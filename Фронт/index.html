@@ -1,0 +1,107 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#fcfaf7">
+  <meta name="description" content="Сегодня: ваш срок беременности, малыш, самочувствие и полезные материалы.">
+  <title>Сегодня</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='10' fill='%238052ff'/%3E%3Cpath d='M16 24 7 15C1 8 12 3 16 10 20 3 31 8 25 15Z' fill='white'/%3E%3C/svg%3E">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="app" id="today">
+    <header class="page-header">
+      <div>
+        <h1>Сегодня</h1>
+        <p class="greeting">Доброе утро, Алина! <span class="greeting-heart sprite" aria-hidden="true"></span></p>
+      </div>
+      <div class="header-actions">
+        <button class="notification icon-button" type="button" data-action="notifications" aria-label="Уведомления: есть новые"><span class="sprite bell" aria-hidden="true"></span></button>
+        <a class="avatar sprite" href="profile.html" aria-label="Профиль Алины"></a>
+      </div>
+    </header>
+
+    <main>
+      <button class="pregnancy-summary" type="button" data-action="pregnancy" aria-label="Ваш срок: 27 недель и 4 дня. 3 триместр. До родов примерно 82 дня">
+        <span class="summary-row">
+          <span class="pregnancy-age"><strong>27</strong> недель и 4 дня</span>
+          <span class="pregnancy-meta">3 триместр<br>До родов ≈ 82 дня</span>
+          <svg class="chevron" aria-hidden="true"><use href="#i-chevron"/></svg>
+        </span>
+        <span class="progress-track" aria-hidden="true"><span></span></span>
+      </button>
+
+      <a class="feature-card baby-card" href="baby.html" aria-labelledby="baby-title">
+        <span class="feature-art baby-art sprite" aria-hidden="true"></span>
+        <span class="card-heading"><span class="round-icon baby-icon sprite" aria-hidden="true"></span><span id="baby-title">Малыш</span></span>
+        <svg class="chevron" aria-hidden="true"><use href="#i-chevron"/></svg>
+        <span class="feature-copy">
+          <strong class="baby-age">27 недель и 4 дня</strong>
+          <span class="trimester">3 триместр</span>
+          <span class="baby-measurements">Вес ≈ 1000 г · рост ≈ 36 см</span>
+          <span class="baby-description">Созревают лёгкие,<br>малыш активно двигается</span>
+        </span>
+      </a>
+
+      <a class="feature-card mom-card" href="mom.html" aria-labelledby="mom-title">
+        <span class="feature-art mom-art sprite" aria-hidden="true"></span>
+        <span class="card-heading"><span class="round-icon mom-icon sprite" aria-hidden="true"></span><span id="mom-title">Мама</span></span>
+        <svg class="chevron" aria-hidden="true"><use href="#i-chevron"/></svg>
+        <span class="feature-copy">
+          <strong class="mom-subtitle">Что происходит с вашим телом</strong>
+          <span class="mom-description">Матка растёт, смещается центр<br>тяжести. Возможны тренировочные<br>схватки и отёки</span>
+        </span>
+      </a>
+
+      <section class="helpers" aria-labelledby="helpers-title">
+        <div class="section-heading">
+          <h2 id="helpers-title">Быстрые помощники</h2>
+          <button class="text-link" type="button" data-action="tools">Все инструменты<svg class="chevron" aria-hidden="true"><use href="#i-chevron"/></svg></button>
+        </div>
+        <div class="helper-grid">
+          <button class="helper" type="button" data-action="calendar"><span class="helper-icon calendar-icon sprite" aria-hidden="true"></span><span>Календарь</span></button>
+          <button class="helper" type="button" data-action="breathing"><span class="helper-icon breathing-icon sprite" aria-hidden="true"></span><span>Дыхание</span></button>
+          <button class="helper" type="button" data-action="movements"><span class="helper-icon movements-icon sprite" aria-hidden="true"></span><span>Шевеления</span></button>
+          <button class="helper" type="button" data-action="tools"><span class="helper-icon more-icon sprite" aria-hidden="true"></span><span>Ещё</span></button>
+        </div>
+      </section>
+
+      <section class="recommendations" aria-labelledby="recommendations-title">
+        <div class="section-heading">
+          <h2 id="recommendations-title">Для вас сейчас</h2>
+          <button class="text-link" type="button" data-action="materials">Все материалы<svg class="chevron" aria-hidden="true"><use href="#i-chevron"/></svg></button>
+        </div>
+        <p class="section-description">Подобрали по вашему сроку и этапу подготовки</p>
+        <div class="article-grid">
+          <button class="article-card baby-article" type="button" data-action="baby-article">
+            <span class="article-art article-baby-art sprite" aria-hidden="true"></span>
+            <span class="article-meta"><span class="tag">СТАТЬЯ</span><span>·</span><span>6 мин</span></span>
+            <span class="article-title">Что происходит<br>с малышом<br>на 27 неделе</span>
+            <span class="article-arrow"><svg class="chevron" aria-hidden="true"><use href="#i-chevron"/></svg></span>
+          </button>
+          <button class="article-card practice-article" type="button" data-action="practice-article">
+            <span class="article-art article-practice-art sprite" aria-hidden="true"></span>
+            <span class="article-meta"><span class="tag">ПРАКТИКА</span><span>·</span><span>10 мин</span></span>
+            <span class="article-title">Упражнения<br>для расслабления<br>тазового дна</span>
+            <span class="article-arrow"><svg class="chevron" aria-hidden="true"><use href="#i-chevron"/></svg></span>
+          </button>
+        </div>
+      </section>
+    </main>
+
+    <nav class="bottom-navigation" aria-label="Основная навигация">
+      <div class="navigation-items">
+        <a class="nav-item active" href="#today" aria-current="page"><svg class="nav-icon home-icon" viewBox="0 0 30 30" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 13 15 4l10 9v13h-7v-8h-6v8H5Z"/></svg><span>Сегодня</span></a>
+        <a class="nav-item" href="journey.html"><svg class="nav-icon journey-icon" viewBox="0 0 30 30" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 7 11 4 19 7 26 4v20l-7 3-8-3-7 3V7Z"/><path d="M11 4v20M19 7v20"/></svg><span>Мой путь</span></a>
+        <a class="nav-item" href="ai.html"><span class="nav-icon ai-icon sprite" aria-hidden="true"></span><span>AI</span></a>
+        <a class="nav-item" href="club.html"><span class="nav-icon club-icon sprite" aria-hidden="true"></span><span>Клуб</span></a>
+        <a class="nav-item" href="profile.html"><span class="nav-icon profile-icon sprite" aria-hidden="true"></span><span>Профиль</span></a>
+      </div>
+    </nav>
+  </div>
+
+  <svg class="svg-definitions" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><symbol id="i-chevron" viewBox="0 0 16 24"><path d="m5 5 6 7-6 7" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></symbol></svg>
+  <script src="app.js"></script>
+</body>
+</html>

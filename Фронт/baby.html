@@ -1,0 +1,92 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#fcfaf7">
+  <meta name="description" content="Малыш: развитие на вашей неделе беременности, данные и полезные материалы.">
+  <title>Малыш</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='10' fill='%238052ff'/%3E%3Cpath d='M16 24 7 15C1 8 12 3 16 10 20 3 31 8 25 15Z' fill='white'/%3E%3C/svg%3E">
+  <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="baby.css">
+</head>
+<body>
+  <div class="app baby-page">
+    <header class="baby-header">
+      <a href="index.html" class="back-link" aria-label="Назад на Сегодня"><svg aria-hidden="true" viewBox="0 0 24 24"><path d="m15 4-8 8 8 8"/></svg></a>
+      <h1>Малыш</h1>
+    </header>
+    <main class="baby-main">
+      <section class="baby-overview" aria-labelledby="baby-overview-title">
+        <span class="baby-hero-art baby-sprite" role="img" aria-label="Иллюстрация малыша в утробе"></span>
+        <div class="baby-overview-copy">
+          <p class="eyebrow">Ваш малыш сейчас</p>
+          <h2 id="baby-overview-title"><span>27</span> недель и 4 дня</h2>
+          <p class="overview-meta">3 триместр <span>·</span> До родов ≈ 82 дня</p>
+          <div class="baby-size">
+            <div><strong>≈ 1000 г</strong><span>Вес</span></div>
+            <div><strong>≈ 36 см</strong><span>Рост</span></div>
+            <div class="size-comparison"><span class="cauliflower baby-sprite" aria-hidden="true"></span><p>Примерно с<br><strong>цветную капусту</strong></p></div>
+          </div>
+        </div>
+      </section>
+
+      <section class="baby-panel baby-data" aria-labelledby="baby-data-title">
+        <div class="section-heading"><h2 id="baby-data-title">Данные о малыше</h2><button class="text-link" type="button" data-action="baby-data">Добавить данные<svg class="chevron" aria-hidden="true"><use href="#i-chevron"/></svg></button></div>
+        <div class="baby-data-grid">
+          <div class="data-tile"><span class="data-icon heartbeat-icon baby-sprite" aria-hidden="true"></span><div><h3>ЧСС</h3><strong>120–160 уд/мин</strong><p>Норма на этом сроке</p></div></div>
+          <div class="data-tile"><span class="data-icon ultrasound-icon baby-sprite" aria-hidden="true"></span><div><h3>Последнее УЗИ</h3><strong>26 недель</strong><p>2 июля 2024</p></div></div>
+          <div class="data-tile"><span class="data-icon position-icon baby-sprite" aria-hidden="true"></span><div><h3>Положение</h3><strong>Головное</strong><p>По данным УЗИ</p></div></div>
+        </div>
+      </section>
+
+      <section class="baby-panel baby-development" aria-labelledby="development-title">
+        <h2 id="development-title">Развитие малыша</h2>
+        <p>На этой неделе лёгкие продолжают созревать, мозг активно развивается, формируются новые нервные связи.<br>Малыш всё лучше различает голоса и звуки, активно двигается и тренирует дыхательные движения.</p>
+        <button class="development-link" type="button" data-action="baby-weeks"><svg class="book-icon" aria-hidden="true" viewBox="0 0 24 24"><path d="M12 5C9 2 5 3 3 4v16c3-1 6-1 9 1 3-2 6-2 9-1V4c-2-1-6-2-9 1Zm0 0v16"/></svg><span>Подробнее о развитии по неделям</span><svg class="chevron" aria-hidden="true"><use href="#i-chevron"/></svg></button>
+      </section>
+
+      <section class="baby-panel baby-movements" aria-labelledby="movements-title">
+        <span class="movement-badge baby-sprite" aria-hidden="true"></span>
+        <div class="movement-copy"><h2 id="movements-title">Шевеления малыша</h2><p>Последняя запись: сегодня, 14:28</p><p class="movement-status"><span aria-hidden="true"></span>Малыш активен — всё в порядке</p></div>
+        <button class="primary-button" type="button" data-action="movements">Записать шевеления</button>
+      </section>
+
+      <section class="baby-panel baby-learn" aria-labelledby="learn-title">
+        <div class="section-heading"><h2 id="learn-title">Узнать больше</h2><button class="text-link" type="button" data-action="materials">Смотреть все<svg class="chevron" aria-hidden="true"><use href="#i-chevron"/></svg></button></div>
+        <div class="article-grid">
+          <button class="article-card baby-article" type="button" data-action="baby-article">
+            <span class="article-art baby-reading-art baby-sprite" aria-hidden="true"></span>
+            <span class="article-meta"><span class="tag">СТАТЬЯ</span><span>·</span><span>6 мин</span></span>
+            <span class="article-title">Что происходит<br>с малышом<br>на 27 неделе</span>
+            <span class="article-arrow"><svg class="chevron" aria-hidden="true"><use href="#i-chevron"/></svg></span>
+          </button>
+          <button class="article-card course-article" type="button" data-action="birth-course" aria-label="Урок курса: Как малыш проходит через родовые пути. 9 минут. Закрытый материал">
+            <span class="article-art birth-course-art baby-sprite" aria-hidden="true"></span>
+            <span class="article-meta"><span class="tag">УРОК КУРСА</span><span>·</span><span>9 мин</span></span>
+            <span class="article-title">Как малыш проходит<br>через родовые пути</span>
+            <span class="course-lock"><svg viewBox="0 0 16 20" aria-hidden="true"><path d="M4 9V6a4 4 0 0 1 8 0v3M3 9h10v9H3Z"/></svg></span>
+            <span class="article-arrow"><svg class="chevron" aria-hidden="true"><use href="#i-chevron"/></svg></span>
+          </button>
+        </div>
+      </section>
+
+      <section class="baby-panel community-card" aria-labelledby="community-title">
+        <span class="community-badge baby-sprite" aria-hidden="true"></span>
+        <div class="community-copy"><h2 id="community-title">Мамы на вашем сроке обсуждают</h2><p>«Как часто ваш малыш активен вечером?»</p><span>112 ответов</span></div>
+        <a class="text-link" href="club.html">В клуб<svg class="chevron" aria-hidden="true"><use href="#i-chevron"/></svg></a>
+      </section>
+    </main>
+
+    <nav class="bottom-navigation" aria-label="Основная навигация"><div class="navigation-items">
+      <a class="nav-item" href="index.html"><svg class="nav-icon home-icon" viewBox="0 0 30 30" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 13 15 4l10 9v13h-7v-8h-6v8H5Z"/></svg><span>Сегодня</span></a>
+      <a class="nav-item" href="journey.html"><svg class="nav-icon journey-icon" viewBox="0 0 30 30" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 7 11 4 19 7 26 4v20l-7 3-8-3-7 3V7Z"/><path d="M11 4v20M19 7v20"/></svg><span>Мой путь</span></a>
+      <a class="nav-item" href="ai.html"><span class="nav-icon ai-icon sprite" aria-hidden="true"></span><span>AI</span></a>
+      <a class="nav-item" href="club.html"><span class="nav-icon club-icon sprite" aria-hidden="true"></span><span>Клуб</span></a>
+      <a class="nav-item" href="profile.html"><span class="nav-icon profile-icon sprite" aria-hidden="true"></span><span>Профиль</span></a>
+    </div></nav>
+  </div>
+  <svg class="svg-definitions" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><symbol id="i-chevron" viewBox="0 0 16 24"><path d="m5 5 6 7-6 7" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></symbol></svg>
+  <script src="app.js"></script>
+</body>
+</html>

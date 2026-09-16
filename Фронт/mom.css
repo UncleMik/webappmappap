@@ -1,0 +1,78 @@
+/* 436 px mobile reference, excluding the surrounding frame and device chrome. */
+:root { font-size: min(2.293577982vw, 10px); }
+.mom-sprite { display: block; flex-shrink: 0; background: url('assets/mom-reference.png') no-repeat; background-size: 95.6rem 147.2rem; }
+.mom-header { position: relative; display: grid; grid-template-columns: 3.6rem 1fr 3.6rem; align-items: start; min-height: calc(6.7rem + env(safe-area-inset-top,0px)); padding: calc(1.6rem + env(safe-area-inset-top,0px)) 1.8rem .9rem; gap: .8rem; }
+.mom-header > div { text-align: center; }
+.mom-header h1 { font-size: 2rem; line-height: 2.6rem; letter-spacing: -.05rem; }
+.mom-header p { color: var(--muted); font-size: 1.2rem; line-height: 1.8rem; white-space: nowrap; }
+.mom-back { display: grid; place-items: center; width: 2rem; height: 2.8rem; color: #1b294a; }
+.mom-back .chevron { transform: rotate(180deg); width: 1.6rem; height: 2.6rem; color: inherit; }
+.mom-header-heart { display: grid; place-items: center; width: 3.5rem; height: 3.5rem; background: #fff0f4; border-radius: 50%; color: #fa83b4; }
+.mom-header-heart svg { width: 1.8rem; height: 1.8rem; }
+.mom-main { padding: 0 1.4rem; }
+.mom-overview { position: relative; min-height: 13rem; border: 1px solid #faf1f8; border-radius: 1.5rem; background: linear-gradient(105deg,#fcf6ff,#fff8fa 55%,#fff2ee); }
+.mom-overview-copy { position: relative; z-index: 2; width: 22rem; padding: 1.2rem 1.6rem 1rem; }
+.mom-overview h2 { font-size: 2.1rem; line-height: 2.9rem; letter-spacing: -.06rem; white-space: nowrap; }
+.mom-overview h2 > span { font-size: 2.5rem; }
+.mom-overview-meta { color: #566c94; font-size: 1.25rem; line-height: 2rem; white-space: nowrap; }
+.mom-overview-meta > span { margin: 0 .4rem; }
+.mom-progress { margin-top: .4rem; height: .8rem; width: 18.6rem; border-radius: 2rem; background: #ede3ff; overflow: hidden; }
+.mom-progress > span { display: block; width: 74%; height: 100%; border-radius: inherit; background: linear-gradient(90deg,#925dff,#a776ff); }
+.mom-encouragement { display: flex; align-items: center; gap: .7rem; margin-top: 1.4rem; padding: .6rem .9rem; width: 19rem; min-height: 3.3rem; background: #f9e9ff; color: #72578e; border-radius: 2rem; font-size: 1.05rem; white-space: nowrap; }
+.mom-encouragement > svg:first-child { width: 1.5rem; height: 1.5rem; color: #a66bff; flex-shrink: 0; }
+.mom-encouragement .chevron { margin-left: auto; width: 1rem; height: 1.8rem; }
+.mom-portrait { position: absolute; z-index: 1; right: 0; top: -2.8rem; width: 12.3rem; height: 17rem; background-position: -55.7rem -32.9rem; mask-image: linear-gradient(to right,transparent 2%,#000 24%); }
+.mom-affirmation { position: absolute; right: 10.5rem; top: 5.7rem; color: #b1959a; font-size: 1.05rem; line-height: 1.45rem; font-style: italic; transform: rotate(-6deg); }
+.mom-affirmation svg { display: block; width: 1.6rem; height: 1.6rem; margin-left: 3.3rem; margin-top: -1.5rem; margin-bottom: .2rem; color: #efc6cb; }
+.mom-panel { position: relative; z-index: 2; margin-top: 1rem; border-radius: 1.5rem; border: 1px solid #f5f1ef; background: #fff; padding: .9rem 1rem; box-shadow: 0 .2rem .6rem #715e5d03; }
+.mom-panel .section-heading { height: 2.2rem; }
+.mom-panel h2 { font-size: 1.6rem; line-height: 2.2rem; letter-spacing: -.035rem; }
+.mom-panel .text-link { font-size: 1.05rem; line-height: 1.8rem; letter-spacing: -.025rem; gap: .3rem; }
+.mom-panel .text-link .chevron { width: 1rem; height: 1.8rem; }
+.mom-data-grid { display: grid; grid-template-columns: repeat(4,minmax(0,1fr)); gap: .7rem; margin-top: .7rem; }
+.mom-metric { position: relative; display: flex; flex-direction: column; align-items: center; height: 9.6rem; border-radius: 1rem; border: 1px solid #f0eaff; padding: .6rem .2rem; }
+.metric-weight { background: linear-gradient(120deg,#f5f0ff,#faf7ff); }
+.metric-gain { background: linear-gradient(120deg,#fff2fa,#fdf7fc); border-color: #fbeaf5; }
+.metric-pressure { background: linear-gradient(120deg,#edfff8,#f4fdf9); border-color: #e5f9f0; }
+.metric-wellbeing { background: linear-gradient(120deg,#fff7eb,#fffaf4); border-color: #faf0e4; }
+.metric-icon { width: 2.8rem; height: 2.8rem; border-radius: .7rem; }
+.weight-icon { background-position: -31.4rem -54.1rem; }
+.gain-icon { background-position: -41.4rem -54.1rem; }
+.pressure-icon { background-position: -51.4rem -54.1rem; }
+.wellbeing-icon { background-position: -61.4rem -54.1rem; }
+.metric-label { font-size: 1.05rem; line-height: 1.5rem; margin-top: .3rem; white-space: nowrap; }
+.mom-metric > strong { font-size: 1.4rem; line-height: 2rem; letter-spacing: -.03rem; }
+.metric-note { font-size: 1.1rem; line-height: 1.8rem; color: #586e94; }
+.mom-metric > .chevron { position: absolute; right: .4rem; bottom: .5rem; width: 1rem; height: 1.7rem; }
+.mom-changes { padding: .9rem 1rem .8rem; }
+.mom-changes-copy { color: #687b9e; font-size: 1.3rem; line-height: 1.65rem; margin-top: .6rem; letter-spacing: -.018rem; }
+.mom-information { display: flex; align-items: center; gap: 1.2rem; margin-top: .7rem; min-height: 4.2rem; background: linear-gradient(110deg,#f8f4ff,#f6f2ff); border-radius: 1.5rem; padding: .7rem 1.2rem; }
+.information-icon { display: grid; place-items: center; flex-shrink: 0; width: 1.9rem; height: 1.9rem; background: #8756ff; color: white; border-radius: 50%; font-size: 1.6rem; line-height: 1.9rem; font-weight: 700; }
+.mom-information p { font-size: 1.05rem; line-height: 1.4rem; color: #697a98; }
+.mom-tools { padding-bottom: .8rem; }
+.mom-tools-grid { display: grid; grid-template-columns: repeat(3,minmax(0,1fr)); gap: .7rem; margin-top: .6rem; }
+.mom-practice { display: flex; flex-direction: column; min-width: 0; min-height: 16.6rem; border: 1px solid #f0e9fc; border-radius: 1rem; overflow: hidden; background: #fcfaff; }
+.practice-photo { width: 100%; aspect-ratio: 125 / 65; background-size: 764.8% auto; }
+.back-practice-photo { background-position: 34.29603% 62.82871%; }
+.birth-practice-photo { background-position: 50.30084% 62.82871%; }
+.practice-copy { padding: .4rem .7rem 0; }
+.practice-copy h3, .weight-tool-heading h3 { margin: 0; font-size: 1.15rem; line-height: 1.3rem; letter-spacing: -.025rem; }
+.practice-copy p, .mom-weight-tool > p { color: #6c7d9f; font-size: 1.05rem; line-height: 1.3rem; letter-spacing: -.02rem; }
+.practice-start, .weight-record { display: flex; align-items: center; justify-content: center; height: 2.9rem; flex-shrink: 0; border-radius: 2rem; font-size: 1.1rem; line-height: 1.3rem; }
+.practice-start { margin: auto .7rem .6rem; gap: .8rem; background: linear-gradient(105deg,#8954ff,#7847f9); color: white; }
+.practice-start svg { width: 1.5rem; height: 1.5rem; }
+.mom-weight-tool { display: flex; flex-direction: column; min-width: 0; background: linear-gradient(120deg,#eafff7,#f1fffa); border: 1px solid #e0fff2; border-radius: 1rem; padding: .9rem .7rem .6rem; }
+.weight-tool-heading { display: flex; align-items: center; gap: .7rem; }
+.weight-tool-icon { width: 4.3rem; height: 4.3rem; border-radius: .8rem; background-position: -55.6rem -89.3rem; }
+.mom-weight-tool > p { margin-top: .8rem; margin-bottom: .7rem; }
+.weight-record { margin-top: auto; width: 100%; border: 1px solid #a578ff; background: #ffffffde; color: #8252ff; text-align: center; }
+.mom-recommendations-grid { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: .8rem; margin-top: .7rem; }
+.mom-recommendations .article-card { height: 11.2rem; padding: .9rem; }
+.mom-recommendations .article-title { font-size: 1.15rem; line-height: 1.4rem; }
+.mom-week-article { background: linear-gradient(105deg,#f4fff9,#fff6f1); }
+.recommended-mom-art { position: absolute; width: 9rem; height: 11.2rem; right: 0; bottom: 0; background-position: -61rem -65.7rem; mask-image: linear-gradient(to right,transparent,#000 40%); }
+.mom-page .bottom-navigation { margin-top: 1rem; }
+@media (max-width: 350px) {
+  .mom-changes .section-heading, .mom-recommendations .section-heading { height: auto; align-items: flex-start; gap: .5rem; }
+  .mom-changes h2, .mom-recommendations h2 { max-width: 27rem; }
+}

@@ -1,0 +1,94 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#fcfaf7">
+  <meta name="description" content="Мама: ваше самочувствие, данные и забота о себе на каждом этапе беременности.">
+  <title>Мама</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='10' fill='%238052ff'/%3E%3Cpath d='M16 24 7 15C1 8 12 3 16 10 20 3 31 8 25 15Z' fill='white'/%3E%3C/svg%3E">
+  <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="mom.css">
+</head>
+<body>
+  <div class="app mom-page">
+    <header class="mom-header">
+      <a class="mom-back" href="index.html" aria-label="Назад на Сегодня"><svg class="chevron" aria-hidden="true"><use href="#i-chevron"/></svg></a>
+      <div><h1>Мама</h1><p>Забота о вас на каждом этапе</p></div>
+      <button class="mom-header-heart" type="button" data-action="favorites" aria-label="Избранное"><svg aria-hidden="true"><use href="#i-heart"/></svg></button>
+    </header>
+
+    <main class="mom-main">
+      <section class="mom-overview" aria-labelledby="mom-age-title">
+        <span class="mom-portrait mom-sprite" role="img" aria-label="Будущая мама бережно обнимает живот"></span>
+        <div class="mom-overview-copy">
+          <h2 id="mom-age-title"><span>27</span> недель и 4 дня</h2>
+          <p class="mom-overview-meta">III триместр <span>·</span> До родов ≈ 82 дня</p>
+          <div class="mom-progress" role="progressbar" aria-label="Срок беременности" aria-valuemin="0" aria-valuemax="280" aria-valuenow="193" aria-valuetext="27 недель и 4 дня"><span></span></div>
+          <button class="mom-encouragement" type="button" data-action="mom-support"><svg aria-hidden="true"><use href="#i-heart"/></svg><span>Вы делаете важное дело</span><svg class="chevron" aria-hidden="true"><use href="#i-chevron"/></svg></button>
+        </div>
+        <p class="mom-affirmation"><svg aria-hidden="true"><use href="#i-heart"/></svg>Вы<br>справляетесь<br>отлично</p>
+      </section>
+
+      <section class="mom-panel mom-data" aria-labelledby="mom-data-title">
+        <div class="section-heading"><h2 id="mom-data-title">Мои данные</h2><button class="text-link" type="button" data-action="mom-data">Все данные<svg class="chevron" aria-hidden="true"><use href="#i-chevron"/></svg></button></div>
+        <div class="mom-data-grid">
+          <button class="mom-metric metric-weight" type="button" data-action="weight"><span class="metric-icon weight-icon mom-sprite" aria-hidden="true"></span><span class="metric-label">Вес</span><strong>68,4 кг</strong><span class="metric-note">+7,2 кг</span><svg class="chevron" aria-hidden="true"><use href="#i-chevron"/></svg></button>
+          <button class="mom-metric metric-gain" type="button" data-action="weight-gain"><span class="metric-icon gain-icon mom-sprite" aria-hidden="true"></span><span class="metric-label">Прибавка</span><strong>+7,2 кг</strong><span class="metric-note">Норма</span><svg class="chevron" aria-hidden="true"><use href="#i-chevron"/></svg></button>
+          <button class="mom-metric metric-pressure" type="button" data-action="blood-pressure"><span class="metric-icon pressure-icon mom-sprite" aria-hidden="true"></span><span class="metric-label">Давление</span><strong>118/76</strong><span class="metric-note">Норма</span><svg class="chevron" aria-hidden="true"><use href="#i-chevron"/></svg></button>
+          <button class="mom-metric metric-wellbeing" type="button" data-action="wellbeing"><span class="metric-icon wellbeing-icon mom-sprite" aria-hidden="true"></span><span class="metric-label">Самочувствие</span><strong>Хорошо</strong><span class="metric-note" aria-hidden="true">&nbsp;</span><svg class="chevron" aria-hidden="true"><use href="#i-chevron"/></svg></button>
+        </div>
+      </section>
+
+      <section class="mom-panel mom-changes" aria-labelledby="mom-changes-title">
+        <div class="section-heading"><h2 id="mom-changes-title">Что происходит на 27-й неделе</h2><button class="text-link" type="button" data-action="mom-week">Подробнее<svg class="chevron" aria-hidden="true"><use href="#i-chevron"/></svg></button></div>
+        <p class="mom-changes-copy">Ваше тело продолжает меняться: растет живот, увеличивается нагрузка на спину, могут появляться тренировочные схватки.<br>Это нормальные процессы на этом этапе. Возможны изменения сна, повышенная утомляемость, колебания настроения.<br>Если что-то беспокоит сильно или непривычно — важно обсудить это с врачом.</p>
+        <div class="mom-information"><span class="information-icon" aria-hidden="true">i</span><p>Каждая беременность индивидуальна.<br>Здесь — общая информация для вашего срока.</p></div>
+      </section>
+
+      <section class="mom-panel mom-tools" aria-labelledby="mom-tools-title">
+        <div class="section-heading"><h2 id="mom-tools-title">Что поможет сейчас</h2><a class="text-link" href="journey.html">Все инструменты<svg class="chevron" aria-hidden="true"><use href="#i-chevron"/></svg></a></div>
+        <div class="mom-tools-grid">
+          <article class="mom-practice">
+            <span class="practice-photo back-practice-photo mom-sprite" role="img" aria-label="Практика расслабления спины"></span>
+            <div class="practice-copy"><h3>Тянет спину?</h3><p>Практика для<br>расслабления спины<br>· 8 мин</p></div>
+            <button class="practice-start" type="button" data-action="back-practice" aria-label="Начать практику расслабления спины">Начать<svg aria-hidden="true"><use href="#i-play"/></svg></button>
+          </article>
+          <article class="mom-practice">
+            <span class="practice-photo birth-practice-photo mom-sprite" role="img" aria-label="Дыхательная практика для подготовки к родам"></span>
+            <div class="practice-copy"><h3>Подготовиться<br>к родам</h3><p>Дыхательная<br>практика · 6 мин</p></div>
+            <button class="practice-start" type="button" data-action="breathing" aria-label="Начать дыхательную практику">Начать<svg aria-hidden="true"><use href="#i-play"/></svg></button>
+          </article>
+          <article class="mom-weight-tool">
+            <div class="weight-tool-heading"><span class="weight-tool-icon mom-sprite" aria-hidden="true"></span><h3>Следите<br>за весом</h3></div>
+            <p>Добавьте новое измерение, чтобы отслеживать динамику</p>
+            <button class="weight-record" type="button" data-action="weight">Записать вес</button>
+          </article>
+        </div>
+      </section>
+
+      <section class="mom-panel mom-recommendations" aria-labelledby="mom-recommendations-title">
+        <div class="section-heading"><h2 id="mom-recommendations-title">Подобрано для вашего этапа</h2><button class="text-link" type="button" data-action="materials">Смотреть все<svg class="chevron" aria-hidden="true"><use href="#i-chevron"/></svg></button></div>
+        <div class="mom-recommendations-grid">
+          <button class="article-card mom-week-article" type="button" data-action="mom-week"><span class="recommended-mom-art sprite" aria-hidden="true"></span><span class="article-meta"><span class="tag">СТАТЬЯ</span><span>·</span><span>5 мин</span></span><span class="article-title">Что происходит<br>на 27-й неделе</span><span class="article-arrow"><svg class="chevron" aria-hidden="true"><use href="#i-chevron"/></svg></span></button>
+          <button class="article-card practice-article" type="button" data-action="practice-article"><span class="article-art article-practice-art sprite" aria-hidden="true"></span><span class="article-meta"><span class="tag">ПРАКТИКА</span><span>·</span><span>10 мин</span></span><span class="article-title">Упражнения<br>для расслабления<br>тазового дна</span><span class="article-arrow"><svg class="chevron" aria-hidden="true"><use href="#i-chevron"/></svg></span></button>
+        </div>
+      </section>
+    </main>
+
+    <nav class="bottom-navigation" aria-label="Основная навигация"><div class="navigation-items">
+      <a class="nav-item active" href="index.html"><svg class="nav-icon home-icon" viewBox="0 0 30 30" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 13 15 4l10 9v13h-7v-8h-6v8H5Z"/></svg><span>Сегодня</span></a>
+      <a class="nav-item" href="journey.html"><svg class="nav-icon journey-icon" viewBox="0 0 30 30" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 7 11 4 19 7 26 4v20l-7 3-8-3-7 3V7Z"/><path d="M11 4v20M19 7v20"/></svg><span>Мой путь</span></a>
+      <a class="nav-item" href="ai.html"><span class="nav-icon ai-icon sprite" aria-hidden="true"></span><span>AI</span></a>
+      <a class="nav-item" href="club.html"><span class="nav-icon club-icon sprite" aria-hidden="true"></span><span>Клуб</span></a>
+      <a class="nav-item" href="profile.html"><span class="nav-icon profile-icon sprite" aria-hidden="true"></span><span>Профиль</span></a>
+    </div></nav>
+  </div>
+  <svg class="svg-definitions" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+    <symbol id="i-chevron" viewBox="0 0 16 24"><path d="m5 5 6 7-6 7" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+    <symbol id="i-heart" viewBox="0 0 24 24"><path d="M12 21C9 18 2 14 2 8a5.5 5.5 0 0 1 10-3 5.5 5.5 0 0 1 10 3c0 6-7 10-10 13Z" fill="currentColor"/></symbol>
+    <symbol id="i-play" viewBox="0 0 20 20"><circle cx="10" cy="10" r="9" fill="white"/><path d="m8 6 6 4-6 4Z" fill="#8452fa"/></symbol>
+  </svg>
+  <script src="app.js"></script>
+</body>
+</html>

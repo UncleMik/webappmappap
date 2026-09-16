@@ -1,0 +1,7 @@
+.placeholder-main { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 4rem 2.4rem 7rem; text-align: center; }
+.placeholder-symbol { display: grid; place-items: center; width: 7.6rem; height: 7.6rem; margin-bottom: 2.4rem; border-radius: 2.6rem; background: #f0eaff; color: var(--purple); }
+.placeholder-symbol svg { width: 4rem; height: 4rem; }
+.placeholder-main h2 { font-size: 2.6rem; line-height: 1.25; letter-spacing: -.05rem; }
+.placeholder-main p { max-width: 30rem; margin-top: 1.2rem; color: var(--muted); font-size: 1.5rem; line-height: 1.5; }
+.placeholder-back { display: grid; place-items: center; min-height: 4.6rem; margin-top: 2.8rem; padding: 1.2rem 3rem; border-radius: 2.4rem; background: var(--purple); color: #fff; text-decoration: none; font-size: 1.5rem; }
+.placeholder-page .nav-item.active .sprite { filter: hue-rotate(28deg) saturate(5); }

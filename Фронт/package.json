@@ -1,0 +1,7 @@
+{
+  "name": "today-mobile",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Мобильная страница Сегодня по предоставленному макету",
+  "scripts": { "dev": "node server.cjs", "start": "node server.cjs" }
+}

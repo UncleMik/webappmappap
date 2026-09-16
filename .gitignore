@@ -1,0 +1,7 @@
+tools/preview-runtime/
+данные/
+.env
+.env.*
+node_modules/
+__pycache__/
+_site/
