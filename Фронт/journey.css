@@ -3,8 +3,6 @@
 .journey-page { background: linear-gradient(110deg,#fff,#fcfbff 65%,#fff); }
 .journey-header { display: flex; justify-content: space-between; align-items: center; padding: calc(1.6rem + env(safe-area-inset-top,0px)) 2.6rem .4rem; min-height: calc(5.2rem + env(safe-area-inset-top,0px)); }
 .journey-header h1 { font-size: 2.2rem; line-height: 2.8rem; letter-spacing: -.04rem; }
-.calendar-top { display: grid; place-items: center; width: 2.6rem; height: 2.8rem; color: #8a48ff; background: none; }
-.calendar-top svg { width: 2.2rem; height: 2.2rem; }
 .journey-main { padding: 0 2.3rem; }
 .journey-page h2 { font-size: 1.4rem; line-height: 1.9rem; letter-spacing: -.035rem; }
 .journey-page h3 { margin: 0; font-size: .95rem; line-height: 1.1rem; letter-spacing: -.015rem; font-weight: 400; }
@@ -64,27 +62,20 @@
 .small-play { position: absolute; bottom: .3rem; left: .6rem; width: 2.2rem; height: 2.2rem; background: white; border-radius: 50%; display: grid; place-items: center; color: #6884af; }
 .small-play svg { width: 1.3rem; height: 1.3rem; }
 .upcoming-weeks { margin-top: .9rem; }
-.completed-week { display: flex; align-items: center; gap: 1rem; margin-top: .3rem; padding: .4rem .9rem; width: 100%; min-height: 3.1rem; border: 1px solid #f0eef5; border-radius: 1rem; background: #fff; box-shadow: 0 .2rem .5rem #37457705; }
-.week-symbol { flex-shrink: 0; display: grid; place-items: center; width: 2.7rem; height: 2.6rem; background: #f1f0fd; color: #7c90bd; border-radius: .6rem; }
-.week-symbol svg { width: 1.8rem; height: 1.8rem; }
-.week-title { display: flex; flex-direction: column; text-align: left; flex: 1; min-width: 0; }
-.week-title strong { color: #7952c9; font-size: 1.1rem; line-height: 1.25rem; font-weight: 600; }
-.week-title > span { color: var(--muted); font-size: .95rem; line-height: 1.1rem; }
-.week-completed { display: flex; align-items: center; gap: .6rem; color: #00c5a4; font-size: .9rem; white-space: nowrap; }
-.week-completed svg { width: 1.9rem; height: 1.9rem; }
-.completed-week > .chevron, .upcoming-week summary > .chevron { width: 1rem; height: 1.8rem; color: #7590c0; }
-.upcoming-week { margin-top: .2rem; border: 1px solid #f1ecff; border-radius: 1rem; background: #f7f2ff; }
-.upcoming-week summary { display: flex; align-items: flex-start; list-style: none; gap: 1rem; padding: .4rem .9rem .2rem; cursor: pointer; }
-.upcoming-week summary::-webkit-details-marker { display: none; }
-.upcoming-week summary > .chevron { color: #8b53ff; }
-.upcoming-week:not([open]) summary > .chevron { transform: rotate(90deg); }
+.journey-weeks-grid { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: .8rem; margin-top: .7rem; }
+.journey-week-card { position: relative; display: flex; flex-direction: column; align-items: flex-start; gap: 1rem; width: 100%; min-width: 0; aspect-ratio: 1; padding: 1.3rem; border: 1px solid #f0eaff; border-radius: 1.5rem; text-align: left; box-shadow: 0 .2rem .6rem #715e5d03; }
+.completed-week { background: linear-gradient(120deg,#edfff8,#f4fdf9); border-color: #e5f9f0; }
+.upcoming-week { background: linear-gradient(120deg,#f5f0ff,#faf7ff); }
+.week-symbol { flex-shrink: 0; display: grid; place-items: center; width: 3.2rem; height: 3.2rem; background: #f1f0fd; color: #7c90bd; border-radius: .8rem; }
+.week-symbol svg { width: 2.2rem; height: 2.2rem; }
+.week-title { display: flex; flex-direction: column; gap: .4rem; min-width: 0; }
+.week-title strong { color: #7952c9; font-size: 1.5rem; line-height: 1.9rem; font-weight: 600; }
+.week-title > span { color: var(--muted); font-size: 1.1rem; line-height: 1.5rem; }
+.week-completed { display: flex; align-items: center; gap: .5rem; margin-top: auto; padding-right: 1.1rem; color: #238e7e; font-size: 1.1rem; line-height: 1.5rem; }
+.week-completed svg { flex-shrink: 0; width: 1.8rem; height: 1.8rem; }
+.week-focus { margin-top: auto; padding-right: 1.1rem; color: #687b9e; font-size: 1.1rem; line-height: 1.5rem; }
+.journey-week-card > .chevron { position: absolute; right: .8rem; bottom: 1.2rem; width: 1rem; height: 1.8rem; color: #8b53ff; }
 .sprout-symbol { color: #00c9aa; background: #e5fbf5; }
-.upcoming-grid { gap: .6rem; margin: .2rem .7rem .5rem; }
-.upcoming-card { min-height: 6.7rem; border-radius: .6rem; }
-.upcoming-card h3 { margin: .2rem .4rem 0; font-size: .95rem; line-height: 1.05rem; }
-.upcoming-card > .content-type { margin: auto .3rem .2rem; padding: 0 .3rem; font-size: .9rem; line-height: 1.15rem; }
-.upcoming-card .small-play { width: 1.9rem; height: 1.9rem; bottom: .2rem; left: .5rem; }
-.upcoming-card .photo-duration { bottom: .2rem; right: .3rem; font-size: .75rem; line-height: .9rem; padding: .2rem .4rem; }
 .journey-page .bottom-navigation { border-top: 1px solid #efedf5; border-radius: 0; margin-top: .2rem; background: #fffffff5; min-height: calc(5.2rem + env(safe-area-inset-bottom,0px)); padding: .5rem .4rem calc(.7rem + env(safe-area-inset-bottom,0px)); }
 .journey-page .nav-item { font-size: 1rem; line-height: 1.3rem; gap: .2rem; color: #7b8dbd; }
 .journey-page .nav-item.active { color: #854bff; }

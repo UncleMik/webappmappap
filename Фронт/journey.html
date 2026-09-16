@@ -13,7 +13,7 @@
 </head>
 <body>
   <div class="app journey-page" id="journey">
-    <header class="journey-header"><h1>Мой путь</h1><button class="calendar-top" type="button" data-action="calendar" aria-label="Открыть календарь"><svg aria-hidden="true"><use href="#j-calendar"/></svg></button></header>
+    <header class="journey-header"><h1>Мой путь</h1></header>
     <main class="journey-main">
       <section class="journey-week" aria-label="Текущая неделя беременности"><div><h2>27-я неделя беременности</h2><p>8 сентября — 14 сентября</p></div><button class="open-calendar" type="button" data-action="calendar"><svg aria-hidden="true"><use href="#j-calendar"/></svg><span>Открыть<br>календарь</span><svg class="chevron" aria-hidden="true"><use href="#i-chevron"/></svg></button></section>
 
@@ -51,14 +51,20 @@
       </section>
 
       <section class="journey-section upcoming-weeks" aria-labelledby="weeks-title"><h2 id="weeks-title">Дальше по неделям</h2><p class="journey-subtitle">Ваш персональный план на самые важные встречи</p>
-        <button class="completed-week" type="button" data-action="week-26"><span class="week-symbol"><svg aria-hidden="true"><use href="#j-calendar"/></svg></span><span class="week-title"><strong>26-я неделя</strong><span>1 сентября — 7 сентября</span></span><span class="week-completed"><svg aria-hidden="true"><use href="#j-check"/></svg>3 из 3 выполнено</span><svg class="chevron" aria-hidden="true"><use href="#i-chevron"/></svg></button>
-        <details class="upcoming-week" open><summary><span class="week-symbol sprout-symbol"><svg aria-hidden="true"><use href="#j-sprout"/></svg></span><span class="week-title"><strong>28-я неделя</strong><span>15 сентября — 21 сентября</span><span>Фокус недели: комфорт тела и профилактика отеков.</span></span><svg class="chevron" aria-hidden="true"><use href="#i-chevron"/></svg></summary>
-          <div class="journey-three-grid upcoming-grid">
-            <button class="journey-content-card upcoming-card" type="button" data-action="pregnancy-yoga"><span class="journey-photo video-photo" style="--x:289;--y:1085;--w:116;--h:29" aria-hidden="true"><span class="small-play"><svg><use href="#j-play"/></svg></span><span class="photo-duration">14:20</span></span><h3>Йога для беременных</h3><span class="content-type video-type"><svg aria-hidden="true"><use href="#j-eye"/></svg>Видео</span></button>
-            <button class="journey-content-card upcoming-card" type="button" data-action="swelling-massage"><span class="journey-photo video-photo" style="--x:412;--y:1085;--w:121;--h:29" aria-hidden="true"><span class="small-play"><svg><use href="#j-play"/></svg></span><span class="photo-duration">11:35</span></span><h3>Самомассаж<br>при отеках</h3><span class="content-type"><svg aria-hidden="true"><use href="#j-document"/></svg>Практика</span></button>
-            <button class="journey-content-card upcoming-card" type="button" data-action="sleep-article"><span class="journey-photo video-photo" style="--x:541;--y:1085;--w:117;--h:29" aria-hidden="true"><span class="small-play"><svg><use href="#j-play"/></svg></span><span class="photo-duration">09:18</span></span><h3>Как наладить сон<br>перед родами</h3><span class="content-type"><svg aria-hidden="true"><use href="#j-document"/></svg>Статья</span></button>
-          </div>
-        </details>
+        <div class="journey-weeks-grid">
+          <button class="journey-week-card completed-week" type="button" data-action="week-26">
+            <span class="week-symbol"><svg aria-hidden="true"><use href="#j-calendar"/></svg></span>
+            <span class="week-title"><strong>26-я неделя</strong><span>1 сентября — 7 сентября</span></span>
+            <span class="week-completed"><svg aria-hidden="true"><use href="#j-check"/></svg>3 из 3 выполнено</span>
+            <svg class="chevron" aria-hidden="true"><use href="#i-chevron"/></svg>
+          </button>
+          <button class="journey-week-card upcoming-week" type="button" data-action="week-28">
+            <span class="week-symbol sprout-symbol"><svg aria-hidden="true"><use href="#j-sprout"/></svg></span>
+            <span class="week-title"><strong>28-я неделя</strong><span>15 сентября — 21 сентября</span></span>
+            <span class="week-focus">Фокус недели: комфорт тела и профилактика отеков.</span>
+            <svg class="chevron" aria-hidden="true"><use href="#i-chevron"/></svg>
+          </button>
+        </div>
       </section>
     </main>
 
@@ -96,12 +102,9 @@
         </div>
         <div class="calendar-weeks" id="calendar-weeks" role="tabpanel" aria-labelledby="trimester-2"></div>
         <section class="calendar-progress-section" aria-labelledby="calendar-progress-title">
-          <div class="calendar-section-heading"><h3 id="calendar-progress-title">Мой прогресс</h3><button type="button" class="calendar-details">Смотреть детали<svg class="chevron" aria-hidden="true"><use href="#i-chevron"/></svg></button></div>
-          <div class="calendar-progress-card">
-            <div class="calendar-progress-ring" role="img" aria-label="Пройдено 65 процентов беременности"><svg viewBox="0 0 80 80" aria-hidden="true"><circle class="ring-track" cx="40" cy="40" r="33"/><circle class="ring-value" cx="40" cy="40" r="33" pathLength="100"/></svg><strong>65%</strong></div>
-            <div><strong>26 из 40 недель</strong><p>Вы уже прошли больше половины пути.<br>Продолжайте в том же темпе!</p></div>
-          </div>
-          <div class="calendar-progress-details" hidden><p>Пройдено: <strong>26 недель</strong></p><p>Текущая: <strong>27-я неделя</strong></p><p>Впереди: <strong>14 недель, включая текущую</strong></p></div>
+          <div class="calendar-section-heading"><h3 id="calendar-progress-title">Мой прогресс</h3></div>
+          <div class="calendar-progress-summary"><span>26 из 40 недель</span><strong>65%</strong></div>
+          <progress class="calendar-progress-bar" value="26" max="40" aria-labelledby="calendar-progress-title">65%</progress>
         </section>
         <div class="calendar-encouragement"><svg aria-hidden="true"><use href="#j-sprout"/></svg><p>Каждая неделя — это важный шаг<br>к вашей встрече с малышом <span>💜</span></p></div>
         <button class="calendar-go-current" type="button">Перейти к текущей неделе</button>

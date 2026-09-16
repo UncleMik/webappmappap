@@ -8,8 +8,6 @@
   const tabs = [...dialog.querySelectorAll('[data-trimester]')];
   const dragZone = dialog.querySelector('.calendar-drag-zone');
   const closeButton = dialog.querySelector('.calendar-close');
-  const detailsButton = dialog.querySelector('.calendar-details');
-  const progressDetails = dialog.querySelector('.calendar-progress-details');
   const triggers = [...document.querySelectorAll('[data-action="calendar"]')];
   let selectedWeek = currentWeek;
   let opener = null;
@@ -28,11 +26,8 @@
   });
 
   function renderWeeks(trimester) {
-    const starts = { 1: 1, 2: 14, 3: 28 };
-    const start = starts[trimester];
-    // Match the reference: show 20 weeks from the trimester start, including
-    // the following trimester's preview; stop at week 40.
-    const end = Math.min(start + 19, 40);
+    const ranges = { 1: [1, 13], 2: [14, 27], 3: [28, 40] };
+    const [start, end] = ranges[trimester];
     tabs.forEach(tab => {
       const active = Number(tab.dataset.trimester) === trimester;
       tab.setAttribute('aria-selected', String(active));
@@ -82,8 +77,6 @@
     afterClose = null;
     selectedWeek = currentWeek;
     renderWeeks(2);
-    progressDetails.hidden = true;
-    detailsButton.setAttribute('aria-expanded', 'false');
     scrollPosition = { x: window.scrollX, y: window.scrollY };
     bodyStyles = {};
     for (const property of ['position', 'top', 'left', 'right', 'width', 'overflow']) bodyStyles[property] = document.body.style[property];
@@ -140,14 +133,6 @@
     if (event.target !== dialog) return;
     const bounds = dialog.getBoundingClientRect();
     if (event.clientY < bounds.top || event.clientY > bounds.bottom || event.clientX < bounds.left || event.clientX > bounds.right) closeCalendar();
-  });
-
-  detailsButton.setAttribute('aria-expanded', 'false');
-  progressDetails.id = 'calendar-progress-details';
-  detailsButton.setAttribute('aria-controls', progressDetails.id);
-  detailsButton.addEventListener('click', () => {
-    progressDetails.hidden = !progressDetails.hidden;
-    detailsButton.setAttribute('aria-expanded', String(!progressDetails.hidden));
   });
 
   dialog.querySelector('.calendar-go-current').addEventListener('click', () => closeCalendar(() => {

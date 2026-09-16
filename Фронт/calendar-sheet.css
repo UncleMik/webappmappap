@@ -44,21 +44,15 @@
 .calendar-week .week-now { color: #8b55ff; font-size: calc(11 * var(--cal)); line-height: calc(13 * var(--cal)); }
 .calendar-week[aria-pressed="true"] { border-color: #a275ff; background: #f8f4ff; box-shadow: 0 0 0 1px #ac85ff24; }
 .calendar-week .calendar-week-check { position: absolute; top: calc(7 * var(--cal)); right: calc(7 * var(--cal)); width: calc(18 * var(--cal)); height: calc(18 * var(--cal)); color: #2ebba5; }
-.calendar-progress-section { margin-top: calc(32 * var(--cal)); }
+.calendar-progress-section { margin-top: calc(20 * var(--cal)); }
 .calendar-section-heading { display: flex; align-items: center; justify-content: space-between; gap: calc(8 * var(--cal)); margin-bottom: calc(10 * var(--cal)); }
 .calendar-section-heading h3 { margin: 0; font-size: calc(16 * var(--cal)); line-height: calc(22 * var(--cal)); letter-spacing: calc(-.3 * var(--cal)); }
-.calendar-details { display: flex; align-items: center; gap: calc(5 * var(--cal)); background: none; color: #8952ff; font-size: calc(12 * var(--cal)); line-height: calc(18 * var(--cal)); }
-.calendar-details .chevron { color: inherit; width: calc(11 * var(--cal)); height: calc(20 * var(--cal)); }
-.calendar-progress-card { display: flex; align-items: center; gap: calc(17 * var(--cal)); min-height: calc(85 * var(--cal)); padding: calc(6 * var(--cal)) calc(10 * var(--cal)); border: 1px solid #f2f1fa; border-radius: calc(13 * var(--cal)); background: #fff; box-shadow: 0 2px 9px #6b659204; }
-.calendar-progress-ring { position: relative; flex-shrink: 0; width: calc(72 * var(--cal)); height: calc(72 * var(--cal)); }
-.calendar-progress-ring > svg { display: block; width: 100%; height: 100%; transform: rotate(-90deg); }
-.calendar-progress-ring circle { fill: none; stroke-width: 11; }
-.ring-track { stroke: #eee7fc; }
-.ring-value { stroke: #2dbca5; stroke-dasharray: 65 100; stroke-linecap: round; }
-.calendar-progress-ring strong { position: absolute; inset: 0; display: grid; place-items: center; font-size: calc(16 * var(--cal)); }
-.calendar-progress-card > div > strong { font-size: calc(15 * var(--cal)); line-height: calc(20 * var(--cal)); }
-.calendar-progress-card p { margin-top: calc(4 * var(--cal)); font-size: calc(12 * var(--cal)); line-height: calc(14 * var(--cal)); color: #8894c5; }
-.calendar-progress-details { padding: calc(10 * var(--cal)); margin-top: calc(6 * var(--cal)); border-radius: calc(10 * var(--cal)); background: #f6f3ff; color: #65739d; font-size: calc(12 * var(--cal)); line-height: calc(20 * var(--cal)); }
+.calendar-progress-summary { display: flex; align-items: center; justify-content: space-between; gap: calc(12 * var(--cal)); font-size: calc(14 * var(--cal)); line-height: calc(20 * var(--cal)); }
+.calendar-progress-summary strong { color: #238e7e; }
+.calendar-progress-bar { display: block; appearance: none; width: 100%; height: calc(8 * var(--cal)); margin-top: calc(8 * var(--cal)); margin-bottom: calc(14 * var(--cal)); border: 0; border-radius: 999px; overflow: hidden; background: #eee7fc; color: #2dbca5; }
+.calendar-progress-bar::-webkit-progress-bar { background: #eee7fc; border-radius: 999px; }
+.calendar-progress-bar::-webkit-progress-value { background: #2dbca5; border-radius: 999px; }
+.calendar-progress-bar::-moz-progress-bar { background: #2dbca5; border-radius: 999px; }
 .calendar-encouragement { display: flex; align-items: center; gap: calc(19 * var(--cal)); min-height: calc(60 * var(--cal)); padding: calc(10 * var(--cal)) calc(20 * var(--cal)); margin-top: calc(9 * var(--cal)); border-radius: calc(12 * var(--cal)); background: linear-gradient(110deg,#f1edff,#edeeff); }
 .calendar-encouragement > svg { flex-shrink: 0; width: calc(33 * var(--cal)); height: calc(33 * var(--cal)); color: #2bb9a2; }
 .calendar-encouragement p { color: #687caa; font-size: calc(13 * var(--cal)); line-height: calc(17 * var(--cal)); }
