@@ -31,7 +31,7 @@
 .lesson-progress progress::-webkit-progress-bar { background: #eee7fc; border-radius: 2rem; }
 .lesson-progress progress::-webkit-progress-value { background: linear-gradient(90deg,#a175ff,#8755ff); border-radius: 2rem; }
 .lesson-progress progress::-moz-progress-bar { background: #9160ff; border-radius: 2rem; }
-.journey-primary { display: flex; align-items: center; justify-content: center; gap: .6rem; min-height: 2.7rem; padding: .5rem 1.2rem; border-radius: 2rem; color: #fff; background: linear-gradient(180deg,#a17aff,#7a48ff); font-size: 1rem; line-height: 1.3rem; white-space: nowrap; }
+.journey-primary { text-decoration: none; display: flex; align-items: center; justify-content: center; gap: .6rem; min-height: 2.7rem; padding: .5rem 1.2rem; border-radius: 2rem; color: #fff; background: linear-gradient(180deg,#a17aff,#7a48ff); font-size: 1rem; line-height: 1.3rem; white-space: nowrap; }
 .journey-primary .chevron { color: white; width: .9rem; height: 1.4rem; }
 .large-play { display: grid; place-items: center; position: absolute; top: 50%; left: 50%; width: 3rem; height: 3rem; transform: translate(-50%,-50%); background: #343a3da3; border-radius: 50%; color: white; }
 .large-play svg { width: 1.8rem; height: 1.8rem; }
