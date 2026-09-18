@@ -4,21 +4,43 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <meta name="theme-color" content="#fcfaf7">
-  <title>AI</title>
+  <title>AI — ваш личный ассистент</title>
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='10' fill='%238052ff'/%3E%3Cpath d='M16 24 7 15C1 8 12 3 16 10 20 3 31 8 25 15Z' fill='white'/%3E%3C/svg%3E">
   <link rel="stylesheet" href="styles.css">
-  <link rel="stylesheet" href="placeholder.css">
+  <link rel="stylesheet" href="ai.css">
+  <script src="ai.js" defer></script>
 </head>
-<body class="placeholder-page">
+<body class="ai-page">
+  <svg class="svg-definitions" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><defs>
+    <symbol id="clock" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 6v6l5 3"/></symbol>
+    <symbol id="calendar" viewBox="0 0 24 24"><rect x="4" y="5" width="16" height="16" rx="3"/><path d="M8 3v5m8-5v5M8 13l3 3 5-6"/></symbol>
+    <symbol id="heart" viewBox="0 0 24 24"><path d="M12 21 3 12C-3 4 8-1 12 6c4-7 15-2 9 6Z" fill="currentColor" stroke="none"/></symbol>
+    <symbol id="symptoms" viewBox="0 0 24 24"><path d="M5 3H3v6a5 5 0 0 0 10 0V3h-2M8 14v3a5 5 0 0 0 10 0v-3"/><circle cx="18" cy="11" r="3"/></symbol>
+    <symbol id="book" viewBox="0 0 24 24"><path d="M12 5C9 2 5 2 2 4v16c3-2 7-2 10 1 3-3 7-3 10-1V4c-3-2-7-2-10 1v16"/></symbol>
+    <symbol id="bell" viewBox="0 0 24 24"><path d="M5 9a7 7 0 0 1 14 0c0 8 3 7 3 9H2c0-2 3-1 3-9ZM9 21h6M12 1v2"/></symbol>
+    <symbol id="chat" viewBox="0 0 24 24"><path d="M21 11a9 9 0 1 0-17 4L2 22l7-2a9 9 0 0 0 12-9Z"/></symbol>
+    <symbol id="clip" viewBox="0 0 24 24"><path d="m9 16 8-8a3 3 0 0 0-4-4L4 13a5 5 0 0 0 7 7l10-10M7 14l8-8"/></symbol>
+    <symbol id="send" viewBox="0 0 24 24"><path d="m3 10 18-7-7 18-4-7-7-4Z"/><path d="m10 14 7-7"/></symbol>
+  </defs></svg>
   <div class="app">
-    <header class="page-header"><h1>AI</h1></header>
-    <main class="placeholder-main">
-      <div class="placeholder-symbol" aria-hidden="true">
-        <svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="16" cy="16" r="11"/><path d="M16 9v7l4 3"/></svg>
-      </div>
-      <h2>В разработке</h2>
-      <p>Скоро здесь появится раздел «AI».</p>
-      <a class="placeholder-back" href="index.html">На главную</a>
+    <header class="ai-header"><h1>AI — ваш личный ассистент</h1><button id="history-open" class="history-button" type="button"><svg><use href="#clock"/></svg>История</button></header>
+    <main class="ai-main">
+      <section class="assistant-card" aria-label="Ваша беременность: пример данных">
+        <span class="assistant-art" aria-hidden="true"></span>
+        <div><h2>Добрый вечер, Виктория! <span class="purple-heart">♥</span></h2><p><svg><use href="#calendar"/></svg>27 недель 4 дня</p><p><svg><use href="#clock"/></svg>До родов ≈ 82 дня</p><p><svg><use href="#heart"/></svg>Малыш активен <span class="pink-heart">♥</span></p></div>
+      </section>
+      <section class="conversation" id="conversation" aria-label="Пример диалога с ассистентом">
+        <article class="message assistant-message"><span class="bot-avatar" aria-hidden="true"></span><div class="message-content"><div class="bubble">Здравствуйте! Я рядом, чтобы помочь разобраться в вопросах о беременности, родах и восстановлении.<br>Что вас беспокоит сегодня?</div><time>19:30</time></div></article>
+        <article class="message user-message"><div class="message-content"><div class="bubble">Иногда тянет низ живота<br>и поясницу. Это нормально?</div><div class="message-meta"><time>19:31</time><span class="read-mark" aria-label="Прочитано">✓✓</span></div></div></article>
+        <article class="message assistant-message"><span class="bot-avatar" aria-hidden="true"></span><div class="message-content"><div class="bubble"><p>Да, такое может быть. Во втором и третьем триместре тянущие ощущения внизу живота и пояснице часто связаны с ростом матки, увеличением нагрузки на связки и изменением центра тяжести.</p><p>Обычно это нормально, если боль несильная, проходит в покое и не сопровождается другими тревожными симптомами.</p></div><time>19:32</time></div></article>
+        <article class="message assistant-message"><span class="bot-avatar" aria-hidden="true"></span><div class="message-content"><div class="bubble">Хотите, я расскажу, как облегчить эти ощущения? Или у вас есть другие вопросы?</div><time>19:32</time></div></article>
+      </section>
+      <section class="chat-controls" aria-label="Написать ассистенту">
+        <p class="help-label">Чем могу помочь</p>
+        <div class="suggestions"><button type="button" data-prompt="Хочу обсудить симптомы: " class="symptoms"><svg><use href="#symptoms"/></svg>Симптомы</button><button type="button" data-prompt="Помоги найти материалы о " class="materials"><svg><use href="#book"/></svg>Материалы</button><button type="button" data-prompt="Хочу добавить напоминание: " class="reminders"><svg><use href="#bell"/></svg>Напоминания</button><button type="button" data-prompt="Помоги сформулировать вопрос врачу: " class="doctor"><svg><use href="#chat"/></svg>Вопрос врачу</button></div>
+        <form class="composer" id="chat-form"><button type="button" class="attachment-button" id="attachment" aria-label="Прикрепить файл"><svg><use href="#clip"/></svg></button><div class="input-wrap"><label class="visually-hidden" for="chat-input">Ваш вопрос ассистенту</label><input id="chat-input" placeholder="Напишите ваш вопрос…" autocomplete="off" maxlength="2000"><button type="submit" class="send-button" aria-label="Отправить сообщение"><svg><use href="#send"/></svg></button></div></form>
+        <p id="chat-status" role="status" hidden></p>
+      </section>
     </main>
     <nav class="bottom-navigation" aria-label="Основная навигация">
       <div class="navigation-items">
@@ -30,5 +52,6 @@
       </div>
     </nav>
   </div>
+  <dialog id="history-dialog" aria-labelledby="history-title"><div class="dialog-heading"><h2 id="history-title">История</h2><button type="button" id="history-close" aria-label="Закрыть историю">×</button></div><p>Сейчас открыт пример диалога. Сохранение истории пока не подключено.</p><button type="button" id="return-chat">Вернуться к диалогу</button></dialog>
 </body>
 </html>

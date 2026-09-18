@@ -5,3 +5,5 @@ tools/preview-runtime/
 node_modules/
 __pycache__/
 _site/
+.playwright-cli/
+output/playwright/
