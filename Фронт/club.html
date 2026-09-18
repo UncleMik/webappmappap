@@ -3,29 +3,82 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-  <meta name="theme-color" content="#fcfaf7">
+  <meta name="theme-color" content="#fdfcfa">
   <title>Клуб</title>
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='10' fill='%238052ff'/%3E%3Cpath d='M16 24 7 15C1 8 12 3 16 10 20 3 31 8 25 15Z' fill='white'/%3E%3C/svg%3E">
   <link rel="stylesheet" href="styles.css">
-  <link rel="stylesheet" href="placeholder.css">
+  <link rel="stylesheet" href="club.css">
+  <script src="club.js" defer></script>
 </head>
-<body class="placeholder-page">
+<body class="club-page">
+  <svg class="svg-definitions" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><defs>
+    <symbol id="search" viewBox="0 0 24 24"><circle cx="10.5" cy="10.5" r="7.5"/><path d="m16 16 5 5"/></symbol>
+    <symbol id="filter" viewBox="0 0 24 24"><path d="M3 7h7m5 0h6M3 17h3m5 0h10"/><circle cx="12.5" cy="7" r="2.5"/><circle cx="8.5" cy="17" r="2.5"/></symbol>
+    <symbol id="calendar" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M7 2v6m10-6v6M3 11h18"/></symbol>
+    <symbol id="globe" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><ellipse cx="12" cy="12" rx="4.5" ry="9"/><path d="M4 8h16M3 12h18M4 16h16"/></symbol>
+    <symbol id="crown" viewBox="0 0 24 24"><path d="m3 7 5 4 4-8 4 8 5-4-3 12H6Z" fill="currentColor" stroke="none"/><path d="M6 21h12"/></symbol>
+    <symbol id="bubble" viewBox="0 0 24 24"><path d="M12 2a10 10 0 0 0-8.2 15.7L3 22l4.5-1.2A10 10 0 1 0 12 2" fill="currentColor" stroke="none"/><circle cx="8" cy="11" r="1.2" fill="white" stroke="none"/><circle cx="16" cy="11" r="1.2" fill="white" stroke="none"/></symbol>
+    <symbol id="lock" viewBox="0 0 16 20"><rect x="2" y="8" width="12" height="11" rx="2" fill="currentColor" stroke="none"/><path d="M5 8V5a3 3 0 0 1 6 0v3"/><path d="M8 12v3" stroke="white"/></symbol>
+    <symbol id="arrow" viewBox="0 0 12 20"><path d="m4 5 5 5-5 5"/></symbol>
+    <symbol id="people" viewBox="0 0 30 30"><circle cx="15" cy="9" r="4"/><path d="M8 25v-3a7 7 0 0 1 14 0v3Z" fill="currentColor" stroke="none"/><path d="M7 7a4 4 0 0 0 0 8M23 7a4 4 0 0 1 0 8M7 18a5 5 0 0 0-5 5v2h3M23 18a5 5 0 0 1 5 5v2h-3"/></symbol>
+  </defs></svg>
   <div class="app">
-    <header class="page-header"><h1>Клуб</h1></header>
-    <main class="placeholder-main">
-      <div class="placeholder-symbol" aria-hidden="true">
-        <svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="16" cy="16" r="11"/><path d="M16 9v7l4 3"/></svg>
+    <header class="page-header club-header">
+      <div><h1>Клуб</h1><p>Общение, поддержка и вдохновение</p></div>
+      <div class="header-actions">
+        <button class="club-tool" id="search-toggle" type="button" aria-label="Поиск в клубе" aria-expanded="false" aria-controls="club-search"><svg><use href="#search"/></svg></button>
+        <button class="club-tool" id="filter-toggle" type="button" aria-label="Фильтр по доступу" aria-expanded="false" aria-controls="club-filters"><svg><use href="#filter"/></svg></button>
       </div>
-      <h2>В разработке</h2>
-      <p>Скоро здесь появится раздел «Клуб».</p>
-      <a class="placeholder-back" href="index.html">На главную</a>
+    </header>
+    <main class="club-main">
+      <div class="club-tabs" role="tablist" aria-label="Разделы клуба">
+        <button id="chats-tab" role="tab" aria-selected="true" aria-controls="chats-panel" tabindex="0"><svg><use href="#bubble"/></svg>Чаты</button>
+        <button id="events-tab" role="tab" aria-selected="false" aria-controls="events-panel" tabindex="-1"><span class="tab-calendar"><svg><use href="#calendar"/></svg><i></i></span>События</button>
+      </div>
+      <div class="club-search" id="club-search" hidden><label for="club-query">Поиск по названию и описанию</label><input id="club-query" type="search" placeholder="Найти в клубе" autocomplete="off"></div>
+      <fieldset class="club-filters" id="club-filters" hidden><legend>Доступ</legend><label><input type="radio" name="access" value="all" checked> Все</label><label><input type="radio" name="access" value="free"> Для всех</label><label><input type="radio" name="access" value="paid"> По тарифу</label></fieldset>
+      <div id="chats-panel" role="tabpanel" aria-labelledby="chats-tab">
+        <section class="club-section" data-access="free" aria-labelledby="public-chats">
+          <div class="club-section-heading"><span class="section-icon"><svg><use href="#globe"/></svg></span><h2 id="public-chats">Для всех</h2></div>
+          <div class="chat-list">
+            <button class="chat-row club-entry" type="button" data-preview="Чат «Беременность» пока не подключён."><span class="chat-avatar pregnancy-avatar" aria-hidden="true"></span><span class="chat-copy"><strong>Беременность</strong><span>Подскажите, у кого тоже тянет поясницу<br>к вечеру?</span></span><span class="chat-meta"><span>10:23</span><span class="unread" aria-label="7 непрочитанных сообщений">7</span></span><svg class="row-arrow"><use href="#arrow"/></svg></button>
+            <button class="chat-row club-entry" type="button" data-preview="Чат «Материнство» пока не подключён."><span class="chat-avatar motherhood-avatar" aria-hidden="true"></span><span class="chat-copy"><strong>Материнство</strong><span>Как вы справляетесь с недосыпом<br>и находите время для себя?</span></span><span class="chat-meta"><span>вчера</span><span class="unread" aria-label="5 непрочитанных сообщений">5</span></span><svg class="row-arrow"><use href="#arrow"/></svg></button>
+          </div>
+        </section>
+        <section class="club-section" data-access="paid" aria-labelledby="paid-chats">
+          <div class="club-section-heading"><span class="section-icon"><svg><use href="#crown"/></svg></span><h2 id="paid-chats">Только для платного тарифа</h2></div>
+          <div class="chat-list">
+            <a class="chat-row club-entry" href="courses.html"><span class="chat-avatar expert-avatar" aria-hidden="true"></span><span class="chat-copy"><strong>Вопросы экспертам «Лёгкие роды» <svg class="inline-lock" aria-label="Платный доступ"><use href="#lock"/></svg></strong><span>Добрый день! Можно ли заниматься йогой<br>на 28 неделе?</span></span><span class="chat-meta"><span>10:42</span><span class="unread">3</span></span><svg class="row-arrow"><use href="#arrow"/></svg></a>
+            <a class="chat-row club-entry" href="courses.html"><span class="chat-avatar heart-avatar" aria-hidden="true"></span><span class="chat-copy"><strong>Вопросы экспертам «Лёгкое материнство» <svg class="inline-lock" aria-label="Платный доступ"><use href="#lock"/></svg></strong><span>Как наладить сон в 3 месяца?</span></span><span class="chat-meta"><span>09:18</span><span class="unread">12</span></span><svg class="row-arrow"><use href="#arrow"/></svg></a>
+            <a class="chat-row club-entry" href="courses.html"><span class="chat-avatar group-avatar" aria-hidden="true"></span><span class="chat-copy"><strong>Чаты потоков <svg class="inline-lock" aria-label="Платный доступ"><use href="#lock"/></svg></strong><span>Девочки, кто уже посмотрел новый урок?<br>Делитесь впечатлениями!</span></span><span class="chat-meta"><span>вчера</span><span class="unread">4</span></span><svg class="row-arrow"><use href="#arrow"/></svg></a>
+          </div>
+        </section>
+      </div>
+      <div id="events-panel" role="tabpanel" aria-labelledby="events-tab" hidden>
+        <section class="club-section" data-access="free" aria-labelledby="public-events">
+          <div class="club-section-heading"><span class="section-icon"><svg><use href="#globe"/></svg></span><div><h2 id="public-events">Для всех</h2><p>Бесплатные вебинары. Открыты для всех желающих.</p></div></div>
+          <div class="event-list">
+            <button class="event-card club-entry" type="button" data-preview="Ссылка на вебинар «Дыхание в родах: практика и разбор» пока не добавлена."><span class="event-photo breathing-photo" role="img" aria-label="Будущая мама"></span><span class="event-copy"><span class="event-badge free-badge">Бесплатный вебинар</span><strong>Дыхание в родах:<br>практика и разбор</strong><span class="event-date">17 мая, сб · 11:00 (МСК)</span><span class="event-expert">Акушер-гинеколог<br>Юлия Сулейманова</span></span><svg class="row-arrow"><use href="#arrow"/></svg></button>
+            <button class="event-card club-entry" type="button" data-preview="Ссылка на вебинар «Сон малыша: как помочь всей семье высыпаться» пока не добавлена."><span class="event-photo sleep-photo" role="img" aria-label="Мама с малышом"></span><span class="event-copy"><span class="event-badge free-badge">Бесплатный вебинар</span><strong>Сон малыша: как помочь<br>всей семье высыпаться</strong><span class="event-date">22 мая, чт · 12:00 (МСК)</span><span class="event-expert">Перинатальный психолог<br>Анастасия Сафина</span></span><svg class="row-arrow"><use href="#arrow"/></svg></button>
+          </div>
+        </section>
+        <section class="club-section" data-access="paid" aria-labelledby="paid-events">
+          <div class="club-section-heading"><span class="section-icon"><svg><use href="#crown"/></svg></span><div><h2 id="paid-events">Только для платного тарифа</h2><p>Онлайн-встречи с экспертами. Доступ откроется после покупки тарифа.</p></div></div>
+          <div class="event-list">
+            <a class="event-card paid-event club-entry" href="courses.html"><span class="event-photo birth-photo" role="img" aria-label="Акушер-гинеколог Юлия Сулейманова"><span class="photo-lock"><svg><use href="#lock"/></svg></span></span><span class="event-copy"><span class="event-badge">Онлайн-эфир</span><strong>Подготовка к родам:<br>что важно знать<br>в III триместре</strong><span class="event-date">15 мая, чт · 18:00 (МСК)</span><span class="event-expert">Акушер-гинеколог<br>Юлия Сулейманова</span></span><span class="access-button">Открыть доступ</span></a>
+            <a class="event-card paid-event club-entry" href="courses.html"><span class="event-photo feeding-photo" role="img" aria-label="Эксперт Анастасия Сафина"><span class="photo-lock"><svg><use href="#lock"/></svg></span></span><span class="event-copy"><span class="event-badge">Встреча с экспертом</span><strong>Грудное вскармливание:<br>от первых дней до уверенности</strong><span class="event-date">20 мая, вт · 19:00 (МСК)</span><span class="event-expert">Эксперт по ГВ, сну и прикорму<br>Анастасия Сафина</span></span><span class="access-button">Открыть доступ</span></a>
+          </div>
+        </section>
+      </div>
+      <p class="club-empty" role="status" hidden>Ничего не найдено. Попробуйте изменить запрос или фильтр.</p>
+      <div class="club-notice" role="status" hidden><p></p><button type="button" aria-label="Закрыть сообщение">×</button></div>
     </main>
     <nav class="bottom-navigation" aria-label="Основная навигация">
       <div class="navigation-items">
         <a class="nav-item" href="index.html"><svg class="nav-icon home-icon" viewBox="0 0 30 30" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 13 15 4l10 9v13h-7v-8h-6v8H5Z"/></svg><span>Сегодня</span></a>
         <a class="nav-item" href="journey.html"><svg class="nav-icon journey-icon" viewBox="0 0 30 30" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 7 11 4 19 7 26 4v20l-7 3-8-3-7 3V7Z"/><path d="M11 4v20M19 7v20"/></svg><span>Мой путь</span></a>
         <a class="nav-item" href="ai.html"><span class="nav-icon ai-icon sprite" aria-hidden="true"></span><span>AI</span></a>
-        <a class="nav-item active" href="club.html" aria-current="page"><span class="nav-icon club-icon sprite" aria-hidden="true"></span><span>Клуб</span></a>
+        <a class="nav-item active" href="club.html" aria-current="page"><svg class="nav-icon" aria-hidden="true"><use href="#people"/></svg><span>Клуб</span></a>
         <a class="nav-item" href="profile.html"><span class="nav-icon profile-icon sprite" aria-hidden="true"></span><span>Профиль</span></a>
       </div>
     </nav>
