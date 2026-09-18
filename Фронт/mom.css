@@ -71,7 +71,6 @@
 .mom-recommendations .article-title { font-size: 1.15rem; line-height: 1.4rem; }
 .mom-week-article { background: linear-gradient(105deg,#f4fff9,#fff6f1); }
 .recommended-mom-art { position: absolute; width: 9rem; height: 11.2rem; right: 0; bottom: 0; background-position: -61rem -65.7rem; mask-image: linear-gradient(to right,transparent,#000 40%); }
-.mom-page .bottom-navigation { margin-top: 1rem; }
 @media (max-width: 350px) {
   .mom-changes .section-heading, .mom-recommendations .section-heading { height: auto; align-items: flex-start; gap: .5rem; }
   .mom-changes h2, .mom-recommendations h2 { max-width: 27rem; }

@@ -76,5 +76,4 @@
 .club-notice { position:fixed; z-index:10; bottom:calc(8.5rem + env(safe-area-inset-bottom,0px)); left:1.5rem; right:1.5rem; display:flex; align-items:center; gap:1rem; padding:1.5rem; border-radius:1.5rem; box-shadow:0 .5rem 3rem #33215e20; border:1px solid #e8dcff; background:#fff; font-size:1.5rem; line-height:2rem; }
 .club-notice p { flex:1; }
 .club-notice button { background:#f4efff; border-radius:50%; min-width:3.5rem; height:3.5rem; text-align:center; font-size:2.4rem; color:var(--purple); }
-.club-page .bottom-navigation { margin-top:1rem; }
 @media(min-width:600px) { .paid-event .event-copy strong { padding-right:13rem; } }

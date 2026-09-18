@@ -45,8 +45,6 @@
 .send-button { display: grid; place-items: center; width: 44px; height: 44px; border-radius: 50%; background: linear-gradient(130deg, #a47aff, #8455ff); color: white; flex-shrink: 0; }
 .send-button svg { fill: #fff; stroke: #9a74ff; width: 23px; height: 23px; }
 #chat-status { font-size: 12px; line-height: 1.4; color: #685882; padding: 8px 4px 0; }
-.ai-page .bottom-navigation { border-top: 1px solid #f5f1f9; border-radius: 0; margin-top: 0; }
-.ai-page .nav-icon.home-icon, .ai-page .nav-icon.journey-icon { width: min(6vw, 30px); height: min(6vw, 30px); }
 .visually-hidden { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; border: 0; }
 #history-dialog { width: min(90vw, 420px); border: 1px solid #eee4ff; border-radius: 22px; padding: 20px; color: #393456; font-size: 15px; line-height: 1.5; }
 #history-dialog::backdrop { background: #21173555; }

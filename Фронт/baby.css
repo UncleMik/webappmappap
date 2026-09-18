@@ -73,8 +73,6 @@
 .community-copy h2 { font-size: 1.35rem; line-height: 1.8rem; }
 .community-copy p { margin-top: .2rem; color: #79828f; font-size: 1.15rem; line-height: 1.5rem; }
 .community-copy > span { font-size: 1rem; line-height: 1.5rem; color: #79828f; }
-.baby-page .bottom-navigation { margin-top: 1rem; }
-.baby-page .nav-item { color: #656d7b; }
 @media (max-width: 360px) {
   .baby-movements { flex-wrap: wrap; }
   .baby-movements .primary-button { margin-left: 5.5rem; }
