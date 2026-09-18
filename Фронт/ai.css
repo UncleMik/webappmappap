@@ -1,11 +1,13 @@
-.ai-page { background: #fff; }
-.ai-page .app { background: #fff; }
+.ai-page { background: #fff; overflow: hidden; }
+.ai-page .app { background: #fff; height: var(--chat-viewport-height, 100dvh); min-height: 0; overflow: hidden; }
+.ai-header, .assistant-card, .chat-controls { flex-shrink: 0; }
+.ai-page .bottom-navigation { position: relative; bottom: auto; margin-top: 0; }
 .ai-header { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: calc(12px + env(safe-area-inset-top, 0px)) 20px 8px; }
 .ai-header h1 { font-size: 20px; line-height: 1.25; letter-spacing: -.45px; }
 .ai-page svg { width: 20px; height: 20px; fill: none; stroke: currentColor; stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; flex-shrink: 0; }
 .history-button { display: flex; align-items: center; gap: 6px; color: #7669ad; background: none; min-height: 44px; font-size: 13px; }
 .history-button svg { width: 24px; height: 24px; }
-.ai-main { padding: 0 16px; display: flex; flex-direction: column; }
+.ai-main { padding: 0 16px; display: flex; flex-direction: column; flex: 1; min-height: 0; overflow: hidden; }
 .assistant-card { display: flex; align-items: center; gap: 16px; padding: 7px 14px; min-height: 104px; background: #f6f0ff; border-radius: 18px; }
 .assistant-art { flex-shrink: 0; width: 90px; height: 90px; background: url('assets/ai-reference.png') -90px -98px / 540px 960px no-repeat; }
 .assistant-card h2 { font-size: 14px; line-height: 20px; letter-spacing: -.2px; margin-bottom: 3px; }
@@ -13,8 +15,8 @@
 .assistant-card p svg { width: 17px; height: 17px; color: #9863ff; }
 .purple-heart { color: #9c59f6; font-size: 20px; }
 .pink-heart { color: #da91e8; font-size: 19px; }
-.conversation { display: flex; flex-direction: column; gap: 10px; padding-top: 15px; flex: 1; }
-.message { display: flex; gap: 12px; align-items: flex-start; }
+.conversation { display: flex; flex-direction: column; gap: 10px; padding: 15px 0 8px; flex: 1; min-height: 0; overflow-y: auto; overscroll-behavior-y: contain; }
+.message { flex-shrink: 0; display: flex; gap: 12px; align-items: flex-start; }
 .bot-avatar { width: 40px; height: 43px; flex-shrink: 0; border-radius: 50%; background: url('assets/ai-reference.png') -79px -209px / 540px 960px no-repeat; }
 .message-content { max-width: min(68%, 480px); min-width: 0; }
 .bubble { background: #f6f0ff; border-radius: 17px; padding: 11px 14px; color: #393456; font-size: 14px; line-height: 1.28; overflow-wrap: anywhere; }
@@ -40,7 +42,7 @@
 .attachment-button svg { width: 23px; height: 23px; }
 .input-wrap { flex: 1; min-width: 0; display: flex; align-items: center; border: 1px solid #ece3fc; border-radius: 28px; padding: 2px; }
 .input-wrap:focus-within { outline: 2px solid #9a71ea; outline-offset: 2px; }
-.input-wrap input { width: 100%; min-width: 0; border: 0; background: transparent; font: inherit; font-size: 12px; padding: 10px 13px; outline: none; color: #393456; }
+.input-wrap input { width: 100%; min-width: 0; border: 0; background: transparent; font: inherit; font-size: 16px; padding: 10px 13px; outline: none; color: #393456; }
 .input-wrap input::placeholder { color: #8b7eb5; }
 .send-button { display: grid; place-items: center; width: 44px; height: 44px; border-radius: 50%; background: linear-gradient(130deg, #a47aff, #8455ff); color: white; flex-shrink: 0; }
 .send-button svg { fill: #fff; stroke: #9a74ff; width: 23px; height: 23px; }
@@ -53,3 +55,5 @@
 #history-close { width: 44px; height: 44px; text-align: center; font-size: 28px; background: #f6f0ff; border-radius: 50%; }
 #return-chat { padding: 12px 18px; margin-top: 18px; background: #f6f0ff; color: #7542c6; border-radius: 22px; }
 @media (max-width: 374px) { .ai-header { padding-left: 14px; padding-right: 14px; }.ai-header h1 { font-size: 17px; }.history-button { font-size: 11px; gap: 3px; }.ai-main { padding: 0 12px; }.assistant-card { gap: 8px; padding: 7px; }.assistant-card h2 { font-size: 12px; }.bubble { font-size: 13px; }.message { gap: 8px; }.suggestions { flex-wrap: wrap; }.suggestions button { flex-basis: 45%; } }
+
+@media (max-height: 500px) { .assistant-art { width: 48px; height: 48px; background-size: 288px 512px; background-position: -48px -52px; }.assistant-card { min-height: 0; }.assistant-card p { display: none; }.suggestions { flex-wrap: nowrap; overflow-x: auto; }.suggestions button { flex: 1 0 auto; padding: 0 8px; }.ai-header { padding-top: env(safe-area-inset-top, 0px); }.chat-controls { padding-top: 4px; } }

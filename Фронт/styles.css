@@ -89,12 +89,12 @@ h2 { font-size: 2rem; line-height: 2.5rem; font-weight: 700; letter-spacing: -.0
 .bottom-navigation { --nav-unit: min(2vw, 10px); position: sticky; bottom: 0; flex-shrink: 0; z-index: 5; min-height: calc(67 * var(--nav-unit) / 10 + env(safe-area-inset-bottom,0px)); margin-top: calc(1 * var(--nav-unit)); padding: calc(.9 * var(--nav-unit)) calc(.6 * var(--nav-unit)) calc(.9 * var(--nav-unit) + env(safe-area-inset-bottom,0px)); border-top: 1px solid #f5f1f9; border-radius: 0; background: #fffffff5; box-shadow: 0 -3px 18px #7d6b8c04; }
 .navigation-items { display: grid; grid-template-columns: repeat(5,minmax(0,1fr)); }
 .nav-item { display: flex; align-items: center; flex-direction: column; gap: calc(.3 * var(--nav-unit)); color: #65719b; background: none; text-decoration: none; font-size: calc(1.25 * var(--nav-unit)); line-height: calc(1.6 * var(--nav-unit)); font-weight: 400; white-space: nowrap; }
-.nav-item.active { color: #794aff; }
+.nav-item.active, .nav-item[aria-current="page"] { color: #794aff; }
+.bottom-navigation .nav-item { min-height: 44px; border-radius: 12px; transition: color .15s ease, background-color .15s ease; }
+.bottom-navigation .nav-item:active { background: #f0e9ff; }
+.bottom-navigation .nav-icon { fill: none; stroke: currentColor; stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; }
+@media (prefers-reduced-motion: reduce) { .bottom-navigation .nav-item { transition: none; } }
 .bottom-navigation .nav-icon { width: calc(3 * var(--nav-unit)); height: calc(3 * var(--nav-unit)); flex-shrink: 0; }
-.bottom-navigation .sprite { background-size: calc(105.3 * var(--nav-unit)) calc(147.2 * var(--nav-unit)); }
-.bottom-navigation .ai-icon { background-position: calc(-51.1 * var(--nav-unit)) calc(-114.4 * var(--nav-unit)); }
-.bottom-navigation .club-icon { background-position: calc(-60.7 * var(--nav-unit)) calc(-114.4 * var(--nav-unit)); }
-.bottom-navigation .profile-icon { background-position: calc(-70.4 * var(--nav-unit)) calc(-114.4 * var(--nav-unit)); }
 .svg-definitions { position: absolute; width: 0; height: 0; overflow: hidden; }
 @media (prefers-reduced-motion: no-preference) { button { transition: filter .12s ease; } }
 @media (max-width: 350px) {

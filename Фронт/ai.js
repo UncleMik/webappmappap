@@ -1,3 +1,15 @@
+const conversation = document.querySelector('#conversation');
+const scrollToLatest = () => { conversation.scrollTop = conversation.scrollHeight; };
+// Keep the composer above the mobile keyboard as the visible viewport changes.
+const resizeChat = () => {
+  document.documentElement.style.setProperty('--chat-viewport-height', `${window.visualViewport?.height ?? window.innerHeight}px`);
+};
+window.visualViewport?.addEventListener('resize', resizeChat);
+window.addEventListener('resize', resizeChat);
+resizeChat();
+requestAnimationFrame(scrollToLatest);
+document.fonts.ready.then(scrollToLatest);
+
 const input = document.querySelector('#chat-input');
 const status = document.querySelector('#chat-status');
 const showStatus = text => { status.textContent = text; status.hidden = false; };
@@ -22,10 +34,10 @@ document.querySelector('#chat-form').addEventListener('submit', event => {
   bubble.textContent = text;
   content.append(bubble);
   message.append(content);
-  document.querySelector('#conversation').append(message);
+  conversation.append(message);
   input.value = '';
   showStatus('Это демонстрация чата. AI пока не подключён: сообщение не отправлено и исчезнет после перезагрузки.');
-  message.scrollIntoView({ block: 'center' });
+  scrollToLatest();
 });
 
 document.querySelector('#attachment').addEventListener('click', () => {
