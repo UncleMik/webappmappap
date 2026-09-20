@@ -73,6 +73,8 @@ h2 { font-size: 2rem; line-height: 2.5rem; font-weight: 700; letter-spacing: -.0
 .section-description { color: var(--muted); font-size: 1.4rem; line-height: 1.8rem; letter-spacing: -.02rem; }
 .article-grid { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 1rem; margin-top: .5rem; }
 .article-card { position: relative; display: block; height: 11.2rem; padding: 1.1rem 1.3rem; border-radius: 1.3rem; border: 1px solid #f2eeee; overflow: hidden; }
+a.article-card, a.content-open { text-decoration: none; color: inherit; }
+a.content-open { display: block; }
 .baby-article { background: linear-gradient(105deg,#f1fcf4 10%,#fff3f0 62%,#ffd4d6); }
 .practice-article { background: linear-gradient(105deg,#fff7f4,#fbefec); }
 .article-meta { position: relative; z-index: 1; display: flex; align-items: center; gap: .5rem; width: max-content; height: 2rem; border-radius: 1rem; color: #009371; background: #effff6b8; padding-right: .7rem; font-size: 1.1rem; line-height: 2rem; }

@@ -10,13 +10,13 @@
 .reader-progress progress::-webkit-progress-value { background: #9570ed; border-radius: 8px; }
 .reader-progress progress::-moz-progress-bar { background: #9570ed; border-radius: 8px; }
 .reader-progress output { color: #71809a; font-size: 13px; min-width: 25px; }
-.reader-scroll { flex: 1; min-height: 0; padding: 0; overflow-y: auto; overscroll-behavior-y: contain; scroll-snap-type: y proximity; }
-.reader-section { min-height: 100%; scroll-snap-align: start; padding: 16px 20px 24px; font-size: 16px; line-height: 1.42; color: #424b61; }
+.reader-scroll { flex: 1; min-height: 0; padding: 0; overflow-y: auto; overscroll-behavior-y: contain; }
+.reader-section { padding: 16px 20px 12px; font-size: 16px; line-height: 1.42; color: #424b61; }
 .reader-section h1, .reader-section h2 { font-size: 25px; line-height: 1.13; letter-spacing: -.45px; color: #10152f; margin: 0 0 16px; }
 .reader-section p + p { margin-top: 18px; }
 .reader-week { display: inline-block; padding: 6px 14px; border-radius: 20px; background: #eee5ff; color: #9270e3; font-size: 13px; font-weight: 700; margin-bottom: 13px; }
 .reader-intro { display: flex; flex-direction: column; padding-bottom: 0; }
-.reader-cover { position: relative; margin: 18px -20px 0; flex: 1; min-height: 220px; overflow: hidden; border-radius: 15px 15px 0 0; }
+.reader-cover { position: relative; margin: 18px -20px 8px; height: clamp(220px, 62vw, 340px); flex: none; overflow: hidden; border-radius: 15px; }
 .reader-cover { background: #f0e9e3; }
 .reader-cover img { display: block; width: 72%; height: 100%; position: absolute; right: 0; object-fit: cover; object-position: center; mask-image: linear-gradient(to right, transparent, #000 20%); }
 .reader-cover-note { position: absolute; left: 22px; top: 22%; transform: rotate(-12deg); text-align: center; color: #747299; font: italic 20px/1.1 Georgia, serif; }
@@ -40,12 +40,25 @@ blockquote.reader-callout { display: flex; gap: 16px; font-size: 15px; font-styl
 .reader-checklist ul { padding: 0; margin: 0; list-style: none; font-size: 14px; }
 .reader-checklist li { position: relative; padding-left: 30px; margin-top: 9px; }
 .reader-checklist li::before { content: '✓'; position: absolute; left: 0; top: 0; width: 19px; height: 19px; border-radius: 50%; text-align: center; color: white; background: linear-gradient(130deg,#c5aaf9,#9165ec); }
-.reader-finish { display: flex; flex-direction: column; justify-content: center; gap: 24px; }
+.reader-finish { display: flex; flex-direction: column; justify-content: center; gap: 20px; padding-top: 24px; padding-bottom: 30px; }
 .reader-finish h2 { text-align: center; margin: 0; }
 .reader-heart { width: 130px; height: 112px; align-self: center; color: #9570ed; }
 .reader-actions { display: grid; gap: 14px; margin-top: 6px; }
 .reader-button { display: flex; justify-content: center; align-items: center; min-height: 54px; padding: 12px 18px; border-radius: 22px; text-decoration: none; text-align: center; font-size: 14px; font-weight: 700; color: #46377a; border: 1px solid #c8b7ee; background: #f7f2ff; }
 .reader-button:disabled { color: white; background: #794aff; border-color: #794aff; cursor: default; opacity: .65; }
+.reader-next { color: white; background: #794aff; border-color: #794aff; }
+.reader-demo { display: block; color: #827193; font-size: 12px; margin-bottom: 12px; }
+.reader-example-cover img { width: 100%; mask-image: none; }
+.reader-example-cover .reader-duration { background: #fffefbe8; border-radius: 20px; padding: 6px 10px; }
+.reader-inline-photo { display: block; width: 100%; max-height: 240px; object-fit: cover; border-radius: 16px; margin-top: 18px; }
+.materials-main { padding: 20px; }
+.materials-main h1 { font-size: 28px; line-height: 1.15; margin: 20px 0; }
+.materials-list { display: grid; grid-template-columns: repeat(auto-fit,minmax(min(100%,280px),1fr)); gap: 16px; }
+.material-link { display: block; text-decoration: none; color: inherit; background: white; border-radius: 16px; overflow: hidden; border: 1px solid #eee5fa; }
+.material-link img { width: 100%; height: 160px; object-fit: cover; }
+.material-link div { padding: 16px; }
+.material-link h2 { font-size: 20px; line-height: 1.2; margin-bottom: 10px; }
+.material-link p { font-size: 13px; color: #827193; }
 .reader-page > .bottom-navigation { margin-top: 0; }
 .dating-article { text-decoration: none; color: inherit; background: #f3ebff; grid-column: 1 / -1; }
 .dating-article .article-title { font-size: 1.6rem; line-height: 1.9rem; padding-right: 3rem; }

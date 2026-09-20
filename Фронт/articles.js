@@ -1,0 +1,20 @@
+const list = document.querySelector('.materials-list');
+Object.entries(window.articleLibrary).forEach(([id, article]) => {
+  const link = document.createElement('a');
+  link.className = 'material-link';
+  link.href = `article.html?id=${id}&from=articles`;
+  const image = document.createElement('img');
+  image.src = `assets/${article.image}`;
+  image.alt = '';
+  image.loading = 'lazy';
+  const copy = document.createElement('div');
+  const title = document.createElement('h2');
+  title.textContent = article.title;
+  const meta = document.createElement('p');
+  meta.textContent = `${article.type || 'Статья'} · ${article.minutes} мин${id === 'dating' ? '' : ' · Пример материала'}`;
+  copy.append(title, meta);
+  link.append(image, copy);
+  list.append(link);
+});
+const from = new URLSearchParams(location.search).get('from');
+if (['index', 'baby', 'mom', 'journey'].includes(from)) document.querySelector('#materials-back').href = `${from}.html`;
