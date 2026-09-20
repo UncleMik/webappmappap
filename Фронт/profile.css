@@ -1,4 +1,5 @@
 .profile-page { --canvas:#fbfbfe; --muted:#8178aa; color:#111235; }
+.edit-profile, .complete-profile { text-decoration:none; }
 .profile-page .app { background:linear-gradient(135deg,#fdfdff,#f8f9fb); }
 .profile-header { display:flex; justify-content:space-between; align-items:center; padding:calc(1.5rem + env(safe-area-inset-top,0px)) 2.7rem .8rem 2rem; }
 .profile-header h1 { font-size:2.6rem; line-height:3.2rem; letter-spacing:-.06rem; }
