@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#faf9ff">
+  <title>Расслабление спины</title>
+  <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="video.css">
+  <script src="video.js" defer></script>
+</head>
+<body class="video-page">
+  <div class="app video-app">
+    <header class="video-header">
+      <a class="video-back" href="mom.html" aria-label="Вернуться назад"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m15 5-7 7 7 7"/></svg></a>
+      <div><h1 id="video-title">Расслабление спины</h1><p>Видео · <span id="video-duration">демонстрация</span></p></div>
+      <button class="video-favorite" type="button" aria-label="Добавить в избранное" aria-pressed="false"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21 3 12C-3 4 8 0 12 7 16 0 27 4 21 12Z"/></svg></button>
+    </header>
+    <main class="video-main">
+      <section class="video-stage" aria-label="Видеоплеер">
+        <div id="youtube-player"></div>
+        <button class="video-cover" type="button" aria-label="Включить демонстрационное видео">
+          <img src="assets/practice-reference.png" alt="Спокойная практика на коврике">
+          <span class="cover-play"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m8 4 13 8-13 8Z"/></svg></span>
+          <span class="cover-label">Смотреть видео</span>
+        </button>
+      </section>
+      <section class="video-panel" aria-labelledby="step-title">
+        <div class="step-copy" aria-live="polite"><p class="step-count">1 из 5</p><h2 id="step-title">Устройтесь удобно</h2><p class="step-description">Выберите удобное место и включите видео. Можно смотреть в своём темпе и переключаться между разделами.</p></div>
+        <div class="video-timeline"><input id="video-progress" type="range" min="0" max="100" value="0" step="1" aria-label="Позиция в видео" disabled><output id="video-time">0:00</output></div>
+        <div class="video-controls">
+          <button id="video-prev" class="skip-button" type="button" aria-label="Предыдущий раздел" disabled><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 5h3v14H5zm14 0v14L8 12Z"/></svg></button>
+          <button id="video-play" class="play-button" type="button" aria-label="Воспроизвести видео"><svg viewBox="0 0 24 24" aria-hidden="true"><path id="play-icon" d="m8 4 13 8-13 8Z"/></svg></button>
+          <button id="video-next" class="skip-button" type="button" aria-label="Следующий раздел"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M16 5h3v14h-3zM5 5l11 7-11 7Z"/></svg></button>
+        </div>
+        <aside class="video-note"><span aria-hidden="true">i</span><p>Пока здесь видео-заглушка — Big Buck Bunny. Разделы показывают навигацию будущего занятия.</p></aside>
+        <p id="player-status" role="status" hidden></p>
+        <a class="youtube-link" href="https://www.youtube.com/watch?v=aqz-KE-bpKQ" target="_blank" rel="noopener noreferrer">Открыть на YouTube ↗</a>
+        <details class="video-chapters"><summary>Разделы видео <span>5</span></summary><ol id="chapter-list"></ol></details>
+      </section>
+    </main>
+  </div>
+</body>
+</html>
