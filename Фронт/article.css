@@ -61,5 +61,7 @@ blockquote.reader-callout { display: flex; gap: 16px; font-size: 15px; font-styl
 .material-link p { font-size: 13px; color: #827193; }
 .reader-page > .bottom-navigation { margin-top: 0; }
 .dating-article { text-decoration: none; color: inherit; background: #f3ebff; grid-column: 1 / -1; }
+.dating-article::before { content: ''; position: absolute; inset: -6px; background: url('assets/article-cover.jpg') center 55% / cover no-repeat; filter: blur(2px); }
+.dating-article::after { content: ''; position: absolute; inset: 0; background: linear-gradient(90deg, #fffaf5e6, #fffaf5b3 65%, #fffaf566); }
 .dating-article .article-title { font-size: 1.6rem; line-height: 1.9rem; padding-right: 3rem; }
 @media (min-width: 600px) { .reader-section { padding-left: 6vw; padding-right: 6vw; } .reader-cover { margin-left: -6vw; margin-right: -6vw; } }
