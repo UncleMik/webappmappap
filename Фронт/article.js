@@ -22,6 +22,20 @@ sections.forEach((section, index) => {
   if (!heading.id) heading.id = `article-section-${index + 1}`;
   section.setAttribute('aria-labelledby', heading.id);
 });
+sections.slice(0, -1).forEach(section => {
+  const more = document.createElement('aside');
+  more.className = 'reader-social';
+  more.innerHTML = '<p>Больше информации в нашем <a href="#" data-social="ТГ">тг</a> или <a href="#" data-social="ВК">вк</a></p><span class="reader-social-status" role="status" hidden></span>';
+  more.addEventListener('click', event => {
+    const link = event.target.closest('[data-social]');
+    if (!link) return;
+    event.preventDefault();
+    const status = more.querySelector('.reader-social-status');
+    status.textContent = 'Ссылка на ' + link.dataset.social + ' скоро появится.';
+    status.hidden = false;
+  });
+  section.after(more);
+});
 const progress = document.querySelector('.reader-progress progress');
 const counter = document.querySelector('.reader-progress output');
 let scheduled = false;

@@ -84,12 +84,12 @@
 .club-header p { color:var(--muted); font-size:1.5rem; }
 .club-header .header-actions { gap:.8rem; }
 .club-main { padding:0 1.8rem 2rem; }
-.lara-welcome { display:flex; position:relative; align-items:center; min-height:15.5rem; border-radius:2rem; overflow:hidden; background:#f6f0fc; padding:2rem 2.4rem; }
+.lara-welcome { display:flex; position:relative; align-items:center; min-height:10.6rem; border-radius:2rem; overflow:hidden; background:#f6f0fc; padding:.8rem 2rem; }
 .lara-welcome > div { position:relative; z-index:1; width:65%; }
-.lara-welcome h2 { font-size:2rem; line-height:1.2; margin-bottom:1rem; }
-.lara-welcome p { font-size:1.45rem; line-height:1.4; color:#51446f; }
-.lara-welcome div > span { display:block; text-align:right; margin-top:.7rem; font:italic 1.8rem Georgia,serif; color:#8271ae; }
-.lara-welcome img { position:absolute; right:-1.3rem; bottom:0; width:20rem; height:100%; object-fit:cover; object-position:center 35%; mix-blend-mode:multiply; mask-image:linear-gradient(90deg,transparent,#000 18%); }
+.lara-welcome h2 { font-size:1.65rem; line-height:1.15; margin-bottom:.4rem; }
+.lara-welcome p { font-size:1.3rem; line-height:1.2; color:#51446f; }
+.lara-welcome div > span { display:block; text-align:right; margin-top:.3rem; font:italic 1.5rem Georgia,serif; color:#8271ae; }
+.lara-welcome img { position:absolute; right:-1.3rem; bottom:0; width:14rem; height:100%; object-fit:cover; object-position:center 35%; mix-blend-mode:multiply; mask-image:linear-gradient(90deg,transparent,#000 18%); }
 .stage-picker { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:1rem; margin:1.2rem 0; }
 .stage-picker button { position:relative; min-height:10.6rem; border-radius:1.7rem; padding:1rem; background:#fff2f7; border:2px solid transparent; }
 .stage-picker button:nth-child(2) { background:#fff6ef; }
@@ -155,7 +155,7 @@
 .discussion-composer .discussion-send { color:#fff; background:linear-gradient(140deg,#b071ff,#7934ff); border-radius:50%; font-size:2rem; }
 .community-chat .bottom-navigation { position:relative; margin-top:0; }
 .visually-hidden { position:absolute; width:1px; height:1px; overflow:hidden; clip-path:inset(50%); }
-@media(min-width:600px) { .lara-welcome { min-height:190px; }.lara-welcome img { width:250px; }.lara-welcome > div { width:60%; }.stage-picker button { min-height:110px; }.community-copy strong { font-size:16px; }.community-copy > span { font-size:14px; } }
+@media(min-width:600px) { .lara-welcome { min-height:110px; }.lara-welcome img { width:150px; }.lara-welcome > div { width:60%; }.stage-picker button { min-height:110px; }.community-copy strong { font-size:16px; }.community-copy > span { font-size:14px; } }
 .discussion-header svg,.discussion-composer svg,.pinned-message svg { width:22px; height:22px; }
 .member-avatar { width:4rem; height:4rem; background-image:url('assets/community-reference.jpg'); background-size:137.4rem 103.7rem; background-position:-73.7rem -24rem; }
 .member-1 { background-position:-73.7rem -36.3rem; }.member-2 { background-position:-73.7rem -47.7rem; }.member-4 { background-position:-73.7rem -68rem; }.member-5 { background-position:-73.7rem -78.3rem; }
