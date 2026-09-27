@@ -68,6 +68,7 @@
     if (!button) return;
     selectedWeek = Number(button.dataset.week);
     grid.querySelectorAll('[data-week]').forEach(week => week.setAttribute('aria-pressed', String(week === button)));
+    closeCalendar(() => window.dispatchEvent(new CustomEvent('journey:select-week', { detail: { week: selectedWeek } })));
   });
 
   function openCalendar(button) {
@@ -75,8 +76,8 @@
     opener = button;
     closing = false;
     afterClose = null;
-    selectedWeek = currentWeek;
-    renderWeeks(2);
+    selectedWeek = Number(document.querySelector('#journey').dataset.week) || currentWeek;
+    renderWeeks(selectedWeek <= 13 ? 1 : selectedWeek <= 27 ? 2 : 3);
     scrollPosition = { x: window.scrollX, y: window.scrollY };
     bodyStyles = {};
     for (const property of ['position', 'top', 'left', 'right', 'width', 'overflow']) bodyStyles[property] = document.body.style[property];
@@ -136,6 +137,7 @@
   });
 
   dialog.querySelector('.calendar-go-current').addEventListener('click', () => closeCalendar(() => {
+    window.dispatchEvent(new CustomEvent('journey:select-week', { detail: { week: currentWeek } }));
     const current = document.querySelector('.journey-week');
     current.setAttribute('tabindex', '-1');
     current.focus({ preventScroll: true });
