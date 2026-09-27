@@ -8,7 +8,7 @@
 .history-button { display: flex; align-items: center; gap: 6px; color: #7669ad; background: none; min-height: 44px; font-size: 13px; }
 .history-button svg { width: 24px; height: 24px; }
 .ai-main { padding: 0 16px; display: flex; flex-direction: column; flex: 1; min-height: 0; overflow: hidden; }
-.assistant-card { display: flex; align-items: center; gap: 16px; padding: 7px 14px; min-height: 104px; background: #f6f0ff; border-radius: 18px; }
+.assistant-card { display: flex; align-items: center; gap: 16px; margin-inline: 6px; padding: 7px 10px; min-height: 104px; background: #f6f0ff; border-radius: 18px; }
 .assistant-art { flex-shrink: 0; width: 90px; height: 90px; object-fit: cover; border-radius: 14px; }
 .assistant-card h2 { font-size: 14px; line-height: 20px; letter-spacing: -.2px; margin-bottom: 3px; }
 .assistant-card p { display: flex; align-items: center; gap: 8px; font-size: 12px; line-height: 22px; color: #393456; }
