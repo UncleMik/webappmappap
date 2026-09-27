@@ -21,23 +21,27 @@
     <symbol id="lock" viewBox="0 0 16 20"><rect x="2" y="8" width="12" height="11" rx="2" fill="currentColor" stroke="none"/><path d="M5 8V5a3 3 0 0 1 6 0v3"/><path d="M8 12v3" stroke="white"/></symbol>
     <symbol id="arrow" viewBox="0 0 12 20"><path d="m4 5 5 5-5 5"/></symbol>
     <symbol id="people" viewBox="0 0 30 30"><circle cx="15" cy="9" r="4"/><path d="M8 25v-3a7 7 0 0 1 14 0v3Z" fill="currentColor" stroke="none"/><path d="M7 7a4 4 0 0 0 0 8M23 7a4 4 0 0 1 0 8M7 18a5 5 0 0 0-5 5v2h3M23 18a5 5 0 0 1 5 5v2h-3"/></symbol>
-  </defs></svg>
+  <symbol id="bell" viewBox="0 0 24 24"><path d="M5 17h14l-2-3V9a5 5 0 0 0-10 0v5Zm5 4h4"/></symbol><symbol id="video" viewBox="0 0 24 24"><rect x="3" y="5" width="12" height="14" rx="3"/><path d="m15 9 6-3v12l-6-3"/></symbol><symbol id="baby" viewBox="0 0 24 24"><circle cx="12" cy="13" r="8"/><path d="M12 5c4-5-3-6-2-1M8 12h.1M16 12h.1M9 16q3 3 6 0"/></symbol></defs></svg>
   <div class="app">
-    <header class="page-header club-header">
-      <div><h1>Клуб</h1><p>Общение, поддержка и вдохновение</p></div>
-      <div class="header-actions">
-        <button class="club-tool" id="search-toggle" type="button" aria-label="Поиск в клубе" aria-expanded="false" aria-controls="club-search"><svg><use href="#search"/></svg></button>
-        <button class="club-tool" id="filter-toggle" type="button" aria-label="Фильтр по доступу" aria-expanded="false" aria-controls="club-filters"><svg><use href="#filter"/></svg></button>
-      </div>
-    </header>
-    <main class="club-main">
-      <div class="club-tabs" role="tablist" aria-label="Разделы клуба">
-        <button id="chats-tab" role="tab" aria-selected="true" aria-controls="chats-panel" tabindex="0"><svg><use href="#bubble"/></svg>Чаты</button>
-        <button id="events-tab" role="tab" aria-selected="false" aria-controls="events-panel" tabindex="-1"><span class="tab-calendar"><svg><use href="#calendar"/></svg><i></i></span>События</button>
-      </div>
-      <div class="club-search" id="club-search" hidden><label for="club-query">Поиск по названию и описанию</label><input id="club-query" type="search" placeholder="Найти в клубе" autocomplete="off"></div>
-      <fieldset class="club-filters" id="club-filters" hidden><legend>Доступ</legend><label><input type="radio" name="access" value="all" checked> Все</label><label><input type="radio" name="access" value="free"> Для всех</label><label><input type="radio" name="access" value="paid"> По тарифу</label></fieldset>
-      <div id="chats-panel" role="tabpanel" aria-labelledby="chats-tab">
+    <header class="page-header club-header"><div><h1>Клуб</h1><p>Поддержка по сроку, этапу и теме</p></div><div class="header-actions"><button class="club-tool" id="search-toggle" type="button" aria-label="Поиск в клубе" aria-expanded="false" aria-controls="club-search"><svg aria-hidden="true"><use href="#search"/></svg></button><button class="club-tool" type="button" data-notice="Уведомления клуба пока не подключены." aria-label="Уведомления"><svg aria-hidden="true"><use href="#bell"/></svg></button></div></header>
+<main class="club-main">
+<section class="lara-welcome" aria-label="Ваш доктор Лара"><div><h2>Выберите, что вам<br>сейчас важно</h2><p>Я подскажу, где искать ответы<br>и поддержку 💜</p><span>Ваш доктор Лара</span></div><img src="assets/doctor-lara.jpg" alt="Доктор Лара" width="640" height="640"></section>
+<div class="stage-picker" aria-label="Ваш этап"><button data-stage="pregnancy" aria-pressed="false"><span class="stage-icon">♥</span><strong>Беременность</strong><span>Я жду малыша <b>›</b></span></button><button data-stage="birth" aria-pressed="false"><span class="stage-icon"><svg aria-hidden="true"><use href="#baby"/></svg></span><strong>Скоро роды</strong><span>Готовлюсь <b>›</b></span></button><button data-stage="motherhood" aria-pressed="false"><span class="stage-icon"><svg aria-hidden="true"><use href="#baby"/></svg></span><strong>Я уже мама</strong><span>Забочусь о малыше <b>›</b></span></button></div>
+<div class="club-search" id="club-search" hidden><label for="club-query">Поиск по названию и описанию</label><input id="club-query" type="search" placeholder="Найти в клубе" autocomplete="off"></div>
+<div class="community-tabs" role="tablist" aria-label="Разделы клуба"><button role="tab" id="all-tab" data-tab="all" aria-selected="true" aria-controls="community-content" tabindex="0">Все</button><button role="tab" id="chats-tab" data-tab="chats" aria-selected="false" aria-controls="community-content" tabindex="-1">Чаты</button><button role="tab" id="experts-tab" data-tab="experts" aria-selected="false" aria-controls="community-content" tabindex="-1">Эксперты</button><button role="tab" id="events-tab" data-tab="events" aria-selected="false" aria-controls="community-content" tabindex="-1">События</button><button role="tab" id="useful-tab" data-tab="useful" aria-selected="false" aria-controls="community-content" tabindex="-1">Полезное</button></div>
+<div id="community-content" role="tabpanel" aria-labelledby="all-tab">
+<section class="community-section" data-overview><div class="community-heading"><h2>🔥 Популярное сейчас</h2><button data-select-tab="chats">Смотреть все ›</button></div>
+<a class="community-row" data-kind="experts" data-stage="" href="courses.html"><span class="community-icon bubble"><svg aria-hidden="true"><use href="#bubble"/></svg></span><span class="community-copy"><strong>Вопросы эксперту 💜</strong><span>Сегодня отвечает акушер-гинеколог<br>312 вопросов за неделю</span></span><span class="community-meta">10:24<br><b>12</b></span></a>
+<a class="community-row" data-kind="chats" data-stage="" href="club-chat.html?room=moms"><span class="community-icon people"><svg aria-hidden="true"><use href="#people"/></svg></span><span class="community-copy"><strong>Мамы на одном этапе</strong><span>Поддержка, опыт и счастливые истории<br>Сегодня активны 48 участниц</span></span><span class="community-meta">Вчера<br><b>7</b></span></a>
+</section>
+<section class="community-section" data-overview><div class="community-heading"><h2>⭐ По вашему этапу</h2><button data-select-tab="chats">Смотреть все ›</button></div>
+<a class="community-row" data-kind="chats" data-stage="pregnancy birth" href="club-chat.html"><span class="community-icon baby"><svg aria-hidden="true"><use href="#baby"/></svg></span><span class="community-copy"><strong>Беременность · 3 триместр</strong><span>Чат для тех, кто на финишной прямой<br>312 участниц</span></span><span class="community-meta">09:18<br><b>15</b></span></a>
+</section>
+<section class="community-section" data-overview><div class="community-heading"><h2>🗓 Эксперты и эфиры</h2><button data-select-tab="events">Смотреть все ›</button></div>
+<button class="community-row" data-kind="events" data-select-tab="events"><span class="community-icon video"><svg aria-hidden="true"><use href="#video"/></svg></span><span class="community-copy"><strong>Прямые эфиры с врачами</strong><span>Разборы тем и ответы на ваши вопросы<br>Ближайший эфир: завтра в 17:00</span></span><span class="community-meta">Завтра<br>›</span></button>
+</section>
+<section class="community-section" data-category="useful" hidden><div class="community-heading"><h2>Полезные материалы</h2></div><a class="community-row" data-kind="useful" data-stage="" href="articles.html?from=club"><span class="community-icon calendar"><svg aria-hidden="true"><use href="#calendar"/></svg></span><span class="community-copy"><strong>Материалы школы</strong><span>Статьи и практики для вас</span></span><span class="community-meta">›</span></a></section>
+<div id="legacy-chats" data-category="chats" hidden>
         <section class="club-section" data-access="free" aria-labelledby="public-chats">
           <div class="club-section-heading"><span class="section-icon"><svg><use href="#globe"/></svg></span><h2 id="public-chats">Для всех</h2></div>
           <div class="chat-list">
@@ -54,7 +58,7 @@
           </div>
         </section>
       </div>
-      <div id="events-panel" role="tabpanel" aria-labelledby="events-tab" hidden>
+<div id="events-panel" data-category="events" hidden>
         <section class="club-section" data-access="free" aria-labelledby="public-events">
           <div class="club-section-heading"><span class="section-icon"><svg><use href="#globe"/></svg></span><div><h2 id="public-events">Для всех</h2><p>Бесплатные вебинары. Открыты для всех желающих.</p></div></div>
           <div class="event-list">
@@ -70,9 +74,9 @@
           </div>
         </section>
       </div>
-      <p class="club-empty" role="status" hidden>Ничего не найдено. Попробуйте изменить запрос или фильтр.</p>
-      <div class="club-notice" role="status" hidden><p></p><button type="button" aria-label="Закрыть сообщение">×</button></div>
-    </main>
+
+</div><p class="club-empty" role="status" hidden>По этому запросу пока ничего нет. Попробуйте другой раздел или этап.</p><p class="club-demo">Демонстрация интерфейса · чаты и события пока не подключены</p>
+<div class="club-notice" role="status" hidden><p></p><button type="button" aria-label="Закрыть сообщение">×</button></div></main>
     <nav class="bottom-navigation" aria-label="Основная навигация">
       <div class="navigation-items">
         <a class="nav-item" href="index.html"><svg class="nav-icon home-icon" viewBox="0 0 30 30" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 13 15 4l10 9v13h-7v-8h-6v8H5Z"/></svg><span>Сегодня</span></a>
@@ -82,6 +86,4 @@
         <a class="nav-item" href="profile.html"><svg class="nav-icon profile-icon" viewBox="0 0 30 30" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="15" cy="9" r="5"/><path d="M5 26v-3a10 10 0 0 1 20 0v3Z"/></svg><span>Профиль</span></a>
       </div>
     </nav>
-  </div>
-<script src="app.js"></script></body>
-</html>
+</div><script src="app.js"></script></body></html>

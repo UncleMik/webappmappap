@@ -77,3 +77,88 @@
 .club-notice p { flex:1; }
 .club-notice button { background:#f4efff; border-radius:50%; min-width:3.5rem; height:3.5rem; text-align:center; font-size:2.4rem; color:var(--purple); }
 @media(min-width:600px) { .paid-event .event-copy strong { padding-right:13rem; } }
+/* Community overview follows the approved reference; shared navigation stays in styles.css. */
+.club-page { --ink:#171333; --muted:#838099; --purple:#794aff; --canvas:#fff; }
+.club-page .app { background:#fff; }
+.club-header { padding:2rem 2rem 1.2rem; min-height:8rem; align-items:center; }
+.club-header p { color:var(--muted); font-size:1.5rem; }
+.club-header .header-actions { gap:.8rem; }
+.club-main { padding:0 1.8rem 2rem; }
+.lara-welcome { display:flex; position:relative; align-items:center; min-height:15.5rem; border-radius:2rem; overflow:hidden; background:#f6f0fc; padding:2rem 2.4rem; }
+.lara-welcome > div { position:relative; z-index:1; width:65%; }
+.lara-welcome h2 { font-size:2rem; line-height:1.2; margin-bottom:1rem; }
+.lara-welcome p { font-size:1.45rem; line-height:1.4; color:#51446f; }
+.lara-welcome div > span { display:block; text-align:right; margin-top:.7rem; font:italic 1.8rem Georgia,serif; color:#8271ae; }
+.lara-welcome img { position:absolute; right:-1.3rem; bottom:0; width:20rem; height:100%; object-fit:cover; object-position:center 35%; mix-blend-mode:multiply; mask-image:linear-gradient(90deg,transparent,#000 18%); }
+.stage-picker { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:1rem; margin:1.2rem 0; }
+.stage-picker button { position:relative; min-height:10.6rem; border-radius:1.7rem; padding:1rem; background:#fff2f7; border:2px solid transparent; }
+.stage-picker button:nth-child(2) { background:#fff6ef; }
+.stage-picker button:nth-child(3) { background:#edf9f4; }
+.stage-picker button[aria-pressed=true] { border-color:#aa83ef; }
+.stage-icon { display:grid; place-items:center; width:4.3rem; height:4.3rem; margin-bottom:.8rem; border-radius:50%; background:#ffe0ec; color:#ee83a5; font-size:3rem; }
+.stage-icon svg { width:3.1rem; height:3.1rem; }
+.stage-picker button:nth-child(2) .stage-icon { background:#ffeadc; color:#edb18b; }
+.stage-picker button:nth-child(3) .stage-icon { background:#d3f6e7; color:#55bc9e; }
+.stage-picker strong { display:block; font-size:1.4rem; margin-bottom:.4rem; }
+.stage-picker button > span:last-child { display:flex; justify-content:space-between; gap:.3rem; color:#837c93; font-size:1.15rem; }
+.stage-picker b { font-size:2rem; line-height:1rem; color:#766494; }
+.community-tabs { display:flex; gap:.6rem; margin:1.3rem 0 1rem; }
+.community-tabs button { flex:1; min-height:44px; padding:.7rem .5rem; text-align:center; border-radius:3rem; background:#f7f5fa; font-size:1.3rem; }
+.community-tabs [aria-selected=true] { background:linear-gradient(120deg,#a06eff,#7137ff); color:white; }
+.community-section { margin:1.1rem 0 1.5rem; }
+.community-heading { display:flex; align-items:center; justify-content:space-between; gap:1rem; min-height:3.7rem; }
+.community-heading h2 { font-size:1.6rem; line-height:1.3; }
+.community-heading button { background:none; color:#938ba6; font-size:1.15rem; min-height:32px; white-space:nowrap; }
+.community-row { width:100%; display:flex; gap:1.2rem; align-items:center; padding:1rem; margin-bottom:.65rem; border:1px solid #f1edf5; border-radius:1.6rem; background:#fff; text-decoration:none; color:var(--ink); min-height:7.8rem; }
+.community-icon { flex:none; display:grid; place-items:center; width:5.5rem; height:5.5rem; border-radius:1.5rem; background:#faf0fe; color:#b564d9; }
+.community-icon svg { width:3.4rem; height:3.4rem; }
+.community-icon.baby { background:#fff0f7; color:#e88cb2; }
+.community-icon.video { background:#f3eaff; color:#8e5df6; }
+.community-copy { flex:1; min-width:0; }
+.community-copy strong { display:block; font-size:1.45rem; line-height:1.35; margin-bottom:.4rem; }
+.community-copy > span { display:block; color:var(--muted); font-size:1.25rem; line-height:1.4; }
+.community-meta { align-self:flex-start; text-align:right; color:var(--muted); font-size:1.15rem; line-height:1.7; white-space:nowrap; }
+.community-meta b { display:inline-grid; place-items:center; width:2.7rem; height:2.7rem; margin-top:.5rem; border-radius:50%; background:linear-gradient(130deg,#a275ff,#793fff); color:white; font-size:1.3rem; font-weight:400; }
+.club-demo { font-size:1.2rem; color:#91869f; margin:1.5rem 0 .5rem; text-align:center; }
+.community-chat { overflow:hidden; }
+.community-chat .app { height:100dvh; min-height:0; }
+.discussion-header { display:flex; align-items:center; gap:1.2rem; padding:1.6rem 1.8rem 1rem; flex:none; }
+.discussion-header a,.discussion-header button { display:grid; place-items:center; min-width:32px; height:40px; background:none; text-decoration:none; color:#55427b; font-size:2.8rem; }
+.discussion-header div { flex:1; min-width:0; }
+.discussion-header h1 { font-size:1.6rem; line-height:1.25; letter-spacing:0; }
+.discussion-header p { color:var(--muted); font-size:1.2rem; margin-top:.4rem; }
+.pinned-message { display:flex; align-items:center; gap:1rem; margin:0 1.8rem 1rem; padding:1.1rem 1.3rem; border-radius:1.4rem; background:#f8f3ff; flex:none; }
+.pinned-message > span:first-child { color:#9253ed; font-size:2.8rem; }
+.pinned-message > span:nth-child(2) { flex:1; font-size:1.3rem; line-height:1.5; }
+.pinned-message strong { display:block; color:#9863dc; font-size:1.25rem; }
+.pinned-message b { font-size:2rem; color:#9166b9; }
+.discussion-messages { min-height:0; overflow-y:auto; overscroll-behavior:contain; padding:.5rem 1.8rem 1rem; }
+.discussion-message { display:flex; align-items:flex-start; gap:1rem; margin-bottom:1.4rem; }
+.member-avatar { display:grid; place-items:center; flex:none; width:3.8rem; height:3.8rem; border-radius:50%; background:#f1ddec; color:#9c6290; font-size:1.7rem; }
+.member-1 { background:#f7e5d4; color:#aa7f59; }.member-2 { background:#f0dcdf; color:#a65e6a; }.member-4 { background:#e2ebd8; color:#78925c; }
+.discussion-bubble { width:min(82%,560px); padding:1rem 1.2rem .7rem; border-radius:1.5rem; background:#f8f4fc; }
+.discussion-bubble h2 { font-size:1.3rem; color:#9762da; margin-bottom:.4rem; }
+.discussion-bubble p { font-size:1.45rem; line-height:1.4; }
+.discussion-bubble footer { display:flex; align-items:center; justify-content:space-between; gap:1rem; margin-top:.5rem; }
+.discussion-bubble time { color:#a49ab7; font-size:1rem; }
+.reaction { background:#f1eafb; color:#715a88; padding:.25rem .6rem; border-radius:1rem; font-size:1.2rem; min-height:25px; }
+.reaction[aria-pressed=true] { background:#e3d1ff; outline:1px solid #b392e9; }
+.own-message { justify-content:flex-end; }
+.own-message .discussion-bubble { background:#f0e6ff; }
+.discussion-controls { flex:none; padding:.5rem 1.8rem 1rem; }
+.chat-demo { color:#9b8caf; font-size:1.1rem; margin-bottom:.7rem; }
+.discussion-composer { display:flex; align-items:center; gap:.7rem; }
+.discussion-composer button { display:grid; place-items:center; width:40px; height:40px; background:none; color:#9a83b5; font-size:2.5rem; flex:none; }
+.composer-field { display:flex; align-items:center; flex:1; min-width:0; border:1px solid #ede5f5; border-radius:3rem; background:#fdfbff; }
+.composer-field input { min-width:0; width:100%; border:0; outline:0; background:transparent; padding:1rem 1.2rem; font:inherit; font-size:16px; }
+.composer-field:focus-within { outline:2px solid #bb9beb; }
+.discussion-composer .discussion-send { color:#fff; background:linear-gradient(140deg,#b071ff,#7934ff); border-radius:50%; font-size:2rem; }
+.community-chat .bottom-navigation { position:relative; margin-top:0; }
+.visually-hidden { position:absolute; width:1px; height:1px; overflow:hidden; clip-path:inset(50%); }
+@media(min-width:600px) { .lara-welcome { min-height:190px; }.lara-welcome img { width:250px; }.lara-welcome > div { width:60%; }.stage-picker button { min-height:110px; }.community-copy strong { font-size:16px; }.community-copy > span { font-size:14px; } }
+.discussion-header svg,.discussion-composer svg,.pinned-message svg { width:22px; height:22px; }
+.member-avatar { width:4rem; height:4rem; background-image:url('assets/community-reference.jpg'); background-size:137.4rem 103.7rem; background-position:-73.7rem -24rem; }
+.member-1 { background-position:-73.7rem -36.3rem; }.member-2 { background-position:-73.7rem -47.7rem; }.member-4 { background-position:-73.7rem -68rem; }.member-5 { background-position:-73.7rem -78.3rem; }
+.discussion-bubble p { font-size:14px; }
+.community-copy strong { font-size:1.6rem; }
+.community-copy > span { font-size:1.35rem; }
