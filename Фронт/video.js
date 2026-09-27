@@ -26,20 +26,33 @@
     try { localStorage.setItem(favoriteKey, String(value)); } catch { /* Keep the current session usable. */ }
   });
 
-  const chapters = [
+  const weeklyIds = ['contractions-lesson', 'birth-breathing-video', 'back-relief-video'];
+  const weeklyIndex = weeklyIds.indexOf(id);
+  const isWeekly = params.get('from') === 'journey' && weeklyIndex !== -1;
+  const chapters = isWeekly ? weeklyIds.map(videoId => [titles[videoId], 'Видео на эту неделю. Смотрите в своём темпе и переключайтесь между тремя видео стрелками или через список ниже.']) : [
     ['Устройтесь удобно', 'Выберите удобное место и включите видео. Можно смотреть в своём темпе и переключаться между разделами.'],
     ['В своём темпе', 'Второй раздел демонстрационного видео. Поставьте просмотр на паузу в любой момент.'],
     ['Продолжим вместе', 'Вы в середине просмотра. Полоска прогресса поможет вернуться к любому моменту.'],
     ['Ещё немного времени', 'Четвёртый раздел видео. Переключайтесь стрелками или выберите нужный раздел в списке ниже.'],
     ['Завершение', 'Последний раздел. Можно вернуться к началу или закончить просмотр и продолжить свой день.']
   ];
+  const summary = document.querySelector('.video-chapters summary');
+  summary.replaceChildren(document.createTextNode(isWeekly ? 'Видео на эту неделю ' : 'Разделы видео '));
+  const chapterCount = document.createElement('span');
+  chapterCount.textContent = chapters.length;
+  summary.append(chapterCount);
+  if (isWeekly) {
+    document.querySelector('#video-prev').setAttribute('aria-label', 'Предыдущее видео недели');
+    document.querySelector('#video-next').setAttribute('aria-label', 'Следующее видео недели');
+    document.querySelector('.video-note p').textContent = 'Пока для каждого видео используется заглушка — Big Buck Bunny. В недельном наборе три видео; учебные записи будут добавлены позже.';
+  }
   const progress = document.querySelector('#video-progress');
   const play = document.querySelector('#video-play');
   const previous = document.querySelector('#video-prev');
   const next = document.querySelector('#video-next');
   const cover = document.querySelector('.video-cover');
   const status = document.querySelector('#player-status');
-  let player, ready = false, started = false, failed = false, current = 0, duration = 0, pendingChapter = 0, timer;
+  let player, ready = false, started = false, failed = false, current = 0, duration = 0, pendingChapter = isWeekly ? weeklyIndex : 0, timer;
   const time = seconds => `${Math.floor(seconds / 60)}:${String(Math.floor(seconds % 60)).padStart(2, '0')}`;
   const list = document.querySelector('#chapter-list');
   chapters.forEach(([title], index) => {
@@ -52,6 +65,7 @@
     list.append(item);
   });
   function renderChapter(index) {
+    if (isWeekly) index = weeklyIndex;
     current = index;
     document.querySelector('.step-count').textContent = `${index + 1} из ${chapters.length}`;
     document.querySelector('#step-title').textContent = chapters[index][0];
@@ -61,6 +75,14 @@
     list.querySelectorAll('button').forEach((button, i) => button.setAttribute('aria-current', String(i === index)));
   }
   function selectChapter(index) {
+    if (isWeekly) {
+      if (index >= 0 && index < weeklyIds.length && index !== weeklyIndex) {
+        const destination = new URL(location.href);
+        destination.searchParams.set('id', weeklyIds[index]);
+        location.href = destination.href;
+      }
+      return;
+    }
     pendingChapter = Math.max(0, Math.min(chapters.length - 1, index));
     renderChapter(pendingChapter);
     if (ready && duration) {
