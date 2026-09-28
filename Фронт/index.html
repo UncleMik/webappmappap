@@ -9,6 +9,7 @@
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='10' fill='%238052ff'/%3E%3Cpath d='M16 24 7 15C1 8 12 3 16 10 20 3 31 8 25 15Z' fill='white'/%3E%3C/svg%3E">
   <link rel="stylesheet" href="styles.css">
   <link rel="stylesheet" href="article.css">
+  <link rel="stylesheet" href="calendar-sheet.css">
 </head>
 <body>
   <div class="app" id="today">
@@ -109,6 +110,32 @@
   </div>
 
   <svg class="svg-definitions" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><symbol id="i-chevron" viewBox="0 0 16 24"><path d="m5 5 6 7-6 7" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></symbol></svg>
+  <svg class="svg-definitions" aria-hidden="true"><symbol id="j-check" viewBox="0 0 24 24"><circle cx="12" cy="12" r="11" fill="currentColor"/><path d="m6 12 4 4 8-8" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></symbol><symbol id="j-sprout" viewBox="0 0 24 24"><path d="M12 22V10m0 6C3 17 3 9 3 9s9-1 9 7Zm0-5C11 2 21 2 21 2s1 9-9 9Z" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></symbol></svg>
+  <dialog class="calendar-dialog" id="journey-calendar" aria-labelledby="calendar-title" aria-describedby="calendar-description">
+    <div class="calendar-shell">
+      <div class="calendar-topbar">
+        <div class="calendar-drag-zone" aria-hidden="true"><span></span></div>
+        <button class="calendar-close" type="button" aria-label="Закрыть календарь"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m6 6 12 12M18 6 6 18"/></svg></button>
+      </div>
+      <div class="calendar-content">
+        <header class="calendar-heading"><h2 id="calendar-title">Календарь моего пути</h2><p id="calendar-description">Вся беременность по неделям</p></header>
+        <div class="calendar-trimesters" role="tablist" aria-label="Триместры беременности">
+          <button type="button" role="tab" id="trimester-1" aria-selected="false" aria-controls="calendar-weeks" tabindex="-1" data-trimester="1"><span>I триместр</span><small>1–13 недели</small></button>
+          <button type="button" role="tab" id="trimester-2" aria-selected="true" aria-controls="calendar-weeks" tabindex="0" data-trimester="2"><span>II триместр</span><small>14–27 недели</small></button>
+          <button type="button" role="tab" id="trimester-3" aria-selected="false" aria-controls="calendar-weeks" tabindex="-1" data-trimester="3"><span>III триместр</span><small>28–40 недели</small></button>
+        </div>
+        <div class="calendar-weeks" id="calendar-weeks" role="tabpanel" aria-labelledby="trimester-2"></div>
+        <section class="calendar-progress-section" aria-labelledby="calendar-progress-title">
+          <div class="calendar-section-heading"><h3 id="calendar-progress-title">Мой прогресс</h3></div>
+          <div class="calendar-progress-summary"><span>26 из 40 недель</span><strong>65%</strong></div>
+          <progress class="calendar-progress-bar" value="26" max="40" aria-labelledby="calendar-progress-title">65%</progress>
+        </section>
+        <div class="calendar-encouragement"><svg aria-hidden="true"><use href="#j-sprout"/></svg><p>Каждая неделя — это важный шаг<br>к вашей встрече с малышом <span>💜</span></p></div>
+        <button class="calendar-go-current" type="button">Перейти к текущей неделе</button>
+      </div>
+    </div>
+  </dialog>
   <script src="app.js"></script>
+  <script src="calendar-sheet.js"></script>
 </body>
 </html>

@@ -68,15 +68,23 @@
     if (!button) return;
     selectedWeek = Number(button.dataset.week);
     grid.querySelectorAll('[data-week]').forEach(week => week.setAttribute('aria-pressed', String(week === button)));
-    closeCalendar(() => window.dispatchEvent(new CustomEvent('journey:select-week', { detail: { week: selectedWeek } })));
+    closeCalendar(() => openWeek(selectedWeek));
   });
+
+  function openWeek(week) {
+    if (document.querySelector('#journey')) {
+      window.dispatchEvent(new CustomEvent('journey:select-week', { detail: { week } }));
+    } else {
+      location.href = 'journey.html?week=' + week;
+    }
+  }
 
   function openCalendar(button) {
     if (dialog.open) return;
     opener = button;
     closing = false;
     afterClose = null;
-    selectedWeek = Number(document.querySelector('#journey').dataset.week) || currentWeek;
+    selectedWeek = Number(document.querySelector('#journey')?.dataset.week) || currentWeek;
     renderWeeks(selectedWeek <= 13 ? 1 : selectedWeek <= 27 ? 2 : 3);
     scrollPosition = { x: window.scrollX, y: window.scrollY };
     bodyStyles = {};
@@ -137,8 +145,9 @@
   });
 
   dialog.querySelector('.calendar-go-current').addEventListener('click', () => closeCalendar(() => {
-    window.dispatchEvent(new CustomEvent('journey:select-week', { detail: { week: currentWeek } }));
+    openWeek(currentWeek);
     const current = document.querySelector('.journey-week');
+    if (!current) return;
     current.setAttribute('tabindex', '-1');
     current.focus({ preventScroll: true });
     current.scrollIntoView({ block: 'start', behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'instant' : 'smooth' });
