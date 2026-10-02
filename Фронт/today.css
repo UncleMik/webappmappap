@@ -4,7 +4,12 @@
 #today .mom-card { height: 15.9rem; }
 #today .helpers { margin-top: 1.8rem; }
 #today .recommendations { margin-top: 2.4rem; }
-#today .recommendations .section-heading { height: auto; min-height: 2.5rem; gap: 1rem; align-items: baseline; }
-#today .weekly-program-link { color: inherit; text-decoration: none; }
-#today .section-description { margin-top: .3rem; }
+#today .section-description { display: block; margin-top: .5rem; }
+#today .pregnancy-summary { height: auto; margin-top: 1rem; padding: 1.3rem 1.6rem; }
+#today .summary-row { height: auto; min-height: 2.8rem; gap: 1rem; }
+#today .pregnancy-age { font-size: 2.15rem; line-height: 2.8rem; }
+#today .summary-progress-row { display: flex; align-items: center; gap: 1.5rem; margin-top: 1.5rem; }
+#today .pregnancy-meta { margin-right: 0; font-size: 1.4rem; line-height: 1.8rem; white-space: nowrap; }
+#today .progress-track { flex: 1; min-width: 0; margin: 0; height: 1.3rem; }
+#today .progress-track > span { width: 68.93%; }
 #today .article-grid { margin-top: 1rem; }
