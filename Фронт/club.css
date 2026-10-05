@@ -50,6 +50,8 @@
 .feeding-photo { background-position:-95.78rem -100.08rem; }
 .event-copy { flex:1; min-width:0; display:flex; flex-direction:column; align-items:flex-start; padding:.7rem 0; }
 .event-badge { display:inline-block; border-radius:1.1rem; padding:.4rem .9rem; color:#794dff; background:#f1ebff; font-size:1.1rem; line-height:1.3rem; white-space:nowrap; margin-bottom:.65rem; }
+.event-card { text-align:left; }
+.event-copy { padding-right:1rem; }
 .free-badge { background:#dff9f1; color:#10aa8d; }
 .event-copy strong { font-size:1.45rem; line-height:1.65rem; letter-spacing:-.035rem; font-weight:600; }
 .event-date { margin-top:.65rem; font-size:1.3rem; line-height:1.5rem; color:#7482bc; }

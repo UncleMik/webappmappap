@@ -56,15 +56,15 @@ scroller.addEventListener('scroll', () => {
   if (!scheduled) { scheduled = true; requestAnimationFrame(updateProgress); }
 }, { passive: true });
 new ResizeObserver(updateProgress).observe(scroller);
-const origins = { index: 'index.html#recommendations-title', journey: 'journey.html#weekly-articles-title', baby: 'baby.html#learn-title', mom: 'mom.html#mom-recommendations-title', articles: 'articles.html' };
+const origins = { index: 'index.html#recommendations-title', journey: 'journey.html#weekly-articles-title', baby: 'baby.html#learn-title', mom: 'mom.html#mom-recommendations-title', articles: 'articles.html', 'club-motherhood': 'club.html#motherhood' };
 const origin = Object.hasOwn(origins, params.get('from')) ? params.get('from') : 'index';
 const returnUrl = origins[origin];
 document.querySelectorAll('[data-reader-return]').forEach(link => { link.href = returnUrl; });
-const ids = Object.keys(library);
+const ids = Object.keys(library).filter(id => origin !== 'club-motherhood' || library[id].group === 'motherhood');
 document.querySelector('[data-reader-next]').href = `article.html?id=${ids[(ids.indexOf(articleId) + 1) % ids.length]}&from=${origin}`;
-if (origin === 'journey') {
+if (origin === 'journey' || origin === 'club-motherhood') {
   document.querySelectorAll('.nav-item').forEach(link => {
-    const active = link.getAttribute('href') === 'journey.html';
+    const active = link.getAttribute('href') === (origin === 'journey' ? 'journey.html' : 'club.html');
     link.classList.toggle('active', active);
     if (active) link.setAttribute('aria-current', 'page');
     else link.removeAttribute('aria-current');
