@@ -38,6 +38,7 @@
     const article = document.querySelector('.mom-week-article');
     article.href = articleUrl(week, 'mom');
     article.querySelector('.article-title').textContent = content.title;
+    article.querySelector('.article-meta').lastElementChild.textContent = `≈ ${Math.max(1, Math.ceil(content.paragraphs.join(' ').split(/\s+/).length / 180))} мин`;
   }
   select.addEventListener('change', () => {
     const url = new URL(location.href);
