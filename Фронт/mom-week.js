@@ -8,7 +8,7 @@
     card.querySelector('a').href = articleUrl(week, 'journey');
     card.querySelector('h3').textContent = library[week].title;
     const checkbox = card.querySelector('input');
-    checkbox.checked = false;
+    window.articleReadState.bindCheckbox(checkbox, `mom-week-${week}`);
     checkbox.setAttribute('aria-label', `Отметить материал о маме на ${week}-й неделе прочитанным`);
   };
   const summary = document.querySelector('.mom-description');

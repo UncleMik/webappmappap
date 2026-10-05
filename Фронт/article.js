@@ -78,6 +78,7 @@ const progress = document.querySelector('.reader-progress progress');
 const counter = document.querySelector('.reader-progress output');
 progress.max = sections.length;
 let scheduled = false;
+const readArticleId = article.pregnancy ? article.id : articleId === 'mom-week' ? `mom-week-${momWeek}` : articleId;
 function updateProgress() {
   const top = scroller.getBoundingClientRect().top;
   const position = top + scroller.clientHeight * .45;
@@ -92,6 +93,9 @@ function updateProgress() {
   scheduled = false;
 }
 scroller.addEventListener('scroll', () => {
+  if (scroller.scrollTop > 0 && scroller.scrollTop + scroller.clientHeight >= scroller.scrollHeight - 2) {
+    window.articleReadState.setRead(readArticleId);
+  }
   if (!scheduled) { scheduled = true; requestAnimationFrame(updateProgress); }
 }, { passive: true });
 new ResizeObserver(updateProgress).observe(scroller);

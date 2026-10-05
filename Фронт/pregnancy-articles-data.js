@@ -17,7 +17,7 @@ window.renderPregnancyWeekArticles = (list, week) => {
     card.querySelector('h3').textContent = article.title;
     card.querySelector('.journey-photo').classList.add('article-cover-placeholder');
     const checkbox = card.querySelector('input');
-    checkbox.checked = false;
+    window.articleReadState.bindCheckbox(checkbox, article.id);
     checkbox.setAttribute('aria-label', `Отметить статью ${article.title} прочитанной`);
     return card;
   });
