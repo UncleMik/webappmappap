@@ -39,7 +39,8 @@
       window.dispatchEvent(new PopStateEvent('popstate'));
       window.dispatchEvent(new HashChangeEvent('hashchange'));
     });
-    notify('ready');
+    if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', () => notify('ready'), { once: true });
+    else notify('ready');
     return;
   }
   const initialFile = fileOf(new URL(location.href));
