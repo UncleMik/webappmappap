@@ -56,7 +56,11 @@
     const stage = week <= 14 ? 0 : week <= 27 ? 1 : 2;
     [...dots.children].forEach((dot, index) => dot.classList.toggle('active', index === stage));
     dots.setAttribute('aria-label', ['1–14 недели', '15–27 недели', '28–40 недели'][stage]);
-    weeklySections.forEach(section => { section.hidden = week !== currentWeek; });
+    weeklySections[0].hidden = false;
+    weeklySections[1].hidden = week !== currentWeek;
+    weeklySections[0].querySelectorAll('.journey-content-card').forEach((card, index) => { card.hidden = index !== 0 && week !== currentWeek; });
+    window.renderMomWeekCard(week);
+    empty.textContent = 'Другие материалы этой недели пока не добавлены.';
     empty.hidden = week === currentWeek;
   }
   function select(week, smooth = true) {
