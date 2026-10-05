@@ -10,7 +10,7 @@
 .profile-card,.completion-card,.profile-list,.learning-card { border:1px solid #eaeaf3; border-radius:1.3rem; background:#ffffffb8; }
 .profile-card { padding:.8rem; }
 .identity { display:flex; position:relative; align-items:center; gap:2rem; padding:0 .8rem .7rem; }
-.profile-photo { width:9.7rem; height:9.7rem; flex-shrink:0; border-radius:50%; background:url('assets/profile-reference.png') no-repeat; background-size:56.6rem 96rem; background-position:-5.6rem -8.7rem; }
+.profile-photo { width:9.7rem; height:9.7rem; flex-shrink:0; border-radius:50%; background:url('assets/profile-reference.webp') no-repeat; background-size:56.6rem 96rem; background-position:-5.6rem -8.7rem; }
 .identity-copy { min-width:0; padding-right:2.4rem; }
 .identity-copy h2 { font-size:1.85rem; line-height:2.4rem; letter-spacing:-.02rem; }
 .identity-copy p { font-size:1.55rem; line-height:2.2rem; margin-top:.3rem; }
@@ -47,7 +47,7 @@
 .row-arrow { color:#8378ac; font-size:2.5rem; line-height:2.5rem; padding:0 .3rem; }
 .notification-count { display:grid; place-items:center; width:2.4rem; height:2.4rem; border-radius:50%; background:#ff4486; color:white; font-size:1.4rem; margin-right:-1.2rem; }
 .learning-card { display:flex; gap:1.6rem; align-items:center; padding:.6rem .9rem; text-decoration:none; color:inherit; }
-.learning-photo { flex-shrink:0; display:block; width:12.2rem; height:6.9rem; border-radius:.9rem; background:url('assets/profile-reference.png') no-repeat; background-size:56.6rem 96rem; background-position:-5rem -52rem; }
+.learning-photo { flex-shrink:0; display:block; width:12.2rem; height:6.9rem; border-radius:.9rem; background:url('assets/profile-reference.webp') no-repeat; background-size:56.6rem 96rem; background-position:-5rem -52rem; }
 .learning-copy { flex:1; min-width:0; padding-right:2.9rem; }
 .learning-copy strong { display:block; font-size:1.6rem; line-height:2rem; }
 .learning-copy>span { display:block; font-size:1.4rem; line-height:2rem; color:var(--muted); margin-top:.2rem; }

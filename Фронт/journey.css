@@ -21,7 +21,7 @@
 .journey-page .text-link { font-size: 1.15rem; line-height: 1.5rem; gap: .4rem; }
 .journey-page .text-link .chevron { width: .8rem; height: 1.4rem; color: inherit; }
 .journey-subtitle { color: var(--muted); font-size: 1.2rem; line-height: 1.5rem; margin-top: .1rem; }
-.journey-photo { position: relative; display: block; width: 100%; aspect-ratio: var(--w) / var(--h); flex-shrink: 0; background-image: url('assets/journey-reference.png'); background-repeat: no-repeat; background-size: calc(95100% / var(--w)) calc(147200% / var(--h)); background-position: calc(var(--x) * 100% / (951 - var(--w))) calc(var(--y) * 100% / (1472 - var(--h))); overflow: hidden; }
+.journey-photo { position: relative; display: block; width: 100%; aspect-ratio: var(--w) / var(--h); flex-shrink: 0; background-image: url('assets/journey-reference.webp'); background-repeat: no-repeat; background-size: calc(95100% / var(--w)) calc(147200% / var(--h)); background-position: calc(var(--x) * 100% / (951 - var(--w))) calc(var(--y) * 100% / (1472 - var(--h))); overflow: hidden; }
 .content-carousel { position: relative; }
 .article-list, .video-list, .course-list { display: flex; gap: 1rem; overflow-x: auto; scroll-snap-type: x mandatory; margin-top: .7rem; padding-bottom: .4rem; scrollbar-width: none; }
 .journey-content-card { display: flex; flex-direction: column; flex: 0 0 55%; min-width: 0; scroll-snap-align: start; background: #fff; border: 1px solid #f0eef4; border-radius: 1.1rem; overflow: hidden; box-shadow: 0 .2rem .4rem #37457708; }

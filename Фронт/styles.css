@@ -20,7 +20,7 @@ button:focus-visible, a:focus-visible { outline: 2px solid var(--purple); outlin
 button:active { filter: brightness(.98); }
 h1, h2, p { margin: 0; }
 .app { display: flex; flex-direction: column; width: 100%; min-height: 100svh; min-height: 100dvh; margin: 0; background: radial-gradient(ellipse at 50% 22%, #fffdfa80, transparent 75%), var(--canvas); }
-.sprite { display: block; background-image: url('assets/reference.png'); background-repeat: no-repeat; background-size: 105.3rem 147.2rem; flex-shrink: 0; }
+.sprite { display: block; background-image: url('assets/reference.webp'); background-repeat: no-repeat; background-size: 105.3rem 147.2rem; flex-shrink: 0; }
 .page-header { min-height: calc(7.8rem + env(safe-area-inset-top,0px)); padding: calc(1.6rem + env(safe-area-inset-top,0px)) 1.9rem 0 2.1rem; display: flex; justify-content: space-between; align-items: flex-start; }
 h1 { font-size: 3.6rem; line-height: 4rem; letter-spacing: -.13rem; font-weight: 750; }
 .greeting { display: flex; align-items: center; gap: .6rem; color: var(--muted); font-size: 1.8rem; line-height: 2.2rem; letter-spacing: -.045rem; }

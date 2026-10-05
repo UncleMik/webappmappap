@@ -1,7 +1,7 @@
 /* Source mobile content is 464 px wide. No device chrome or outside frame. */
 :root { font-size: min(2.155172414vw, 10px); }
 .baby-page { color: #191b24; }
-.baby-sprite { display: block; flex-shrink: 0; background: url('assets/baby-reference.png') no-repeat; background-size: 105.3rem 147.3rem; }
+.baby-sprite { display: block; flex-shrink: 0; background: url('assets/baby-reference.webp') no-repeat; background-size: 105.3rem 147.3rem; }
 .baby-header { display: flex; align-items: center; gap: 1.5rem; min-height: calc(6rem + env(safe-area-inset-top,0px)); padding: calc(1rem + env(safe-area-inset-top,0px)) 1.6rem 1rem; }
 .baby-header h1 { font-size: 2.4rem; line-height: 3rem; letter-spacing: -.07rem; }
 .back-link { display: grid; place-items: center; width: 3rem; height: 3.6rem; color: #1c2838; }

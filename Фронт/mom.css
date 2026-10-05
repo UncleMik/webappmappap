@@ -1,6 +1,6 @@
 /* 436 px mobile reference, excluding the surrounding frame and device chrome. */
 :root { font-size: min(2.293577982vw, 10px); }
-.mom-sprite { display: block; flex-shrink: 0; background: url('assets/mom-reference.png') no-repeat; background-size: 95.6rem 147.2rem; }
+.mom-sprite { display: block; flex-shrink: 0; background: url('assets/mom-reference.webp') no-repeat; background-size: 95.6rem 147.2rem; }
 .mom-header { position: relative; display: grid; grid-template-columns: 3.6rem 1fr 3.6rem; align-items: start; min-height: calc(6.7rem + env(safe-area-inset-top,0px)); padding: calc(1.6rem + env(safe-area-inset-top,0px)) 1.8rem .9rem; gap: .8rem; }
 .mom-header > div { text-align: center; }
 .mom-header h1 { font-size: 2rem; line-height: 2.6rem; letter-spacing: -.05rem; }

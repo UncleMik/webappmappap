@@ -17,7 +17,7 @@
 .data-label { flex:1; text-align:left; }
 .data-value { color:#756c9a; text-align:right; overflow-wrap:anywhere; max-width:44%; }
 .data-arrow { color:#8178aa; font-size:2.5rem; line-height:2.6rem; flex:none; }
-.data-photo { width:4.4rem; height:4.4rem; flex:none; border-radius:50%; background:url('assets/profile-reference.png') no-repeat; background-size:25.675rem 43.546rem; background-position:-2.54rem -3.947rem; }
+.data-photo { width:4.4rem; height:4.4rem; flex:none; border-radius:50%; background:url('assets/profile-reference.webp') no-repeat; background-size:25.675rem 43.546rem; background-position:-2.54rem -3.947rem; }
 .logout-row { border:1px solid #ffe0e9; background:#fff8fa90; border-radius:1.2rem; color:#ff286c; overflow:hidden; }
 .logout-row .data-row { min-height:4.6rem; }
 .logout-row .data-icon { background:#ffedf3; color:#ff286c; }

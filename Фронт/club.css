@@ -26,7 +26,7 @@
 .chat-list { border:1px solid #f7f5f8; border-radius:1.6rem; background:#ffffffb5; box-shadow:0 .3rem 1.7rem #79695604; overflow:hidden; }
 .chat-row { display:flex; align-items:center; gap:1.4rem; width:100%; min-height:8.8rem; padding:1rem 1rem 1rem 1.1rem; text-decoration:none; color:var(--ink); background:transparent; }
 .chat-row + .chat-row { border-top:1px solid #f2f2f8; }
-.chat-avatar { flex:none; width:6.4rem; height:6.4rem; border-radius:50%; background-image:url('assets/club-reference.png'); background-size:166.5rem 147.2rem; background-repeat:no-repeat; }
+.chat-avatar { flex:none; width:6.4rem; height:6.4rem; border-radius:50%; background-image:url('assets/club-reference.webp'); background-size:166.5rem 147.2rem; background-repeat:no-repeat; }
 .pregnancy-avatar { background-position:-31rem -49.4rem; }
 .motherhood-avatar { background-position:-31rem -57.8rem; }
 .expert-avatar { background-position:-31rem -71.7rem; }
@@ -43,7 +43,7 @@
 .chat-row .row-arrow { margin-left:-.6rem; }
 .event-list { display:grid; gap:.65rem; }
 .event-card { display:flex; align-items:center; position:relative; min-height:13.4rem; width:100%; gap:1.6rem; border:1px solid #f0eff7; border-radius:1.3rem; background:#ffffffbd; overflow:hidden; color:var(--ink); text-decoration:none; }
-.event-photo { position:relative; display:block; align-self:stretch; flex:none; width:13.4rem; min-height:13.4rem; border-radius:1.1rem; background-image:url('assets/club-reference.png'); background-size:174.3rem 154.1rem; background-repeat:no-repeat; }
+.event-photo { position:relative; display:block; align-self:stretch; flex:none; width:13.4rem; min-height:13.4rem; border-radius:1.1rem; background-image:url('assets/club-reference.webp'); background-size:174.3rem 154.1rem; background-repeat:no-repeat; }
 .breathing-photo { background-position:-95.78rem -50.77rem; }
 .sleep-photo { background-position:-95.78rem -64.49rem; }
 .birth-photo { background-position:-95.78rem -85.21rem; }

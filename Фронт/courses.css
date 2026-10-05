@@ -7,7 +7,7 @@
 .eyebrow { position:relative; color:var(--muted); font-size:1.3rem; margin:.2rem 0 .8rem; }
 .course-hero h1 { position:relative; font-size:1.9rem; line-height:2.05rem; letter-spacing:-.055rem; }
 .hero-description { position:relative; color:var(--muted); font-size:1.1rem; line-height:1.45rem; margin-top:.8rem; }
-.hero-photo { position:absolute; right:-1.4rem; top:0; width:14.8rem; height:18.5rem; background:url('assets/courses-reference.png') -32rem -4.7rem / 51.4rem 96rem; mask-image:linear-gradient(to bottom,#000 80%,transparent); opacity:.9; }
+.hero-photo { position:absolute; right:-1.4rem; top:0; width:14.8rem; height:18.5rem; background:url('assets/courses-reference.webp') -32rem -4.7rem / 51.4rem 96rem; mask-image:linear-gradient(to bottom,#000 80%,transparent); opacity:.9; }
 .hero-badge { position:absolute; right:4rem; top:5.5rem; min-width:10rem; display:flex; align-items:center; gap:.5rem; padding:.8rem .7rem; border-radius:1rem; background:#fff0f8; color:#cd5894; font-size:.8rem; line-height:1rem; }
 .hero-badge span { color:#ff7bad; font-size:2rem; }
 .course-benefits { position:relative; display:grid; grid-template-columns:repeat(4,1fr); text-align:center; gap:.5rem; margin:.4rem 0 2.6rem; }
@@ -45,7 +45,7 @@
 .course-bonus>p { padding:0 1.5rem 1.2rem; color:var(--muted); font-size:1.1rem; }
 .course-stories { margin-top:1.6rem; }
 .testimonial { display:flex; align-items:center; gap:1.2rem; padding:1.8rem 1rem; margin-top:.6rem; border-radius:1.4rem; background:#fff; }
-.review-avatar { flex-shrink:0; width:4.8rem; height:4.8rem; border-radius:50%; background:url('assets/courses-reference.png') -6.5rem -77rem / 51.4rem 96rem; }
+.review-avatar { flex-shrink:0; width:4.8rem; height:4.8rem; border-radius:50%; background:url('assets/courses-reference.webp') -6.5rem -77rem / 51.4rem 96rem; }
 .testimonial blockquote { margin:0; font-size:1.05rem; line-height:1.4rem; }
 .testimonial p { color:var(--muted); font-size:.95rem; margin-top:.7rem; }
 .payment-dialog { width:calc(100% - 3.2rem); max-width:40rem; padding:2.4rem; border:1px solid #eee4ff; border-radius:1.8rem; color:var(--ink); background:#fefcff; }

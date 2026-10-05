@@ -15,7 +15,7 @@
 .owned-list { display:grid; gap:1.15rem; }
 .owned-course { display:grid; grid-template-columns:12rem minmax(0,1fr); gap:.7rem; min-width:0; }
 .owned-course[hidden] { display:none; }
-.owned-photo { min-height:10.6rem; border-radius:.9rem; background-image:url('assets/my-courses-reference.png'); background-size:calc(51400% / 115) calc(96000% / 102); background-position:calc(72 * 100% / (514 - 115)) calc(var(--photo-y) * 100% / (960 - 102)); }
+.owned-photo { min-height:10.6rem; border-radius:.9rem; background-image:url('assets/my-courses-reference.webp'); background-size:calc(51400% / 115) calc(96000% / 102); background-position:calc(72 * 100% / (514 - 115)) calc(var(--photo-y) * 100% / (960 - 102)); }
 .owned-copy { position:relative; min-width:0; border:1px solid #eeeafb; border-radius:1rem; background:#ffffffa8; padding:.5rem .9rem .7rem; }
 .owned-copy:after { content:'›'; position:absolute; right:1rem; top:.8rem; font-size:2.4rem; color:#8999c9; pointer-events:none; }
 .course-label { display:table; background:#f2eaff; color:var(--purple); padding:.1rem .6rem; border-radius:.5rem; font-size:.8rem; }
