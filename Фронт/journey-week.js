@@ -58,10 +58,10 @@
     dots.setAttribute('aria-label', ['1–14 недели', '15–28 недели', '29–42 недели'][stage]);
     weeklySections[0].hidden = false;
     weeklySections[1].hidden = week !== currentWeek;
-    weeklySections[0].querySelectorAll('.journey-content-card').forEach((card, index) => { card.hidden = index !== 0 && week !== currentWeek; });
     window.renderMomWeekCard(week);
-    weeklySections[0].querySelector('p').textContent = week === currentWeek ? '3 статьи, которые помогут сейчас' : 'Состояние мамы на этой неделе';
-    empty.textContent = 'Другие материалы этой недели пока не добавлены.';
+    window.renderPregnancyWeekArticles(weeklySections[0].querySelector('.article-list'), week);
+    weeklySections[0].querySelector('p').textContent = '3 статьи и материал о состоянии мамы';
+    empty.textContent = 'Видео этой недели пока не добавлены.';
     empty.hidden = week === currentWeek;
   }
   function select(week, smooth = true) {

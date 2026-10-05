@@ -10,7 +10,39 @@ if (params.get('id') === 'mom-week') {
 const articleId = Object.hasOwn(library, params.get('id')) ? params.get('id') : 'dating';
 const article = library[articleId];
 const escapeText = text => text.replace(/[&<>"']/g, char => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[char]));
-if (articleId !== 'dating') {
+if (article.pregnancy) {
+  const finish = scroller.querySelector('.reader-finish').cloneNode(true);
+  finish.querySelector('p').textContent = 'Вы дочитали статью. Можно перейти к следующему материалу или вернуться к подборке.';
+  scroller.replaceChildren();
+  let section = document.createElement('section');
+  section.className = 'reader-section reader-intro';
+  section.innerHTML = `<div><span class="reader-week">${escapeText(article.type)}</span><h1>${escapeText(article.title)}</h1><p class="reader-reading-time">≈ ${article.minutes} мин на чтение</p></div>`;
+  scroller.append(section);
+  let list = null;
+  article.blocks.forEach(block => {
+    if (block.type === 'heading') {
+      section = document.createElement('section');
+      section.className = 'reader-section';
+      const heading = document.createElement('h2');
+      heading.textContent = block.text;
+      section.append(heading);
+      scroller.append(section);
+      list = null;
+    } else if (block.type === 'list-item') {
+      if (!list) { list = document.createElement('ul'); section.append(list); }
+      const item = document.createElement('li');
+      item.textContent = block.text;
+      list.append(item);
+    } else {
+      list = null;
+      const paragraph = document.createElement('p');
+      paragraph.textContent = block.text;
+      section.append(paragraph);
+    }
+  });
+  scroller.append(finish);
+  document.querySelector('.reader-toolbar > span').textContent = article.type;
+} else if (articleId !== 'dating') {
   const finish = scroller.querySelector('.reader-finish').cloneNode(true);
   finish.querySelector('p').textContent = article.supplied ? 'Процессы развиваются постепенно: описанные изменения могут появляться раньше или позже. Все сроки — акушерские.' : 'Вы дочитали пример материала. Сохраните интересные мысли и переходите к следующей теме в удобном темпе.';
   scroller.innerHTML = `<section class="reader-section reader-intro"><div><span class="reader-week">${escapeText(article.type || '27 неделя')}</span>${article.supplied ? '' : '<span class="reader-demo">Пример материала</span>'}<h1>${escapeText(article.title)}</h1><p>${escapeText(article.intro)}</p></div><figure class="reader-cover reader-example-cover"><img src="assets/${article.image}" alt="${escapeText(article.title)}"><figcaption class="reader-duration">${article.supplied ? `≈ ${article.minutes} мин на чтение` : `${article.minutes} минут на чтение`}</figcaption></figure></section>`;
@@ -44,6 +76,7 @@ sections.slice(0, -1).forEach(section => {
 });
 const progress = document.querySelector('.reader-progress progress');
 const counter = document.querySelector('.reader-progress output');
+progress.max = sections.length;
 let scheduled = false;
 function updateProgress() {
   const top = scroller.getBoundingClientRect().top;
@@ -64,11 +97,17 @@ scroller.addEventListener('scroll', () => {
 new ResizeObserver(updateProgress).observe(scroller);
 const origins = { index: 'index.html#recommendations-title', journey: 'journey.html#weekly-articles-title', baby: 'baby.html#learn-title', mom: 'mom.html#mom-recommendations-title', articles: 'articles.html', 'club-motherhood': 'club.html#motherhood' };
 const origin = Object.hasOwn(origins, params.get('from')) ? params.get('from') : 'index';
-const returnUrl = article.supplied && ['mom', 'journey'].includes(origin) ? `${origin}.html?week=${momWeek}#${origin === 'mom' ? 'mom-changes-title' : 'weekly-articles-title'}` : origins[origin];
+const returnWeek = article.pregnancy ? article.week : momWeek;
+const returnUrl = article.supplied && ['mom', 'journey'].includes(origin) ? `${origin}.html?week=${returnWeek}#${origin === 'mom' ? 'mom-changes-title' : 'weekly-articles-title'}` : origins[origin];
 document.querySelectorAll('[data-reader-return]').forEach(link => { link.href = returnUrl; });
 const ids = Object.keys(library).filter(id => origin !== 'club-motherhood' || library[id].group === 'motherhood');
 document.querySelector('[data-reader-next]').href = `article.html?id=${ids[(ids.indexOf(articleId) + 1) % ids.length]}&from=${origin}`;
-if (article.supplied) {
+if (article.pregnancy) {
+  const next = document.querySelector('[data-reader-next]');
+  const following = window.pregnancyArticleList.find(item => item.number === article.number + 1);
+  next.href = following ? `article.html?id=${following.id}&from=${origin}` : returnUrl;
+  next.textContent = following ? 'Читать следующую статью →' : 'Вернуться к разделу';
+} else if (article.supplied) {
   const next = document.querySelector('[data-reader-next]');
   next.href = momWeek < 42 ? `article.html?id=mom-week&week=${momWeek + 1}&from=${origin}` : returnUrl;
   next.textContent = momWeek < 42 ? `Читать о ${momWeek + 1}-й неделе →` : 'Вернуться к разделу';
