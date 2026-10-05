@@ -8,30 +8,31 @@
   <title>Мой путь</title>
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='10' fill='%238052ff'/%3E%3Cpath d='M16 24 7 15C1 8 12 3 16 10 20 3 31 8 25 15Z' fill='white'/%3E%3C/svg%3E">
   <link rel="stylesheet" href="styles.css">
-  <link rel="stylesheet" href="journey.css">
+  <link rel="stylesheet" href="journey.css?v=20261005-path">
   <link rel="stylesheet" href="calendar-sheet.css">
 </head>
 <body>
   <div class="app journey-page" id="journey">
     <header class="journey-header"><h1>Мой путь</h1></header>
     <main class="journey-main">
-      <section class="journey-week" aria-label="Текущая неделя беременности"><div><h2>27-я неделя беременности</h2><p>8 сентября — 14 сентября</p></div><button class="open-calendar" type="button" data-action="calendar"><svg aria-hidden="true"><use href="#j-calendar"/></svg><span>Открыть<br>календарь</span><svg class="chevron" aria-hidden="true"><use href="#i-chevron"/></svg></button></section>
-
-      <section class="journey-section continue-section" aria-labelledby="continue-title">
-        <div class="section-heading"><h2 id="continue-title">Продолжить</h2><button class="text-link" type="button" data-action="my-lessons">Смотреть все</button></div>
-        <article class="continue-card">
-          <button class="continue-photo journey-photo" style="--x:289;--y:382;--w:113;--h:95" type="button" data-action="contractions-lesson" aria-label="Продолжить урок Дыхание во время схваток"><span class="large-play"><svg aria-hidden="true"><use href="#j-play"/></svg></span><span class="photo-duration">8 мин</span></button>
-          <div class="continue-content"><p class="lesson-meta"><span>УРОК КУРСА</span><span>·</span><span>8 из 24</span></p><h3>Дыхание во время схваток</h3><p class="continue-description">Практические техники, которые помогут сохранять спокойствие и силы.</p><div class="continue-bottom"><div class="lesson-progress"><progress value="40" max="100" aria-label="Урок пройден на 40 процентов">40%</progress><span>40%</span></div><button class="journey-primary" type="button" data-action="contractions-lesson">Продолжить<svg class="chevron" aria-hidden="true"><use href="#i-chevron"/></svg></button></div></div>
-        </article>
+      <section class="journey-week" aria-label="Выбор недели беременности">
+        <div class="week-selector">
+          <button class="round-arrow week-prev" type="button" aria-label="Предыдущая неделя">‹</button>
+          <button class="week-neighbor" type="button" data-week-offset="-1">26 неделя</button>
+          <button class="week-selected" type="button" data-action="calendar" aria-label="27 неделя. Открыть календарь">27 неделя</button>
+          <button class="week-neighbor" type="button" data-week-offset="1">28 неделя</button>
+          <button class="round-arrow week-next" type="button" aria-label="Следующая неделя">›</button>
+        </div>
+        <div class="week-dots" aria-hidden="true"><span></span><span></span><span></span></div>
       </section>
 
       <section class="journey-section" aria-labelledby="weekly-articles-title">
         <h2 id="weekly-articles-title">Полезные статьи на эту неделю</h2><p class="journey-subtitle">3 статьи, которые помогут сейчас</p>
-        <div class="journey-three-grid article-list">
+        <div class="content-carousel"><button class="round-arrow carousel-prev" type="button" aria-label="Предыдущие статьи">‹</button><div class="journey-three-grid article-list">
           <article class="journey-content-card"><a class="content-open" href="article.html?id=body-changes-article&amp;from=journey"><span class="journey-photo" style="--x:282;--y:526;--w:123;--h:54" aria-hidden="true"></span><h3>Изменения в теле<br>на 27 неделе</h3></a><div class="content-footer"><span class="content-type"><svg aria-hidden="true"><use href="#j-document"/></svg>Статья</span><input class="read-checkbox" type="checkbox" aria-label="Отметить статью Изменения в теле на 27 неделе прочитанной"></div></article>
           <article class="journey-content-card"><a class="content-open" href="article.html?id=nutrition-article&amp;from=journey"><span class="journey-photo" style="--x:411;--y:526;--w:123;--h:54" aria-hidden="true"></span><h3>Питание во втором<br>триместре: что<br>действительно важно</h3></a><div class="content-footer"><span class="content-type"><svg aria-hidden="true"><use href="#j-document"/></svg>Статья</span><input class="read-checkbox" type="checkbox" aria-label="Отметить статью Питание во втором триместре прочитанной"></div></article>
           <article class="journey-content-card"><a class="content-open" href="article.html?id=anxiety-article&amp;from=journey"><span class="journey-photo" style="--x:540;--y:526;--w:122;--h:54" aria-hidden="true"></span><h3>Как справляться<br>с тревогой<br>во время беременности</h3></a><div class="content-footer"><span class="content-type"><svg aria-hidden="true"><use href="#j-document"/></svg>Статья</span><input class="read-checkbox" type="checkbox" aria-label="Отметить статью Как справляться с тревогой прочитанной"></div></article>
-        </div>
+        </div><button class="round-arrow carousel-next" type="button" aria-label="Следующие статьи">›</button></div>
       </section>
 
       <section class="journey-section" aria-labelledby="courses-title">
@@ -44,29 +45,13 @@
       </section>
 
       <section class="journey-section" aria-labelledby="videos-title"><h2 id="videos-title">Полезные видео на эту неделю</h2><p class="journey-subtitle">3 видео, которые помогут сейчас</p>
-        <div class="journey-two-grid video-list">
+        <div class="content-carousel"><button class="round-arrow carousel-prev" type="button" aria-label="Предыдущие видео">‹</button><div class="journey-two-grid video-list">
           <button class="journey-content-card video-card" type="button" data-action="contractions-lesson"><span class="video-photo journey-photo" style="--x:282;--y:854;--w:187;--h:69" aria-hidden="true"><span class="small-play"><svg><use href="#j-play"/></svg></span><span class="photo-duration">8 мин</span></span><h3>Дыхание во время<br>схваток</h3><span class="content-type video-type"><svg aria-hidden="true"><use href="#j-video"/></svg>Видео</span></button>
-          <button class="journey-content-card video-card" type="button" data-action="birth-breathing-video"><span class="video-photo journey-photo" style="--x:282;--y:854;--w:187;--h:69" aria-hidden="true"><span class="small-play"><svg><use href="#j-play"/></svg></span><span class="photo-duration">8 мин</span></span><h3>Дыхание в родах: базовая<br>практика</h3><span class="content-type video-type"><svg aria-hidden="true"><use href="#j-video"/></svg>Видео</span></button>
           <button class="journey-content-card video-card" type="button" data-action="back-relief-video"><span class="video-photo journey-photo" style="--x:475;--y:854;--w:187;--h:69" aria-hidden="true"><span class="small-play"><svg><use href="#j-play"/></svg></span><span class="photo-duration">10 мин</span></span><h3>Как снять напряжение<br>в спине</h3><span class="content-type video-type"><svg aria-hidden="true"><use href="#j-video"/></svg>Видео</span></button>
-        </div>
+          <button class="journey-content-card video-card" type="button" data-action="birth-breathing-video"><span class="video-photo journey-photo" style="--x:282;--y:854;--w:187;--h:69" aria-hidden="true"><span class="small-play"><svg><use href="#j-play"/></svg></span><span class="photo-duration">8 мин</span></span><h3>Дыхание в родах: базовая<br>практика</h3><span class="content-type video-type"><svg aria-hidden="true"><use href="#j-video"/></svg>Видео</span></button>
+        </div><button class="round-arrow carousel-next" type="button" aria-label="Следующие видео">›</button></div>
       </section>
 
-      <section class="journey-section upcoming-weeks" aria-labelledby="weeks-title"><h2 id="weeks-title">Дальше по неделям</h2><p class="journey-subtitle">Ваш персональный план на самые важные встречи</p>
-        <div class="journey-weeks-grid">
-          <button class="journey-week-card completed-week" type="button" data-action="week-26">
-            <span class="week-symbol"><svg aria-hidden="true"><use href="#j-calendar"/></svg></span>
-            <span class="week-title"><strong>26-я неделя</strong><span>1 сентября — 7 сентября</span></span>
-            <span class="week-completed"><svg aria-hidden="true"><use href="#j-check"/></svg>3 из 3 выполнено</span>
-            <svg class="chevron" aria-hidden="true"><use href="#i-chevron"/></svg>
-          </button>
-          <button class="journey-week-card upcoming-week" type="button" data-action="week-28">
-            <span class="week-symbol sprout-symbol"><svg aria-hidden="true"><use href="#j-sprout"/></svg></span>
-            <span class="week-title"><strong>28-я неделя</strong><span>15 сентября — 21 сентября</span></span>
-            <span class="week-focus">Фокус недели: комфорт тела и профилактика отеков.</span>
-            <svg class="chevron" aria-hidden="true"><use href="#i-chevron"/></svg>
-          </button>
-        </div>
-      </section>
     </main>
 
     <nav class="bottom-navigation" aria-label="Основная навигация"><div class="navigation-items">
@@ -114,7 +99,7 @@
   </dialog>
   <script src="course-access.js"></script>
   <script src="app.js"></script>
-  <script src="journey-week.js"></script>
+  <script src="journey-week.js?v=20261005-path"></script>
   <script src="calendar-sheet.js"></script>
 </body>
 </html>
