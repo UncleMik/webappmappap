@@ -37,7 +37,6 @@
 .video-note { display: flex; gap: 1.3rem; align-items: flex-start; padding: 1.7rem; border-radius: 2rem; background: #f0edff; color: #7b87ad; }
 .video-note > span { display: grid; place-items: center; width: 2.8rem; height: 2.8rem; flex-shrink: 0; border-radius: 50%; background: #a2abcd; color: white; font-size: 2rem; font-weight: bold; }
 .video-note p { font-size: 1.4rem; line-height: 1.45; }
-.youtube-link { display: block; width: fit-content; margin: 1.6rem auto; color: #7854c1; font-size: 1.4rem; text-underline-offset: .3rem; }
 #player-status { color: #6a577b; background: #f2ebfa; border-radius: 1rem; padding: 1.2rem; margin-top: 1rem; font-size: 1.5rem; line-height: 1.4; }
 .video-chapters { border-top: 1px solid #eae5f5; padding-top: 1.4rem; font-size: 1.6rem; }
 .video-chapters summary { cursor: pointer; color: #57658b; padding: .6rem 0; }

@@ -107,7 +107,7 @@
     setPlaying(false);
     progress.disabled = true;
     status.hidden = false;
-    status.textContent = 'Не удалось загрузить YouTube. Попробуйте ещё раз или откройте видео по ссылке ниже.';
+    status.textContent = 'Не удалось загрузить видео. Попробуйте ещё раз.';
     cover.hidden = false;
     document.querySelector('.cover-label').textContent = 'Попробовать ещё раз';
     cover.setAttribute('aria-label', 'Повторить загрузку видео');
