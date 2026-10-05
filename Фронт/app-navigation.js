@@ -34,6 +34,7 @@
       window.dispatchEvent(new PopStateEvent('popstate'));
       window.dispatchEvent(new HashChangeEvent('hashchange'));
     });
+    notify('ready');
     return;
   }
   const initialFile = fileOf(new URL(location.href));
@@ -82,13 +83,16 @@
     frame.title = sections.get(file);
     frame.hidden = true;
     const panel = { element: frame, url: url.href, ready: false };
-    panel.loaded = new Promise(resolve => frame.addEventListener('load', () => {
+    panel.loaded = new Promise(resolve => {
+      panel.resolve = resolve;
+      frame.addEventListener('load', () => {
       try {
         if (!frame.contentDocument?.querySelector('.app')) { resolve(false); return; }
         panel.ready = true;
         resolve(true);
       } catch { resolve(false); }
-    }, { once: true }));
+    }, { once: true });
+    });
     panels.set(file, panel);
     frame.src = url.href;
     document.body.append(frame);
@@ -149,6 +153,7 @@
     const panelEntry = [...panels.entries()].find(([, panel]) => panel.element.contentWindow === event.source);
     if (!panelEntry) return;
     const [file, panel] = panelEntry;
+    if (event.data.type === 'ready') { panel.ready = true; panel.resolve?.(true); return; }
     const url = new URL(event.data.url);
     if (url.origin !== location.origin) return;
     if (['navigate', 'tab'].includes(event.data.type)) { navigate(url, true, event.data.type === 'tab'); return; }
