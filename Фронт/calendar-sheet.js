@@ -110,7 +110,9 @@
     if (document.querySelector('#journey')) {
       window.dispatchEvent(new CustomEvent('journey:select-week', { detail: { week } }));
     } else {
-      location.href = 'journey.html?week=' + week;
+      const url = 'journey.html?week=' + week;
+      if (window.navigateApp) window.navigateApp(url);
+      else location.href = url;
     }
   }
 

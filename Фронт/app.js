@@ -1,5 +1,6 @@
 /* Video destinations share the same player, including practice and course cards. */
 (() => {
+  const navigate = url => window.navigateApp ? window.navigateApp(url) : location.assign(url);
   const videoActions = new Set(['back-practice', 'breathing', 'practice-article', 'birth-course', 'back-course', 'confidence-course', 'baby-course', 'contractions-lesson', 'birth-breathing-video', 'back-relief-video', 'webinars']);
   const from = location.pathname.split('/').pop().replace('.html', '') || 'index';
   const videoUrl = id => `video.html?id=${encodeURIComponent(id === 'birth-course' && ['baby', 'articles', 'article'].includes(from) ? 'baby-birth-lesson' : id)}&from=${encodeURIComponent(from === 'article' ? 'articles' : from)}`;
@@ -13,11 +14,11 @@
     const id = control.dataset.action || (control.dataset.preview?.includes('вебинар') ? 'webinars' : '');
     if (id === 'my-lessons') {
       event.stopPropagation();
-      location.href = 'my-courses.html';
+      navigate('my-courses.html');
     } else if (videoActions.has(id)) {
       event.preventDefault();
       event.stopPropagation();
-      location.href = videoUrl(id);
+      navigate(videoUrl(id));
     }
   }, true);
 })();

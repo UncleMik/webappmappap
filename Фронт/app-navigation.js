@@ -10,6 +10,7 @@
   if (parentPanel) {
     document.documentElement.classList.add('embedded-section');
     const notify = (type, url = location.href) => parent.postMessage({ appSection: true, type, url, title: document.title }, location.origin);
+    window.navigateApp = destination => notify('navigate', new URL(destination, location.href).href);
     const replace = history.replaceState.bind(history);
     // Only the outer application owns browser history entries.
     history.pushState = (state, unused, url) => { replace(state, unused, url); notify('push'); };
@@ -55,7 +56,14 @@
   status.hidden = true;
   status.textContent = 'Открываем раздел…';
   document.body.append(status);
-  const updateHeight = () => document.documentElement.style.setProperty('--section-nav-height', `${nav.getBoundingClientRect().height}px`);
+  const updateHeight = () => {
+    const height = window.visualViewport?.height ?? innerHeight;
+    document.documentElement.style.setProperty('--section-nav-height', `${nav.getBoundingClientRect().height}px`);
+    document.documentElement.style.setProperty('--section-viewport-height', `${height}px`);
+    document.documentElement.style.setProperty('--section-viewport-bottom', `${Math.max(0, innerHeight - height - (window.visualViewport?.offsetTop ?? 0))}px`);
+  };
+  window.visualViewport?.addEventListener('resize', updateHeight);
+  window.addEventListener('resize', updateHeight);
   new ResizeObserver(updateHeight).observe(nav);
   updateHeight();
   function setActive(file) {
@@ -92,7 +100,7 @@
     if (file === activeFile && push && restoreTab) return;
     const request = ++serial;
     const old = panels.get(activeFile);
-    if (activeFile === initialFile) { old.url = location.href; old.scroll = [scrollX, scrollY]; }
+    if (activeFile === initialFile) { if (push) old.url = location.href; old.scroll = [scrollX, scrollY]; }
     let panel = panels.get(file);
     if (!panel) panel = makePanel(url);
     status.hidden = panel.ready;
@@ -125,13 +133,16 @@
     panel.url = target.href;
   }
   document.addEventListener('click', event => {
-    const link = event.target.closest('.bottom-navigation a');
+    const link = event.target.closest('a[href]');
     if (!link || !ordinaryClick(event)) return;
     const url = new URL(link.href);
-    if (!sections.has(fileOf(url))) return;
+    if (url.origin !== location.origin || !sections.has(fileOf(url))) return;
+    const tab = !!link.closest('.bottom-navigation');
+    if (!tab && url.pathname === location.pathname && url.search === location.search && url.hash) return;
     event.preventDefault();
-    navigate(url, true, true);
+    navigate(url, true, tab);
   });
+  window.navigateApp = destination => navigate(new URL(destination, location.href));
   window.addEventListener('popstate', () => { if (!restoring) navigate(new URL(location.href), false); });
   window.addEventListener('message', event => {
     if (event.origin !== location.origin || !event.data?.appSection) return;

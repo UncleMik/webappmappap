@@ -32,13 +32,15 @@
   filter();
  }
  tabs.forEach((tab, i) => {
-  tab.addEventListener('click', () => { location.hash = tab.dataset.tab; });
+  tab.addEventListener('click', () => { history.pushState(null, '', '#' + tab.dataset.tab);
+   select(tab.dataset.tab); });
   tab.addEventListener('keydown', event => {
    if (!['ArrowLeft', 'ArrowRight', 'Home', 'End'].includes(event.key)) return;
    event.preventDefault();
    const index = event.key === 'Home' ? 0 : event.key === 'End' ? tabs.length - 1 : (i + (event.key === 'ArrowRight' ? 1 : -1) + tabs.length) % tabs.length;
    tabs[index].focus();
-   location.hash = tabs[index].dataset.tab;
+   history.pushState(null, '', '#' + tabs[index].dataset.tab);
+   select(tabs[index].dataset.tab);
   });
  });
  const search = document.querySelector('#search-toggle');
@@ -62,5 +64,6 @@
   }
  });
  window.addEventListener('hashchange', () => select(location.hash.slice(1)));
+ window.addEventListener('popstate', () => select(location.hash.slice(1)));
  select(location.hash.slice(1));
 })();

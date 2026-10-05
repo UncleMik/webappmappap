@@ -1,7 +1,7 @@
-.app-shell > .bottom-navigation { position:fixed; inset:auto 0 0; width:100%; margin:0; z-index:20; }
+.app-shell > .bottom-navigation { position:fixed; inset:auto 0 var(--section-viewport-bottom, 0px); width:100%; margin:0; z-index:20; }
 .app-shell > [data-initial-section] { margin-bottom:var(--section-nav-height, 67px); }
 .app-shell.ai-page > .app { height:calc(var(--chat-viewport-height, 100dvh) - var(--section-nav-height, 67px)); }
 .app-shell > [hidden] { display:none !important; }
-.app-section-frame { position:fixed; inset:0 0 auto; width:100%; height:calc(100dvh - var(--section-nav-height, 67px)); border:0; background:#fcfaf7; z-index:10; }
+.app-section-frame { position:fixed; inset:0 0 auto; width:100%; height:calc(var(--section-viewport-height, 100dvh) - var(--section-nav-height, 67px)); border:0; background:#fcfaf7; z-index:10; }
 .section-loading { position:fixed; top:0; left:0; right:0; z-index:30; padding:10px 16px; background:#f6f0ff; color:#794aff; font:14px/20px Roboto,sans-serif; box-shadow:0 2px 8px #794aff18; }
 .embedded-section .bottom-navigation { display:none !important; }
