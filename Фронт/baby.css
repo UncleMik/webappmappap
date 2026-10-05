@@ -78,3 +78,10 @@
   .baby-movements .primary-button { margin-left: 5.5rem; }
   .data-tile { gap: .3rem; padding-left: .4rem; padding-right: .4rem; }
 }
+
+.baby-week-select { display:flex; align-items:center; justify-content:space-between; gap:1rem; margin-bottom:1rem; font-size:1.3rem; }
+.baby-week-select select { min-width:10rem; padding:.7rem; border:1px solid #e5dafa; border-radius:.8rem; background:#fff; font:inherit; }
+.baby-week-measurements { font-size:1.6rem; line-height:2rem; margin-top:1rem; }
+.baby-measurement-note { font-size:1.15rem; line-height:1.5rem; color:#68758b; max-width:27rem; margin-top:.5rem; }
+.baby-page [hidden] { display:none !important; }
+.development-link { text-decoration:none; }

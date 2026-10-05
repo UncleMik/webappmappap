@@ -7,8 +7,8 @@
   <meta name="description" content="Малыш: развитие на вашей неделе беременности, данные и полезные материалы.">
   <title>Малыш</title>
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='10' fill='%238052ff'/%3E%3Cpath d='M16 24 7 15C1 8 12 3 16 10 20 3 31 8 25 15Z' fill='white'/%3E%3C/svg%3E">
-  <link rel="stylesheet" href="styles.css">
-  <link rel="stylesheet" href="baby.css">
+  <link rel="stylesheet" href="styles.css?v=20261005-baby-weeks">
+  <link rel="stylesheet" href="baby.css?v=20261005-baby-weeks">
 </head>
 <body>
   <div class="app baby-page">
@@ -17,12 +17,15 @@
       <h1>Малыш</h1>
     </header>
     <main class="baby-main">
+      <label class="baby-week-select">Малыш по неделям<select aria-label="Неделя развития малыша"></select></label>
       <section class="baby-overview" aria-labelledby="baby-overview-title">
         <span class="baby-hero-art baby-sprite" role="img" aria-label="Иллюстрация малыша в утробе"></span>
         <div class="baby-overview-copy">
           <p class="eyebrow">Ваш малыш сейчас</p>
           <h2 id="baby-overview-title"><span>27</span> недель и 4 дня</h2>
           <p class="overview-meta">3 триместр <span>·</span> До родов ≈ 82 дня</p>
+          <p class="baby-week-measurements"></p>
+          <p class="baby-measurement-note"></p>
           <div class="baby-size">
             <div><strong>≈ 1000 г</strong><span>Вес</span></div>
             <div><strong>≈ 36 см</strong><span>Рост</span></div>
@@ -43,7 +46,7 @@
       <section class="baby-panel baby-development" aria-labelledby="development-title">
         <h2 id="development-title">Развитие малыша</h2>
         <p>На этой неделе лёгкие продолжают созревать, мозг активно развивается, формируются новые нервные связи.<br>Малыш всё лучше различает голоса и звуки, активно двигается и тренирует дыхательные движения.</p>
-        <button class="development-link" type="button" data-action="baby-weeks"><svg class="book-icon" aria-hidden="true" viewBox="0 0 24 24"><path d="M12 5C9 2 5 3 3 4v16c3-1 6-1 9 1 3-2 6-2 9-1V4c-2-1-6-2-9 1Zm0 0v16"/></svg><span>Подробнее о развитии по неделям</span><svg class="chevron" aria-hidden="true"><use href="#i-chevron"/></svg></button>
+        <a class="development-link" href="journey.html?week=27"><svg class="book-icon" aria-hidden="true" viewBox="0 0 24 24"><path d="M12 5C9 2 5 3 3 4v16c3-1 6-1 9 1 3-2 6-2 9-1V4c-2-1-6-2-9 1Zm0 0v16"/></svg><span>Материалы этой недели</span><svg class="chevron" aria-hidden="true"><use href="#i-chevron"/></svg></a>
       </section>
 
       <section class="baby-panel baby-movements" aria-labelledby="movements-title">
@@ -86,6 +89,8 @@
     </div></nav>
   </div>
   <svg class="svg-definitions" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><symbol id="i-chevron" viewBox="0 0 16 24"><path d="m5 5 6 7-6 7" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></symbol></svg>
+  <script src="baby-weeks-data.js?v=20261005-baby-weeks"></script>
+  <script src="baby-week.js?v=20261005-baby-weeks"></script>
   <script src="app.js"></script>
 </body>
 </html>

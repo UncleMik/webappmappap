@@ -102,3 +102,8 @@ a.content-open { display: block; }
 @media (max-width: 350px) {
   .pregnancy-meta { margin-right: 1.6rem; }
 }
+
+/* Supplied weekly baby text must fit fully beside the illustration. */
+.baby-card { height:auto; min-height:18.8rem; }
+.baby-card .feature-copy { max-width:calc(100% - 15rem); }
+.baby-measurement-caption { margin-top:.6rem; color:#69778f; font-size:1.1rem; line-height:1.5rem; }
