@@ -17,10 +17,6 @@
     return button;
   });
   const weeklySections = ['weekly-articles-title', 'videos-title'].map(id => document.getElementById(id).closest('section'));
-  const empty = document.createElement('p');
-  empty.className = 'journey-week-empty';
-  empty.textContent = 'Материалы этой недели пока не добавлены.';
-  heading.after(empty);
   const normalize = value => Number.isInteger(Number(value)) && Number(value) >= 1 && Number(value) <= 42 ? Number(value) : currentWeek;
   const fromUrl = () => normalize(new URLSearchParams(location.search).get('week'));
   let settleTimer, animationFrame, scrollingTo = null;
@@ -61,8 +57,6 @@
     window.renderMomWeekCard(week);
     window.renderPregnancyWeekArticles(weeklySections[0].querySelector('.article-list'), week);
     weeklySections[0].querySelector('p').textContent = '3 статьи и материал о состоянии мамы';
-    empty.textContent = 'Видео этой недели пока не добавлены.';
-    empty.hidden = week === currentWeek;
   }
   function select(week, smooth = true) {
     week = normalize(week);
