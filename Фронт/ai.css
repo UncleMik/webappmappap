@@ -8,10 +8,10 @@
 .history-button { display: flex; align-items: center; gap: 6px; color: #7669ad; background: none; min-height: 44px; font-size: 13px; }
 .history-button svg { width: 24px; height: 24px; }
 .ai-main { padding: 0 16px; display: flex; flex-direction: column; flex: 1; min-height: 0; overflow: hidden; }
-.assistant-card { display: flex; align-items: center; gap: 16px; margin-inline: 6px; padding: 7px 10px; min-height: 104px; background: #f6f0ff; border-radius: 18px; }
-.assistant-art { flex-shrink: 0; width: 90px; height: 90px; object-fit: cover; border-radius: 14px; }
-.assistant-card h2 { font-size: 14px; line-height: 20px; letter-spacing: -.2px; margin-bottom: 3px; }
-.assistant-card p { display: flex; align-items: center; gap: 8px; font-size: 12px; line-height: 22px; color: #393456; }
+.assistant-card { display: flex; align-items: center; gap: 10px; margin-inline: 6px; padding: 4px 10px; min-height: 80px; background: #f6f0ff; border-radius: 18px; }
+.assistant-art { flex-shrink: 0; width: 64px; height: 64px; object-fit: cover; border-radius: 14px; }
+.assistant-card h2 { font-size: 14px; line-height: 18px; letter-spacing: -.2px; margin-bottom: 0; }
+.assistant-card p { display: flex; align-items: center; gap: 6px; font-size: 12px; line-height: 18px; color: #393456; }
 .assistant-card p svg { width: 17px; height: 17px; color: #9863ff; }
 .purple-heart { color: #9c59f6; font-size: 20px; }
 .pink-heart { color: #da91e8; font-size: 19px; }
@@ -54,6 +54,6 @@
 .dialog-heading h2 { font-size: 20px; }
 #history-close { width: 44px; height: 44px; text-align: center; font-size: 28px; background: #f6f0ff; border-radius: 50%; }
 #return-chat { padding: 12px 18px; margin-top: 18px; background: #f6f0ff; color: #7542c6; border-radius: 22px; }
-@media (max-width: 374px) { .ai-header { padding-left: 14px; padding-right: 14px; }.ai-header h1 { font-size: 17px; }.history-button { font-size: 11px; gap: 3px; }.ai-main { padding: 0 12px; }.assistant-card { gap: 8px; padding: 7px; }.assistant-card h2 { font-size: 12px; }.bubble { font-size: 13px; }.message { gap: 8px; }.suggestions { flex-wrap: wrap; }.suggestions button { flex-basis: 45%; } }
+@media (max-width: 374px) { .ai-header { padding-left: 14px; padding-right: 14px; }.ai-header h1 { font-size: 17px; }.history-button { font-size: 11px; gap: 3px; }.ai-main { padding: 0 12px; }.assistant-card { gap: 8px; padding: 4px 7px; }.assistant-card h2 { font-size: 12px; }.bubble { font-size: 13px; }.message { gap: 8px; }.suggestions { flex-wrap: wrap; }.suggestions button { flex-basis: 45%; } }
 
 @media (max-height: 500px) { .assistant-art { width: 48px; height: 48px; border-radius: 10px; }.assistant-card { min-height: 0; }.assistant-card p { display: none; }.suggestions { flex-wrap: nowrap; overflow-x: auto; }.suggestions button { flex: 1 0 auto; padding: 0 8px; }.ai-header { padding-top: env(safe-area-inset-top, 0px); }.chat-controls { padding-top: 4px; } }
