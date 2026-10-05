@@ -10,7 +10,7 @@
   <link rel="stylesheet" href="styles.css?v=20260928-summary">
   <link rel="stylesheet" href="article.css">
   <link rel="stylesheet" href="today.css?v=20261002">
-  <link rel="stylesheet" href="calendar-sheet.css">
+  <link rel="stylesheet" href="calendar-sheet.css?v=20261005-reference">
 </head>
 <body>
   <div class="app" id="today">
@@ -125,17 +125,12 @@
           <button type="button" role="tab" id="trimester-3" aria-selected="false" aria-controls="calendar-weeks" tabindex="-1" data-trimester="3"><span>III триместр</span><small>28–40 недели</small></button>
         </div>
         <div class="calendar-weeks" id="calendar-weeks" role="tabpanel" aria-labelledby="trimester-2"></div>
-        <section class="calendar-progress-section" aria-labelledby="calendar-progress-title">
-          <div class="calendar-section-heading"><h3 id="calendar-progress-title">Мой прогресс</h3></div>
-          <div class="calendar-progress-summary"><span>26 из 40 недель</span><strong>65%</strong></div>
-          <progress class="calendar-progress-bar" value="26" max="40" aria-labelledby="calendar-progress-title">65%</progress>
-        </section>
-        <div class="calendar-encouragement"><svg aria-hidden="true"><use href="#j-sprout"/></svg><p>Каждая неделя — это важный шаг<br>к вашей встрече с малышом <span>💜</span></p></div>
-        <button class="calendar-go-current" type="button">Перейти к текущей неделе</button>
+        <section class="calendar-important" aria-labelledby="calendar-important-title"><h3 id="calendar-important-title">Что важно на этой неделе</h3><div class="calendar-important-content" aria-live="polite"></div></section>
       </div>
+      <footer class="calendar-footer"><button class="calendar-go-current" type="button">Перейти к материалам недели</button></footer>
     </div>
   </dialog>
   <script src="app.js"></script>
-  <script src="calendar-sheet.js"></script>
+  <script src="calendar-sheet.js?v=20261005-reference"></script>
 </body>
 </html>

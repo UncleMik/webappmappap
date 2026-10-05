@@ -3,7 +3,27 @@
   if (!dialog) return;
 
   const currentWeek = 27;
-  const completedWeeks = 26;
+  // Demonstration events supplied in the user's calendar reference.
+  const events = {
+    8: [{ type: 'visit', title: 'Приём' }, { type: 'tests', title: 'Анализы' }],
+    11: [
+      { type: 'scan', title: 'УЗИ', description: 'I скрининг. Период: 11–13 недель 6 дней.' },
+      { type: 'tests', title: 'Анализы', description: 'Биохимическая часть I скрининга.' }
+    ],
+    18: [
+      { type: 'scan', title: 'УЗИ', description: 'II скрининг. Период: 18–20 недель 6 дней.' },
+      { type: 'tests', title: 'Анализы', description: 'При Rh-отрицательной крови: контроль антител. Период: 18–20 недель.' }
+    ],
+    20: [{ type: 'study', title: 'Подготовка' }],
+    24: [{ type: 'tests', title: 'Анализы' }]
+  };
+  const icons = {
+    visit: '<rect x="5" y="6" width="14" height="15" rx="2"/><path d="M8 3v6m8-6v6M5 11h14"/>',
+    tests: '<path d="M9 3h6M10 3v7L5 19a1 1 0 0 0 1 2h12a1 1 0 0 0 1-2l-5-9V3M8 15h8"/>',
+    scan: '<path d="m7 4-4 14q9 6 18 0L17 4q-5 3-10 0Z"/><circle cx="12" cy="13" r="3"/>',
+    study: '<path d="m2 8 10-5 10 5-10 5-10-5ZM6 10v7q6 5 12 0v-7M22 8v9"/>'
+  };
+  const icon = type => `<svg viewBox="0 0 24 24" aria-hidden="true">${icons[type]}</svg>`;
   const grid = dialog.querySelector('.calendar-weeks');
   const tabs = [...dialog.querySelectorAll('[data-trimester]')];
   const dragZone = dialog.querySelector('.calendar-drag-zone');
@@ -18,6 +38,15 @@
   let closeTimer = null;
   let afterClose = null;
 
+  function renderImportant() {
+    const content = dialog.querySelector('.calendar-important-content');
+    const items = events[selectedWeek] || [];
+    content.innerHTML = items.length ? items.map(item => `<article class="calendar-event"><span class="calendar-event-icon ${item.type}">${icon(item.type)}</span><div><h4>${item.title}</h4>${item.description ? `<p>${item.description}</p>` : ''}</div></article>`).join('') : '<p class="calendar-empty">События этой недели пока не добавлены.</p>';
+    if (selectedWeek === 11) content.insertAdjacentHTML('beforeend', '<p class="calendar-note"><span aria-hidden="true">i</span>Постановку на учёт и стартовые анализы желательно пройти до 10–12 недель.</p>');
+    if (selectedWeek === 18) content.insertAdjacentHTML('beforeend', '<p class="calendar-note"><span aria-hidden="true">i</span>Подготовку к родам удобно начинать с 20–24 недель.</p>');
+    dialog.querySelector('.calendar-go-current').setAttribute('aria-label', `Перейти к материалам ${selectedWeek}-й недели`);
+  }
+
   triggers.forEach(button => {
     button.setAttribute('aria-haspopup', 'dialog');
     button.setAttribute('aria-controls', dialog.id);
@@ -28,6 +57,7 @@
   function renderWeeks(trimester) {
     const ranges = { 1: [1, 13], 2: [14, 27], 3: [28, 40] };
     const [start, end] = ranges[trimester];
+    if (selectedWeek < start || selectedWeek > end) selectedWeek = start;
     tabs.forEach(tab => {
       const active = Number(tab.dataset.trimester) === trimester;
       tab.setAttribute('aria-selected', String(active));
@@ -41,11 +71,12 @@
       button.className = 'calendar-week';
       button.dataset.week = week;
       button.setAttribute('aria-pressed', String(week === selectedWeek));
-      button.setAttribute('aria-label', `${week}-я неделя${week <= completedWeeks ? ', пройдена' : week === currentWeek ? ', сейчас' : ''}`);
+      button.setAttribute('aria-label', `${week}-я неделя${week === currentWeek ? ', сейчас' : ''}${events[week] ? ', ' + events[week].map(item => item.title).join(', ') : ''}`);
       if (week === currentWeek) button.setAttribute('aria-current', 'step');
-      button.innerHTML = `<strong>${week}</strong><span>неделя</span>${week === currentWeek ? '<span class="week-now">Сейчас</span>' : ''}${week <= completedWeeks ? '<svg class="calendar-week-check" aria-hidden="true"><use href="#j-check"/></svg>' : ''}`;
+      button.innerHTML = `<strong>${week}</strong><span>неделя</span>${events[week] ? `<span class="calendar-week-events">${events[week].map(item => `<span class="calendar-week-event ${item.type}">${icon(item.type)}<span>${item.title}</span></span>`).join('')}</span>` : ''}${week === currentWeek ? '<span class="week-now">Сейчас</span>' : ''}`;
       grid.append(button);
     }
+    renderImportant();
   }
 
   tabs.forEach((tab, index) => {
@@ -68,7 +99,7 @@
     if (!button) return;
     selectedWeek = Number(button.dataset.week);
     grid.querySelectorAll('[data-week]').forEach(week => week.setAttribute('aria-pressed', String(week === button)));
-    closeCalendar(() => openWeek(selectedWeek));
+    renderImportant();
   });
 
   function openWeek(week) {
@@ -145,7 +176,7 @@
   });
 
   dialog.querySelector('.calendar-go-current').addEventListener('click', () => closeCalendar(() => {
-    openWeek(currentWeek);
+    openWeek(selectedWeek);
     const current = document.querySelector('.journey-week');
     if (!current) return;
     current.setAttribute('tabindex', '-1');

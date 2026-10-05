@@ -9,7 +9,7 @@
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='10' fill='%238052ff'/%3E%3Cpath d='M16 24 7 15C1 8 12 3 16 10 20 3 31 8 25 15Z' fill='white'/%3E%3C/svg%3E">
   <link rel="stylesheet" href="styles.css">
   <link rel="stylesheet" href="journey.css?v=20261005-path">
-  <link rel="stylesheet" href="calendar-sheet.css">
+  <link rel="stylesheet" href="calendar-sheet.css?v=20261005-reference">
 </head>
 <body>
   <div class="app journey-page" id="journey">
@@ -87,19 +87,14 @@
           <button type="button" role="tab" id="trimester-3" aria-selected="false" aria-controls="calendar-weeks" tabindex="-1" data-trimester="3"><span>III триместр</span><small>28–40 недели</small></button>
         </div>
         <div class="calendar-weeks" id="calendar-weeks" role="tabpanel" aria-labelledby="trimester-2"></div>
-        <section class="calendar-progress-section" aria-labelledby="calendar-progress-title">
-          <div class="calendar-section-heading"><h3 id="calendar-progress-title">Мой прогресс</h3></div>
-          <div class="calendar-progress-summary"><span>26 из 40 недель</span><strong>65%</strong></div>
-          <progress class="calendar-progress-bar" value="26" max="40" aria-labelledby="calendar-progress-title">65%</progress>
-        </section>
-        <div class="calendar-encouragement"><svg aria-hidden="true"><use href="#j-sprout"/></svg><p>Каждая неделя — это важный шаг<br>к вашей встрече с малышом <span>💜</span></p></div>
-        <button class="calendar-go-current" type="button">Перейти к текущей неделе</button>
+        <section class="calendar-important" aria-labelledby="calendar-important-title"><h3 id="calendar-important-title">Что важно на этой неделе</h3><div class="calendar-important-content" aria-live="polite"></div></section>
       </div>
+      <footer class="calendar-footer"><button class="calendar-go-current" type="button">Перейти к материалам недели</button></footer>
     </div>
   </dialog>
   <script src="course-access.js"></script>
   <script src="app.js"></script>
   <script src="journey-week.js?v=20261005-path"></script>
-  <script src="calendar-sheet.js"></script>
+  <script src="calendar-sheet.js?v=20261005-reference"></script>
 </body>
 </html>
