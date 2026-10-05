@@ -9,7 +9,11 @@
   const parentPanel = window.frameElement?.dataset.appPanel;
   if (parentPanel) {
     document.documentElement.classList.add('embedded-section');
-    const notify = (type, url = location.href) => parent.postMessage({ appSection: true, type, url, title: document.title }, location.origin);
+    const notify = (type, url = location.href) => {
+      const address = new URL(url);
+      address.searchParams.delete('_app');
+      parent.postMessage({ appSection: true, type, url: address.href, title: document.title }, location.origin);
+    };
     window.navigateApp = destination => notify('navigate', new URL(destination, location.href).href);
     const replace = history.replaceState.bind(history);
     // Only the outer application owns browser history entries.
@@ -94,7 +98,9 @@
     }, { once: true });
     });
     panels.set(file, panel);
-    frame.src = url.href;
+    const source = new URL(url);
+    source.searchParams.set('_app', '20261005-performance5');
+    frame.src = source.href;
     document.body.append(frame);
     return panel;
   }
