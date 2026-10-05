@@ -17,7 +17,7 @@
 .pink-heart { color: #da91e8; font-size: 19px; }
 .conversation { display: flex; flex-direction: column; gap: 10px; padding: 15px 0 8px; flex: 1; min-height: 0; overflow-y: auto; overscroll-behavior-y: contain; }
 .message { flex-shrink: 0; display: flex; gap: 12px; align-items: flex-start; }
-.bot-avatar { width: 40px; height: 43px; flex-shrink: 0; border-radius: 50%; background: url('assets/ai-reference.png') -79px -209px / 540px 960px no-repeat; }
+.bot-avatar { width: 40px; height: 43px; flex-shrink: 0; border-radius: 50%; background: url('assets/doctor-lara.jpg') center 30% / cover no-repeat; }
 .message-content { max-width: min(68%, 480px); min-width: 0; }
 .bubble { background: #f6f0ff; border-radius: 17px; padding: 11px 14px; color: #393456; font-size: 14px; line-height: 1.28; overflow-wrap: anywhere; }
 .bubble p + p { margin-top: 9px; }
