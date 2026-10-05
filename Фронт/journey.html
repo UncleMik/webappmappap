@@ -8,7 +8,7 @@
   <title>Мой путь</title>
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='10' fill='%238052ff'/%3E%3Cpath d='M16 24 7 15C1 8 12 3 16 10 20 3 31 8 25 15Z' fill='white'/%3E%3C/svg%3E">
   <link rel="stylesheet" href="styles.css">
-  <link rel="stylesheet" href="journey.css?v=20261005-path">
+  <link rel="stylesheet" href="journey.css?v=20261005-wheel-club">
   <link rel="stylesheet" href="calendar-sheet.css?v=20261005-reference">
 </head>
 <body>
@@ -18,12 +18,10 @@
       <section class="journey-week" aria-label="Выбор недели беременности">
         <div class="week-selector">
           <button class="round-arrow week-prev" type="button" aria-label="Предыдущая неделя">‹</button>
-          <button class="week-neighbor" type="button" data-week-offset="-1">26 неделя</button>
-          <button class="week-selected" type="button" data-action="calendar" aria-label="27 неделя. Открыть календарь">27 неделя</button>
-          <button class="week-neighbor" type="button" data-week-offset="1">28 неделя</button>
+          <div class="week-wheel" aria-label="Недели беременности"></div>
           <button class="round-arrow week-next" type="button" aria-label="Следующая неделя">›</button>
         </div>
-        <div class="week-dots" aria-hidden="true"><span></span><span></span><span></span></div>
+        <div class="week-dots" role="img" aria-label="15–27 недели"><span></span><span class="active"></span><span></span></div>
       </section>
 
       <section class="journey-section" aria-labelledby="weekly-articles-title">
@@ -37,11 +35,11 @@
 
       <section class="journey-section" aria-labelledby="courses-title">
         <div class="section-heading"><h2 id="courses-title">Курсы для вас</h2><a class="text-link" href="courses.html">Все курсы<svg class="chevron" aria-hidden="true"><use href="#i-chevron"/></svg></a></div><p class="journey-subtitle">Глубокая программа с поддержкой специалистов</p>
-        <div class="journey-three-grid course-list">
+        <div class="content-carousel"><button class="round-arrow carousel-prev" type="button" aria-label="Предыдущие курсы">‹</button><div class="journey-three-grid course-list">
           <article class="journey-content-card course-card"><span class="course-photo journey-photo" style="--x:282;--y:686;--w:123;--h:45" aria-hidden="true"><svg class="course-lock-icon"><use href="#j-lock"/></svg></span><div class="course-copy"><h3>Подготовка к родам</h3><p>Пошаговая программа<br>с сопровождением</p></div><a class="journey-primary" href="courses.html?course=birth" aria-label="Открыть доступ к курсу Подготовка к родам">Открыть доступ</a></article>
           <article class="journey-content-card course-card"><span class="course-photo journey-photo" style="--x:412;--y:686;--w:122;--h:45" aria-hidden="true"><svg class="course-lock-icon"><use href="#j-lock"/></svg></span><div class="course-copy"><h3>Здоровая спина<br>во время беременности</h3><p>Комплексная программа<br>упражнений</p></div><a class="journey-primary" href="courses.html?course=back" aria-label="Открыть доступ к курсу Здоровая спина">Открыть доступ</a></article>
           <article class="journey-content-card course-card"><span class="course-photo journey-photo" style="--x:541;--y:686;--w:122;--h:45" aria-hidden="true"><svg class="course-lock-icon"><use href="#j-lock"/></svg></span><div class="course-copy"><h3>Эмоциональная<br>уверенность</h3><p>Техники для спокойствия<br>и поддержки</p></div><a class="journey-primary" href="courses.html?course=confidence" aria-label="Открыть доступ к курсу Эмоциональная уверенность">Открыть доступ</a></article>
-        </div>
+        </div><button class="round-arrow carousel-next" type="button" aria-label="Следующие курсы">›</button></div>
       </section>
 
       <section class="journey-section" aria-labelledby="videos-title"><h2 id="videos-title">Полезные видео на эту неделю</h2><p class="journey-subtitle">3 видео, которые помогут сейчас</p>
@@ -94,7 +92,7 @@
   </dialog>
   <script src="course-access.js"></script>
   <script src="app.js"></script>
-  <script src="journey-week.js?v=20261005-path"></script>
-  <script src="calendar-sheet.js?v=20261005-reference"></script>
+  <script src="journey-week.js?v=20261005-wheel-club"></script>
+  <script src="calendar-sheet.js?v=20261005-wheel-club"></script>
 </body>
 </html>

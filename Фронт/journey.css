@@ -6,15 +6,16 @@
 .journey-main { padding: 0 1.6rem 2rem; }
 .journey-page h2 { font-size: 1.55rem; line-height: 1.9rem; letter-spacing: -.035rem; }
 .journey-page h3 { margin: 0; font-size: 1.45rem; line-height: 1.7rem; font-weight: 500; letter-spacing: -.025rem; }
-.week-selector { display: grid; grid-template-columns: 2.8rem 1fr 1.35fr 1fr 2.8rem; gap: .6rem; align-items: center; }
+.week-selector { display: grid; grid-template-columns: 2.8rem minmax(0,1fr) 2.8rem; gap: .6rem; align-items: center; }
 .round-arrow { display: grid; place-items: center; width: 2.8rem; height: 2.8rem; border-radius: 50%; background: white; color: #914aff; font-size: 2.7rem; line-height: 1; box-shadow: 0 .2rem 1rem #8653d51c; text-align: center; }
-.week-neighbor, .week-selected { text-align: center; border-radius: 1.1rem; background: #f6f0ff; white-space: nowrap; }
-.week-neighbor { min-height: 3.3rem; color: #858197; font-size: 1.15rem; }
-.week-selected { min-height: 4.3rem; font-size: 1.6rem; font-weight: 700; border: 1px solid white; box-shadow: 0 .3rem 1.2rem #9876d52b; }
+.week-wheel { display: flex; align-items: center; gap: .6rem; overflow-x: auto; min-width: 0; padding: .8rem calc(50% - 5rem); scroll-snap-type: x mandatory; scrollbar-width: none; overscroll-behavior-x: contain; user-select: none; }
+.week-wheel::-webkit-scrollbar { display: none; }
+.week-option { flex: 0 0 10rem; min-height: 4.3rem; text-align: center; border-radius: 1.1rem; background: #f6f0ff; white-space: nowrap; font-size: 1.35rem; color: #858197; scroll-snap-align: center; transform: perspective(24rem) rotateY(var(--turn,0deg)) scale(var(--scale,.85)); opacity: var(--opacity,.65); }
+.week-option.week-selected { color: var(--ink); font-weight: 700; border: 1px solid white; box-shadow: 0 .3rem 1.2rem #9876d52b; }
 .week-selector button:disabled { opacity: .3; cursor: default; }
 .week-dots { display: flex; justify-content: center; gap: .4rem; margin: .7rem 0 1rem; }
-.week-dots span { width: .6rem; height: .6rem; background: #ddccf8; border-radius: 50%; }
-.week-dots span:first-child { width: .8rem; background: #9450fa; }
+.week-dots span { width: .6rem; height: .6rem; background: #ddccf8; border-radius: 50%; transition: width .25s, background-color .25s, transform .25s; }
+.week-dots span.active { width: 1.4rem; background: #9450fa; transform: scale(1.1); }
 .journey-section { margin-top: 1.3rem; }
 .journey-page .section-heading { display: flex; justify-content: space-between; align-items: center; }
 .journey-page .text-link { font-size: 1.15rem; line-height: 1.5rem; gap: .4rem; }
@@ -36,14 +37,14 @@
 .carousel-prev, .carousel-next { position: absolute; top: 4.7rem; z-index: 1; }
 .carousel-prev { left: -1.3rem; }
 .carousel-next { right: -1.3rem; }
-.course-card { flex-basis: 34.5%; min-height: 15.5rem; }
-.course-photo { aspect-ratio: 1.95; }
+.course-card { min-height: 16.3rem; }
+.course-photo { aspect-ratio: 123 / 54; }
 .course-lock-icon { position: absolute; width: 2.4rem; height: 2.8rem; bottom: .7rem; left: 50%; transform: translateX(-50%); }
-.course-copy { padding: .6rem .6rem .5rem; }
-.journey-page .course-copy h3 { font-size: 1.05rem; line-height: 1.25rem; }
-.course-copy p { color: var(--muted); margin-top: .4rem; font-size: 1rem; line-height: 1.25rem; }
+.course-copy { padding: .7rem 1rem; }
+.journey-page .course-copy h3 { font-size: 1.45rem; line-height: 1.7rem; }
+.course-copy p { color: var(--muted); margin-top: .4rem; font-size: 1.2rem; line-height: 1.5rem; }
 .journey-primary { text-decoration: none; display: flex; align-items: center; justify-content: center; min-height: 2.8rem; border-radius: .8rem; color: white; background: linear-gradient(180deg,#af79ff,#8240f4); font-size: 1.05rem; line-height: 1.4rem; }
-.course-card > .journey-primary { margin: auto .6rem .6rem; padding: .5rem .2rem; white-space: nowrap; }
+.course-card > .journey-primary { margin: auto 1rem .7rem; padding: .6rem .4rem; font-size: 1.3rem; white-space: nowrap; }
 .video-card { min-height: 14rem; text-align: left; }
 .video-photo { aspect-ratio: 2.3; }
 .video-card > h3 { margin: .6rem 1rem; font-size: 1.2rem; line-height: 1.4rem; }
@@ -55,4 +56,4 @@
 .photo-duration { position: absolute; bottom: .6rem; right: .6rem; border-radius: .4rem; background: #424640b8; color: white; padding: .3rem .6rem; font-size: 1.1rem; line-height: 1.3rem; }
 .journey-page [hidden] { display: none !important; }
 .journey-week-empty { margin: 2rem 0; padding: 2rem; background: #f7f3ff; border-radius: 1.4rem; color: var(--muted); font-size: 1.5rem; line-height: 1.5; }
-@media (prefers-reduced-motion: reduce) { .article-list, .video-list { scroll-behavior: auto; } }
+@media (prefers-reduced-motion: reduce) { .article-list, .video-list, .course-list, .week-wheel { scroll-behavior: auto; } .week-dots span { transition: none; } }

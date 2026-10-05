@@ -51,7 +51,11 @@
     button.setAttribute('aria-haspopup', 'dialog');
     button.setAttribute('aria-controls', dialog.id);
     button.setAttribute('aria-expanded', 'false');
-    button.addEventListener('click', () => openCalendar(button));
+    button.addEventListener('click', () => {
+      // A wheel neighbor selects a week; only the centered week opens the calendar.
+      if (button.classList.contains('week-option') && Number(button.dataset.week) !== Number(document.querySelector('#journey')?.dataset.week)) return;
+      openCalendar(button);
+    });
   });
 
   function renderWeeks(trimester) {

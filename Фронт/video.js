@@ -26,10 +26,10 @@
     try { localStorage.setItem(favoriteKey, String(value)); } catch { /* Keep the current session usable. */ }
   });
 
-  const weeklyIds = ['contractions-lesson', 'birth-breathing-video', 'back-relief-video'];
+  const weeklyIds = ['contractions-lesson', 'back-relief-video', 'birth-breathing-video'];
   const weeklyIndex = weeklyIds.indexOf(id);
   const isWeekly = params.get('from') === 'journey' && weeklyIndex !== -1;
-  const chapters = isWeekly ? weeklyIds.map(videoId => [titles[videoId], 'Видео на эту неделю. Смотрите в своём темпе и переключайтесь между тремя видео стрелками или через список ниже.']) : [
+  const chapters = isWeekly ? weeklyIds.map(videoId => [titles[videoId], 'Видео на эту неделю. После просмотра откроется следующее видео — включите его, когда будете готовы. Можно переключаться стрелками или через список ниже.']) : [
     ['Устройтесь удобно', 'Выберите удобное место и включите видео. Можно смотреть в своём темпе и переключаться между разделами.'],
     ['В своём темпе', 'Второй раздел демонстрационного видео. Поставьте просмотр на паузу в любой момент.'],
     ['Продолжим вместе', 'Вы в середине просмотра. Полоска прогресса поможет вернуться к любому моменту.'],
@@ -52,7 +52,7 @@
   const next = document.querySelector('#video-next');
   const cover = document.querySelector('.video-cover');
   const status = document.querySelector('#player-status');
-  let player, ready = false, started = false, failed = false, current = 0, duration = 0, pendingChapter = isWeekly ? weeklyIndex : 0, timer;
+  let player, ready = false, started = false, failed = false, current = 0, duration = 0, pendingChapter = isWeekly ? weeklyIndex : 0, timer, endedHandled = false;
   const time = seconds => `${Math.floor(seconds / 60)}:${String(Math.floor(seconds % 60)).padStart(2, '0')}`;
   const list = document.querySelector('#chapter-list');
   chapters.forEach(([title], index) => {
@@ -161,7 +161,23 @@
         },
         onStateChange(event) {
           setPlaying(event.data === 1);
-          if (event.data === 0) { updateTimeline(duration); renderChapter(chapters.length - 1); }
+          if (event.data === 1) {
+            endedHandled = false;
+            status.hidden = true;
+          }
+          if (event.data === 0 && !endedHandled) {
+            endedHandled = true;
+            updateTimeline(duration);
+            if (isWeekly && weeklyIndex < weeklyIds.length - 1) {
+              selectChapter(weeklyIndex + 1);
+            } else {
+              renderChapter(chapters.length - 1);
+              if (isWeekly) {
+                status.textContent = 'Все видео этой недели завершены. Можно вернуться к материалам недели или посмотреть видео ещё раз.';
+                status.hidden = false;
+              }
+            }
+          }
         },
         onError: showError
       }
