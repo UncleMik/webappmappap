@@ -60,6 +60,7 @@
     weeklySections[1].hidden = week !== currentWeek;
     weeklySections[0].querySelectorAll('.journey-content-card').forEach((card, index) => { card.hidden = index !== 0 && week !== currentWeek; });
     window.renderMomWeekCard(week);
+    weeklySections[0].querySelector('p').textContent = week === currentWeek ? '3 статьи, которые помогут сейчас' : 'Состояние мамы на этой неделе';
     empty.textContent = 'Другие материалы этой недели пока не добавлены.';
     empty.hidden = week === currentWeek;
   }
