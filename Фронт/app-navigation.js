@@ -82,8 +82,8 @@
       } catch { resolve(false); }
     }, { once: true }));
     panels.set(file, panel);
-    document.body.append(frame);
     frame.src = url.href;
+    document.body.append(frame);
     return panel;
   }
   async function navigate(url, push = true, restoreTab = false) {
