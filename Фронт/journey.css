@@ -45,10 +45,10 @@
 .course-copy p { color: var(--muted); margin-top: .4rem; font-size: 1.2rem; line-height: 1.5rem; }
 .journey-primary { text-decoration: none; display: flex; align-items: center; justify-content: center; min-height: 2.8rem; border-radius: .8rem; color: white; background: linear-gradient(180deg,#af79ff,#8240f4); font-size: 1.05rem; line-height: 1.4rem; }
 .course-card > .journey-primary { margin: auto 1rem .7rem; padding: .6rem .4rem; font-size: 1.3rem; white-space: nowrap; }
-.video-card { min-height: 14rem; text-align: left; }
-.video-photo { aspect-ratio: 2.3; }
-.video-card > h3 { margin: .6rem 1rem; font-size: 1.2rem; line-height: 1.4rem; }
-.video-card > .content-type { margin: auto 1rem .6rem; }
+.video-card { min-height: 16.3rem; text-align: left; }
+.video-photo { aspect-ratio: 123 / 54; }
+.video-card > h3 { margin: .7rem 1rem 0; font-size: 1.45rem; line-height: 1.7rem; }
+.video-card > .content-type { margin: auto 1rem .7rem; }
 .video-type { color: #23ba9f; background: #e8fbf5; }
 .video-type svg { width: 1.5rem; height: 1.2rem; }
 .small-play { position: absolute; bottom: .7rem; left: .8rem; width: 3.2rem; height: 3.2rem; background: white; border-radius: 50%; display: grid; place-items: center; color: #8999b1; }
