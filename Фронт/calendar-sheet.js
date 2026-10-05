@@ -59,7 +59,7 @@
   });
 
   function renderWeeks(trimester) {
-    const ranges = { 1: [1, 13], 2: [14, 27], 3: [28, 40] };
+    const ranges = { 1: [1, 13], 2: [14, 27], 3: [28, 42] };
     const [start, end] = ranges[trimester];
     if (selectedWeek < start || selectedWeek > end) selectedWeek = start;
     tabs.forEach(tab => {

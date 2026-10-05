@@ -6,7 +6,7 @@
   const wheel = heading.querySelector('.week-wheel');
   const dots = heading.querySelector('.week-dots');
   const reducedMotion = () => matchMedia('(prefers-reduced-motion: reduce)').matches;
-  const options = Array.from({ length: 40 }, (_, index) => {
+  const options = Array.from({ length: 42 }, (_, index) => {
     const button = document.createElement('button');
     button.type = 'button';
     button.className = 'week-option';
@@ -21,7 +21,7 @@
   empty.className = 'journey-week-empty';
   empty.textContent = 'Материалы этой недели пока не добавлены.';
   heading.after(empty);
-  const normalize = value => Number.isInteger(Number(value)) && Number(value) >= 1 && Number(value) <= 40 ? Number(value) : currentWeek;
+  const normalize = value => Number.isInteger(Number(value)) && Number(value) >= 1 && Number(value) <= 42 ? Number(value) : currentWeek;
   const fromUrl = () => normalize(new URLSearchParams(location.search).get('week'));
   let settleTimer, animationFrame, scrollingTo = null;
   function paintWheel() {
@@ -52,10 +52,10 @@
       button.setAttribute('aria-label', selected ? `${week} неделя. Открыть календарь` : `${button.dataset.week} неделя`);
     });
     heading.querySelector('.week-prev').disabled = week === 1;
-    heading.querySelector('.week-next').disabled = week === 40;
-    const stage = week <= 14 ? 0 : week <= 27 ? 1 : 2;
+    heading.querySelector('.week-next').disabled = week === 42;
+    const stage = week <= 14 ? 0 : week <= 28 ? 1 : 2;
     [...dots.children].forEach((dot, index) => dot.classList.toggle('active', index === stage));
-    dots.setAttribute('aria-label', ['1–14 недели', '15–27 недели', '28–40 недели'][stage]);
+    dots.setAttribute('aria-label', ['1–14 недели', '15–28 недели', '29–42 недели'][stage]);
     weeklySections[0].hidden = false;
     weeklySections[1].hidden = week !== currentWeek;
     weeklySections[0].querySelectorAll('.journey-content-card').forEach((card, index) => { card.hidden = index !== 0 && week !== currentWeek; });
@@ -87,7 +87,7 @@
   wheel.addEventListener('keydown', event => {
     if (!['ArrowLeft', 'ArrowRight', 'Home', 'End'].includes(event.key)) return;
     event.preventDefault();
-    const week = event.key === 'Home' ? 1 : event.key === 'End' ? 40 : Math.max(1, Math.min(40, Number(page.dataset.week) + (event.key === 'ArrowRight' ? 1 : -1)));
+    const week = event.key === 'Home' ? 1 : event.key === 'End' ? 42 : Math.max(1, Math.min(42, Number(page.dataset.week) + (event.key === 'ArrowRight' ? 1 : -1)));
     select(week);
     options[week - 1].focus({ preventScroll: true });
   });
