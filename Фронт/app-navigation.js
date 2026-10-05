@@ -4,6 +4,7 @@
     ['index.html', 'Сегодня'], ['journey.html', 'Мой путь'],
     ['ai.html', 'AI врач'], ['club.html', 'Клуб'], ['profile.html', 'Профиль']
   ]);
+  const version = new URL(document.currentScript.src).searchParams.get('v') || '1';
   const fileOf = url => url.pathname.split('/').pop() || 'index.html';
   const ordinaryClick = event => event.button === 0 && !event.metaKey && !event.ctrlKey && !event.shiftKey && !event.altKey;
   const parentPanel = window.frameElement?.dataset.appPanel;
@@ -99,7 +100,7 @@
     });
     panels.set(file, panel);
     const source = new URL(url);
-    source.searchParams.set('_app', '20261005-performance5');
+    source.searchParams.set('_app', version);
     frame.src = source.href;
     document.body.append(frame);
     return panel;
@@ -107,6 +108,7 @@
   async function navigate(url, push = true, restoreTab = false) {
     const file = fileOf(url);
     if (!sections.has(file) || url.origin !== location.origin) { location.href = url.href; return; }
+    url.searchParams.set('v', version);
     if (file === activeFile && push && restoreTab) return;
     const request = ++serial;
     const old = panels.get(activeFile);
