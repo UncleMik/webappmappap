@@ -5,7 +5,7 @@
 .profile-header h1 { font-size:2.6rem; line-height:3.2rem; letter-spacing:-.06rem; }
 .profile-page svg:not(.nav-icon):not(.svg-definitions) { width:2.2rem; height:2.2rem; fill:none; stroke:currentColor; stroke-width:1.8; stroke-linecap:round; stroke-linejoin:round; }
 .settings-button { display:grid; place-items:center; width:3.2rem; height:3.2rem; background:none; }
-.profile-page .settings-button svg { width:26px; height:26px; display:block; stroke-width:1.7; }
+.profile-page .profile-header .settings-button svg { width:26px; height:26px; display:block; stroke-width:1.7; }
 .profile-main { padding:0 1.6rem .6rem; }
 .profile-card,.completion-card,.profile-list,.learning-card { border:1px solid #eaeaf3; border-radius:1.3rem; background:#ffffffb8; }
 .profile-card { padding:.8rem; }
