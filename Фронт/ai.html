@@ -7,7 +7,7 @@
   <title>AI врач — ваш личный ассистент</title>
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='10' fill='%238052ff'/%3E%3Cpath d='M16 24 7 15C1 8 12 3 16 10 20 3 31 8 25 15Z' fill='white'/%3E%3C/svg%3E">
   <link rel="stylesheet" href="styles.css?v=20261005-performance">
-  <link rel="stylesheet" href="ai.css?v=20261005-performance">
+  <link rel="stylesheet" href="ai.css?v=20261006-send-plane">
   <script src="ai.js" defer></script>
   <link rel="stylesheet" href="app-navigation.css?v=20261005-performance3">
 </head>
@@ -21,7 +21,7 @@
     <symbol id="bell" viewBox="0 0 24 24"><path d="M5 9a7 7 0 0 1 14 0c0 8 3 7 3 9H2c0-2 3-1 3-9ZM9 21h6M12 1v2"/></symbol>
     <symbol id="chat" viewBox="0 0 24 24"><path d="M21 11a9 9 0 1 0-17 4L2 22l7-2a9 9 0 0 0 12-9Z"/></symbol>
     <symbol id="clip" viewBox="0 0 24 24"><path d="m9 16 8-8a3 3 0 0 0-4-4L4 13a5 5 0 0 0 7 7l10-10M7 14l8-8"/></symbol>
-    <symbol id="send" viewBox="0 0 24 24"><path d="m3 10 18-7-7 18-4-7-7-4Z"/><path d="m10 14 7-7"/></symbol>
+    <symbol id="send" viewBox="0 0 24 24"><path d="M21.6 2.4a1 1 0 0 0-1.05-.23L2.8 9.05a1 1 0 0 0 .03 1.87l6.12 2.2 8.57-6.64-6.64 8.57 2.2 6.12a1 1 0 0 0 1.87.03l6.88-17.75a1 1 0 0 0-.23-1.05Z"/></symbol>
   </defs></svg>
   <div class="app">
     <header class="ai-header"><h1>AI врач — ваш личный ассистент</h1><button id="history-open" class="history-button" type="button"><svg><use href="#clock"/></svg>История</button></header>
@@ -39,7 +39,7 @@
       <section class="chat-controls" aria-label="Написать ассистенту">
         <p class="help-label">Чем могу помочь</p>
         <div class="suggestions"><button type="button" data-prompt="Хочу обсудить симптомы: " class="symptoms"><svg><use href="#symptoms"/></svg>Симптомы</button><button type="button" data-prompt="Помоги найти материалы о " class="materials"><svg><use href="#book"/></svg>Материалы</button><button type="button" data-prompt="Хочу добавить напоминание: " class="reminders"><svg><use href="#bell"/></svg>Напоминания</button><button type="button" data-prompt="Помоги сформулировать вопрос врачу: " class="doctor"><svg><use href="#chat"/></svg>Вопрос врачу</button></div>
-        <form class="composer" id="chat-form"><button type="button" class="attachment-button" id="attachment" aria-label="Прикрепить файл"><svg><use href="#clip"/></svg></button><div class="input-wrap"><label class="visually-hidden" for="chat-input">Ваш вопрос ассистенту</label><input id="chat-input" placeholder="Напишите ваш вопрос…" autocomplete="off" maxlength="2000"><button type="submit" class="send-button" aria-label="Отправить сообщение"><svg><use href="#send"/></svg></button></div></form>
+        <form class="composer" id="chat-form"><button type="button" class="attachment-button" id="attachment" aria-label="Прикрепить файл"><svg><use href="#clip"/></svg></button><div class="input-wrap"><label class="visually-hidden" for="chat-input">Ваш вопрос ассистенту</label><input id="chat-input" placeholder="Напишите ваш вопрос…" autocomplete="off" maxlength="2000"><button type="submit" class="send-button" aria-label="Отправить сообщение"><svg aria-hidden="true"><use href="#send"/></svg></button></div></form>
         <p id="chat-status" role="status" hidden></p>
       </section>
     </main>
