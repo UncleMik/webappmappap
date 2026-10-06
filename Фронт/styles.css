@@ -113,3 +113,6 @@ a.content-open { display: block; }
 
 .mom-card { height: auto; min-height: 15.4rem; }
 .mom-card .feature-copy { max-width: calc(100% - 17.7rem); }
+
+.school-article { height: auto; min-height: 11.2rem; background: #f7f1fa; }
+.school-article .article-title { padding-right: 1.8rem; }

@@ -9,18 +9,30 @@ window.pregnancyArticleList.forEach(article => {
 });
 if (window.articleLibrary) window.articleLibrary.dating = window.pregnancyArticleList[0];
 window.renderPregnancyWeekArticles = (list, week) => {
-  const momCard = list.firstElementChild;
   const cards = window.pregnancyArticleList.filter(article => article.week === week).map(article => {
-    const card = momCard.cloneNode(true);
-    card.hidden = false;
+    const card = document.createElement('article');
+    card.className = 'journey-content-card';
+    card.innerHTML = '<a class="content-open"><h3></h3></a><div class="content-footer"><span class="content-type"><svg aria-hidden="true"><use href="#j-document"/></svg>Статья</span><input class="read-checkbox" type="checkbox"></div>';
     card.querySelector('a').href = `article.html?id=${article.id}&from=journey`;
     card.querySelector('h3').textContent = article.title;
-    card.querySelector('.journey-photo').classList.add('article-cover-placeholder');
     const checkbox = card.querySelector('input');
     window.articleReadState.bindCheckbox(checkbox, article.id);
     checkbox.setAttribute('aria-label', `Отметить статью ${article.title} прочитанной`);
     return card;
   });
-  list.replaceChildren(momCard, ...cards);
+  list.replaceChildren(...cards);
   list.scrollLeft = 0;
 };
+window.renderPregnancyRecommendations = (list, week, from) => {
+  list.replaceChildren(...window.pregnancyArticleList.filter(article => article.week === week).map(article => {
+    const card = document.createElement('a');
+    card.className = 'article-card school-article';
+    card.href = `article.html?id=${article.id}&from=${from}`;
+    card.innerHTML = '<span class="article-meta"><span class="tag">СТАТЬЯ</span><span>·</span><span class="school-reading-time"></span></span><span class="article-title"></span><span class="article-arrow">›</span>';
+    card.querySelector('.school-reading-time').textContent = `≈ ${article.minutes} мин`;
+    card.querySelector('.article-title').textContent = article.title;
+    return card;
+  }));
+};
+const todayArticles = document.querySelector('.today-page .article-grid, #today .article-grid');
+if (todayArticles) window.renderPregnancyRecommendations(todayArticles, 27, 'index');

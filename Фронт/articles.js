@@ -1,7 +1,7 @@
 const list = document.querySelector('.materials-list');
 Object.entries(window.articleLibrary).forEach(([id, article]) => {
   if (id === 'dating') return;
-  if (!article.pregnancy && article.group !== 'motherhood' && id !== 'practice-article') return;
+  if (!article.pregnancy) return;
   const link = document.createElement('a');
   link.className = 'material-link';
   link.href = `article.html?id=${id}&from=articles`;

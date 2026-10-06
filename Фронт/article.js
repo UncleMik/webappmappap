@@ -5,7 +5,7 @@ const requestedWeek = Number(params.get('week'));
 const momWeek = Number.isInteger(requestedWeek) && requestedWeek >= 1 && requestedWeek <= 42 ? requestedWeek : 27;
 if (params.get('id') === 'mom-week') {
   const content = window.momWeekLibrary[momWeek];
-  library['mom-week'] = { title: content.title, type: `${momWeek} неделя · Состояние мамы`, image: 'article-rest.jpg', minutes: Math.max(1, Math.ceil(content.paragraphs.join(' ').split(/\s+/).length / 180)), intro: content.paragraphs[0], headings: content.paragraphs.slice(1).map(() => 'Что происходит'), paragraphs: content.paragraphs.slice(1), supplied: true };
+  library['mom-week'] = { title: content.title, type: `${momWeek} неделя · Состояние мамы`, minutes: Math.max(1, Math.ceil(content.paragraphs.join(' ').split(/\s+/).length / 180)), intro: content.paragraphs[0], headings: content.paragraphs.slice(1).map(() => 'Что происходит'), paragraphs: content.paragraphs.slice(1), supplied: true };
 }
 const articleId = Object.hasOwn(library, params.get('id')) ? params.get('id') : 'dating';
 const article = library[articleId];
@@ -44,12 +44,11 @@ if (article.pregnancy) {
   document.querySelector('.reader-toolbar > span').textContent = article.type;
 } else if (articleId !== 'dating') {
   const finish = scroller.querySelector('.reader-finish').cloneNode(true);
-  finish.querySelector('p').textContent = article.supplied ? 'Процессы развиваются постепенно: описанные изменения могут появляться раньше или позже. Все сроки — акушерские.' : 'Вы дочитали пример материала. Сохраните интересные мысли и переходите к следующей теме в удобном темпе.';
-  scroller.innerHTML = `<section class="reader-section reader-intro"><div><span class="reader-week">${escapeText(article.type || '27 неделя')}</span>${article.supplied ? '' : '<span class="reader-demo">Пример материала</span>'}<h1>${escapeText(article.title)}</h1><p>${escapeText(article.intro)}</p></div><figure class="reader-cover reader-example-cover"><img src="assets/${article.image}" alt="${escapeText(article.title)}"><figcaption class="reader-duration">${article.supplied ? `≈ ${article.minutes} мин на чтение` : `${article.minutes} минут на чтение`}</figcaption></figure></section>`;
+  finish.querySelector('p').textContent = 'Процессы развиваются постепенно: описанные изменения могут появляться раньше или позже. Все сроки — акушерские.';
+  scroller.innerHTML = `<section class="reader-section reader-intro"><div><span class="reader-week">${escapeText(article.type || '27 неделя')}</span><h1>${escapeText(article.title)}</h1><p>${escapeText(article.intro)}</p></div><p class="reader-reading-time">≈ ${article.minutes} мин на чтение</p></section>`;
   article.headings.forEach((heading, index) => {
-    scroller.insertAdjacentHTML('beforeend', `<section class="reader-section"><h2>${escapeText(heading)}</h2><p>${escapeText(article.paragraphs[index])}</p>${index === 1 ? `<img class="reader-inline-photo" src="assets/${article.image}" alt="Иллюстрация к материалу" loading="lazy">` : ''}</section>`);
+    scroller.insertAdjacentHTML('beforeend', `<section class="reader-section"><h2>${escapeText(heading)}</h2><p>${escapeText(article.paragraphs[index])}</p></section>`);
   });
-  if (!article.supplied) scroller.insertAdjacentHTML('beforeend', `<section class="reader-section"><h2>Что можно сохранить</h2><p>Небольшая памятка по теме статьи, к которой удобно вернуться позже.</p><aside class="reader-callout reader-checklist"><h3>Ваш список</h3><ul>${article.checklist.map(item => `<li>${escapeText(item)}</li>`).join('')}</ul></aside></section>`);
   scroller.append(finish);
   document.querySelector('.reader-toolbar > span').textContent = article.type || 'Статья';
 }
@@ -102,7 +101,7 @@ new ResizeObserver(updateProgress).observe(scroller);
 const origins = { index: 'index.html#recommendations-title', journey: 'journey.html#weekly-articles-title', baby: 'baby.html#learn-title', mom: 'mom.html#mom-recommendations-title', articles: 'articles.html', 'club-motherhood': 'club.html#motherhood' };
 const origin = Object.hasOwn(origins, params.get('from')) ? params.get('from') : 'index';
 const returnWeek = article.pregnancy ? article.week : momWeek;
-const returnUrl = article.supplied && ['mom', 'journey'].includes(origin) ? `${origin}.html?week=${returnWeek}#${origin === 'mom' ? 'mom-changes-title' : 'weekly-articles-title'}` : origins[origin];
+const returnUrl = article.supplied && ['mom', 'journey', 'baby'].includes(origin) ? `${origin}.html?week=${returnWeek}#${origin === 'mom' ? 'mom-changes-title' : origin === 'baby' ? 'learn-title' : 'weekly-articles-title'}` : origins[origin];
 document.querySelectorAll('[data-reader-return]').forEach(link => { link.href = returnUrl; });
 const ids = Object.keys(library).filter(id => origin !== 'club-motherhood' || library[id].group === 'motherhood');
 document.querySelector('[data-reader-next]').href = `article.html?id=${ids[(ids.indexOf(articleId) + 1) % ids.length]}&from=${origin}`;

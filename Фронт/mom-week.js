@@ -1,16 +1,6 @@
 (() => {
   const library = window.momWeekLibrary;
   const normalize = value => Number.isInteger(Number(value)) && Number(value) >= 1 && Number(value) <= 42 ? Number(value) : 27;
-  const articleUrl = (week, from) => `article.html?id=mom-week&week=${week}&from=${from}`;
-  window.renderMomWeekCard = week => {
-    const card = document.querySelector('.article-list .journey-content-card');
-    if (!card) return;
-    card.querySelector('a').href = articleUrl(week, 'journey');
-    card.querySelector('h3').textContent = library[week].title;
-    const checkbox = card.querySelector('input');
-    window.articleReadState.bindCheckbox(checkbox, `mom-week-${week}`);
-    checkbox.setAttribute('aria-label', `Отметить материал о маме на ${week}-й неделе прочитанным`);
-  };
   const summary = document.querySelector('.mom-description');
   if (summary) summary.textContent = library[27].paragraphs[0].split(/(?<=[.!?])\s/)[0];
   const panel = document.querySelector('.mom-changes');
@@ -35,10 +25,7 @@
       return p;
     }));
     panel.querySelector('.mom-information p').textContent = 'Процессы развиваются постепенно: описанные изменения могут появляться раньше или позже. Все сроки — акушерские.';
-    const article = document.querySelector('.mom-week-article');
-    article.href = articleUrl(week, 'mom');
-    article.querySelector('.article-title').textContent = content.title;
-    article.querySelector('.article-meta').lastElementChild.textContent = `≈ ${Math.max(1, Math.ceil(content.paragraphs.join(' ').split(/\s+/).length / 180))} мин`;
+    window.renderPregnancyRecommendations(document.querySelector('.mom-recommendations-grid'), week, 'mom');
   }
   select.addEventListener('change', () => {
     const url = new URL(location.href);
