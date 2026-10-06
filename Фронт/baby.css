@@ -52,7 +52,6 @@
 .primary-button { padding: 1.1rem 1.4rem; background: linear-gradient(110deg,#8655df,#7550cc); color: white; border-radius: 3rem; font-size: 1.05rem; line-height: 1.5rem; white-space: nowrap; }
 .baby-learn { padding: 1rem 1.1rem; min-height: 14.4rem; }
 .baby-learn .section-heading { padding: 0 .3rem; }
-.baby-learn .article-grid { margin-top: .5rem; gap: .7rem; }
 .baby-learn .article-card { height: 9.8rem; padding: .8rem 1.1rem; border-radius: 1.2rem; }
 .baby-learn .article-meta { font-size: 1rem; line-height: 1.8rem; height: 1.8rem; gap: .45rem; padding-right: .5rem; }
 .baby-learn .tag { font-size: .9rem; padding: 0 .5rem; }

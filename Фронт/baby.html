@@ -8,7 +8,7 @@
   <title>Малыш</title>
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='10' fill='%238052ff'/%3E%3Cpath d='M16 24 7 15C1 8 12 3 16 10 20 3 31 8 25 15Z' fill='white'/%3E%3C/svg%3E">
   <link rel="stylesheet" href="styles.css?v=20261006-intro">
-  <link rel="stylesheet" href="baby.css?v=20261006-gotham">
+  <link rel="stylesheet" href="baby.css?v=20261007-article-carousel">
 </head>
 <body>
   <div class="app baby-page">
@@ -62,7 +62,11 @@
 
       <section class="baby-panel baby-learn" aria-labelledby="learn-title">
         <div class="section-heading"><h2 id="learn-title">Узнать больше</h2><a class="text-link" href="articles.html?from=baby">Смотреть все<svg class="chevron" aria-hidden="true"><use href="#i-chevron"/></svg></a></div>
-        <div class="article-grid"></div>
+        <div class="recommendations-carousel">
+          <button class="recommendations-prev" type="button" aria-label="Предыдущие статьи" aria-controls="baby-articles">‹</button>
+          <div class="article-grid" id="baby-articles"></div>
+          <button class="recommendations-next" type="button" aria-label="Следующие статьи" aria-controls="baby-articles">›</button>
+        </div>
       </section>
 
       <section class="baby-panel community-card" aria-labelledby="community-title">
@@ -85,6 +89,7 @@
 <script src="articles-api.js?v=20261007-journey-articles"></script>
 <script src="baby-weeks-data.js?v=20261006-transparent"></script>
   <script src="baby-week.js?v=20261006-clean-articles"></script>
+  <script src="recommendations-carousel.js?v=20261007-journey-articles"></script>
   <script src="app.js"></script>
 </body>
 </html>
