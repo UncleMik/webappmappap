@@ -145,7 +145,7 @@
 .composer-field input { min-width:0; width:100%; border:0; outline:0; background:transparent; padding:1rem 1.2rem; font:inherit; font-size:16px; }
 .composer-field:focus-within { outline:2px solid #bb9beb; }
 .discussion-composer .discussion-send { color:#fff; background:linear-gradient(140deg,#b071ff,#7934ff); border-radius:50%; font-size:2rem; }
-.discussion-composer .discussion-send svg { width:24px; height:24px; display:block; fill:currentColor; stroke:none; }
+.discussion-composer .discussion-send svg { width:40px; height:40px; display:block; fill:currentColor; stroke:none; }
 .community-chat .bottom-navigation { position:relative; margin-top:0; }
 .visually-hidden { position:absolute; width:1px; height:1px; overflow:hidden; clip-path:inset(50%); }
 @media(min-width:600px) { .lara-welcome { min-height:110px; }.lara-welcome img { width:150px; }.lara-welcome > div { width:60%; }.community-copy strong { font-size:16px; }.community-copy > span { font-size:14px; } }
