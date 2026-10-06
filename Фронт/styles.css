@@ -71,6 +71,7 @@ h2 { font-size: 2rem; line-height: 2.5rem; font-weight: 700; letter-spacing: -.0
 .more-icon { background-position: -67.7rem -86.2rem; }
 .recommendations { margin-top: 1.2rem; }
 .section-description { color: var(--muted); font-size: 1.4rem; line-height: 1.8rem; letter-spacing: -.02rem; }
+.pregnancy-summary .section-description { font-size: 1.6rem; line-height: 2rem; }
 .article-grid { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 1rem; margin-top: .5rem; }
 .article-card { position: relative; display: block; height: 11.2rem; padding: 1.1rem 1.3rem; border-radius: 1.3rem; border: 1px solid #f2eeee; overflow: hidden; }
 a.article-card, a.content-open { text-decoration: none; color: inherit; }
