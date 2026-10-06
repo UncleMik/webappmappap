@@ -13,6 +13,10 @@
   document.title = titles[id];
   document.querySelector('#video-title').textContent = titles[id];
   document.querySelector('.video-back').href = Object.hasOwn(origins, params.get('from')) ? origins[params.get('from')] : 'mom.html';
+  if (params.get('from') === 'journey') {
+    const week = Number(params.get('week'));
+    document.querySelector('.video-back').href = `journey.html?week=${Number.isInteger(week) && week >= 1 && week <= 42 ? week : 27}#videos-title`;
+  }
   const favorite = document.querySelector('.video-favorite');
   const favoriteKey = `webpril.videoFavorite.${id}`;
   function setFavorite(value) {

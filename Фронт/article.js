@@ -101,7 +101,7 @@ new ResizeObserver(updateProgress).observe(scroller);
 const origins = { index: 'index.html#recommendations-title', journey: 'journey.html#weekly-articles-title', baby: 'baby.html#learn-title', mom: 'mom.html#mom-recommendations-title', articles: 'articles.html', 'club-motherhood': 'club.html#motherhood' };
 const origin = Object.hasOwn(origins, params.get('from')) ? params.get('from') : 'index';
 const returnWeek = article.pregnancy ? article.week : momWeek;
-const returnUrl = article.supplied && ['mom', 'journey', 'baby'].includes(origin) ? `${origin}.html?week=${returnWeek}#${origin === 'mom' ? 'mom-changes-title' : origin === 'baby' ? 'learn-title' : 'weekly-articles-title'}` : origins[origin];
+const returnUrl = (origin === 'journey' || article.supplied && ['mom', 'baby'].includes(origin)) ? `${origin}.html?week=${returnWeek}#${origin === 'mom' ? 'mom-changes-title' : origin === 'baby' ? 'learn-title' : 'weekly-articles-title'}` : origins[origin];
 document.querySelectorAll('[data-reader-return]').forEach(link => { link.href = returnUrl; });
 const ids = Object.keys(library).filter(id => origin !== 'club-motherhood' || library[id].group === 'motherhood');
 document.querySelector('[data-reader-next]').href = `article.html?id=${ids[(ids.indexOf(articleId) + 1) % ids.length]}&from=${origin}`;

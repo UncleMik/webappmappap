@@ -53,7 +53,8 @@
     [...dots.children].forEach((dot, index) => dot.classList.toggle('active', index === stage));
     dots.setAttribute('aria-label', ['1–14 недели', '15–28 недели', '29–42 недели'][stage]);
     weeklySections[0].hidden = false;
-    weeklySections[1].hidden = week !== currentWeek;
+    // Temporary videos: remove when real videos are added for this week.
+    weeklySections[1].hidden = false;
     window.renderPregnancyWeekArticles(weeklySections[0].querySelector('.article-list'), week);
     weeklySections[0].querySelector('p').textContent = '3 статьи, которые помогут сейчас';
   }

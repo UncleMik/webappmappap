@@ -3,7 +3,7 @@
   const navigate = url => window.navigateApp ? window.navigateApp(url) : location.assign(url);
   const videoActions = new Set(['back-practice', 'breathing', 'practice-article', 'birth-course', 'back-course', 'confidence-course', 'baby-course', 'contractions-lesson', 'birth-breathing-video', 'back-relief-video', 'webinars']);
   const from = location.pathname.split('/').pop().replace('.html', '') || 'index';
-  const videoUrl = id => `video.html?id=${encodeURIComponent(id === 'birth-course' && ['baby', 'articles', 'article'].includes(from) ? 'baby-birth-lesson' : id)}&from=${encodeURIComponent(from === 'article' ? 'articles' : from)}`;
+  const videoUrl = id => `video.html?id=${encodeURIComponent(id === 'birth-course' && ['baby', 'articles', 'article'].includes(from) ? 'baby-birth-lesson' : id)}&from=${encodeURIComponent(from === 'article' ? 'articles' : from)}${from === 'journey' ? `&week=${document.querySelector('#journey').dataset.week || 27}` : ''}`;
   document.querySelectorAll('a[href*="article.html?"]').forEach(link => {
     const id = new URL(link.href).searchParams.get('id');
     if (videoActions.has(id)) link.href = videoUrl(id);
