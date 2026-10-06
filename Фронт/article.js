@@ -1,5 +1,13 @@
+(async () => {
 const scroller = document.querySelector('.reader-scroll');
 const params = new URLSearchParams(location.search);
+scroller.setAttribute('aria-busy', 'true');
+const loadingMessage = document.createElement('p');
+loadingMessage.className = 'article-load-status';
+loadingMessage.setAttribute('role', 'status');
+loadingMessage.textContent = 'Загружаем статью…';
+scroller.prepend(loadingMessage);
+await window.articlesReady;
 const library = window.articleLibrary;
 const requestedWeek = Number(params.get('week'));
 const momWeek = Number.isInteger(requestedWeek) && requestedWeek >= 1 && requestedWeek <= 42 ? requestedWeek : 27;
@@ -8,8 +16,17 @@ if (params.get('id') === 'mom-week') {
   library['mom-week'] = { title: content.title, type: `${momWeek} неделя · Состояние мамы`, minutes: Math.max(1, Math.ceil(content.paragraphs.join(' ').split(/\s+/).length / 180)), intro: content.paragraphs[0], headings: content.paragraphs.slice(1).map(() => 'Что происходит'), paragraphs: content.paragraphs.slice(1), supplied: true };
 }
 const articleId = Object.hasOwn(library, params.get('id')) ? params.get('id') : 'dating';
-const article = library[articleId];
+let article;
+try {
+  article = articleId === 'mom-week' ? library[articleId] : await window.loadSchoolArticle(library[articleId]?.id || 'pregnancy-001');
+} catch {
+  window.showArticleLoadError(scroller);
+  document.querySelector('.reader-progress').hidden = true;
+  return;
+}
 const escapeText = text => text.replace(/[&<>"']/g, char => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[char]));
+loadingMessage.remove();
+scroller.removeAttribute('aria-busy');
 if (article.pregnancy) {
   const finish = scroller.querySelector('.reader-finish').cloneNode(true);
   finish.querySelector('p').textContent = 'Вы дочитали статью. Можно перейти к следующему материалу или вернуться к подборке.';
@@ -17,6 +34,14 @@ if (article.pregnancy) {
   let section = document.createElement('section');
   section.className = 'reader-section reader-intro';
   section.innerHTML = `<div><span class="reader-week">${escapeText(article.type)}</span><h1>${escapeText(article.title)}</h1><p class="reader-reading-time">≈ ${article.minutes} мин на чтение</p></div>`;
+  if (article.image) {
+    const cover = document.createElement('img');
+    cover.className = 'reader-school-cover';
+    cover.src = window.articleImageUrl(article.image);
+    cover.alt = '';
+    cover.decoding = 'async';
+    section.append(cover);
+  }
   scroller.append(section);
   let list = null;
   article.blocks.forEach(block => {
@@ -124,3 +149,5 @@ if (origin === 'journey' || origin === 'club-motherhood') {
   });
 }
 updateProgress();
+
+})();

@@ -1,3 +1,5 @@
+(async () => {
+await window.articlesReady;
 const list = document.querySelector('.materials-list');
 Object.entries(window.articleLibrary).forEach(([id, article]) => {
   if (id === 'dating') return;
@@ -7,7 +9,8 @@ Object.entries(window.articleLibrary).forEach(([id, article]) => {
   link.href = `article.html?id=${id}&from=articles`;
   const image = document.createElement(article.image ? 'img' : 'span');
   if (article.image) {
-    image.src = `assets/${article.image}`;
+    image.src = window.articleImageUrl(article.image);
+    image.decoding = 'async';
     image.alt = '';
     image.loading = 'lazy';
   } else {
@@ -23,5 +26,8 @@ Object.entries(window.articleLibrary).forEach(([id, article]) => {
   link.append(image, copy);
   list.append(link);
 });
+if (!window.pregnancyArticleList.length) window.showArticleLoadError(list);
 const from = new URLSearchParams(location.search).get('from');
 if (['index', 'baby', 'mom', 'journey'].includes(from)) document.querySelector('#materials-back').href = `${from}.html`;
+
+})();

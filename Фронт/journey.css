@@ -27,6 +27,7 @@
 .journey-content-card { display: flex; flex-direction: column; flex: 0 0 55%; min-width: 0; scroll-snap-align: start; background: #fff; border: 1px solid #f0eef4; border-radius: 1.1rem; overflow: hidden; box-shadow: 0 .2rem .4rem #37457708; }
 .content-open { display: block; color: inherit; text-decoration: none; }
 .journey-photo.article-cover-placeholder { background: linear-gradient(135deg, #eee5ff, #faf7ff); }
+.journey-photo.school-article-cover { aspect-ratio: 3 / 2; background: none; object-fit: cover; }
 .content-open h3 { margin: .7rem 1rem 0; }
 .article-list > article { min-height: 16.3rem; }
 .content-footer { display: flex; align-items: center; justify-content: space-between; margin-top: auto; padding: .7rem 1rem; }

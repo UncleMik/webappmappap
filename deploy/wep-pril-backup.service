@@ -1,0 +1,7 @@
+[Unit]
+Description=Back up wep_pril articles and images
+
+[Service]
+Type=oneshot
+ExecStart=/usr/bin/python3 /opt/wep_pril/deploy/backup.py
+UMask=0077

@@ -1,0 +1,22 @@
+[Unit]
+Description=wep_pril article API
+After=network.target
+
+[Service]
+Type=simple
+User=wep-pril
+Group=wep-pril
+WorkingDirectory=/opt/wep_pril/backend
+ExecStart=/usr/local/bin/node /opt/wep_pril/backend/server.mjs
+Restart=on-failure
+RestartSec=3
+Environment=NODE_ENV=production
+Environment=DATABASE_PATH=/opt/wep_pril/data/articles.sqlite
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=true
+MemoryMax=192M
+
+[Install]
+WantedBy=multi-user.target
