@@ -56,4 +56,11 @@
 .profile-notice[hidden] { display:none; }
 .profile-notice p { flex:1; }
 .profile-notice button { background:#f4eeff; border-radius:50%; width:3rem; height:3rem; text-align:center; font-size:2rem; }
+.support-dialog { height: auto; max-height: calc(100dvh - 24px); }
+.support-dialog .calendar-content { font-size: max(14px, calc(16 * var(--cal))); }
+.support-options { display: grid; gap: 10px; margin-top: 20px; }
+.support-options button { display: flex; justify-content: space-between; align-items: center; gap: 12px; min-height: 48px; padding: 12px 16px; border: 1px solid #eae4f5; border-radius: 14px; background: #f6f0fc; color: #51446f; text-align: left; font: inherit; }
+.support-options button:focus-visible { outline: 2px solid #794aff; outline-offset: 2px; }
+.support-status { margin-top: 16px; line-height: 1.5; color: #685982; }
+.support-status[hidden] { display: none; }
 @media(max-width:370px) { .completion-card { gap:1rem; } .complete-profile { padding:.7rem; } .identity { gap:1.5rem; } }
