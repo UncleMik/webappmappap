@@ -124,3 +124,22 @@ a.content-open { display: block; }
 .school-article-cover { display: block; width: 100%; object-fit: cover; }
 .article-load-status { padding: 1rem; color: #685882; }
 .article-load-retry { margin: 0 1rem 1rem; padding: .8rem 1.2rem; border: 0; border-radius: .8rem; background: #f0e9ff; color: #794aff; cursor: pointer; }
+
+/* Shared article carousel for Today and Mom. */
+.recommendations-carousel { position: relative; margin-top: 1rem; }
+.recommendations-carousel .article-grid { display: flex; gap: 1rem; margin-top: 0; padding-bottom: .4rem; overflow-x: auto; scroll-snap-type: x mandatory; overscroll-behavior-x: contain; scrollbar-width: none; }
+.recommendations-carousel .school-article-card { flex: 0 0 55%; min-width: 0; scroll-snap-align: start; }
+.recommendations-prev, .recommendations-next { position: absolute; top: 4.7rem; z-index: 3; display: grid; place-items: center; width: 2.8rem; height: 2.8rem; border-radius: 50%; background: white; color: #914aff; font-size: 2.7rem; line-height: 1; box-shadow: 0 .2rem 1rem #8653d51c; text-align: center; }
+.recommendations-prev { left: -1.3rem; }
+.recommendations-next { right: -1.3rem; }
+
+/* Article cards share the My Journey composition in every section. */
+.school-article-card { font-size: min(2.56vw, 10px); display: flex; flex-direction: column; min-width: 0; background: #fff; border: 1px solid #f0eef4; border-radius: 1.1em; overflow: hidden; box-shadow: 0 .2em .4em #37457708; }
+.school-article-card .school-article-cover { display: block; width: 100%; aspect-ratio: 3 / 2; object-fit: cover; background: none; }
+.school-article-card .content-open h3 { margin: .483em .69em 0; font-size: 1.45em; line-height: 1.17; font-weight: 700; letter-spacing: -.017em; }
+.school-article-card .content-footer { display: flex; align-items: center; justify-content: space-between; gap: .5em; margin-top: auto; padding: .7em 1em; }
+.school-article-card .content-type { display: inline-flex; align-items: center; gap: .435em; width: max-content; max-width: 100%; padding: .261em .435em; font-size: 1.15em; line-height: 1.304; color: #914aff; background: #f7f0ff; border-radius: .435em; }
+.school-article-card .content-type svg { width: 1.304em; height: 1.478em; flex-shrink: 0; }
+.school-article-card .read-checkbox { appearance: none; font-size: inherit; width: 1.9em; height: 1.9em; border: 1.3px solid #a3a9bb; border-radius: 50%; margin: 0; cursor: pointer; background: white; flex-shrink: 0; }
+.school-article-card .read-checkbox:checked { background: #9060ff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='m6 12 4 4 8-8' fill='none' stroke='white' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") center / 90% no-repeat; border-color: #9060ff; }
+.school-article-card .read-checkbox:focus-visible { outline: 2px solid #9060ff; outline-offset: 3px; }

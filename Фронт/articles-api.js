@@ -72,37 +72,29 @@ function articleCover(article, className) {
   return image;
 }
 
+window.createSchoolArticleCard = (article, from) => {
+  const card = document.createElement('article');
+  card.className = 'journey-content-card school-article-card';
+  card.innerHTML = '<a class="content-open"><h3></h3></a><div class="content-footer"><span class="content-type"><svg aria-hidden="true" viewBox="0 0 18 22"><path d="M3 1h7l5 5v14H3ZM10 1v6h5M6 11h6M6 15h6" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>Статья</span><input class="read-checkbox" type="checkbox"></div>';
+  const link = card.querySelector('a');
+  link.href = `article.html?id=${encodeURIComponent(article.id)}&from=${from}`;
+  const cover = articleCover(article, 'journey-photo school-article-cover');
+  if (cover) link.prepend(cover);
+  card.querySelector('h3').textContent = article.title;
+  const checkbox = card.querySelector('input');
+  window.articleReadState.bindCheckbox(checkbox, article.id);
+  checkbox.setAttribute('aria-label', `Отметить статью ${article.title} прочитанной`);
+  return card;
+};
+
 window.renderPregnancyWeekArticles = (list, week) => renderWhenArticlesReady(list, () => {
-  const cards = window.pregnancyArticleList.filter(article => article.week === week).map(article => {
-    const card = document.createElement('article');
-    card.className = 'journey-content-card';
-    card.innerHTML = '<a class="content-open"><h3></h3></a><div class="content-footer"><span class="content-type"><svg aria-hidden="true"><use href="#j-document"/></svg>Статья</span><input class="read-checkbox" type="checkbox"></div>';
-    const link = card.querySelector('a');
-    link.href = `article.html?id=${article.id}&from=journey`;
-    const cover = articleCover(article, 'journey-photo school-article-cover');
-    if (cover) link.prepend(cover);
-    card.querySelector('h3').textContent = article.title;
-    const checkbox = card.querySelector('input');
-    window.articleReadState.bindCheckbox(checkbox, article.id);
-    checkbox.setAttribute('aria-label', `Отметить статью ${article.title} прочитанной`);
-    return card;
-  });
+  const cards = window.pregnancyArticleList.filter(article => article.week === week).map(article => window.createSchoolArticleCard(article, 'journey'));
   list.replaceChildren(...cards);
   list.scrollLeft = 0;
 });
 
 window.renderPregnancyRecommendations = (list, week, from) => renderWhenArticlesReady(list, () => {
-  list.replaceChildren(...window.pregnancyArticleList.filter(article => article.week === week).map(article => {
-    const card = document.createElement('a');
-    card.className = 'article-card school-article';
-    card.href = `article.html?id=${article.id}&from=${from}`;
-    card.innerHTML = '<span class="article-meta"><span class="tag">СТАТЬЯ</span><span>·</span><span class="school-reading-time"></span></span><span class="article-title"></span><span class="article-arrow">›</span>';
-    card.querySelector('.school-reading-time').textContent = `≈ ${article.minutes} мин`;
-    card.querySelector('.article-title').textContent = article.title;
-    const cover = articleCover(article, 'school-recommendation-cover');
-    if (cover) card.prepend(cover);
-    return card;
-  }));
+  list.replaceChildren(...window.pregnancyArticleList.filter(article => article.week === week).map(article => window.createSchoolArticleCard(article, from)));
 });
 const todayArticles = document.querySelector('.today-page .article-grid, #today .article-grid');
 if (todayArticles) window.renderPregnancyRecommendations(todayArticles, 27, 'index');

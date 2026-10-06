@@ -66,9 +66,7 @@
 .weight-tool-icon { width: 4.3rem; height: 4.3rem; border-radius: .8rem; background-position: -55.6rem -89.3rem; }
 .mom-weight-tool > p { margin-top: .8rem; margin-bottom: .7rem; }
 .weight-record { margin-top: auto; width: 100%; border: 1px solid #a578ff; background: #ffffffde; color: #8252ff; text-align: center; }
-.mom-recommendations-grid { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: .8rem; margin-top: .7rem; }
-.mom-recommendations .article-card { height: 11.2rem; padding: .9rem; }
-.mom-recommendations .article-title { font-size: 1.15rem; line-height: 1.4rem; }
+.mom-recommendations-grid { margin-top: 1rem; }
 .mom-week-article { background: linear-gradient(105deg,#f4fff9,#fff6f1); }
 .recommended-mom-art { position: absolute; width: 9rem; height: 11.2rem; right: 0; bottom: 0; background-position: -61rem -65.7rem; mask-image: linear-gradient(to right,transparent,#000 40%); }
 @media (max-width: 350px) {

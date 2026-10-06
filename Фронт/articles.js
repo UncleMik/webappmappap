@@ -4,27 +4,7 @@ const list = document.querySelector('.materials-list');
 Object.entries(window.articleLibrary).forEach(([id, article]) => {
   if (id === 'dating') return;
   if (!article.pregnancy) return;
-  const link = document.createElement('a');
-  link.className = 'material-link';
-  link.href = `article.html?id=${id}&from=articles`;
-  const image = document.createElement(article.image ? 'img' : 'span');
-  if (article.image) {
-    image.src = window.articleImageUrl(article.image);
-    image.decoding = 'async';
-    image.alt = '';
-    image.loading = 'lazy';
-  } else {
-    image.className = 'material-cover-placeholder';
-    image.setAttribute('aria-hidden', 'true');
-  }
-  const copy = document.createElement('div');
-  const title = document.createElement('h2');
-  title.textContent = article.title;
-  const meta = document.createElement('p');
-  meta.textContent = `${article.type || 'Статья'} · ${article.minutes} мин${article.supplied ? '' : ' · Пример материала'}`;
-  copy.append(title, meta);
-  link.append(image, copy);
-  list.append(link);
+  list.append(window.createSchoolArticleCard(article, 'articles'));
 });
 if (!window.pregnancyArticleList.length) window.showArticleLoadError(list);
 const from = new URLSearchParams(location.search).get('from');
