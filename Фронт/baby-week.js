@@ -8,6 +8,7 @@
     todayCard.href = `baby.html?week=${currentWeek}`;
     todayCard.querySelector('.baby-measurements').textContent = content.measurements;
     todayCard.querySelector('.baby-description').textContent = content.description;
+    todayCard.querySelector('.baby-art').src = content.illustration;
     const note = document.createElement('span');
     note.className = 'baby-measurement-caption';
     note.textContent = `${content.measurementNote}. Размеры и вес приблизительные.`;
@@ -46,7 +47,10 @@
     } else {
       image.removeAttribute('src');
     }
-    page.querySelector('.baby-hero-art').hidden = !isCurrent;
+    const illustration = page.querySelector('.baby-hero-art');
+    illustration.src = content.illustration;
+    illustration.alt = `Иллюстрация развития малыша: ${week}-я неделя`;
+    illustration.hidden = false;
     page.querySelector('#development-title').textContent = `Развитие малыша на ${week}-й неделе`;
     page.querySelector('.baby-development > p').textContent = content.description;
     page.querySelector('.development-link').href = `journey.html?week=${week}`;

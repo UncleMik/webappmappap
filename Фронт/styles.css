@@ -107,3 +107,5 @@ a.content-open { display: block; }
 .baby-card { height:auto; min-height:18.8rem; }
 .baby-card .feature-copy { max-width:calc(100% - 15rem); }
 .baby-measurement-caption { margin-top:.6rem; color:#69778f; font-size:1.1rem; line-height:1.5rem; }
+
+.baby-card .baby-art { object-fit: contain; background: none; mask-image: none; }
