@@ -88,10 +88,12 @@
 
 .baby-overview-copy { padding-right: 1.6rem; }
 .baby-overview-heading { padding-right: 13rem; }
-.baby-overview:has(.baby-hero-art:not([hidden])) .baby-overview-heading { min-height: 15rem; }
+.baby-overview:has(.baby-hero-art:not([hidden])) .baby-overview-details { padding-right: 13rem; }
 .baby-overview-details { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); align-items: start; gap: 1rem; margin-top: 1rem; }
 .baby-week-measurements { margin-top: 0; font-size: 1.35rem; line-height: 2rem; }
 .baby-size { gap: .7rem; margin-top: 0; align-items: center; }
 .baby-size-image { width: 4.7rem; height: 4.7rem; object-fit: contain; flex-shrink: 0; }
 .baby-size p { font-size: 1.1rem; line-height: 1.5rem; color: #79828f; }
 .baby-size-name { font-weight: 500; color: #2d3341; }
+
+.baby-week-measurements span { display: inline-block; white-space: nowrap; }

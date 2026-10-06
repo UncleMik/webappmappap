@@ -25,7 +25,14 @@
     page.querySelector('.eyebrow').textContent = isCurrent ? 'Ваш малыш сейчас' : 'Малыш на выбранной неделе';
     page.querySelector('#baby-overview-title').textContent = isCurrent ? '27 недель и 4 дня' : `${week} неделя`;
     page.querySelector('.overview-meta').hidden = !isCurrent;
-    page.querySelector('.baby-week-measurements').textContent = content.measurements;
+    const measurements = page.querySelector('.baby-week-measurements');
+    measurements.replaceChildren();
+    content.measurements.split(' · ').forEach((text, index) => {
+      if (index) measurements.append(document.createTextNode(' · '));
+      const value = document.createElement('span');
+      value.textContent = text;
+      measurements.append(value);
+    });
     page.querySelector('.baby-week-measurements').hidden = !content.measurements;
     page.querySelector('.baby-measurement-note').textContent = content.measurementNote ? `${content.measurementNote}. Размеры и вес приблизительные.` : '';
     page.querySelector('.baby-measurement-note').hidden = !content.measurementNote;
