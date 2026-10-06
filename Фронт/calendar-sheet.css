@@ -49,11 +49,13 @@
 .calendar-week-events { display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: calc(3 * var(--cal)); margin-top: calc(5 * var(--cal)); }
 .calendar-week-event { display: flex; align-items: center; gap: calc(3 * var(--cal)); border-radius: calc(8 * var(--cal)); background: #f7f4fc; padding: calc(2 * var(--cal)); color: #34384f; font-size: calc(7.5 * var(--cal)); line-height: calc(12 * var(--cal)); }
 .calendar-week-event svg { width: calc(20 * var(--cal)); height: calc(20 * var(--cal)); flex-shrink: 0; border-radius: 50%; padding: calc(3 * var(--cal)); }
-.calendar-week[data-week="18"] .calendar-week-event { flex-direction: column; background: transparent; }
+.calendar-week[data-week="18"] .calendar-week-event, .calendar-week[data-week="32"] .calendar-week-event { flex-direction: column; background: transparent; }
 .calendar-week-event svg, .calendar-event-icon svg { fill: none; stroke: currentColor; stroke-width: 1.7; stroke-linecap: round; stroke-linejoin: round; }
 .scan svg { color: #6574e9; background: #e9eaff; }
 .tests svg { color: #2eaf96; background: #e3f8f1; }
 .visit svg, .study svg { color: #e7639e; background: #fff0f8; }
+.ctg svg { color: #ed5d91; background: #ffe8f1; }
+.bag svg { color: #ac50d1; background: #f5e7ff; }
 .calendar-important { margin-top: calc(12 * var(--cal)); padding: calc(13 * var(--cal)) calc(9 * var(--cal)); border-radius: calc(15 * var(--cal)); background: #f4efff; }
 .calendar-important h3 { margin: 0 calc(4 * var(--cal)) calc(10 * var(--cal)); font-size: calc(16 * var(--cal)); line-height: calc(21 * var(--cal)); }
 .calendar-event { display: flex; align-items: center; gap: calc(12 * var(--cal)); border-radius: calc(12 * var(--cal)); background: #fffaff; padding: calc(9 * var(--cal)) calc(11 * var(--cal)); }
