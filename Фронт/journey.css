@@ -5,7 +5,7 @@
 .journey-header h1 { font-size: 2.6rem; line-height: 3.2rem; letter-spacing: -.06rem; }
 .journey-main { padding: 0 1.6rem 2rem; }
 .journey-page h2 { font-size: 1.55rem; line-height: 1.9rem; letter-spacing: -.035rem; }
-.journey-page h3 { margin: 0; font-size: 1.45rem; line-height: 1.7rem; font-weight: 500; letter-spacing: -.025rem; }
+.journey-page h3 { margin: 0; font-size: 1.45rem; line-height: 1.7rem; font-weight: 700; letter-spacing: -.025rem; }
 .week-selector { display: grid; grid-template-columns: 2.8rem minmax(0,1fr) 2.8rem; gap: .6rem; align-items: center; }
 .round-arrow { display: grid; place-items: center; width: 2.8rem; height: 2.8rem; border-radius: 50%; background: white; color: #914aff; font-size: 2.7rem; line-height: 1; box-shadow: 0 .2rem 1rem #8653d51c; text-align: center; }
 .week-wheel { display: flex; align-items: center; gap: .6rem; overflow-x: auto; min-width: 0; padding: .8rem calc(50% - 5rem); scroll-snap-type: x mandatory; scrollbar-width: none; overscroll-behavior-x: contain; user-select: none; }

@@ -1,7 +1,7 @@
 /* Composition of the Today screen, independent of the shared page styles. */
-#today .baby-card { margin-top: 0; height: 16.7rem; }
+#today .baby-card { margin-top: 0; height: auto; min-height: 16.7rem; }
 #today .baby-art { right: 2.4rem; width: 15.2rem; height: 16.6rem; background-size: 94rem 131.4rem; background-position: -50.5rem -41.1rem; }
-#today .mom-card { height: 15.9rem; }
+#today .mom-card { height: auto; min-height: 15.9rem; }
 #today .helpers { margin-top: 1.8rem; }
 #today .recommendations { margin-top: 2.4rem; }
 #today .section-description { display: block; margin-top: .5rem; }

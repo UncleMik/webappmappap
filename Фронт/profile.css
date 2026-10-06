@@ -28,9 +28,9 @@
 .progress-caption { font-size:1.25rem; }
 .completion-card { display:flex; align-items:center; gap:1.6rem; padding:1rem 1.3rem; margin-top:.9rem; }
 .completion-ring { display:grid; place-items:center; flex-shrink:0; width:5.4rem; height:5.4rem; border-radius:50%; background:conic-gradient(#794aff 0 70%,#e5def5 70%); }
-.completion-ring span { display:grid; place-items:center; width:4.2rem; height:4.2rem; background:#fff; border-radius:50%; font-size:1.4rem; font-weight:700; }
+.completion-ring span { display:grid; place-items:center; width:4.2rem; height:4.2rem; background:#fff; border-radius:50%; font-size:1.4rem; font-weight: 700; }
 .completion-copy { flex:1; min-width:0; }
-.completion-copy h2 { font-size:1.4rem; line-height:1.7rem; font-weight:600; letter-spacing:0; }
+.completion-copy h2 { font-size:1.4rem; line-height:1.7rem; font-weight: 700; letter-spacing:0; }
 .completion-copy p { font-size:1.2rem; line-height:1.4rem; color:var(--muted); margin-top:.2rem; }
 .complete-profile { display:flex; gap:.6rem; align-items:center; padding:.7rem 1.2rem; border-radius:3rem; background:#f4eeff; color:var(--purple); font-size:1.2rem; white-space:nowrap; }
 .complete-profile span { font-size:2rem; line-height:2.2rem; }

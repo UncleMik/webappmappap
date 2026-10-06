@@ -20,7 +20,7 @@
 .baby-size .size-comparison { display: flex; align-items: center; gap: .6rem; margin-left: -.3rem; }
 .cauliflower { width: 4.7rem; height: 4.3rem; background-position: -47.1rem -43.6rem; border-radius: .6rem; }
 .size-comparison p { font-size: 1.05rem; line-height: 1.4rem; color: #79828f; }
-.size-comparison p strong { font-weight: 400; color: #2d3341; }
+.size-comparison p strong { font-weight: 700; color: #2d3341; }
 .baby-hero-art { position: absolute; right: 0; top: -1rem; width: 13.5rem; height: 17.2rem; object-fit: contain; border-radius: 0 1.4rem 1.4rem 0; }
 .baby-panel { margin-top: 1rem; padding: 1.2rem 1.3rem; background: linear-gradient(120deg,#fff,#fffefe); border: 1px solid #f5f1ec; border-radius: 1.5rem; box-shadow: 0 .2rem .5rem #55473402; }
 .baby-panel h2 { font-size: 1.6rem; line-height: 2.1rem; letter-spacing: -.035rem; }
@@ -34,8 +34,8 @@
 .heartbeat-icon { background-position: -32.5rem -54.9rem; }
 .ultrasound-icon { background-position: -47.1rem -54.9rem; }
 .position-icon { background-position: -61rem -54.9rem; }
-.data-tile h3 { margin: 0 0 .4rem; font-size: 1.05rem; line-height: 1.3rem; font-weight: 400; white-space: nowrap; }
-.data-tile strong { display: block; font-size: 1.08rem; line-height: 1.3rem; font-weight: 600; white-space: nowrap; }
+.data-tile h3 { margin: 0 0 .4rem; font-size: 1.05rem; line-height: 1.3rem; font-weight: 700; white-space: nowrap; }
+.data-tile strong { display: block; font-size: 1.08rem; line-height: 1.3rem; font-weight: 700; white-space: nowrap; }
 .data-tile p { margin-top: .4rem; font-size: .9rem; line-height: 1.2rem; color: #818692; white-space: nowrap; }
 .baby-development { min-height: 16.4rem; }
 .baby-development > p { font-size: 1.2rem; line-height: 1.6rem; color: #727987; margin-top: .7rem; }

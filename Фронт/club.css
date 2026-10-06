@@ -11,7 +11,7 @@
 .club-tool[aria-expanded=true] { background:#eee7ff; color:var(--purple); }
 .club-main { padding:0 1.1rem 2rem; }
 .club-tabs { display:flex; margin:0 .7rem 1.3rem; padding:.2rem; border-radius:1.8rem; background:#f6f5fa; }
-.club-tabs button { width:50%; display:flex; align-items:center; justify-content:center; gap:1.1rem; height:4.8rem; background:transparent; border:1px solid transparent; border-radius:1.5rem; color:#6674aa; font-size:1.65rem; font-weight:600; }
+.club-tabs button { width:50%; display:flex; align-items:center; justify-content:center; gap:1.1rem; height:4.8rem; background:transparent; border:1px solid transparent; border-radius:1.5rem; color:#6674aa; font-size:1.65rem; font-weight: 700; }
 .club-tabs button[aria-selected=true] { color:var(--purple); border-color:#cdb9ff; background:#ffffffd9; box-shadow:0 .1rem .5rem #b8a2ff24; }
 .club-tabs svg { width:2.5rem; height:2.5rem; }
 .tab-calendar { position:relative; display:flex; }
@@ -21,7 +21,7 @@
 .club-section-heading { display:flex; align-items:center; gap:.9rem; min-height:3.8rem; margin:0 .8rem .5rem; }
 .section-icon { width:3.3rem; height:3.3rem; display:grid; place-items:center; flex:none; border-radius:50%; background:#f6f1ff; color:var(--purple); }
 .section-icon svg { width:2.4rem; height:2.4rem; }
-.club-section-heading h2 { color:var(--purple); font-size:1.65rem; line-height:2rem; letter-spacing:-.035rem; font-weight:600; }
+.club-section-heading h2 { color:var(--purple); font-size:1.65rem; line-height:2rem; letter-spacing:-.035rem; font-weight: 700; }
 .club-section-heading p { color:#7784c0; font-size:1.3rem; line-height:1.6rem; margin-top:.25rem; letter-spacing:-.025rem; }
 .chat-list { border:1px solid #f7f5f8; border-radius:1.6rem; background:#ffffffb5; box-shadow:0 .3rem 1.7rem #79695604; overflow:hidden; }
 .chat-row { display:flex; align-items:center; gap:1.4rem; width:100%; min-height:8.8rem; padding:1rem 1rem 1rem 1.1rem; text-decoration:none; color:var(--ink); background:transparent; }
@@ -33,7 +33,7 @@
 .heart-avatar { background-position:-31rem -79.8rem; }
 .group-avatar { background-position:-31rem -88rem; }
 .chat-copy { min-width:0; flex:1; }
-.chat-copy strong { display:block; font-size:1.6rem; line-height:1.95rem; letter-spacing:-.05rem; font-weight:600; }
+.chat-copy strong { display:block; font-size:1.6rem; line-height:1.95rem; letter-spacing:-.05rem; font-weight: 700; }
 [data-access=paid] .chat-copy strong { font-size:1.48rem; letter-spacing:-.055rem; }
 .chat-copy > span { display:block; margin-top:.45rem; color:var(--muted); font-size:1.42rem; line-height:1.65rem; letter-spacing:-.035rem; }
 .inline-lock { display:inline-block; width:1.3rem; height:1.8rem; margin-left:.3rem; vertical-align:-.2rem; color:var(--purple); }
@@ -53,7 +53,7 @@
 .event-card { text-align:left; }
 .event-copy { padding-right:1rem; }
 .free-badge { background:#dff9f1; color:#10aa8d; }
-.event-copy strong { font-size:1.45rem; line-height:1.65rem; letter-spacing:-.035rem; font-weight:600; }
+.event-copy strong { font-size:1.45rem; line-height:1.65rem; letter-spacing:-.035rem; font-weight: 700; }
 .event-date { margin-top:.65rem; font-size:1.3rem; line-height:1.5rem; color:#7482bc; }
 .event-expert { margin-top:.45rem; font-size:1.15rem; line-height:1.25rem; color:#7482bc; letter-spacing:-.015rem; }
 .event-card > .row-arrow { margin-right:1.1rem; }
@@ -90,7 +90,7 @@
 .lara-welcome > div { position:relative; z-index:1; width:65%; }
 .lara-welcome h2 { font-size:1.65rem; line-height:1.15; margin-bottom:.4rem; }
 .lara-welcome p { font-size:1.3rem; line-height:1.2; color:#51446f; }
-.lara-welcome div > span { display:block; text-align:right; margin-top:.3rem; font:italic 1.5rem Georgia,serif; color:#8271ae; }
+.lara-welcome div > span { display:block; text-align:right; margin-top:.3rem; font:italic 500 1.5rem "Gotham Pro",sans-serif; color:#8271ae; }
 .lara-welcome img { position:absolute; right:-1.3rem; bottom:0; width:14rem; height:100%; object-fit:cover; object-position:center 35%; mix-blend-mode:multiply; mask-image:linear-gradient(90deg,transparent,#000 18%); }
 .community-tabs { display:flex; gap:.6rem; margin:1.3rem 0 1rem; }
 .community-tabs button { flex:1; min-height:44px; padding:.7rem .5rem; text-align:center; border-radius:3rem; background:#f7f5fa; font-size:1.5rem; }
@@ -110,7 +110,7 @@
 .community-copy strong { display:block; font-size:1.45rem; line-height:1.35; margin-bottom:.4rem; }
 .community-copy > span { display:block; color:var(--muted); font-size:1.25rem; line-height:1.4; }
 .community-meta { align-self:flex-start; text-align:right; color:var(--muted); font-size:1.15rem; line-height:1.7; white-space:nowrap; }
-.community-meta b { display:inline-grid; place-items:center; width:2.7rem; height:2.7rem; margin-top:.5rem; border-radius:50%; background:linear-gradient(130deg,#a275ff,#793fff); color:white; font-size:1.3rem; font-weight:400; }
+.community-meta b { display:inline-grid; place-items:center; width:2.7rem; height:2.7rem; margin-top:.5rem; border-radius:50%; background:linear-gradient(130deg,#a275ff,#793fff); color:white; font-size:1.3rem; font-weight: 700; }
 .club-demo { font-size:1.2rem; color:#91869f; margin:1.5rem 0 .5rem; text-align:center; }
 .community-chat { overflow:hidden; }
 .community-chat .app { height:100dvh; min-height:0; }
