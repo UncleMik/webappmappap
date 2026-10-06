@@ -31,7 +31,8 @@
     page.querySelector('.baby-measurement-note').hidden = !content.measurementNote;
     const comparison = page.querySelector('.baby-size');
     comparison.hidden = !content.comparison;
-    const image = comparison.querySelector('.baby-size-image');
+    const image = page.querySelector('.baby-size-image');
+    image.hidden = !content.comparison;
     if (content.comparison) {
       image.src = content.comparisonImage;
       comparison.querySelector('.baby-size-name').textContent = content.comparison;

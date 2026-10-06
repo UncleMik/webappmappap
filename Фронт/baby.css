@@ -87,6 +87,10 @@
 .development-link { text-decoration:none; }
 
 .baby-size { gap: 1rem; }
-.baby-size-image { width: 7.2rem; height: 7.2rem; object-fit: contain; flex-shrink: 0; }
+.baby-size-image { position: absolute; bottom: 1rem; right: 3rem; width: 7.2rem; height: 7.2rem; object-fit: contain; }
 .baby-size p { font-size: 1.2rem; line-height: 1.7rem; color: #79828f; }
 .baby-size-name { font-weight: 500; color: #2d3341; }
+
+.baby-overview-copy { padding-right: 13rem; }
+
+.baby-overview { min-height: 25.5rem; }
