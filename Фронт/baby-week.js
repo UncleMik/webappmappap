@@ -29,7 +29,15 @@
     page.querySelector('.baby-week-measurements').hidden = !content.measurements;
     page.querySelector('.baby-measurement-note').textContent = content.measurementNote ? `${content.measurementNote}. Размеры и вес приблизительные.` : '';
     page.querySelector('.baby-measurement-note').hidden = !content.measurementNote;
-    page.querySelector('.baby-size').hidden = true;
+    const comparison = page.querySelector('.baby-size');
+    comparison.hidden = !content.comparison;
+    const image = comparison.querySelector('.baby-size-image');
+    if (content.comparison) {
+      image.src = content.comparisonImage;
+      comparison.querySelector('.baby-size-name').textContent = content.comparison;
+    } else {
+      image.removeAttribute('src');
+    }
     page.querySelector('.baby-hero-art').hidden = !isCurrent;
     page.querySelector('#development-title').textContent = `Развитие малыша на ${week}-й неделе`;
     page.querySelector('.baby-development > p').textContent = content.description;

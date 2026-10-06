@@ -8,7 +8,7 @@
   <title>Малыш</title>
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='10' fill='%238052ff'/%3E%3Cpath d='M16 24 7 15C1 8 12 3 16 10 20 3 31 8 25 15Z' fill='white'/%3E%3C/svg%3E">
   <link rel="stylesheet" href="styles.css?v=20261005-performance">
-  <link rel="stylesheet" href="baby.css?v=20261005-performance">
+  <link rel="stylesheet" href="baby.css?v=20261006-size-comparison">
 </head>
 <body>
   <div class="app baby-page">
@@ -26,10 +26,9 @@
           <p class="overview-meta">3 триместр <span>·</span> До родов ≈ 82 дня</p>
           <p class="baby-week-measurements"></p>
           <p class="baby-measurement-note"></p>
-          <div class="baby-size">
-            <div><strong>≈ 1000 г</strong><span>Вес</span></div>
-            <div><strong>≈ 36 см</strong><span>Рост</span></div>
-            <div class="size-comparison"><span class="cauliflower baby-sprite" aria-hidden="true"></span><p>Примерно с<br><strong>цветную капусту</strong></p></div>
+          <div class="baby-size" hidden>
+            <img class="baby-size-image" alt="" width="72" height="72">
+            <p>По размеру — как<br><strong class="baby-size-name"></strong></p>
           </div>
         </div>
       </section>
@@ -89,8 +88,8 @@
     </div></nav>
   </div>
   <svg class="svg-definitions" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><symbol id="i-chevron" viewBox="0 0 16 24"><path d="m5 5 6 7-6 7" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></symbol></svg>
-  <script src="baby-weeks-data.js?v=20261005-baby-weeks"></script>
-  <script src="baby-week.js?v=20261005-baby-weeks"></script>
+  <script src="baby-weeks-data.js?v=20261006-size-comparison"></script>
+  <script src="baby-week.js?v=20261006-size-comparison"></script>
   <script src="app.js"></script>
 </body>
 </html>

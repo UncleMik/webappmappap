@@ -85,3 +85,8 @@
 .baby-measurement-note { font-size:1.15rem; line-height:1.5rem; color:#68758b; max-width:27rem; margin-top:.5rem; }
 .baby-page [hidden] { display:none !important; }
 .development-link { text-decoration:none; }
+
+.baby-size { gap: 1rem; }
+.baby-size-image { width: 7.2rem; height: 7.2rem; object-fit: contain; flex-shrink: 0; }
+.baby-size p { font-size: 1.2rem; line-height: 1.7rem; color: #79828f; }
+.baby-size-name { font-weight: 500; color: #2d3341; }
