@@ -27,7 +27,7 @@
 .user-message .message-content { max-width: 80%; }
 .message-meta { display: flex; align-items: center; justify-content: flex-end; gap: 4px; margin-top: 5px; color: #eee4ff; }
 .message-meta time { margin: 0; color: inherit; }
-.read-mark { color: inherit; font-size: 15px; line-height: 13px; letter-spacing: -6px; padding-right: 5px; }
+.read-mark { color: inherit; font-size: 10px; line-height: 13px; }
 .chat-controls { padding: 12px 0 8px; }
 .help-label { color: #7968ac; font-size: 12px; margin-bottom: 3px; }
 .suggestions { display: flex; gap: 4px; }
