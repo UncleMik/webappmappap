@@ -93,7 +93,7 @@
 .lara-welcome div > span { display:block; text-align:right; margin-top:.3rem; font:italic 1.5rem Georgia,serif; color:#8271ae; }
 .lara-welcome img { position:absolute; right:-1.3rem; bottom:0; width:14rem; height:100%; object-fit:cover; object-position:center 35%; mix-blend-mode:multiply; mask-image:linear-gradient(90deg,transparent,#000 18%); }
 .community-tabs { display:flex; gap:.6rem; margin:1.3rem 0 1rem; }
-.community-tabs button { flex:1; min-height:44px; padding:.7rem .5rem; text-align:center; border-radius:3rem; background:#f7f5fa; font-size:1.3rem; }
+.community-tabs button { flex:1; min-height:44px; padding:.7rem .5rem; text-align:center; border-radius:3rem; background:#f7f5fa; font-size:1.5rem; }
 .community-tabs [aria-selected=true] { background:linear-gradient(120deg,#a06eff,#7137ff); color:white; }
 .community-section { margin:1.1rem 0 1.5rem; }
 .community-heading { display:flex; align-items:center; justify-content:space-between; gap:1rem; min-height:3.7rem; }
