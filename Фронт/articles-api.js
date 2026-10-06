@@ -97,4 +97,11 @@ window.renderPregnancyRecommendations = (list, week, from) => renderWhenArticles
   list.replaceChildren(...window.pregnancyArticleList.filter(article => article.week === week).map(article => window.createSchoolArticleCard(article, from)));
 });
 const todayArticles = document.querySelector('.today-page .article-grid, #today .article-grid');
-if (todayArticles) window.renderPregnancyRecommendations(todayArticles, 27, 'index');
+if (todayArticles) renderWhenArticlesReady(todayArticles, () => {
+  const cards = window.pregnancyArticleList.filter(article => article.week === 27).slice(0, 2)
+    .map(article => window.createSchoolArticleCard(article, 'index'));
+  const practice = document.createElement('article');
+  practice.className = 'journey-content-card school-article-card today-practice-card';
+  practice.innerHTML = '<a class="content-open" href="video.html?id=back-practice&from=index"><span class="today-practice-cover" aria-hidden="true"></span><h3>Расслабление спины</h3></a><div class="content-footer"><span class="content-type"><svg aria-hidden="true" viewBox="0 0 18 22"><path d="m5 4 10 7-10 7Z" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg>Практика</span><span class="today-practice-time">8 мин</span></div>';
+  todayArticles.replaceChildren(...cards, practice);
+});

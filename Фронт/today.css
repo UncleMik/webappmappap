@@ -12,3 +12,5 @@
 #today .pregnancy-meta { margin-right: 0; font-size: 1.4rem; line-height: 1.8rem; white-space: nowrap; }
 #today .progress-track { flex: 1; min-width: 0; margin: 0; height: 1.3rem; }
 #today .progress-track > span { width: 68.93%; }
+.today-practice-cover { display: block; width: 100%; aspect-ratio: 3 / 2; background: url('assets/mom-reference.webp') 34.8% 62.82871% / 981% auto no-repeat; }
+.today-practice-time { font-size: 1.1em; color: var(--muted); white-space: nowrap; }
