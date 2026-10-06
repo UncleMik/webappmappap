@@ -25,8 +25,9 @@
 .user-message { justify-content: flex-end; }
 .user-message .bubble { background: linear-gradient(115deg, #9b6aff, #8c63ff); color: #fff; }
 .user-message .message-content { max-width: 80%; }
-.message-meta { display: flex; align-items: center; justify-content: flex-end; gap: 4px; }
-.read-mark { color: #9769ff; font-size: 15px; letter-spacing: -6px; padding-right: 5px; }
+.message-meta { display: flex; align-items: center; justify-content: flex-end; gap: 4px; margin-top: 5px; color: #eee4ff; }
+.message-meta time { margin: 0; color: inherit; }
+.read-mark { color: inherit; font-size: 15px; line-height: 13px; letter-spacing: -6px; padding-right: 5px; }
 .chat-controls { padding: 12px 0 8px; }
 .help-label { color: #7968ac; font-size: 12px; margin-bottom: 3px; }
 .suggestions { display: flex; gap: 4px; }
