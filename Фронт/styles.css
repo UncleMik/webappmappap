@@ -1,7 +1,7 @@
-@font-face { font-family: "Gotham Pro"; src: url('assets/fonts/GothamPro-Medium.woff') format('woff'); font-style: normal; font-weight: 500; font-display: swap; }
-@font-face { font-family: "Gotham Pro"; src: url('assets/fonts/GothamPro-Bold.woff') format('woff'); font-style: normal; font-weight: 700; font-display: swap; }
-@font-face { font-family: "Gotham Pro"; src: url('assets/fonts/GothamPro-Black.woff') format('woff'); font-style: normal; font-weight: 900; font-display: swap; }
-@font-face { font-family: "Gotham Pro"; src: url('assets/fonts/GothamPro-MediumItalic.woff') format('woff'); font-style: italic; font-weight: 500; font-display: swap; }
+@font-face { font-family: "Intro"; src: url('assets/fonts/Intro-Regular.woff') format('woff'); font-style: normal; font-weight: 400 500; font-display: swap; }
+@font-face { font-family: "Intro"; src: url('assets/fonts/Intro-Bold.woff') format('woff'); font-style: normal; font-weight: 700; font-display: swap; }
+@font-face { font-family: "Intro"; src: url('assets/fonts/Intro-Black.woff') format('woff'); font-style: normal; font-weight: 900; font-display: swap; }
+@font-face { font-family: "Intro"; src: url('assets/fonts/Intro-Regular-Italic.woff') format('woff'); font-style: italic; font-weight: 400 500; font-display: swap; }
 /* The reference screen is 500 px wide. 1 rem = 10 reference pixels.
    Scaling is limited to the mobile composition; there is no desktop layout. */
 :root {
@@ -15,7 +15,7 @@
 }
 * { box-sizing: border-box; }
 ::-webkit-scrollbar { width: 0; height: 0; }
-body { margin: 0; background: var(--canvas); color: var(--ink); font-family: "Gotham Pro", Arial, sans-serif; font-weight: 500; font-synthesis: none; -webkit-font-smoothing: antialiased; }
+body { margin: 0; background: var(--canvas); color: var(--ink); font-family: "Intro", Arial, sans-serif; font-weight: 500; font-synthesis: none; -webkit-font-smoothing: antialiased; }
 input, textarea, select { font-family: inherit; font-weight: inherit; }
 h3, strong, b { font-weight: 700; }
 button, a { -webkit-tap-highlight-color: transparent; }
