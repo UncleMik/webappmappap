@@ -9,6 +9,7 @@ body { width: min(100%, 500px); margin-inline: auto; }
 }
 .calendar-dialog { width: min(100%, 500px); margin-inline: auto; }
 @media (min-width: 501px) {
+  html { background: #dedbe3; }
   .club-notice, .profile-notice {
     left: calc(50% - 250px + 16px);
     right: calc(50% - 250px + 16px);
