@@ -43,4 +43,3 @@
 .demo-note { margin-top:1rem; text-align:center; font-size:.85rem; color:var(--muted); }
 .reset-payment { background:none; color:var(--muted); text-decoration:underline; }
 .course-action-status { padding:1rem; margin-top:1rem; border-radius:.8rem; background:#f1ebff; font-size:1.1rem; }
-@media(min-width:600px) { .owned-course { grid-template-columns:16rem minmax(0,1fr); } .owned-copy { display:flex; flex-direction:column; } .owned-copy .lesson-button { margin-top:auto; } }

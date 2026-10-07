@@ -69,10 +69,8 @@ blockquote.reader-callout { display: flex; gap: 16px; font-size: 15px; font-styl
 .dating-article { text-decoration: none; color: inherit; background: #f3ebff; grid-column: 1 / -1; }
 .dating-article::after { content: ''; position: absolute; inset: 0; background: linear-gradient(90deg, #fffaf5e6, #fffaf5b3 65%, #fffaf566); }
 .dating-article .article-title { font-size: 1.6rem; line-height: 1.9rem; padding-right: 3rem; }
-@media (min-width: 600px) { .reader-section { padding-left: 6vw; padding-right: 6vw; } .reader-cover { margin-left: -6vw; margin-right: -6vw; } }
 .reader-social { margin: 8px 20px 14px; padding: 14px 16px; border-radius: 14px; background: #f5efff; color: #685882; font-size: 14px; line-height: 1.5; }
 .reader-social a { color: #794aff; text-decoration: underline; text-underline-offset: 3px; font-weight: 700; }
 .reader-social a:focus-visible { outline: 2px solid #794aff; outline-offset: 3px; }
 .reader-social-status { display: block; margin-top: 6px; font-size: 12px; }
 .reader-social-status[hidden] { display: none; }
-@media (min-width: 600px) { .reader-social { margin-left: 6vw; margin-right: 6vw; } }

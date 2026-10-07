@@ -1,0 +1,16 @@
+/* Keep the mobile composition on wide screens, including fixed panels. */
+body { width: min(100%, 500px); margin-inline: auto; }
+.app-shell > .bottom-navigation,
+.app-section-frame,
+.section-loading {
+  left: max(0px, calc((100% - 500px) / 2));
+  right: auto;
+  width: min(100%, 500px);
+}
+.calendar-dialog { width: min(100%, 500px); margin-inline: auto; }
+@media (min-width: 501px) {
+  .club-notice, .profile-notice {
+    left: calc(50% - 250px + 16px);
+    right: calc(50% - 250px + 16px);
+  }
+}

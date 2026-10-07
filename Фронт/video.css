@@ -44,5 +44,4 @@
 .video-chapters ol { list-style: none; padding: 0; margin: 1rem 0 0; }
 .video-chapters button { display: flex; justify-content: space-between; width: 100%; text-align: left; padding: 1.4rem; border-radius: 1rem; background: transparent; color: #657397; gap: 1rem; }
 .video-chapters button[aria-current="true"] { background: #eee7ff; color: #794aff; }
-@media (min-width: 760px) { .video-main { display: grid; grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr); align-items: start; gap: 2rem; padding: 1rem 3rem 3rem; } .video-stage { aspect-ratio: 414 / 392; border-radius: 2rem; } .video-panel { margin: 0; border-radius: 2rem; } }
 @media (prefers-reduced-motion: no-preference) { .video-controls button, .video-favorite { transition: background .2s, opacity .2s, transform .2s; } .video-controls button:active { transform: scale(.96); } }

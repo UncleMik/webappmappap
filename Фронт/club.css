@@ -78,7 +78,6 @@
 .club-notice { position:fixed; z-index:10; bottom:calc(8.5rem + env(safe-area-inset-bottom,0px)); left:1.5rem; right:1.5rem; display:flex; align-items:center; gap:1rem; padding:1.5rem; border-radius:1.5rem; box-shadow:0 .5rem 3rem #33215e20; border:1px solid #e8dcff; background:#fff; font-size:1.5rem; line-height:2rem; }
 .club-notice p { flex:1; }
 .club-notice button { background:#f4efff; border-radius:50%; min-width:3.5rem; height:3.5rem; text-align:center; font-size:2.4rem; color:var(--purple); }
-@media(min-width:600px) { .paid-event .event-copy strong { padding-right:13rem; } }
 /* Community overview follows the approved reference; shared navigation stays in styles.css. */
 .club-page { --ink:#171333; --muted:#838099; --purple:#794aff; --canvas:#fff; }
 .club-page .app { background:#fff; }
@@ -148,7 +147,6 @@
 .discussion-composer .discussion-send svg { width:40px; height:40px; display:block; fill:currentColor; stroke:none; }
 .community-chat .bottom-navigation { position:relative; margin-top:0; }
 .visually-hidden { position:absolute; width:1px; height:1px; overflow:hidden; clip-path:inset(50%); }
-@media(min-width:600px) { .lara-welcome { min-height:110px; }.lara-welcome img { width:150px; }.lara-welcome > div { width:60%; }.community-copy strong { font-size:16px; }.community-copy > span { font-size:14px; } }
 .discussion-header svg,.discussion-composer svg,.pinned-message svg { width:22px; height:22px; }
 .member-avatar { width:4rem; height:4rem; background-image:url('assets/community-reference.jpg'); background-size:137.4rem 103.7rem; background-position:-73.7rem -24rem; }
 .member-1 { background-position:-73.7rem -36.3rem; }.member-2 { background-position:-73.7rem -47.7rem; }.member-4 { background-position:-73.7rem -68rem; }.member-5 { background-position:-73.7rem -78.3rem; }

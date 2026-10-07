@@ -55,4 +55,3 @@
 .payment-dialog button { width:100%; text-align:center; padding:1.3rem; border-radius:1rem; font-size:1.4rem; }
 .payment-confirm { background:var(--purple); color:white; }
 .payment-cancel { margin-top:.7rem; background:#f2edff; color:var(--purple); }
-@media(min-width:600px) { .hero-photo { right:0; } .hero-badge { right:6rem; } .plan { min-height:32rem; } }
