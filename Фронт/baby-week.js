@@ -52,7 +52,7 @@
     illustration.alt = `Иллюстрация развития малыша: ${week}-я неделя`;
     illustration.hidden = false;
     page.querySelector('#development-title').textContent = `Развитие малыша на ${week}-й неделе`;
-    page.querySelector('.baby-development > p').textContent = content.description;
+    page.querySelector('.baby-development > p').textContent = content.developmentDescription;
     page.querySelector('.development-link').href = `journey.html?week=${week}`;
     window.renderPregnancyRecommendations(page.querySelector('.article-grid'), week, 'baby');
     // Existing ultrasound and movements are demo data for week 27.
