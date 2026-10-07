@@ -98,10 +98,26 @@ window.renderPregnancyRecommendations = (list, week, from) => renderWhenArticles
 });
 const todayArticles = document.querySelector('.today-page .article-grid, #today .article-grid');
 if (todayArticles) renderWhenArticlesReady(todayArticles, () => {
+  function createTodayCard(title, minutes, href, practice = false) {
+    const card = document.createElement('a');
+    card.className = `article-card today-material-card${practice ? ' practice-article' : ''}`;
+    card.href = href;
+    card.innerHTML = '<span class="article-meta"></span><strong class="article-title"></strong><span class="article-arrow"><svg class="chevron" aria-hidden="true"><use href="#i-chevron"/></svg></span>';
+    card.querySelector('.article-meta').textContent = `${practice ? 'ПРАКТИКА' : 'СТАТЬЯ'} · ${minutes} мин`;
+    card.querySelector('.article-title').textContent = title;
+    return card;
+  }
   const cards = window.pregnancyArticleList.filter(article => article.week === 27).slice(0, 2)
-    .map(article => window.createSchoolArticleCard(article, 'index'));
-  const practice = document.createElement('article');
-  practice.className = 'journey-content-card school-article-card today-practice-card';
-  practice.innerHTML = '<a class="content-open" href="video.html?id=back-practice&from=index"><span class="today-practice-cover" aria-hidden="true"></span><h3>Расслабление спины</h3></a><div class="content-footer"><span class="content-type"><svg aria-hidden="true" viewBox="0 0 18 22"><path d="m5 4 10 7-10 7Z" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg>Практика</span><span class="today-practice-time">8 мин</span></div>';
+    .map(article => {
+      const card = createTodayCard(article.title, article.minutes, `article.html?id=${encodeURIComponent(article.id)}&from=index`);
+      const cover = articleCover(article, 'today-material-cover');
+      if (cover) card.prepend(cover);
+      return card;
+    });
+  const practice = createTodayCard('Расслабление спины', 8, 'video.html?id=back-practice&from=index', true);
+  const practiceCover = document.createElement('span');
+  practiceCover.className = 'today-practice-cover today-material-cover';
+  practiceCover.setAttribute('aria-hidden', 'true');
+  practice.prepend(practiceCover);
   todayArticles.replaceChildren(...cards, practice);
 });

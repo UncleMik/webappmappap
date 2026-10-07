@@ -12,5 +12,12 @@
 #today .pregnancy-meta { margin-right: 0; font-size: 1.4rem; line-height: 1.8rem; white-space: nowrap; }
 #today .progress-track { flex: 1; min-width: 0; margin: 0; height: 1.3rem; }
 #today .progress-track > span { width: 68.93%; }
-.today-practice-cover { display: block; width: 100%; aspect-ratio: 3 / 2; background: url('assets/mom-reference.webp') 34.8% 62.82871% / 981% auto no-repeat; }
-.today-practice-time { font-size: 1.1em; color: var(--muted); white-space: nowrap; }
+#today-articles { margin-top: 1rem; }
+#today-articles > .today-material-card:first-child { grid-column: 1 / -1; }
+#today-articles > .article-load-status { grid-column: 1 / -1; }
+.today-material-card { height: auto; min-height: 11.2rem; padding: 1.1rem 1.3rem 3.9rem; background: #f7f3ef; }
+.today-material-card .article-title { max-width: 78%; }
+.today-material-card:first-child .article-title { max-width: 72%; font-size: 1.6rem; line-height: 1.9rem; }
+.today-material-card .article-meta { padding: 0 .5rem; font-size: 1rem; }
+.today-material-cover { position: absolute; right: 0; top: 0; width: 65%; height: 100%; object-fit: cover; mask-image: linear-gradient(to right, transparent, #000); opacity: .6; }
+.today-practice-cover { background: url('assets/mom-reference.webp') 34.8% 62.82871% / 981% auto no-repeat; }
