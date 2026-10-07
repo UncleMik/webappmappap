@@ -96,7 +96,7 @@
 .community-tabs button { flex:1; min-height:44px; padding:.7rem .5rem; text-align:center; border-radius:3rem; background:#f7f5fa; font-size:1.5rem; }
 .community-tabs [aria-selected=true] { background:linear-gradient(120deg,#a06eff,#7137ff); color:white; }
 .community-tabs [data-tab=motherhood][aria-selected=true] { background:linear-gradient(120deg,#f6e8f0,#eed8e9); color:#51446f; }
-.community-tabs [data-tab=events][aria-selected=true] { background:linear-gradient(105deg,#f6a9c8,#ec8fba); color:#48213c; }
+.community-tabs [data-tab=events][aria-selected=true] { background:linear-gradient(105deg,#e4f3c8,#cfe7ad); color:#35482a; }
 .community-section { margin:1.1rem 0 1.5rem; }
 .community-heading { display:flex; align-items:center; justify-content:space-between; gap:1rem; min-height:3.7rem; }
 .community-heading h2 { font-size:1.6rem; line-height:1.3; }
