@@ -33,6 +33,7 @@
   }
   function align(week, smooth) {
     scrollingTo = week;
+    if (!wheel.clientWidth) return;
     const button = options[week - 1];
     wheel.scrollTo({ left: button.offsetLeft - options[0].offsetLeft, behavior: smooth && !reducedMotion() ? 'smooth' : 'instant' });
     paintWheel();
@@ -86,9 +87,11 @@
     options[week - 1].focus({ preventScroll: true });
   });
   wheel.addEventListener('scroll', () => {
+    if (!wheel.clientWidth) return;
     if (!animationFrame) animationFrame = requestAnimationFrame(paintWheel);
     clearTimeout(settleTimer);
     settleTimer = setTimeout(() => {
+      if (!wheel.clientWidth) return;
       const distance = button => Math.abs(button.offsetLeft - options[0].offsetLeft - wheel.scrollLeft);
       const closest = options.reduce((best, button) => distance(button) < distance(best) ? button : best);
       const week = Number(closest.dataset.week);
@@ -139,5 +142,8 @@
   window.addEventListener('popstate', () => { render(fromUrl()); align(fromUrl(), false); });
   window.addEventListener('resize', () => align(Number(page.dataset.week), false));
   render(fromUrl());
+  new ResizeObserver(() => {
+    if (wheel.clientWidth) align(Number(page.dataset.week), false);
+  }).observe(wheel);
   requestAnimationFrame(() => align(fromUrl(), false));
 })();

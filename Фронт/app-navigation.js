@@ -110,7 +110,7 @@
     const file = fileOf(url);
     if (!sections.has(file) || url.origin !== location.origin) { location.href = url.href; return; }
     url.searchParams.set('v', version);
-    if (file === activeFile && push && restoreTab) return;
+    if (file === activeFile && push && restoreTab && file !== 'journey.html') return;
     const request = ++serial;
     const old = panels.get(activeFile);
     if (activeFile === initialFile) { if (push) old.url = location.href; old.scroll = [scrollX, scrollY]; }
@@ -124,8 +124,8 @@
       if (!loaded) { location.href = url.href; return; }
     }
     if (request !== serial) return;
-    // Reopening a tab restores its last week, search, scroll and demo chat.
-    const target = push && restoreTab ? new URL(panel.url) : url;
+    // Journey opens the current week; other tabs retain their saved state.
+    const target = push && restoreTab && file !== 'journey.html' ? new URL(panel.url) : url;
     if (push) history.pushState(null, '', target);
     old.element.hidden = true;
     panel.element.hidden = false;
