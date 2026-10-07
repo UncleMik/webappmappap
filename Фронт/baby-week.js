@@ -22,6 +22,7 @@
     const content = library[week];
     const isCurrent = week === currentWeek;
     select.value = week;
+    window.dispatchEvent(new CustomEvent('baby:week-change', { detail: { week } }));
     document.title = `Малыш · ${week}-я неделя`;
     page.querySelector('.eyebrow').textContent = isCurrent ? 'Ваш малыш сейчас' : 'Малыш на выбранной неделе';
     page.querySelector('#baby-overview-title').textContent = isCurrent ? '27 недель и 4 дня' : `${week} неделя`;
@@ -55,8 +56,8 @@
     page.querySelector('.baby-development > p').textContent = content.developmentDescription;
     page.querySelector('.development-link').href = `journey.html?week=${week}`;
     window.renderPregnancyRecommendations(page.querySelector('.article-grid'), week, 'baby');
-    // Existing ultrasound and movements are demo data for week 27.
-    ['.baby-data', '.baby-movements', '.community-card'].forEach(selector => {
+    // Movements and community content remain demo data for week 27.
+    ['.baby-movements', '.community-card'].forEach(selector => {
       page.querySelector(selector).hidden = !isCurrent;
     });
   }

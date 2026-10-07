@@ -4,7 +4,9 @@
   if (!button || !dialog) return;
   const form = dialog.querySelector('form');
   const error = dialog.querySelector('.baby-form-error');
-  const key = 'webpril:baby-data:v1';
+  const legacyKey = 'webpril:baby-data:v1';
+  const weekKey = week => `webpril:baby-data:v2:week:${week}`;
+  const normalizeWeek = value => integer(value, 42) ? Number(value) : 27;
   const positions = { head: 'Головное', breech: 'Тазовое', transverse: 'Поперечное' };
   const fields = ['heartRate', 'ultrasoundDate', 'ultrasoundWeek', 'position'];
   const integer = (value, max = Infinity) => /^\d+$/.test(String(value)) && Number(value) >= 1 && Number(value) <= max;
@@ -17,14 +19,21 @@
       position: Object.hasOwn(positions, data?.position) ? data.position : '',
     };
   }
-  let saved = normalize({});
-  try { saved = normalize(JSON.parse(localStorage.getItem(key))); } catch { /* Empty form remains usable. */ }
+  let selectedWeek = normalizeWeek(new URLSearchParams(location.search).get('week'));
+  let editingWeek = selectedWeek;
+  function read(week) {
+    try {
+      const stored = localStorage.getItem(weekKey(week));
+      return normalize(JSON.parse(stored ?? (week === 27 ? localStorage.getItem(legacyKey) : null)));
+    } catch { return normalize({}); }
+  }
+  let saved = read(selectedWeek);
   const tiles = document.querySelectorAll('.baby-data .data-tile');
   function render() {
     const values = [
-      [saved.heartRate ? `${saved.heartRate} уд/мин` : 'Не указано', saved.heartRate ? 'Ваша запись' : 'Добавьте значение'],
-      [saved.ultrasoundWeek ? `${saved.ultrasoundWeek} нед.` : 'Не указано', saved.ultrasoundDate ? new Intl.DateTimeFormat('ru-RU').format(new Date(`${saved.ultrasoundDate}T12:00:00`)) : 'Дата не указана'],
-      [positions[saved.position] || 'Не указано', saved.position ? 'Ваша запись' : 'Добавьте положение'],
+      [saved.heartRate ? `${saved.heartRate} уд/мин` : '—', saved.heartRate ? 'Ваша запись' : '—'],
+      [saved.ultrasoundWeek ? `${saved.ultrasoundWeek} нед.` : '—', saved.ultrasoundDate ? new Intl.DateTimeFormat('ru-RU').format(new Date(`${saved.ultrasoundDate}T12:00:00`)) : '—'],
+      [positions[saved.position] || '—', saved.position ? 'Ваша запись' : '—'],
     ];
     values.forEach(([value, note], index) => {
       tiles[index].querySelector('strong').textContent = value;
@@ -32,7 +41,15 @@
     });
   }
   button.setAttribute('aria-haspopup', 'dialog');
+  window.addEventListener('baby:week-change', event => {
+    selectedWeek = normalizeWeek(event.detail.week);
+    saved = read(selectedWeek);
+    render();
+  });
   button.addEventListener('click', () => {
+    editingWeek = selectedWeek;
+    saved = read(editingWeek);
+    dialog.querySelector('#baby-form-title').textContent = `Данные о малыше · ${editingWeek} неделя`;
     fields.forEach(name => { form.elements.namedItem(name).value = saved[name]; });
     error.hidden = true;
     dialog.showModal();
@@ -47,12 +64,12 @@
     event.preventDefault();
     if (!form.reportValidity()) return;
     const data = normalize(Object.fromEntries(new FormData(form)));
-    try { localStorage.setItem(key, JSON.stringify(data)); } catch {
+    try { localStorage.setItem(weekKey(editingWeek), JSON.stringify(data)); } catch {
       error.textContent = 'Не удалось сохранить данные в браузере. Проверьте настройки хранения и попробуйте снова.';
       error.hidden = false;
       return;
     }
-    saved = data;
+    saved = read(selectedWeek);
     render();
     dialog.close();
   });
