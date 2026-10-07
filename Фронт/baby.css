@@ -28,6 +28,19 @@
 .baby-panel .text-link { font-size: 1.05rem; gap: .35rem; color: #8b68ce; letter-spacing: -.01rem; }
 .baby-panel .text-link .chevron { width: 1rem; height: 1.7rem; color: #60677a; }
 .baby-data { padding: 1rem 1.2rem; min-height: 11.4rem; }
+.baby-data-dialog { margin:auto; width:calc(100% - 3.2rem); max-width:44rem; max-height:calc(100dvh - 3.2rem); overflow:auto; padding:2rem; border:0; border-radius:2rem; background:#fff; color:#191b24; box-shadow:0 1rem 5rem #30224433; }
+.baby-data-dialog::backdrop { background:#211a3c66; }
+.baby-form-heading { display:flex; align-items:center; justify-content:space-between; gap:1rem; }
+.baby-form-heading h2 { font-size:2rem; }
+.baby-form-heading button { width:44px; height:44px; border-radius:50%; background:#f6f3fd; font-size:2.5rem; color:#7550cc; }
+.baby-form-note { margin:.8rem 0 1.5rem; font-size:1.3rem; line-height:1.5; color:#727987; }
+.baby-data-dialog label { display:block; margin-top:1.2rem; font-size:1.4rem; line-height:1.5; }
+.baby-data-dialog input, .baby-data-dialog select { display:block; box-sizing:border-box; width:100%; min-width:0; min-height:44px; margin-top:.5rem; padding:1rem; border:1px solid #ddd4ee; border-radius:1rem; font:inherit; font-size:16px; background:#fcfaff; color:#191b24; }
+.baby-form-actions { display:flex; gap:1rem; justify-content:flex-end; margin-top:2rem; }
+.baby-form-actions button { min-height:44px; padding:1rem 1.6rem; font-size:1.4rem; }
+.baby-form-actions button:not(.primary-button) { border-radius:3rem; background:#f6f3fd; color:#7550cc; }
+.baby-form-error { margin-top:1rem; font-size:1.4rem; color:#a62b39; }
+html:has(.baby-data-dialog[open]) { overflow:hidden; }
 .baby-data-grid { display: grid; grid-template-columns: 1.06fr 1fr 1fr; gap: .7rem; margin-top: .7rem; }
 .data-tile { display: flex; align-items: flex-start; gap: .6rem; min-width: 0; min-height: 6.5rem; padding: .9rem .6rem; border: 1px solid #f5f1fa; border-radius: 1.2rem; background: linear-gradient(120deg,#fdfbff,#faf8ff); }
 .data-icon { width: 3.1rem; height: 3.1rem; border-radius: 50%; }

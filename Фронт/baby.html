@@ -8,7 +8,7 @@
   <title>Малыш</title>
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='10' fill='%238052ff'/%3E%3Cpath d='M16 24 7 15C1 8 12 3 16 10 20 3 31 8 25 15Z' fill='white'/%3E%3C/svg%3E">
   <link rel="stylesheet" href="styles.css?v=20261007-opaque-nav">
-  <link rel="stylesheet" href="baby.css?v=20261007-article-carousel">
+  <link rel="stylesheet" href="baby.css?v=20261007-data-form">
   <link rel="stylesheet" href="mobile-layout.css?v=20261007-darker-sides">
 </head>
 <body>
@@ -86,6 +86,19 @@
     </div></nav>
   </div>
   <svg class="svg-definitions" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><symbol id="i-chevron" viewBox="0 0 16 24"><path d="m5 5 6 7-6 7" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></symbol></svg>
+  <dialog class="baby-data-dialog" aria-labelledby="baby-form-title">
+    <form id="baby-data-form">
+      <div class="baby-form-heading"><h2 id="baby-form-title">Данные о малыше</h2><button type="button" data-close-baby-form aria-label="Закрыть">×</button></div>
+      <p class="baby-form-note">Данные сохраняются только в этом браузере.</p>
+      <label>ЧСС, уд/мин<input name="heartRate" type="number" min="1" step="1" inputmode="numeric"></label>
+      <label>Дата последнего УЗИ<input name="ultrasoundDate" type="date"></label>
+      <label>Неделя на последнем УЗИ<input name="ultrasoundWeek" type="number" min="1" max="42" step="1" inputmode="numeric"></label>
+      <label>Положение малыша<select name="position"><option value="">Не указано</option><option value="head">Головное</option><option value="breech">Тазовое</option><option value="transverse">Поперечное</option></select></label>
+      <p class="baby-form-error" role="alert" hidden></p>
+      <div class="baby-form-actions"><button type="button" data-close-baby-form>Отмена</button><button class="primary-button" type="submit">Сохранить</button></div>
+    </form>
+  </dialog>
+  <script src="baby-data.js?v=20261007-data-form"></script>
   <script src="article-read-state.js?v=20261005-auto-read"></script>
 <script src="articles-api.js?v=20261007-journey-articles"></script>
 <script src="baby-weeks-data.js?v=20261006-transparent"></script>
