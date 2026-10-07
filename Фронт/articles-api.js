@@ -57,7 +57,7 @@ function renderWhenArticlesReady(list, render) {
     if (pendingArticleLists.get(list) !== request) return;
     list.removeAttribute('aria-busy');
     if (articleLoadingError) { window.showArticleLoadError(list); return; }
-    render();
+    window.articleReadState.bindList(list, render);
   });
 }
 
@@ -88,13 +88,13 @@ window.createSchoolArticleCard = (article, from) => {
 };
 
 window.renderPregnancyWeekArticles = (list, week) => renderWhenArticlesReady(list, () => {
-  const cards = window.pregnancyArticleList.filter(article => article.week === week).map(article => window.createSchoolArticleCard(article, 'journey'));
+  const cards = window.articleReadState.unreadFirst(window.pregnancyArticleList.filter(article => article.week === week)).map(article => window.createSchoolArticleCard(article, 'journey'));
   list.replaceChildren(...cards);
   list.scrollLeft = 0;
 });
 
 window.renderPregnancyRecommendations = (list, week, from) => renderWhenArticlesReady(list, () => {
-  list.replaceChildren(...window.pregnancyArticleList.filter(article => article.week === week).map(article => window.createSchoolArticleCard(article, from)));
+  list.replaceChildren(...window.articleReadState.unreadFirst(window.pregnancyArticleList.filter(article => article.week === week)).map(article => window.createSchoolArticleCard(article, from)));
 });
 const todayArticles = document.querySelector('.today-page .article-grid, #today .article-grid');
 if (todayArticles) renderWhenArticlesReady(todayArticles, () => {
@@ -107,7 +107,7 @@ if (todayArticles) renderWhenArticlesReady(todayArticles, () => {
     card.querySelector('.article-title').textContent = title;
     return card;
   }
-  const cards = window.pregnancyArticleList.filter(article => article.week === 27).slice(0, 2)
+  const cards = window.articleReadState.unreadFirst(window.pregnancyArticleList.filter(article => article.week === 27)).slice(0, 2)
     .map(article => {
       const card = createTodayCard(article.title, article.minutes, `article.html?id=${encodeURIComponent(article.id)}&from=index`);
       const cover = articleCover(article, 'today-material-cover');
