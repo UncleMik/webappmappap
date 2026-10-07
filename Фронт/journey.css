@@ -40,7 +40,7 @@
 .carousel-prev { left: -1.3rem; }
 .carousel-next { right: -1.3rem; }
 .course-card { min-height: 16.3rem; }
-.course-photo { aspect-ratio: 123 / 54; }
+.course-photo { aspect-ratio: 123 / 54; background-image: url('assets/journey-courses-clean.webp'); }
 .course-lock-icon { position: absolute; width: 2.4rem; height: 2.8rem; bottom: .7rem; left: 50%; transform: translateX(-50%); }
 .course-copy { padding: .7rem 1rem; }
 .journey-page .course-copy h3 { font-size: 1.45rem; line-height: 1.7rem; }
