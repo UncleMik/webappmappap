@@ -91,8 +91,6 @@ html:has(.baby-data-dialog[open]) { overflow:hidden; }
   .data-tile { gap: .3rem; padding-left: .4rem; padding-right: .4rem; }
 }
 
-.baby-week-select { display:flex; align-items:center; justify-content:space-between; gap:1rem; margin-bottom:1rem; font-size:1.3rem; }
-.baby-week-select select { min-width:10rem; padding:.7rem; border:1px solid #e5dafa; border-radius:.8rem; background:#fff; font:inherit; }
 .baby-week-measurements { font-size:1.6rem; line-height:2rem; margin-top:1rem; }
 .baby-measurement-note { font-size:1.15rem; line-height:1.5rem; color:#68758b; max-width:27rem; margin-top:.5rem; }
 .baby-page [hidden] { display:none !important; }
@@ -109,3 +107,15 @@ html:has(.baby-data-dialog[open]) { overflow:hidden; }
 .baby-size-name { font-weight: 500; color: #2d3341; }
 
 .baby-week-measurements span { display: inline-block; white-space: nowrap; }
+
+/* Week carousel matches My Journey. */
+.baby-week-carousel .week-selector { display: grid; grid-template-columns: 2.8rem minmax(0,1fr) 2.8rem; gap: .6rem; align-items: center; }
+.baby-week-carousel .round-arrow { display: grid; place-items: center; width: 2.8rem; height: 2.8rem; border-radius: 50%; background: white; color: #914aff; font-size: 2.7rem; line-height: 1; box-shadow: 0 .2rem 1rem #8653d51c; text-align: center; }
+.baby-week-carousel .week-wheel { display: flex; align-items: center; gap: .6rem; overflow-x: auto; min-width: 0; padding: .8rem calc(50% - 5rem); scroll-snap-type: x mandatory; scrollbar-width: none; overscroll-behavior-x: contain; user-select: none; }
+.baby-week-carousel .week-wheel::-webkit-scrollbar { display: none; }
+.baby-week-carousel .week-option { flex: 0 0 10rem; min-height: 4.3rem; text-align: center; border-radius: 1.1rem; background: #f6f0ff; white-space: nowrap; font-size: 1.35rem; color: #858197; scroll-snap-align: center; transform: perspective(24rem) rotateY(var(--turn,0deg)) scale(var(--scale,.85)); opacity: var(--opacity,.65); }
+.baby-week-carousel .week-option.week-selected { color: #191b24; font-weight: 700; border: 1px solid white; box-shadow: 0 .3rem 1.2rem #9876d52b; }
+.baby-week-carousel .week-selector button:disabled { opacity: .3; cursor: default; }
+.baby-week-carousel .week-dots { display: flex; justify-content: center; gap: .4rem; margin: .7rem 0 1rem; }
+.baby-week-carousel .week-dots span { width: .6rem; height: .6rem; background: #ddccf8; border-radius: 50%; transition: width .25s, background-color .25s, transform .25s; }
+.baby-week-carousel .week-dots span.active { width: 1.4rem; background: #9450fa; transform: scale(1.1); }

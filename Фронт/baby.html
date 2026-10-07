@@ -8,7 +8,7 @@
   <title>Малыш</title>
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='10' fill='%238052ff'/%3E%3Cpath d='M16 24 7 15C1 8 12 3 16 10 20 3 31 8 25 15Z' fill='white'/%3E%3C/svg%3E">
   <link rel="stylesheet" href="styles.css?v=20261007-opaque-nav">
-  <link rel="stylesheet" href="baby.css?v=20261007-data-form">
+  <link rel="stylesheet" href="baby.css?v=20261007-week-carousel">
   <link rel="stylesheet" href="mobile-layout.css?v=20261007-darker-sides">
   <link rel="stylesheet" href="helpers.css?v=20261007-tools">
 </head>
@@ -19,7 +19,14 @@
       <h1>Малыш</h1>
     </header>
     <main class="baby-main">
-      <label class="baby-week-select">Малыш по неделям<select aria-label="Неделя развития малыша"></select></label>
+      <section class="baby-week-carousel" aria-label="Выбор недели развития малыша">
+        <div class="week-selector">
+          <button class="round-arrow week-prev" type="button" aria-label="Предыдущая неделя">‹</button>
+          <div class="week-wheel" aria-label="Недели развития малыша"></div>
+          <button class="round-arrow week-next" type="button" aria-label="Следующая неделя">›</button>
+        </div>
+        <div class="week-dots" role="img" aria-label="15–28 недели"><span></span><span class="active"></span><span></span></div>
+      </section>
       <section class="baby-overview" aria-labelledby="baby-overview-title">
         <img class="baby-hero-art" src="assets/baby-weeks/week-27.webp?v=20261006-transparent" alt="Иллюстрация малыша в утробе" width="400" height="400">
         <div class="baby-overview-copy">
@@ -103,7 +110,7 @@
   <script src="article-read-state.js?v=20261005-auto-read"></script>
 <script src="articles-api.js?v=20261007-journey-articles"></script>
 <script src="baby-weeks-data.js?v=20261007-development"></script>
-  <script src="baby-week.js?v=20261007-weekly-data"></script>
+  <script src="baby-week.js?v=20261007-week-carousel"></script>
   <script src="recommendations-carousel.js?v=20261007-journey-articles"></script>
   <script src="app.js"></script>
   <script src="helpers.js?v=20261007-tools"></script>
