@@ -11,6 +11,7 @@
   <link rel="stylesheet" href="baby.css?v=20261007-week-carousel">
   <link rel="stylesheet" href="mobile-layout.css?v=20261007-darker-sides">
   <link rel="stylesheet" href="helpers.css?v=20261007-tools">
+  <link rel="stylesheet" href="carousel-controls.css?v=20261008-centered-arrows">
 </head>
 <body>
   <div class="app baby-page">
@@ -21,9 +22,9 @@
     <main class="baby-main">
       <section class="baby-week-carousel" aria-label="Выбор недели развития малыша">
         <div class="week-selector">
-          <button class="round-arrow week-prev" type="button" aria-label="Предыдущая неделя">‹</button>
+          <button class="round-arrow week-prev" type="button" aria-label="Предыдущая неделя"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m15 5-6 7 6 7"/></svg></button>
           <div class="week-wheel" aria-label="Недели развития малыша"></div>
-          <button class="round-arrow week-next" type="button" aria-label="Следующая неделя">›</button>
+          <button class="round-arrow week-next" type="button" aria-label="Следующая неделя"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m9 5 6 7-6 7"/></svg></button>
         </div>
         <div class="week-dots" role="img" aria-label="15–28 недели"><span></span><span class="active"></span><span></span></div>
       </section>
@@ -72,9 +73,9 @@
       <section class="baby-panel baby-learn" aria-labelledby="learn-title">
         <div class="section-heading"><h2 id="learn-title">Узнать больше</h2><a class="text-link" href="articles.html?from=baby">Смотреть все<svg class="chevron" aria-hidden="true"><use href="#i-chevron"/></svg></a></div>
         <div class="recommendations-carousel">
-          <button class="recommendations-prev" type="button" aria-label="Предыдущие статьи" aria-controls="baby-articles">‹</button>
+          <button class="recommendations-prev" type="button" aria-label="Предыдущие статьи" aria-controls="baby-articles"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m15 5-6 7 6 7"/></svg></button>
           <div class="article-grid" id="baby-articles"></div>
-          <button class="recommendations-next" type="button" aria-label="Следующие статьи" aria-controls="baby-articles">›</button>
+          <button class="recommendations-next" type="button" aria-label="Следующие статьи" aria-controls="baby-articles"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m9 5 6 7-6 7"/></svg></button>
         </div>
       </section>
 
@@ -114,5 +115,6 @@
   <script src="recommendations-carousel.js?v=20261007-journey-articles"></script>
   <script src="app.js"></script>
   <script src="helpers.js?v=20261007-tools"></script>
+  <script src="carousel-controls.js?v=20261008-centered-arrows"></script>
 </body>
 </html>
