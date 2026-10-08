@@ -57,7 +57,7 @@
 .mom-practice:first-child { min-height: 11.2rem; }
 .practice-photo { position: absolute; right: 0; top: 0; width: 65%; height: 100%; background-size: 981% auto; mask-image: linear-gradient(to right,transparent,#000); opacity: .6; pointer-events: none; }
 .back-practice-photo { background-position: 34.8% 62.82871%; }
-.birth-practice-photo { background-position: 50.30084% 62.82871%; }
+.birth-practice-photo { top: auto; bottom: 3.8rem; height: auto; aspect-ratio: 125 / 65; background-size: 764.8% auto; background-position: 50.30084% 62.82871%; }
 .practice-copy, .weight-tool-heading, .mom-weight-tool > p { position: relative; z-index: 1; }
 .practice-copy { padding: 0; }
 .practice-copy h3, .weight-tool-heading h3 { margin: 0; max-width: 78%; font-size: 1.43rem; line-height: 1.705rem; letter-spacing: -.03rem; }
