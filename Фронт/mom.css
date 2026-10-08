@@ -20,7 +20,6 @@
 .mom-progress > span { display: block; width: 74%; height: 100%; border-radius: inherit; background: linear-gradient(90deg,#925dff,#a776ff); }
 .mom-encouragement { display: flex; align-items: center; gap: .7rem; margin-top: 1.4rem; padding: .6rem .9rem; width: 19rem; min-height: 3.3rem; background: #f9e9ff; color: #72578e; border-radius: 2rem; font-size: 1.155rem; white-space: nowrap; }
 .mom-encouragement > svg:first-child { width: 1.5rem; height: 1.5rem; color: #a66bff; flex-shrink: 0; }
-.mom-encouragement .chevron { margin-left: auto; width: 1rem; height: 1.8rem; }
 .mom-portrait { position: absolute; z-index: 1; right: 0; top: -2.8rem; width: 12.3rem; height: 17rem; background-position: -55.7rem -32.9rem; mask-image: linear-gradient(to right,transparent 2%,#000 24%); }
 .mom-affirmation { position: absolute; right: 10.5rem; top: 5.7rem; color: #b1959a; font-size: 1.155rem; line-height: 1.595rem; font-style: italic; transform: rotate(-6deg); }
 .mom-affirmation svg { display: block; width: 1.6rem; height: 1.6rem; margin-left: 3.3rem; margin-top: -1.5rem; margin-bottom: .2rem; color: #efc6cb; }
