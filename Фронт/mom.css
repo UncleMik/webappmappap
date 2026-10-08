@@ -50,22 +50,26 @@
 .information-icon { display: grid; place-items: center; flex-shrink: 0; width: 1.9rem; height: 1.9rem; background: #8756ff; color: white; border-radius: 50%; font-size: 1.76rem; line-height: 2.09rem; font-weight: 700; }
 .mom-information p { font-size: 1.155rem; line-height: 1.54rem; color: #697a98; }
 .mom-tools { padding-bottom: .8rem; }
-.mom-tools-grid { display: grid; grid-template-columns: repeat(3,minmax(0,1fr)); gap: .7rem; margin-top: .6rem; }
-.mom-practice { display: flex; flex-direction: column; min-width: 0; min-height: 16.6rem; border: 1px solid #f0e9fc; border-radius: 1rem; overflow: hidden; background: #fcfaff; }
-.practice-photo { width: 100%; aspect-ratio: 125 / 65; background-size: 764.8% auto; }
-.back-practice-photo { background-position: 34.29603% 62.82871%; }
+/* Same one-wide, two-below composition as Today materials. */
+.mom-tools-grid { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 1rem; margin-top: 1rem; }
+.mom-tools-grid > :first-child { grid-column: 1 / -1; }
+.mom-practice, .mom-weight-tool { position: relative; display: flex; flex-direction: column; min-width: 0; min-height: 16rem; padding: 1.1rem 1.3rem .9rem; border: 1px solid #f0eef4; border-radius: 1.4rem; overflow: hidden; background: #f7f3ef; }
+.mom-practice:first-child { min-height: 11.2rem; }
+.practice-photo { position: absolute; right: 0; top: 0; width: 65%; height: 100%; background-size: 981% auto; mask-image: linear-gradient(to right,transparent,#000); opacity: .6; pointer-events: none; }
+.back-practice-photo { background-position: 34.8% 62.82871%; }
 .birth-practice-photo { background-position: 50.30084% 62.82871%; }
-.practice-copy { padding: .4rem .7rem 0; }
-.practice-copy h3, .weight-tool-heading h3 { margin: 0; font-size: 1.265rem; line-height: 1.43rem; letter-spacing: -.025rem; }
-.practice-copy p, .mom-weight-tool > p { color: #6c7d9f; font-size: 1.155rem; line-height: 1.43rem; letter-spacing: -.02rem; }
-.practice-start, .weight-record { display: flex; align-items: center; justify-content: center; height: 2.9rem; flex-shrink: 0; border-radius: 2rem; font-size: 1.21rem; line-height: 1.43rem; }
-.practice-start { margin: auto .7rem .6rem; gap: .8rem; background: linear-gradient(105deg,#8954ff,#7847f9); color: white; }
-.practice-start svg { width: 1.5rem; height: 1.5rem; }
-.mom-weight-tool { display: flex; flex-direction: column; min-width: 0; background: linear-gradient(120deg,#eafff7,#f1fffa); border: 1px solid #e0fff2; border-radius: 1rem; padding: .9rem .7rem .6rem; }
-.weight-tool-heading { display: flex; align-items: center; gap: .7rem; }
-.weight-tool-icon { width: 4.3rem; height: 4.3rem; border-radius: .8rem; background-position: -55.6rem -89.3rem; }
-.mom-weight-tool > p { margin-top: .8rem; margin-bottom: .7rem; }
-.weight-record { margin-top: auto; width: 100%; border: 1px solid #a578ff; background: #ffffffde; color: #8252ff; text-align: center; }
+.practice-copy, .weight-tool-heading, .mom-weight-tool > p { position: relative; z-index: 1; }
+.practice-copy { padding: 0; }
+.practice-copy h3, .weight-tool-heading h3 { margin: 0; max-width: 78%; font-size: 1.43rem; line-height: 1.705rem; letter-spacing: -.03rem; }
+.mom-practice:first-child .practice-copy h3 { max-width: 72%; font-size: 1.76rem; line-height: 2.09rem; }
+.practice-copy p, .mom-weight-tool > p { margin-top: .6rem; margin-bottom: 1rem; max-width: 78%; color: #6c7d9f; font-size: 1.155rem; line-height: 1.54rem; letter-spacing: -.02rem; }
+.practice-start, .weight-record { position: relative; z-index: 1; display: flex; align-items: center; justify-content: center; gap: .8rem; align-self: flex-start; width: auto; max-width: 100%; min-height: 3.2rem; flex-shrink: 0; margin: auto 0 0; padding: .6rem 1.2rem; border-radius: 2rem; font-size: 1.21rem; line-height: 1.43rem; }
+.practice-start { background: linear-gradient(105deg,#8954ff,#7847f9); color: white; }
+.practice-start svg { width: 1.5rem; height: 1.5rem; flex-shrink: 0; }
+.weight-tool-heading { display: block; }
+.weight-tool-icon { position: absolute; z-index: 0; right: -.5rem; top: -.2rem; width: 4.3rem; height: 4.3rem; border-radius: .8rem; background-position: -55.6rem -89.3rem; opacity: .6; pointer-events: none; }
+.weight-tool-heading h3 { max-width: 70%; }
+.weight-record { border: 1px solid #a578ff; background: #ffffffde; color: #8252ff; text-align: center; }
 .mom-recommendations-grid { margin-top: 1rem; }
 .mom-week-article { background: linear-gradient(105deg,#f4fff9,#fff6f1); }
 .recommended-mom-art { position: absolute; width: 9rem; height: 11.2rem; right: 0; bottom: 0; background-position: -61rem -65.7rem; mask-image: linear-gradient(to right,transparent,#000 40%); }
