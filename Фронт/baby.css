@@ -3,43 +3,43 @@
 .baby-page { color: #191b24; }
 .baby-sprite { display: block; flex-shrink: 0; background: url('assets/baby-reference.webp') no-repeat; background-size: 105.3rem 147.3rem; }
 .baby-header { display: flex; align-items: center; gap: 1.5rem; min-height: calc(6rem + env(safe-area-inset-top,0px)); padding: calc(1rem + env(safe-area-inset-top,0px)) 1.6rem 1rem; }
-.baby-header h1 { font-size: 2.4rem; line-height: 3rem; letter-spacing: -.07rem; }
+.baby-header h1 { font-size: 2.64rem; line-height: 3.3rem; letter-spacing: -.07rem; }
 .back-link { display: grid; place-items: center; width: 3rem; height: 3.6rem; color: #1c2838; }
 .back-link svg { width: 2.4rem; height: 2.4rem; fill: none; stroke: currentColor; stroke-width: 2.4; stroke-linecap: round; stroke-linejoin: round; }
 .baby-main { padding: 0 1.4rem; }
 .baby-overview { position: relative; min-height: 16.2rem; border-radius: 1.4rem; background: linear-gradient(105deg,#fffaf7,#fff3f2 62%,#ffe7e4); border: 1px solid #fcf0ed; }
 .baby-overview-copy { position: relative; z-index: 1; padding: 1.2rem 1.6rem 1rem; }
-.eyebrow { color: #616976; font-size: 1.5rem; line-height: 2rem; }
-.baby-overview h2 { margin-top: .2rem; font-size: 2.1rem; line-height: 2.9rem; letter-spacing: -.06rem; white-space: nowrap; }
-.baby-overview h2 > span { font-size: 2.5rem; }
-.overview-meta { color: #566c94; font-size: 1.25rem; line-height: 2rem; }
+.eyebrow { color: #616976; font-size: 1.65rem; line-height: 2.2rem; }
+.baby-overview h2 { margin-top: .2rem; font-size: 2.31rem; line-height: 3.19rem; letter-spacing: -.06rem; white-space: nowrap; }
+.baby-overview h2 > span { font-size: 2.75rem; }
+.overview-meta { color: #566c94; font-size: 1.375rem; line-height: 2.2rem; }
 .overview-meta > span { margin: 0 .4rem; }
 .baby-size { display: flex; align-items: center; gap: 2rem; margin-top: 1.2rem; }
-.baby-size > div > strong { display: block; font-size: 1.6rem; line-height: 2rem; white-space: nowrap; }
-.baby-size > div > span:not(.cauliflower) { display: block; font-size: 1.1rem; line-height: 1.7rem; color: #818895; }
+.baby-size > div > strong { display: block; font-size: 1.76rem; line-height: 2.2rem; white-space: nowrap; }
+.baby-size > div > span:not(.cauliflower) { display: block; font-size: 1.21rem; line-height: 1.87rem; color: #818895; }
 .baby-size .size-comparison { display: flex; align-items: center; gap: .6rem; margin-left: -.3rem; }
 .cauliflower { width: 4.7rem; height: 4.3rem; background-position: -47.1rem -43.6rem; border-radius: .6rem; }
-.size-comparison p { font-size: 1.05rem; line-height: 1.4rem; color: #79828f; }
+.size-comparison p { font-size: 1.155rem; line-height: 1.54rem; color: #79828f; }
 .size-comparison p strong { font-weight: 700; color: #2d3341; }
 .baby-hero-art { position: absolute; right: 0; top: -1rem; width: 13.5rem; height: 17.2rem; object-fit: contain; border-radius: 0 1.4rem 1.4rem 0; }
 .baby-panel { margin-top: 1rem; padding: .9rem 1rem; background: #fff; border: 1px solid #f5f1ef; border-radius: 1.5rem; box-shadow: 0 .2rem .6rem #715e5d03; }
-.baby-panel h2 { font-size: 1.6rem; line-height: 2.2rem; letter-spacing: -.035rem; }
+.baby-panel h2 { font-size: 1.76rem; line-height: 2.42rem; letter-spacing: -.035rem; }
 .baby-panel .section-heading { min-height: 2.2rem; height: auto; gap: .5rem; }
-.baby-panel .text-link { font-size: 1.05rem; line-height: 1.8rem; gap: .3rem; letter-spacing: -.025rem; }
+.baby-panel .text-link { font-size: 1.155rem; line-height: 1.98rem; gap: .3rem; letter-spacing: -.025rem; }
 .baby-panel .text-link .chevron { width: 1rem; height: 1.8rem; }
 .baby-data { min-height: 11.4rem; }
 .baby-data-dialog { margin:auto; width:calc(100% - 3.2rem); max-width:44rem; max-height:calc(100dvh - 3.2rem); overflow:auto; padding:2rem; border:0; border-radius:2rem; background:#fff; color:#191b24; box-shadow:0 1rem 5rem #30224433; }
 .baby-data-dialog::backdrop { background:#211a3c66; }
 .baby-form-heading { display:flex; align-items:center; justify-content:space-between; gap:1rem; }
-.baby-form-heading h2 { font-size:2rem; }
-.baby-form-heading button { width:44px; height:44px; border-radius:50%; background:#f6f3fd; font-size:2.5rem; color:#7550cc; }
-.baby-form-note { margin:.8rem 0 1.5rem; font-size:1.3rem; line-height:1.5; color:#727987; }
-.baby-data-dialog label { display:block; margin-top:1.2rem; font-size:1.4rem; line-height:1.5; }
-.baby-data-dialog input, .baby-data-dialog select { display:block; box-sizing:border-box; width:100%; min-width:0; min-height:44px; margin-top:.5rem; padding:1rem; border:1px solid #ddd4ee; border-radius:1rem; font:inherit; font-size:16px; background:#fcfaff; color:#191b24; }
+.baby-form-heading h2 { font-size:2.2rem; }
+.baby-form-heading button { width:44px; height:44px; border-radius:50%; background:#f6f3fd; font-size:2.75rem; color:#7550cc; }
+.baby-form-note { margin:.8rem 0 1.5rem; font-size:1.43rem; line-height:1.5; color:#727987; }
+.baby-data-dialog label { display:block; margin-top:1.2rem; font-size:1.54rem; line-height:1.5; }
+.baby-data-dialog input, .baby-data-dialog select { display:block; box-sizing:border-box; width:100%; min-width:0; min-height:44px; margin-top:.5rem; padding:1rem; border:1px solid #ddd4ee; border-radius:1rem; font:inherit; font-size:17.6px; background:#fcfaff; color:#191b24; }
 .baby-form-actions { display:flex; gap:1rem; justify-content:flex-end; margin-top:2rem; }
-.baby-form-actions button { min-height:44px; padding:1rem 1.6rem; font-size:1.4rem; }
+.baby-form-actions button { min-height:44px; padding:1rem 1.6rem; font-size:1.54rem; }
 .baby-form-actions button:not(.primary-button) { border-radius:3rem; background:#f6f3fd; color:#7550cc; }
-.baby-form-error { margin-top:1rem; font-size:1.4rem; color:#a62b39; }
+.baby-form-error { margin-top:1rem; font-size:1.54rem; color:#a62b39; }
 html:has(.baby-data-dialog[open]) { overflow:hidden; }
 .baby-data-grid { display: grid; grid-template-columns: repeat(3,minmax(0,1fr)); gap: .7rem; margin-top: .7rem; }
 .data-tile { display: flex; flex-direction: column; align-items: center; min-width: 0; min-height: 10.8rem; padding: .6rem .2rem 1rem; border: 1px solid #f0eaff; border-radius: 1rem; background: linear-gradient(120deg,#f5f0ff,#faf7ff); text-align: center; }
@@ -50,28 +50,28 @@ html:has(.baby-data-dialog[open]) { overflow:hidden; }
 .heartbeat-icon { background-position: -32.5rem -54.9rem; }
 .ultrasound-icon { background-position: -47.1rem -54.9rem; }
 .position-icon { background-position: -61rem -54.9rem; }
-.data-tile h3 { margin: .3rem 0 0; font-size: 1.05rem; line-height: 1.5rem; font-weight: 500; }
-.data-tile strong { display: block; font-size: 1.4rem; line-height: 2rem; letter-spacing: -.03rem; font-weight: 700; overflow-wrap: anywhere; }
-.data-tile p { font-size: 1rem; line-height: 1.8rem; color: #586e94; overflow-wrap: anywhere; }
+.data-tile h3 { margin: .3rem 0 0; font-size: 1.155rem; line-height: 1.65rem; font-weight: 500; }
+.data-tile strong { display: block; font-size: 1.54rem; line-height: 2.2rem; letter-spacing: -.03rem; font-weight: 700; overflow-wrap: anywhere; }
+.data-tile p { font-size: 1.1rem; line-height: 1.98rem; color: #586e94; overflow-wrap: anywhere; }
 .baby-development { min-height: 16.4rem; }
-.baby-development > p { font-size: 1.3rem; line-height: 1.65rem; color: #687b9e; margin-top: .6rem; letter-spacing: -.018rem; }
-.development-link { display: flex; align-items: center; gap: 1.3rem; width: 100%; min-height: 3.9rem; padding: .6rem 1.5rem; margin-top: .8rem; border-radius: 1.2rem; background: #f6f3fd; font-size: 1.2rem; }
+.baby-development > p { font-size: 1.43rem; line-height: 1.815rem; color: #687b9e; margin-top: .6rem; letter-spacing: -.018rem; }
+.development-link { display: flex; align-items: center; gap: 1.3rem; width: 100%; min-height: 3.9rem; padding: .6rem 1.5rem; margin-top: .8rem; border-radius: 1.2rem; background: #f6f3fd; font-size: 1.32rem; }
 .book-icon { width: 2.1rem; height: 2.1rem; fill: none; stroke: #8764d3; stroke-width: 1.7; stroke-linejoin: round; flex-shrink: 0; }
 .development-link > .chevron { margin-left: auto; width: 1.2rem; }
 .baby-movements { display: flex; flex-wrap: wrap; align-items: center; gap: .8rem; min-height: 7.6rem; }
 .movement-badge { width: 4.7rem; height: 4.7rem; background-position: -31.9rem -81rem; border-radius: 50%; }
 .movement-copy { flex: 1; min-width: 0; }
-.movement-copy h2 { font-size: 1.6rem; line-height: 2.2rem; }
-.movement-copy p { font-size: 1.3rem; line-height: 1.65rem; color: #687b9e; }
+.movement-copy h2 { font-size: 1.76rem; line-height: 2.42rem; }
+.movement-copy p { font-size: 1.43rem; line-height: 1.815rem; color: #687b9e; }
 .baby-movements .primary-button { margin-left: 5.5rem; }
-.movement-copy .movement-status { display: flex; align-items: center; gap: .5rem; font-size: 1.05rem; line-height: 1.6rem; margin-top: .2rem; color: #7c8693; }
+.movement-copy .movement-status { display: flex; align-items: center; gap: .5rem; font-size: 1.155rem; line-height: 1.76rem; margin-top: .2rem; color: #7c8693; }
 .movement-status > span { display: inline-block; width: .7rem; height: .7rem; background: #63b998; border-radius: 50%; flex-shrink: 0; }
-.primary-button { padding: 1.1rem 1.4rem; background: linear-gradient(110deg,#8655df,#7550cc); color: white; border-radius: 3rem; font-size: 1.05rem; line-height: 1.5rem; white-space: nowrap; }
+.primary-button { padding: 1.1rem 1.4rem; background: linear-gradient(110deg,#8655df,#7550cc); color: white; border-radius: 3rem; font-size: 1.155rem; line-height: 1.65rem; white-space: nowrap; }
 .baby-learn { min-height: 14.4rem; }
 .baby-learn .article-card { height: 9.8rem; padding: .8rem 1.1rem; border-radius: 1.2rem; }
-.baby-learn .article-meta { font-size: 1rem; line-height: 1.8rem; height: 1.8rem; gap: .45rem; padding-right: .5rem; }
-.baby-learn .tag { font-size: .9rem; padding: 0 .5rem; }
-.baby-learn .article-title { margin-top: .6rem; font-size: 1.2rem; line-height: 1.5rem; letter-spacing: -.025rem; }
+.baby-learn .article-meta { font-size: 1.1rem; line-height: 1.98rem; height: 1.8rem; gap: .45rem; padding-right: .5rem; }
+.baby-learn .tag { font-size: 0.99rem; padding: 0 .5rem; }
+.baby-learn .article-title { margin-top: .6rem; font-size: 1.32rem; line-height: 1.65rem; letter-spacing: -.025rem; }
 .baby-learn .article-art { height: 9.8rem; }
 .baby-reading-art { width: 9.1rem; background-position: -43.5rem -92.1rem; mask-image: linear-gradient(to right,transparent,#000 20%); }
 .course-article { background: #fcf5f2; }
@@ -85,17 +85,17 @@ html:has(.baby-data-dialog[open]) { overflow:hidden; }
 .community-card { display: flex; flex-wrap: wrap; align-items: center; gap: 1.1rem; min-height: 7.1rem; }
 .community-badge { width: 4.7rem; height: 4.7rem; background-position: -32rem -104.9rem; border-radius: 50%; }
 .community-copy { flex: 1; min-width: 0; }
-.community-copy h2 { font-size: 1.6rem; line-height: 2.2rem; }
-.community-copy p { margin-top: .6rem; color: #687b9e; font-size: 1.3rem; line-height: 1.65rem; letter-spacing: -.018rem; }
-.community-copy > span { font-size: 1rem; line-height: 1.5rem; color: #79828f; }
+.community-copy h2 { font-size: 1.76rem; line-height: 2.42rem; }
+.community-copy p { margin-top: .6rem; color: #687b9e; font-size: 1.43rem; line-height: 1.815rem; letter-spacing: -.018rem; }
+.community-copy > span { font-size: 1.1rem; line-height: 1.65rem; color: #79828f; }
 @media (max-width: 360px) {
   .baby-movements { flex-wrap: wrap; }
   .baby-movements .primary-button { margin-left: 5.5rem; }
   .data-tile { gap: .3rem; padding-left: .4rem; padding-right: .4rem; }
 }
 
-.baby-week-measurements { font-size:1.6rem; line-height:2rem; margin-top:1rem; }
-.baby-measurement-note { font-size:1.05rem; line-height:1.4rem; color:#697a98; max-width:27rem; margin-top:.5rem; }
+.baby-week-measurements { font-size:1.76rem; line-height:2.2rem; margin-top:1rem; }
+.baby-measurement-note { font-size:1.155rem; line-height:1.54rem; color:#697a98; max-width:27rem; margin-top:.5rem; }
 .baby-page [hidden] { display:none !important; }
 .development-link { text-decoration:none; }
 
@@ -103,22 +103,26 @@ html:has(.baby-data-dialog[open]) { overflow:hidden; }
 .baby-overview-heading { padding-right: 13rem; }
 .baby-overview:has(.baby-hero-art:not([hidden])) .baby-overview-details { padding-right: 13rem; }
 .baby-overview-details { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); align-items: start; gap: 1rem; margin-top: 1rem; }
-.baby-week-measurements { margin-top: 0; font-size: 1.35rem; line-height: 2rem; }
+.baby-week-measurements { margin-top: 0; font-size: 1.485rem; line-height: 2.2rem; }
 .baby-size { gap: .7rem; margin-top: 0; align-items: center; }
 .baby-size-image { width: 4.7rem; height: 4.7rem; object-fit: contain; flex-shrink: 0; }
-.baby-size p { font-size: 1.1rem; line-height: 1.5rem; color: #79828f; }
+.baby-size p { font-size: 1.21rem; line-height: 1.65rem; color: #79828f; }
 .baby-size-name { font-weight: 500; color: #2d3341; }
 
 .baby-week-measurements span { display: inline-block; white-space: nowrap; }
 
 /* Week carousel matches My Journey. */
 .baby-week-carousel .week-selector { display: grid; grid-template-columns: 2.8rem minmax(0,1fr) 2.8rem; gap: .6rem; align-items: center; }
-.baby-week-carousel .round-arrow { display: grid; place-items: center; width: 2.8rem; height: 2.8rem; border-radius: 50%; background: white; color: #914aff; font-size: 2.7rem; line-height: 1; box-shadow: 0 .2rem 1rem #8653d51c; text-align: center; }
+.baby-week-carousel .round-arrow { display: grid; place-items: center; width: 2.8rem; height: 2.8rem; border-radius: 50%; background: white; color: #914aff; font-size: 2.97rem; line-height: 1; box-shadow: 0 .2rem 1rem #8653d51c; text-align: center; }
 .baby-week-carousel .week-wheel { display: flex; align-items: center; gap: .6rem; overflow-x: auto; min-width: 0; padding: .8rem calc(50% - 5rem); scroll-snap-type: x mandatory; scrollbar-width: none; overscroll-behavior-x: contain; user-select: none; }
 .baby-week-carousel .week-wheel::-webkit-scrollbar { display: none; }
-.baby-week-carousel .week-option { flex: 0 0 10rem; min-height: 4.3rem; text-align: center; border-radius: 1.1rem; background: #f6f0ff; white-space: nowrap; font-size: 1.35rem; color: #858197; scroll-snap-align: center; transform: perspective(24rem) rotateY(var(--turn,0deg)) scale(var(--scale,.85)); opacity: var(--opacity,.65); }
+.baby-week-carousel .week-option { flex: 0 0 10rem; min-height: 4.3rem; text-align: center; border-radius: 1.1rem; background: #f6f0ff; white-space: nowrap; font-size: 1.485rem; color: #858197; scroll-snap-align: center; transform: perspective(24rem) rotateY(var(--turn,0deg)) scale(var(--scale,.85)); opacity: var(--opacity,.65); }
 .baby-week-carousel .week-option.week-selected { color: #191b24; font-weight: 700; box-shadow: 0 .3rem 1.2rem #9876d52b; }
 .baby-week-carousel .week-selector button:disabled { opacity: .3; cursor: default; }
 .baby-week-carousel .week-dots { display: flex; justify-content: center; gap: .4rem; margin: .7rem 0 1rem; }
 .baby-week-carousel .week-dots span { width: .6rem; height: .6rem; background: #ddccf8; border-radius: 50%; transition: width .25s, background-color .25s, transform .25s; }
 .baby-week-carousel .week-dots span.active { width: 1.4rem; background: #9450fa; transform: scale(1.1); }
+
+/* Larger article text, shared by the Mom and Baby sections. */
+.baby-page .school-article-card .content-open h3 { font-size: 1.595em; }
+.baby-page .school-article-card .content-type { font-size: 1.265em; }
