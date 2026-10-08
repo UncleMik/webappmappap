@@ -17,6 +17,16 @@
     return button;
   });
   const weeklySections = ['weekly-articles-title', 'videos-title'].map(id => document.getElementById(id).closest('section'));
+  const articleList = weeklySections[0].querySelector('.article-list');
+  function matchArticleHeight() {
+    const article = articleList.querySelector('.journey-content-card');
+    if (article) {
+      page.style.setProperty('--journey-card-height', `${article.getBoundingClientRect().height}px`);
+    } else {
+      page.style.removeProperty('--journey-card-height');
+    }
+  }
+  new ResizeObserver(matchArticleHeight).observe(articleList);
   const normalize = value => Number.isInteger(Number(value)) && Number(value) >= 1 && Number(value) <= 42 ? Number(value) : currentWeek;
   const fromUrl = () => normalize(new URLSearchParams(location.search).get('week'));
   let settleTimer, animationFrame, scrollingTo = null;
