@@ -143,3 +143,8 @@ a.content-open { display: block; }
 .school-article-card .read-checkbox { appearance: none; font-size: inherit; width: 1.9em; height: 1.9em; border: 1.3px solid #a3a9bb; border-radius: 50%; margin: 0; cursor: pointer; background: white; flex-shrink: 0; }
 .school-article-card .read-checkbox:checked { background: #9060ff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='m6 12 4 4 8-8' fill='none' stroke='white' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") center / 90% no-repeat; border-color: #9060ff; }
 .school-article-card .read-checkbox:focus-visible { outline: 2px solid #9060ff; outline-offset: 3px; }
+
+/* Consistent message receipts, independent of the text font. */
+.read-mark { display: inline-flex; align-items: center; flex: 0 0 auto; width: 18px; height: 12px; color: inherit; }
+.read-mark svg { display: block; width: 100%; height: 100%; fill: none; stroke: currentColor; stroke-width: 1.7; stroke-linecap: round; stroke-linejoin: round; }
+.discussion-message-meta { display: inline-flex; align-items: center; gap: 4px; color: #a49ab7; }
