@@ -8,7 +8,7 @@
   <title>Мама</title>
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='10' fill='%238052ff'/%3E%3Cpath d='M16 24 7 15C1 8 12 3 16 10 20 3 31 8 25 15Z' fill='white'/%3E%3C/svg%3E">
   <link rel="stylesheet" href="styles.css?v=20261008-purple-week">
-  <link rel="stylesheet" href="mom.css?v=20261008-text-plus10">
+  <link rel="stylesheet" href="mom.css?v=20261008-week-carousel">
   <link rel="stylesheet" href="mobile-layout.css?v=20261007-darker-sides">
   <link rel="stylesheet" href="carousel-controls.css?v=20261008-centered-arrows">
 </head>
@@ -43,7 +43,14 @@
       </section>
 
       <section class="mom-panel mom-changes" aria-labelledby="mom-changes-title">
-        <label class="mom-week-select">Состояние мамы по неделям<select aria-label="Неделя для состояния мамы"></select></label>
+        <div class="mom-week-carousel" aria-label="Выбор недели для состояния мамы">
+          <div class="week-selector">
+            <button class="round-arrow week-prev" type="button" aria-label="Предыдущая неделя"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m15 5-6 7 6 7"/></svg></button>
+            <div class="week-wheel" aria-label="Недели беременности"></div>
+            <button class="round-arrow week-next" type="button" aria-label="Следующая неделя"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m9 5 6 7-6 7"/></svg></button>
+          </div>
+          <div class="week-dots" role="img" aria-label="15–28 недели"><span></span><span class="active"></span><span></span></div>
+        </div>
         <div class="section-heading"><h2 id="mom-changes-title">Что происходит на 27-й неделе</h2></div>
         <div class="mom-changes-copy">Ваше тело продолжает меняться: растет живот, увеличивается нагрузка на спину, могут появляться тренировочные схватки.<br>Это нормальные процессы на этом этапе. Возможны изменения сна, повышенная утомляемость, колебания настроения.<br>Если что-то беспокоит сильно или непривычно — важно обсудить это с врачом.</div>
         <div class="mom-information"><span class="information-icon" aria-hidden="true">i</span><p>Каждая беременность индивидуальна.<br>Здесь — общая информация для вашего срока.</p></div>
@@ -96,7 +103,7 @@
   <script src="article-read-state.js?v=20261007-unread-first"></script>
 <script src="articles-api.js?v=20261007-unread-first"></script>
 <script src="mom-weeks-data.js?v=20261005-mom-weeks2"></script>
-  <script src="mom-week.js?v=20261006-clean-articles"></script>
+  <script src="mom-week.js?v=20261008-week-carousel"></script>
   <script src="recommendations-carousel.js?v=20261007-journey-articles"></script>
   <dialog class="mom-data-dialog" aria-labelledby="mom-form-title">
     <form>
