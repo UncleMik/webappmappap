@@ -140,7 +140,7 @@
     scrollPosition = { x: window.scrollX, y: window.scrollY };
     bodyStyles = {};
     for (const property of ['position', 'top', 'left', 'right', 'width', 'overflow']) bodyStyles[property] = document.body.style[property];
-    Object.assign(document.body.style, { position: 'fixed', top: `-${scrollPosition.y}px`, left: '0', right: '0', width: '100%', overflow: 'hidden' });
+    Object.assign(document.body.style, { position: 'fixed', top: `-${scrollPosition.y}px`, left: '0', right: '0', overflow: 'hidden' });
     dialog.style.removeProperty('--drag-offset');
     dialog.showModal();
     dialog.querySelector('.calendar-content').scrollTop = 0;
