@@ -126,3 +126,6 @@ html:has(.baby-data-dialog[open]) { overflow:hidden; }
 /* Larger article text, shared by the Mom and Baby sections. */
 .baby-page .school-article-card .content-open h3 { font-size: 1.595em; }
 .baby-page .school-article-card .content-type { font-size: 1.265em; }
+
+.movement-copy button.movement-status { padding: 0; border: 0; background: transparent; text-align: left; cursor: pointer; }
+.movement-copy button.movement-status:focus-visible { outline: 2px solid #794aff; outline-offset: 3px; border-radius: 3px; }

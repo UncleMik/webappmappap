@@ -20,7 +20,7 @@
     try {
       const rows = read();
       block.querySelector('p').textContent = rows.length ? `Последняя запись: ${format(rows.reduce((latest, value) => Math.max(latest, value), 0))}` : 'Записей пока нет';
-      block.querySelector('.movement-status').textContent = rows.length ? `Всего записей: ${rows.length}` : 'Запишите шевеление, когда почувствуете его';
+      block.querySelector('.movement-status').textContent = rows.length ? `Всего шевелений: ${rows.length}` : 'Запишите шевеление, когда почувствуете его';
     } catch {
       block.querySelector('p').textContent = 'Не удалось прочитать записи';
       block.querySelector('.movement-status').textContent = 'Проверьте доступ к хранению в браузере';
@@ -29,6 +29,7 @@
   function history() {
     const list = content.querySelector('.movement-history');
     const error = content.querySelector('.helper-error');
+    const expandedDays = new Set(Array.from(list.querySelectorAll('details[open]'), day => day.dataset.day));
     list.replaceChildren();
     error.hidden = true;
     try {
@@ -38,12 +39,38 @@
         empty.textContent = 'Записей пока нет';
         list.append(empty);
       }
+      const days = new Map();
       rows.forEach(value => {
+        const date = new Date(value);
+        const day = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
+        if (!days.has(day)) days.set(day, []);
+        days.get(day).push(value);
+      });
+      days.forEach((values, day) => {
         const item = document.createElement('li');
+        const details = document.createElement('details');
+        details.dataset.day = day;
+        details.open = expandedDays.has(day);
+        const heading = document.createElement('summary');
         const time = document.createElement('time');
-        time.dateTime = new Date(value).toISOString();
-        time.textContent = format(value);
-        item.append(time);
+        time.dateTime = day;
+        time.textContent = new Intl.DateTimeFormat('ru-RU', { day: 'numeric', month: 'long', year: 'numeric' }).format(new Date(values[0]));
+        const total = document.createElement('span');
+        total.className = 'movement-day-total';
+        total.textContent = `Всего шевелений: ${values.length}`;
+        heading.append(time, total);
+        const records = document.createElement('ul');
+        records.className = 'movement-day-records';
+        values.forEach(value => {
+          const record = document.createElement('li');
+          const recordedAt = document.createElement('time');
+          recordedAt.dateTime = new Date(value).toISOString();
+          recordedAt.textContent = new Intl.DateTimeFormat('ru-RU', { hour: '2-digit', minute: '2-digit', second: '2-digit' }).format(new Date(value));
+          record.append(recordedAt);
+          records.append(record);
+        });
+        details.append(heading, records);
+        item.append(details);
         list.append(item);
       });
     } catch {

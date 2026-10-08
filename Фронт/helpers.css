@@ -10,5 +10,13 @@
 .helper-feedback { color: #51446f; margin-top: 8px; }
 .helper-error { color: #a12642; margin-top: 8px; }
 .movement-history { list-style: none; padding: 0; margin: 0; }
-.movement-history li { padding: 10px 0; border-bottom: 1px solid #eee8f5; }
+.movement-history > li { padding: 10px 0; border-bottom: 1px solid #eee8f5; }
+.movement-history summary { position: relative; display: grid; gap: 2px; padding: 4px 28px 4px 0; list-style: none; cursor: pointer; }
+.movement-history summary::-webkit-details-marker { display: none; }
+.movement-history summary::after { content: ''; position: absolute; right: 5px; top: 15px; width: 8px; height: 8px; border-right: 2px solid #794aff; border-bottom: 2px solid #794aff; transform: rotate(45deg); }
+.movement-history details[open] > summary::after { transform: rotate(225deg); top: 19px; }
+.movement-history summary:focus-visible { outline: 2px solid #794aff; outline-offset: 3px; border-radius: 4px; }
+.movement-day-total { color: #61709b; font-size: 12px; }
+.movement-day-records { list-style: none; margin: 8px 0 0; padding: 0; }
+.movement-day-records li { padding: 6px 12px; border-top: 1px solid #eee8f5; }
 .helper-storage-note { margin-top: 16px; color: #61709b; font-size: 12px; }
