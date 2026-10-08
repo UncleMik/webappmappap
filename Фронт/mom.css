@@ -1,12 +1,12 @@
 /* 436 px mobile reference, excluding the surrounding frame and device chrome. */
 :root { font-size: min(2.293577982vw, 10px); }
 .mom-sprite { display: block; flex-shrink: 0; background: url('assets/mom-reference.webp') no-repeat; background-size: 95.6rem 147.2rem; }
-.mom-header { position: relative; display: grid; grid-template-columns: 3.6rem 1fr 3.6rem; align-items: start; min-height: calc(6.7rem + env(safe-area-inset-top,0px)); padding: calc(1.6rem + env(safe-area-inset-top,0px)) 1.8rem .9rem; gap: .8rem; }
-.mom-header > div { text-align: center; }
-.mom-header h1 { font-size: 2rem; line-height: 2.6rem; letter-spacing: -.05rem; }
+.mom-header { position: relative; display: grid; grid-template-columns: 3rem minmax(0,1fr) 3.5rem; align-items: start; min-height: calc(6rem + env(safe-area-inset-top,0px)); padding: calc(1rem + env(safe-area-inset-top,0px)) 1.6rem 1rem; gap: 1.5rem; }
+.mom-header > div { text-align: left; min-width: 0; }
+.mom-header h1 { font-size: 2.4rem; line-height: 3rem; letter-spacing: -.07rem; }
 .mom-header p { color: var(--muted); font-size: 1.2rem; line-height: 1.8rem; white-space: nowrap; }
-.mom-back { display: grid; place-items: center; width: 2rem; height: 2.8rem; color: #1b294a; }
-.mom-back .chevron { transform: rotate(180deg); width: 1.6rem; height: 2.6rem; color: inherit; }
+.mom-back { display: grid; place-items: center; width: 3rem; height: 3.6rem; color: #1c2838; }
+.mom-back .chevron { width: 2.4rem; height: 2.4rem; color: inherit; }
 .mom-header-heart { display: grid; place-items: center; width: 3.5rem; height: 3.5rem; background: #fff0f4; border-radius: 50%; color: #fa83b4; }
 .mom-header-heart svg { width: 1.8rem; height: 1.8rem; }
 .mom-main { padding: 0 1.4rem; }
