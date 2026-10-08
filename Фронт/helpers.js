@@ -83,7 +83,7 @@
     mode = type;
     dialog.querySelector('h2').textContent = type === 'tools' ? 'Все инструменты' : 'Шевеления малыша';
     if (type === 'tools') {
-      content.innerHTML = `<div class="helper-options"><button type="button" data-helper-calendar>Календарь <span aria-hidden="true">›</span></button><button type="button" data-action="breathing">Дыхание <span aria-hidden="true">›</span></button><button type="button" data-action="movements">Шевеления <span aria-hidden="true">›</span></button></div>`;
+      content.innerHTML = `<div class="helper-options"><button class="helper" type="button" data-helper-calendar><span class="helper-icon calendar-icon sprite" aria-hidden="true"></span><span>Календарь</span></button><button class="helper" type="button" data-action="breathing"><span class="helper-icon breathing-icon sprite" aria-hidden="true"></span><span>Дыхание</span></button><button class="helper" type="button" data-action="movements"><span class="helper-icon movements-icon sprite" aria-hidden="true"></span><span>Шевеления</span></button></div>`;
     } else {
       content.innerHTML = `<p>Нажмите, когда почувствуете шевеление: сохраним текущие дату и время.</p><button type="button" class="helper-save">Записать сейчас</button><p class="helper-feedback" role="status"></p><p class="helper-error" role="alert" hidden></p><h3>История записей</h3><ul class="movement-history"></ul><p class="helper-storage-note">Записи сохраняются в этом браузере, без синхронизации между устройствами.</p>`;
       history();
