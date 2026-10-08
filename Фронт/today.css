@@ -21,3 +21,4 @@
 .today-material-card .article-meta { padding: 0 .5rem; font-size: 1rem; }
 .today-material-cover { position: absolute; right: 0; top: 0; width: 65%; height: 100%; object-fit: cover; mask-image: linear-gradient(to right, transparent, #000); opacity: .6; }
 .today-practice-cover { background: url('assets/mom-reference.webp') 34.8% 62.82871% / 981% auto no-repeat; }
+.recommendations .section-heading { justify-content: flex-end; }
