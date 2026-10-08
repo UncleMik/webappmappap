@@ -6,7 +6,7 @@
   <meta name="theme-color" content="#fbfbfe">
   <title>Профиль</title>
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='10' fill='%238052ff'/%3E%3Cpath d='M16 24 7 15C1 8 12 3 16 10 20 3 31 8 25 15Z' fill='white'/%3E%3C/svg%3E">
-  <link rel="stylesheet" href="styles.css?v=20261007-opaque-nav">
+  <link rel="stylesheet" href="styles.css?v=20261008-close">
   <link rel="stylesheet" href="calendar-sheet.css?v=20261006-intro">
   <link rel="stylesheet" href="profile.css?v=20261006-support-type">
   <link rel="stylesheet" href="app-navigation.css?v=20261006-gotham">
@@ -30,7 +30,7 @@
     </main>
     <dialog id="support-dialog" class="calendar-dialog support-dialog" aria-labelledby="support-title">
       <div class="calendar-shell">
-        <div class="calendar-topbar"><div class="calendar-drag-zone" aria-hidden="true"><span></span></div><button class="calendar-close" type="button" aria-label="Закрыть поддержку"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m6 6 12 12M18 6 6 18"/></svg></button></div>
+        <div class="calendar-topbar"><div class="calendar-drag-zone" aria-hidden="true"><span></span></div><button class="close-button calendar-close" type="button" aria-label="Закрыть поддержку"><svg class="close-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="m6 6 12 12M18 6 6 18"/></svg></button></div>
         <div class="calendar-content">
           <div class="calendar-heading"><h2 id="support-title">Поддержка</h2><p>Выберите, где вам удобно написать</p></div>
           <div class="support-options">
@@ -43,7 +43,7 @@
         </div>
       </div>
     </dialog>
-    <div class="profile-notice" role="status" hidden><p></p><button type="button" aria-label="Закрыть уведомление">×</button></div>
+    <div class="profile-notice" role="status" hidden><p></p><button type="button" aria-label="Закрыть уведомление" class="close-button"><svg class="close-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="m6 6 12 12M18 6 6 18"/></svg></button></div>
     <nav class="bottom-navigation" aria-label="Основная навигация">
       <div class="navigation-items">
         <a class="nav-item" href="index.html"><svg class="nav-icon home-icon" viewBox="0 0 30 30" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 13 15 4l10 9v13h-7v-8h-6v8H5Z"/></svg><span>Сегодня</span></a>

@@ -7,7 +7,7 @@
   <meta name="description" content="Малыш: развитие на вашей неделе беременности, данные и полезные материалы.">
   <title>Малыш</title>
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='10' fill='%238052ff'/%3E%3Cpath d='M16 24 7 15C1 8 12 3 16 10 20 3 31 8 25 15Z' fill='white'/%3E%3C/svg%3E">
-  <link rel="stylesheet" href="styles.css?v=20261007-opaque-nav">
+  <link rel="stylesheet" href="styles.css?v=20261008-close">
   <link rel="stylesheet" href="baby.css?v=20261007-data-form">
   <link rel="stylesheet" href="mobile-layout.css?v=20261007-darker-sides">
   <link rel="stylesheet" href="helpers.css?v=20261007-tools">
@@ -89,7 +89,7 @@
   <svg class="svg-definitions" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><symbol id="i-chevron" viewBox="0 0 16 24"><path d="m5 5 6 7-6 7" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></symbol></svg>
   <dialog class="baby-data-dialog" aria-labelledby="baby-form-title">
     <form id="baby-data-form">
-      <div class="baby-form-heading"><h2 id="baby-form-title">Данные о малыше</h2><button type="button" data-close-baby-form aria-label="Закрыть">×</button></div>
+      <div class="baby-form-heading"><h2 id="baby-form-title">Данные о малыше</h2><button type="button" data-close-baby-form aria-label="Закрыть" class="close-button"><svg class="close-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="m6 6 12 12M18 6 6 18"/></svg></button></div>
       <p class="baby-form-note">Данные сохраняются только в этом браузере.</p>
       <label>ЧСС, уд/мин<input name="heartRate" type="number" min="1" step="1" inputmode="numeric"></label>
       <label>Дата последнего УЗИ<input name="ultrasoundDate" type="date"></label>
@@ -106,6 +106,6 @@
   <script src="baby-week.js?v=20261007-weekly-data"></script>
   <script src="recommendations-carousel.js?v=20261007-journey-articles"></script>
   <script src="app.js"></script>
-  <script src="helpers.js?v=20261007-tools"></script>
+  <script src="helpers.js?v=20261008-close"></script>
 </body>
 </html>

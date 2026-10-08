@@ -22,6 +22,9 @@ button, a { -webkit-tap-highlight-color: transparent; }
 button { appearance: none; margin: 0; border: 0; padding: 0; font: inherit; color: inherit; cursor: pointer; text-align: left; }
 button:focus-visible, a:focus-visible { outline: 2px solid var(--purple); outline-offset: 3px; }
 button:active { filter: brightness(.98); }
+/* Close icons are centered independently of the text font and baseline. */
+button.close-button { display: grid; place-items: center; flex-shrink: 0; padding: 0; line-height: 1; }
+button.close-button > svg.close-icon { display: block; width: 22px; height: 22px; max-width: 70%; max-height: 70%; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; }
 h1, h2, p { margin: 0; }
 .app { display: flex; flex-direction: column; width: 100%; min-height: 100svh; min-height: 100dvh; margin: 0; background: radial-gradient(ellipse at 50% 22%, #fffdfa80, transparent 75%), var(--canvas); }
 .sprite { display: block; background-image: url('assets/reference.webp'); background-repeat: no-repeat; background-size: 105.3rem 147.2rem; flex-shrink: 0; }

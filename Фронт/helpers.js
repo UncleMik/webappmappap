@@ -3,7 +3,7 @@
   const dialog = document.createElement('dialog');
   dialog.className = 'helper-dialog';
   dialog.setAttribute('aria-labelledby', 'helper-title');
-  dialog.innerHTML = `<header><h2 id="helper-title"></h2><button type="button" data-helper-close aria-label="Закрыть">×</button></header><div class="helper-content"></div>`;
+  dialog.innerHTML = `<header><h2 id="helper-title"></h2><button type="button" data-helper-close aria-label="Закрыть" class="close-button"><svg class="close-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="m6 6 12 12M18 6 6 18"/></svg></button></header><div class="helper-content"></div>`;
   document.body.append(dialog);
   const content = dialog.querySelector('.helper-content');
   let opener;
