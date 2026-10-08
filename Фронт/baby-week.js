@@ -1,5 +1,7 @@
 (() => {
-  const library = window.babyWeekLibrary;
+  const container = document.querySelector('.baby-page') || document.querySelector('.baby-card');
+  if (!container) return;
+  window.withWeeklyContent(container, ({ baby: library }) => {
   const currentWeek = 27;
   const normalize = value => Number.isInteger(Number(value)) && Number(value) >= 1 && Number(value) <= 42 ? Number(value) : currentWeek;
   const todayCard = document.querySelector('.baby-card');
@@ -8,10 +10,11 @@
     todayCard.href = `baby.html?week=${currentWeek}`;
     todayCard.querySelector('.baby-measurements').textContent = content.measurements;
     todayCard.querySelector('.baby-description').textContent = content.description;
-    todayCard.querySelector('.baby-art').src = content.illustration;
+    todayCard.querySelector('.baby-art').src = window.weeklyImageUrl(content.illustration);
     const note = document.createElement('span');
     note.className = 'baby-measurement-caption';
     note.textContent = `${content.measurementNote}. Размеры и вес приблизительные.`;
+    todayCard.querySelector('.baby-measurement-caption')?.remove();
     todayCard.querySelector('.feature-copy').append(note);
   }
   const page = document.querySelector('.baby-page');
@@ -84,13 +87,13 @@
     const image = page.querySelector('.baby-size-image');
     image.hidden = !content.comparison;
     if (content.comparison) {
-      image.src = content.comparisonImage;
+      image.src = window.weeklyImageUrl(content.comparisonImage);
       comparison.querySelector('.baby-size-name').textContent = content.comparison;
     } else {
       image.removeAttribute('src');
     }
     const illustration = page.querySelector('.baby-hero-art');
-    illustration.src = content.illustration;
+    illustration.src = window.weeklyImageUrl(content.illustration);
     illustration.alt = `Иллюстрация развития малыша: ${week}-я неделя`;
     illustration.hidden = false;
     page.querySelector('#development-title').textContent = `Развитие малыша на ${week}-й неделе`;
@@ -179,4 +182,5 @@
     if (wheel.clientWidth) align(Number(page.dataset.week), false);
   }).observe(wheel);
   requestAnimationFrame(() => align(normalize(new URLSearchParams(location.search).get('week')), false));
+  });
 })();

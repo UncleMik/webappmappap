@@ -1,7 +1,7 @@
 import { createServer } from 'node:http';
 import { createHash } from 'node:crypto';
 import { fileURLToPath } from 'node:url';
-import { openDatabase, readArticles, readArticle } from './database.mjs';
+import { openDatabase, readArticles, readArticle, readWeeklyContent } from './database.mjs';
 
 export function createArticleServer(db, origin = 'https://unclemik.github.io') {
   return createServer((request, response) => {
@@ -24,6 +24,7 @@ export function createArticleServer(db, origin = 'https://unclemik.github.io') {
     try {
       const url = new URL(request.url, 'http://localhost');
       if (url.pathname === '/api/health') { send(200, { status: 'ok', project: 'wep_pril', articles: readArticles(db).length }); return; }
+      if (url.pathname === '/api/weekly-content') { send(200, readWeeklyContent(db)); return; }
       if (url.pathname === '/api/articles') {
         const value = url.searchParams.get('week');
         if (value !== null && (!/^\d{1,2}$/.test(value) || Number(value) < 1 || Number(value) > 42)) { send(400, { error: 'Invalid week' }); return; }

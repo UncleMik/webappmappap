@@ -126,6 +126,8 @@ a.content-open { display: block; }
 .school-article-cover { display: block; width: 100%; object-fit: cover; }
 .article-load-status { padding: 1rem; color: #685882; }
 .article-load-retry { margin: 0 1rem 1rem; padding: .8rem 1.2rem; border: 0; border-radius: .8rem; background: #f0e9ff; color: #794aff; cursor: pointer; }
+.weekly-load-status { margin: .75rem 1rem; padding: .8rem 1rem; border-radius: .8rem; background: #f0e9ff; color: #685882; }
+.weekly-load-status button { margin-left: .5rem; padding: .5rem .8rem; border: 0; border-radius: .6rem; background: #794aff; color: #fff; cursor: pointer; }
 
 /* Shared article carousel for Today and Mom. */
 .recommendations-carousel { position: relative; margin-top: 1rem; }

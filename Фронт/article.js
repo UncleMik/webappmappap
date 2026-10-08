@@ -12,7 +12,14 @@ const library = window.articleLibrary;
 const requestedWeek = Number(params.get('week'));
 const momWeek = Number.isInteger(requestedWeek) && requestedWeek >= 1 && requestedWeek <= 42 ? requestedWeek : 27;
 if (params.get('id') === 'mom-week') {
-  const content = window.momWeekLibrary[momWeek];
+  let content;
+  try {
+    content = (await window.loadWeeklyContent()).mom[momWeek];
+  } catch {
+    window.showArticleLoadError(scroller);
+    document.querySelector('.reader-progress').hidden = true;
+    return;
+  }
   library['mom-week'] = { title: content.title, type: `${momWeek} неделя · Состояние мамы`, minutes: Math.max(1, Math.ceil(content.paragraphs.join(' ').split(/\s+/).length / 180)), intro: content.paragraphs[0], headings: content.paragraphs.slice(1).map(() => 'Что происходит'), paragraphs: content.paragraphs.slice(1), supplied: true };
 }
 const articleId = Object.hasOwn(library, params.get('id')) ? params.get('id') : 'dating';

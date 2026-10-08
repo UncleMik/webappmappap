@@ -1,5 +1,7 @@
 (() => {
-  const library = window.momWeekLibrary;
+  const container = document.querySelector('.mom-changes') || document.querySelector('.mom-card');
+  if (!container) return;
+  window.withWeeklyContent(container, ({ mom: library }) => {
   const normalize = value => Number.isInteger(Number(value)) && Number(value) >= 1 && Number(value) <= 42 ? Number(value) : 27;
   const summary = document.querySelector('.mom-description');
   if (summary) summary.textContent = library[27].paragraphs[0].split(/(?<=[.!?])\s/)[0];
@@ -146,4 +148,5 @@
     if (wheel.clientWidth) align(Number(page.dataset.week), false);
   }).observe(wheel);
   requestAnimationFrame(() => align(normalize(new URLSearchParams(location.search).get('week')), false));
+  });
 })();
