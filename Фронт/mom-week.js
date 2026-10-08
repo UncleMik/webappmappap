@@ -6,7 +6,7 @@
   const panel = document.querySelector('.mom-changes');
   if (!panel) return;
   const page = panel;
-  const heading = panel.querySelector('.mom-week-carousel');
+  const heading = document.querySelector('.mom-week-carousel');
   const wheel = heading.querySelector('.week-wheel');
   const dots = heading.querySelector('.week-dots');
   const reducedMotion = () => matchMedia('(prefers-reduced-motion: reduce)').matches;

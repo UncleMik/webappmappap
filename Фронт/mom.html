@@ -21,6 +21,14 @@
     </header>
 
     <main class="mom-main">
+        <div class="mom-week-carousel" aria-label="Выбор недели для состояния мамы">
+          <div class="week-selector">
+            <button class="round-arrow week-prev" type="button" aria-label="Предыдущая неделя"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m15 5-6 7 6 7"/></svg></button>
+            <div class="week-wheel" aria-label="Недели беременности"></div>
+            <button class="round-arrow week-next" type="button" aria-label="Следующая неделя"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m9 5 6 7-6 7"/></svg></button>
+          </div>
+          <div class="week-dots" role="img" aria-label="15–28 недели"><span></span><span class="active"></span><span></span></div>
+        </div>
       <section class="mom-overview" aria-labelledby="mom-age-title">
         <span class="mom-portrait mom-sprite" role="img" aria-label="Будущая мама бережно обнимает живот"></span>
         <div class="mom-overview-copy">
@@ -43,14 +51,6 @@
       </section>
 
       <section class="mom-panel mom-changes" aria-labelledby="mom-changes-title">
-        <div class="mom-week-carousel" aria-label="Выбор недели для состояния мамы">
-          <div class="week-selector">
-            <button class="round-arrow week-prev" type="button" aria-label="Предыдущая неделя"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m15 5-6 7 6 7"/></svg></button>
-            <div class="week-wheel" aria-label="Недели беременности"></div>
-            <button class="round-arrow week-next" type="button" aria-label="Следующая неделя"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m9 5 6 7-6 7"/></svg></button>
-          </div>
-          <div class="week-dots" role="img" aria-label="15–28 недели"><span></span><span class="active"></span><span></span></div>
-        </div>
         <div class="section-heading"><h2 id="mom-changes-title">Что происходит на 27-й неделе</h2></div>
         <div class="mom-changes-copy">Ваше тело продолжает меняться: растет живот, увеличивается нагрузка на спину, могут появляться тренировочные схватки.<br>Это нормальные процессы на этом этапе. Возможны изменения сна, повышенная утомляемость, колебания настроения.<br>Если что-то беспокоит сильно или непривычно — важно обсудить это с врачом.</div>
         <div class="mom-information"><span class="information-icon" aria-hidden="true">i</span><p>Каждая беременность индивидуальна.<br>Здесь — общая информация для вашего срока.</p></div>
@@ -103,7 +103,7 @@
   <script src="article-read-state.js?v=20261007-unread-first"></script>
 <script src="articles-api.js?v=20261007-unread-first"></script>
 <script src="mom-weeks-data.js?v=20261005-mom-weeks2"></script>
-  <script src="mom-week.js?v=20261008-week-carousel"></script>
+  <script src="mom-week.js?v=20261008-top-carousel"></script>
   <script src="recommendations-carousel.js?v=20261007-journey-articles"></script>
   <dialog class="mom-data-dialog" aria-labelledby="mom-form-title">
     <form>
