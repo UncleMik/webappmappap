@@ -11,7 +11,7 @@
 .week-wheel { display: flex; align-items: center; gap: .6rem; overflow-x: auto; min-width: 0; padding: .8rem calc(50% - 5rem); scroll-snap-type: x mandatory; scrollbar-width: none; overscroll-behavior-x: contain; user-select: none; }
 .week-wheel::-webkit-scrollbar { display: none; }
 .week-option { flex: 0 0 10rem; min-height: 4.3rem; text-align: center; border-radius: 1.1rem; background: #f6f0ff; white-space: nowrap; font-size: 1.35rem; color: #858197; scroll-snap-align: center; transform: perspective(24rem) rotateY(var(--turn,0deg)) scale(var(--scale,.85)); opacity: var(--opacity,.65); }
-.week-option.week-selected { color: var(--ink); font-weight: 700; border: 1px solid white; box-shadow: 0 .3rem 1.2rem #9876d52b; }
+.week-option.week-selected { color: var(--ink); font-weight: 700; box-shadow: 0 .3rem 1.2rem #9876d52b; }
 .week-selector button:disabled { opacity: .3; cursor: default; }
 .week-dots { display: flex; justify-content: center; gap: .4rem; margin: .7rem 0 1rem; }
 .week-dots span { width: .6rem; height: .6rem; background: #ddccf8; border-radius: 50%; transition: width .25s, background-color .25s, transform .25s; }

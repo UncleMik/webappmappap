@@ -10,6 +10,7 @@
   --ink: #0c0e25;
   --muted: #61709b;
   --purple: #794aff;
+  --selected-week-border: #794aff;
   --canvas: #fcfaf7;
   scrollbar-width: none;
 }
@@ -21,6 +22,7 @@ h3, strong, b { font-weight: 700; }
 button, a { -webkit-tap-highlight-color: transparent; }
 button { appearance: none; margin: 0; border: 0; padding: 0; font: inherit; color: inherit; cursor: pointer; text-align: left; }
 button:focus-visible, a:focus-visible { outline: 2px solid var(--purple); outline-offset: 3px; }
+.week-option.week-selected { border: 1px solid var(--selected-week-border); }
 button:active { filter: brightness(.98); }
 h1, h2, p { margin: 0; }
 .app { display: flex; flex-direction: column; width: 100%; min-height: 100svh; min-height: 100dvh; margin: 0; background: radial-gradient(ellipse at 50% 22%, #fffdfa80, transparent 75%), var(--canvas); }
