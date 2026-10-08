@@ -1,33 +1,8 @@
 (() => {
   const dialog = document.querySelector('#journey-calendar');
   if (!dialog) return;
-
+  window.withWeeklyContent(document.querySelector('main'), ({ calendar: events, calendarNotes }) => {
   const currentWeek = 27;
-  // Events are placed at the start of the period supplied by the user.
-  const events = {
-    8: [
-      { type: 'visit', label: 'Приём', title: 'Постановка на учёт', description: 'Желательно пройти первый полноценный приём и основные анализы до 10–12 недель.' },
-      { type: 'tests', label: 'Анализы', title: 'Стартовые анализы', description: 'Желательно пройти первый полноценный приём и основные анализы до 10–12 недель.' }
-    ],
-    11: [
-      { type: 'scan', label: 'УЗИ', title: 'I скрининг', description: 'Проводится в 11–13 недель 6 дней.' },
-      { type: 'tests', title: 'Анализы', description: 'Биохимическая часть I скрининга.' }
-    ],
-    18: [
-      { type: 'scan', label: 'УЗИ', title: 'II скрининг', description: 'Проводится в 18–20 недель 6 дней.' },
-      { type: 'tests', label: 'Анализы', title: 'Контроль антител при Rh−', description: 'При Rh-отрицательной крови контроль антител — в 18–20 недель.' }
-    ],
-    20: [{ type: 'study', label: 'Подготовка', title: 'Начать подготовку к родам', description: 'Оптимально начать обучение примерно с 20–24 недель, чтобы проходить материалы без спешки.' }],
-    24: [{ type: 'tests', label: 'Анализы', title: 'ГТТ', description: 'Проводится в 24–28 недель.' }],
-    28: [{ type: 'tests', label: 'Анализы', title: 'Rh− контроль / антирезус-профилактика', description: 'Контроль антител и решение вопроса об антирезусном иммуноглобулине — около 28 недель.' }],
-    30: [{ type: 'tests', label: 'Анализы', title: 'Анализы III триместра', description: 'Повторные анализы III триместра выполняются по назначению врача в этом периоде.' }],
-    32: [
-      { type: 'ctg', title: 'КТГ', description: 'КТГ обычно начинают с 32 недель и далее повторяют по графику врача.' },
-      { type: 'bag', label: 'Сумка', title: 'Сумка в роддом', description: 'Удобно начать собирать сумку с 32 недели и полностью подготовить её к 36 неделе.' }
-    ],
-    34: [{ type: 'scan', label: 'УЗИ', title: 'III УЗИ', description: 'Проводится примерно в 34–35 недель 6 дней.' }],
-    35: [{ type: 'tests', label: 'Анализы', title: 'Стрептококк группы B', description: 'Исследование проводится в 35–37 недель.' }]
-  };
   const icons = {
     visit: '<rect x="5" y="6" width="14" height="15" rx="2"/><path d="M8 3v6m8-6v6M5 11h14"/>',
     tests: '<path d="M9 3h6M10 3v7L5 19a1 1 0 0 0 1 2h12a1 1 0 0 0 1-2l-5-9V3M8 15h8"/>',
@@ -36,7 +11,9 @@
     ctg: '<path d="M20.8 5.6a5.5 5.5 0 0 0-8.8 1 5.5 5.5 0 0 0-8.8-1C.5 8.7 2.4 12.4 12 21c9.6-8.6 11.5-12.3 8.8-15.4Z"/><path d="M3 12h4l2-4 3 8 2-4h7"/>',
     bag: '<path d="M5 8h14l1 13H4L5 8ZM8 10V6a4 4 0 0 1 8 0v4"/>'
   };
-  const icon = type => `<svg viewBox="0 0 24 24" aria-hidden="true">${icons[type]}</svg>`;
+  const safeType = type => Object.hasOwn(icons, type) ? type : 'study';
+  const escapeText = value => String(value ?? '').replace(/[&<>"']/g, char => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[char]);
+  const icon = type => `<svg viewBox="0 0 24 24" aria-hidden="true">${icons[safeType(type)]}</svg>`;
   const grid = dialog.querySelector('.calendar-weeks');
   const tabs = [...dialog.querySelectorAll('[data-trimester]')];
   const dragZone = dialog.querySelector('.calendar-drag-zone');
@@ -54,10 +31,16 @@
   function renderImportant() {
     const content = dialog.querySelector('.calendar-important-content');
     const items = events[selectedWeek] || [];
-    content.innerHTML = items.length ? items.map(item => `<article class="calendar-event"><span class="calendar-event-icon ${item.type}">${icon(item.type)}</span><div><h4>${item.title}</h4>${item.description ? `<p>${item.description}</p>` : ''}</div></article>`).join('') : '<p class="calendar-empty">События этой недели пока не добавлены.</p>';
-    if (selectedWeek === 11) content.insertAdjacentHTML('beforeend', '<p class="calendar-note"><span aria-hidden="true">i</span>Постановку на учёт и стартовые анализы желательно пройти до 10–12 недель.</p>');
-    if (selectedWeek === 18) content.insertAdjacentHTML('beforeend', '<p class="calendar-note"><span aria-hidden="true">i</span>Подготовку к родам удобно начинать с 20–24 недель.</p>');
-    if (selectedWeek === 32) content.insertAdjacentHTML('beforeend', '<p class="calendar-note"><span aria-hidden="true">i</span>Мы ставим событие на первую неделю периода, а в описании указываем весь диапазон.</p>');
+    content.innerHTML = items.length ? items.map(item => `<article class="calendar-event"><span class="calendar-event-icon ${safeType(item.type)}">${icon(item.type)}</span><div><h4>${escapeText(item.title)}</h4>${item.description ? `<p>${escapeText(item.description)}</p>` : ''}</div></article>`).join('') : '<p class="calendar-empty">События этой недели пока не добавлены.</p>';
+    if (calendarNotes?.[selectedWeek]) {
+      const note = document.createElement('p');
+      note.className = 'calendar-note';
+      const marker = document.createElement('span');
+      marker.setAttribute('aria-hidden', 'true');
+      marker.textContent = 'i';
+      note.append(marker, calendarNotes[selectedWeek]);
+      content.append(note);
+    }
     dialog.querySelector('.calendar-go-current').setAttribute('aria-label', `Перейти к материалам ${selectedWeek}-й недели`);
   }
 
@@ -89,9 +72,9 @@
       button.className = 'calendar-week';
       button.dataset.week = week;
       button.setAttribute('aria-pressed', String(week === selectedWeek));
-      button.setAttribute('aria-label', `${week}-я неделя${week === currentWeek ? ', сейчас' : ''}${events[week] ? ', ' + events[week].map(item => item.title).join(', ') : ''}`);
+      button.setAttribute('aria-label', `${week}-я неделя${week === currentWeek ? ', сейчас' : ''}${events[week]?.length ? ', ' + events[week].map(item => item.title).join(', ') : ''}`);
       if (week === currentWeek) button.setAttribute('aria-current', 'step');
-      button.innerHTML = `<strong>${week}</strong><span>неделя</span>${events[week] ? `<span class="calendar-week-events">${events[week].map(item => `<span class="calendar-week-event ${item.type}">${icon(item.type)}<span>${item.label || item.title}</span></span>`).join('')}</span>` : ''}${week === currentWeek ? '<span class="week-now">Сейчас</span>' : ''}`;
+      button.innerHTML = `<strong>${week}</strong><span>неделя</span>${events[week]?.length ? `<span class="calendar-week-events">${events[week].map(item => `<span class="calendar-week-event ${safeType(item.type)}">${icon(item.type)}<span>${escapeText(item.label || item.title)}</span></span>`).join('')}</span>` : ''}${week === currentWeek ? '<span class="week-now">Сейчас</span>' : ''}`;
       grid.append(button);
     }
     renderImportant();
@@ -140,7 +123,7 @@
     scrollPosition = { x: window.scrollX, y: window.scrollY };
     bodyStyles = {};
     for (const property of ['position', 'top', 'left', 'right', 'width', 'overflow']) bodyStyles[property] = document.body.style[property];
-    Object.assign(document.body.style, { position: 'fixed', top: `-${scrollPosition.y}px`, left: '0', right: '0', width: '100%', overflow: 'hidden' });
+    Object.assign(document.body.style, { position: 'fixed', top: `-${scrollPosition.y}px`, left: '0', right: '0', overflow: 'hidden' });
     dialog.style.removeProperty('--drag-offset');
     dialog.showModal();
     dialog.querySelector('.calendar-content').scrollTop = 0;
@@ -231,4 +214,5 @@
   dragZone.addEventListener('pointerup', event => finishDrag(event));
   dragZone.addEventListener('pointercancel', event => finishDrag(event, true));
   dragZone.addEventListener('lostpointercapture', event => finishDrag(event, true));
+  });
 })();

@@ -8,43 +8,51 @@
   <title>Мама</title>
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='10' fill='%238052ff'/%3E%3Cpath d='M16 24 7 15C1 8 12 3 16 10 20 3 31 8 25 15Z' fill='white'/%3E%3C/svg%3E">
   <link rel="stylesheet" href="styles.css?v=20261008-close">
-  <link rel="stylesheet" href="mom.css?v=20261006-mom-articles">
+  <link rel="stylesheet" href="mom.css?v=20261008-tools-today2">
   <link rel="stylesheet" href="mobile-layout.css?v=20261007-darker-sides">
+  <link rel="stylesheet" href="carousel-controls.css?v=20261008-centered-arrows">
 </head>
 <body>
   <div class="app mom-page">
     <header class="mom-header">
-      <a class="mom-back" href="index.html" aria-label="Назад на Сегодня"><svg class="chevron" aria-hidden="true"><use href="#i-chevron"/></svg></a>
+      <a class="mom-back" href="index.html" aria-label="Назад на Сегодня"><svg class="chevron" aria-hidden="true" viewBox="0 0 24 24"><path d="m15 4-8 8 8 8" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
       <div><h1>Мама</h1><p>Забота о вас на каждом этапе</p></div>
       <button class="mom-header-heart" type="button" data-action="favorites" aria-label="Избранное"><svg aria-hidden="true"><use href="#i-heart"/></svg></button>
     </header>
 
     <main class="mom-main">
+        <div class="mom-week-carousel" aria-label="Выбор недели для состояния мамы">
+          <div class="week-selector">
+            <button class="round-arrow week-prev" type="button" aria-label="Предыдущая неделя"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m15 5-6 7 6 7"/></svg></button>
+            <div class="week-wheel" aria-label="Недели беременности"></div>
+            <button class="round-arrow week-next" type="button" aria-label="Следующая неделя"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m9 5 6 7-6 7"/></svg></button>
+          </div>
+          <div class="week-dots" role="img" aria-label="15–28 недели"><span></span><span class="active"></span><span></span></div>
+        </div>
       <section class="mom-overview" aria-labelledby="mom-age-title">
         <span class="mom-portrait mom-sprite" role="img" aria-label="Будущая мама бережно обнимает живот"></span>
         <div class="mom-overview-copy">
           <h2 id="mom-age-title"><span>27</span> недель и 4 дня</h2>
           <p class="mom-overview-meta">III триместр <span>·</span> До родов ≈ 82 дня</p>
           <div class="mom-progress" role="progressbar" aria-label="Срок беременности" aria-valuemin="0" aria-valuemax="280" aria-valuenow="193" aria-valuetext="27 недель и 4 дня"><span></span></div>
-          <button class="mom-encouragement" type="button" data-action="mom-support"><svg aria-hidden="true"><use href="#i-heart"/></svg><span>Вы делаете важное дело</span><svg class="chevron" aria-hidden="true"><use href="#i-chevron"/></svg></button>
+          <div class="mom-encouragement"><svg aria-hidden="true"><use href="#i-heart"/></svg><span>Вы делаете важное дело</span></div>
         </div>
         <p class="mom-affirmation"><svg aria-hidden="true"><use href="#i-heart"/></svg>Вы<br>справляетесь<br>отлично</p>
       </section>
 
       <section class="mom-panel mom-data" aria-labelledby="mom-data-title">
-        <div class="section-heading"><h2 id="mom-data-title">Мои данные</h2><button class="text-link" type="button" data-action="mom-data">Все данные<svg class="chevron" aria-hidden="true"><use href="#i-chevron"/></svg></button></div>
+        <div class="section-heading"><h2 id="mom-data-title">Мои данные</h2></div>
         <div class="mom-data-grid">
-          <button class="mom-metric metric-weight" type="button" data-action="weight"><span class="metric-icon weight-icon mom-sprite" aria-hidden="true"></span><span class="metric-label">Вес</span><strong>68,4 кг</strong><span class="metric-note">+7,2 кг</span><svg class="chevron" aria-hidden="true"><use href="#i-chevron"/></svg></button>
-          <button class="mom-metric metric-gain" type="button" data-action="weight-gain"><span class="metric-icon gain-icon mom-sprite" aria-hidden="true"></span><span class="metric-label">Прибавка</span><strong>+7,2 кг</strong><span class="metric-note">Норма</span><svg class="chevron" aria-hidden="true"><use href="#i-chevron"/></svg></button>
-          <button class="mom-metric metric-pressure" type="button" data-action="blood-pressure"><span class="metric-icon pressure-icon mom-sprite" aria-hidden="true"></span><span class="metric-label">Давление</span><strong>118/76</strong><span class="metric-note">Норма</span><svg class="chevron" aria-hidden="true"><use href="#i-chevron"/></svg></button>
-          <button class="mom-metric metric-wellbeing" type="button" data-action="wellbeing"><span class="metric-icon wellbeing-icon mom-sprite" aria-hidden="true"></span><span class="metric-label">Самочувствие</span><strong>Хорошо</strong><span class="metric-note" aria-hidden="true">&nbsp;</span><svg class="chevron" aria-hidden="true"><use href="#i-chevron"/></svg></button>
+          <button class="mom-metric metric-weight" type="button" data-action="weight"><span class="metric-icon weight-icon mom-sprite" aria-hidden="true"></span><span class="metric-label">Вес</span><strong>—</strong><span class="metric-note">Всего: —</span><svg class="chevron" aria-hidden="true"><use href="#i-chevron"/></svg></button>
+          <button class="mom-metric metric-gain" type="button" data-action="weight-gain"><span class="metric-icon gain-icon" aria-hidden="true"></span><span class="metric-label">Прибавка</span><strong>—</strong><span class="metric-note">С последнего</span><svg class="chevron" aria-hidden="true"><use href="#i-chevron"/></svg></button>
+          <button class="mom-metric metric-pressure" type="button" data-action="blood-pressure"><span class="metric-icon pressure-icon mom-sprite" aria-hidden="true"></span><span class="metric-label">Давление</span><strong>—</strong><span class="metric-note">—</span><svg class="chevron" aria-hidden="true"><use href="#i-chevron"/></svg></button>
+          <button class="mom-metric metric-wellbeing" type="button" data-action="wellbeing"><span class="metric-icon wellbeing-icon mom-sprite" aria-hidden="true"></span><span class="metric-label">Самочувствие</span><strong>—</strong><span class="metric-note" aria-hidden="true">&nbsp;</span><svg class="chevron" aria-hidden="true"><use href="#i-chevron"/></svg></button>
         </div>
       </section>
 
       <section class="mom-panel mom-changes" aria-labelledby="mom-changes-title">
-        <label class="mom-week-select">Состояние мамы по неделям<select aria-label="Неделя для состояния мамы"></select></label>
         <div class="section-heading"><h2 id="mom-changes-title">Что происходит на 27-й неделе</h2></div>
-        <div class="mom-changes-copy">Ваше тело продолжает меняться: растет живот, увеличивается нагрузка на спину, могут появляться тренировочные схватки.<br>Это нормальные процессы на этом этапе. Возможны изменения сна, повышенная утомляемость, колебания настроения.<br>Если что-то беспокоит сильно или непривычно — важно обсудить это с врачом.</div>
+        <div class="mom-changes-copy">Загружаем…</div>
         <div class="mom-information"><span class="information-icon" aria-hidden="true">i</span><p>Каждая беременность индивидуальна.<br>Здесь — общая информация для вашего срока.</p></div>
       </section>
 
@@ -53,16 +61,16 @@
         <div class="mom-tools-grid">
           <article class="mom-practice">
             <span class="practice-photo back-practice-photo mom-sprite" role="img" aria-label="Практика расслабления спины"></span>
-            <div class="practice-copy"><h3>Тянет спину?</h3><p>Практика для<br>расслабления спины<br>· 8 мин</p></div>
+            <div class="practice-copy"><h3>Тянет спину?</h3><p>Практика для расслабления спины · 8 мин</p></div>
             <button class="practice-start" type="button" data-action="back-practice" aria-label="Начать практику расслабления спины">Начать<svg aria-hidden="true"><use href="#i-play"/></svg></button>
           </article>
           <article class="mom-practice">
             <span class="practice-photo birth-practice-photo mom-sprite" role="img" aria-label="Дыхательная практика для подготовки к родам"></span>
-            <div class="practice-copy"><h3>Подготовиться<br>к родам</h3><p>Дыхательная<br>практика · 6 мин</p></div>
+            <div class="practice-copy"><h3>Подготовиться к родам</h3><p>Дыхательная практика · 6 мин</p></div>
             <button class="practice-start" type="button" data-action="breathing" aria-label="Начать дыхательную практику">Начать<svg aria-hidden="true"><use href="#i-play"/></svg></button>
           </article>
           <article class="mom-weight-tool">
-            <div class="weight-tool-heading"><span class="weight-tool-icon mom-sprite" aria-hidden="true"></span><h3>Следите<br>за весом</h3></div>
+            <div class="weight-tool-heading"><span class="weight-tool-icon mom-sprite" aria-hidden="true"></span><h3>Следите за весом</h3></div>
             <p>Добавьте новое измерение, чтобы отслеживать динамику</p>
             <button class="weight-record" type="button" data-action="weight">Записать вес</button>
           </article>
@@ -72,9 +80,9 @@
       <section class="mom-panel mom-recommendations" aria-labelledby="mom-recommendations-title">
         <div class="section-heading"><h2 id="mom-recommendations-title">Подобрано для вашего этапа</h2><a class="text-link" href="articles.html?from=mom">Смотреть все<svg class="chevron" aria-hidden="true"><use href="#i-chevron"/></svg></a></div>
         <div class="recommendations-carousel">
-          <button class="recommendations-prev" type="button" aria-label="Предыдущие статьи" aria-controls="mom-articles">‹</button>
+          <button class="recommendations-prev" type="button" aria-label="Предыдущие статьи" aria-controls="mom-articles"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m15 5-6 7 6 7"/></svg></button>
           <div class="article-grid mom-recommendations-grid" id="mom-articles"></div>
-          <button class="recommendations-next" type="button" aria-label="Следующие статьи" aria-controls="mom-articles">›</button>
+          <button class="recommendations-next" type="button" aria-label="Следующие статьи" aria-controls="mom-articles"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m9 5 6 7-6 7"/></svg></button>
         </div>
       </section>
     </main>
@@ -92,11 +100,22 @@
     <symbol id="i-heart" viewBox="0 0 24 24"><path d="M12 21C9 18 2 14 2 8a5.5 5.5 0 0 1 10-3 5.5 5.5 0 0 1 10 3c0 6-7 10-10 13Z" fill="currentColor"/></symbol>
     <symbol id="i-play" viewBox="0 0 20 20"><circle cx="10" cy="10" r="9" fill="white"/><path d="m8 6 6 4-6 4Z" fill="#8452fa"/></symbol>
   </svg>
-  <script src="article-read-state.js?v=20261005-auto-read"></script>
-<script src="articles-api.js?v=20261007-journey-articles"></script>
-<script src="mom-weeks-data.js?v=20261005-mom-weeks2"></script>
-  <script src="mom-week.js?v=20261006-clean-articles"></script>
+  <script src="article-read-state.js?v=20261007-unread-first"></script>
+<script src="articles-api.js?v=20261007-unread-first"></script>
+<script src="weekly-content-api.js?v=20261008-weekly"></script>
+  <script src="mom-week.js?v=20261008-weekly-api"></script>
   <script src="recommendations-carousel.js?v=20261007-journey-articles"></script>
+  <dialog class="mom-data-dialog" aria-labelledby="mom-form-title">
+    <form>
+      <div class="mom-form-heading"><h2 id="mom-form-title"></h2><button type="button" data-close-mom-form aria-label="Закрыть" class="close-button"><svg class="close-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="m6 6 12 12M18 6 6 18"/></svg></button></div>
+      <p class="mom-form-note">Данные сохраняются только в этом браузере.</p>
+      <div class="mom-form-fields"></div>
+      <p class="mom-form-error" role="alert" hidden></p>
+      <div class="mom-form-actions"><button type="button" data-close-mom-form>Отмена</button><button class="primary-button" type="submit">Сохранить</button></div>
+    </form>
+  </dialog>
+  <script src="mom-data.js?v=20261007-mom-data"></script>
   <script src="app.js"></script>
+  <script src="carousel-controls.js?v=20261008-centered-arrows"></script>
 </body>
 </html>

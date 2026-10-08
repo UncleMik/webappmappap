@@ -16,8 +16,23 @@ export function openDatabase(path, readOnly = true) {
       access TEXT NOT NULL DEFAULT 'public' CHECK(access IN ('public','restricted'))
     );
     CREATE INDEX IF NOT EXISTS articles_week ON articles(week);
+    CREATE TABLE IF NOT EXISTS weekly_content (
+      kind TEXT NOT NULL CHECK(kind IN ('baby','mom','calendar','calendarNote')),
+      week INTEGER NOT NULL CHECK(week BETWEEN 1 AND 42),
+      data TEXT NOT NULL,
+      status TEXT NOT NULL DEFAULT 'published' CHECK(status IN ('published','draft')),
+      access TEXT NOT NULL DEFAULT 'public' CHECK(access IN ('public','restricted')),
+      PRIMARY KEY(kind, week)
+    );
   `);
   return db;
+}
+
+export function readWeeklyContent(db) {
+  const result = { baby: {}, mom: {}, calendar: {}, calendarNotes: {} };
+  const rows = db.prepare("SELECT kind, week, data FROM weekly_content WHERE status='published' AND access='public' ORDER BY week").all();
+  for (const row of rows) result[row.kind === 'calendarNote' ? 'calendarNotes' : row.kind][row.week] = JSON.parse(row.data);
+  return result;
 }
 
 export function readArticles(db, week = null) {

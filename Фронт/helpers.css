@@ -4,11 +4,23 @@
 .helper-dialog h2 { font-size: 21px; line-height: 1.25; letter-spacing: -.3px; }
 .helper-dialog h3 { margin: 16px 0 8px; font-size: 16px; }
 .helper-dialog [data-helper-close] { flex: none; width: 36px; height: 36px; border-radius: 50%; background: #f4eeff; color: #794aff; text-align: center; font-size: 26px; }
-.helper-options { display: grid; gap: 10px; }
-.helper-options button { display: flex; justify-content: space-between; width: 100%; padding: 14px; border: 1px solid #eae4f5; border-radius: 14px; background: #f6f0fc; }
+.helper-options { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; }
+.helper-options .helper { width: 100%; height: auto; aspect-ratio: 1; min-width: 0; padding: 6px 2px; justify-content: center; gap: 0; text-align: center; }
+@media (max-width: 360px) {
+  .helper-options .helper { font-size: 12px; line-height: 16px; }
+  .helper-options .helper-icon { transform: scale(.8); margin: -6px 0; }
+}
 .helper-save { width: 100%; margin-top: 16px; padding: 13px; border-radius: 14px; background: #794aff; color: white; text-align: center; font-weight: 700; }
 .helper-feedback { color: #51446f; margin-top: 8px; }
 .helper-error { color: #a12642; margin-top: 8px; }
 .movement-history { list-style: none; padding: 0; margin: 0; }
-.movement-history li { padding: 10px 0; border-bottom: 1px solid #eee8f5; }
+.movement-history > li { padding: 10px 0; border-bottom: 1px solid #eee8f5; }
+.movement-history summary { position: relative; display: grid; gap: 2px; padding: 4px 28px 4px 0; list-style: none; cursor: pointer; }
+.movement-history summary::-webkit-details-marker { display: none; }
+.movement-history summary::after { content: ''; position: absolute; right: 5px; top: 15px; width: 8px; height: 8px; border-right: 2px solid #794aff; border-bottom: 2px solid #794aff; transform: rotate(45deg); }
+.movement-history details[open] > summary::after { transform: rotate(225deg); top: 19px; }
+.movement-history summary:focus-visible { outline: 2px solid #794aff; outline-offset: 3px; border-radius: 4px; }
+.movement-day-total { color: #61709b; font-size: 12px; }
+.movement-day-records { list-style: none; margin: 8px 0 0; padding: 0; }
+.movement-day-records li { padding: 6px 12px; border-top: 1px solid #eee8f5; }
 .helper-storage-note { margin-top: 16px; color: #61709b; font-size: 12px; }

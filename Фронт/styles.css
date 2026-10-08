@@ -10,6 +10,7 @@
   --ink: #0c0e25;
   --muted: #61709b;
   --purple: #794aff;
+  --selected-week-border: #794aff;
   --canvas: #fcfaf7;
   scrollbar-width: none;
 }
@@ -21,6 +22,7 @@ h3, strong, b { font-weight: 700; }
 button, a { -webkit-tap-highlight-color: transparent; }
 button { appearance: none; margin: 0; border: 0; padding: 0; font: inherit; color: inherit; cursor: pointer; text-align: left; }
 button:focus-visible, a:focus-visible { outline: 2px solid var(--purple); outline-offset: 3px; }
+.week-option.week-selected { border: 1px solid var(--selected-week-border); }
 button:active { filter: brightness(.98); }
 /* Close icons are centered independently of the text font and baseline. */
 button.close-button { display: grid; place-items: center; flex-shrink: 0; padding: 0; line-height: 1; }
@@ -127,6 +129,8 @@ a.content-open { display: block; }
 .school-article-cover { display: block; width: 100%; object-fit: cover; }
 .article-load-status { padding: 1rem; color: #685882; }
 .article-load-retry { margin: 0 1rem 1rem; padding: .8rem 1.2rem; border: 0; border-radius: .8rem; background: #f0e9ff; color: #794aff; cursor: pointer; }
+.weekly-load-status { margin: .75rem 1rem; padding: .8rem 1rem; border-radius: .8rem; background: #f0e9ff; color: #685882; }
+.weekly-load-status button { margin-left: .5rem; padding: .5rem .8rem; border: 0; border-radius: .6rem; background: #794aff; color: #fff; cursor: pointer; }
 
 /* Shared article carousel for Today and Mom. */
 .recommendations-carousel { position: relative; margin-top: 1rem; }
@@ -146,3 +150,8 @@ a.content-open { display: block; }
 .school-article-card .read-checkbox { appearance: none; font-size: inherit; width: 1.9em; height: 1.9em; border: 1.3px solid #a3a9bb; border-radius: 50%; margin: 0; cursor: pointer; background: white; flex-shrink: 0; }
 .school-article-card .read-checkbox:checked { background: #9060ff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='m6 12 4 4 8-8' fill='none' stroke='white' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") center / 90% no-repeat; border-color: #9060ff; }
 .school-article-card .read-checkbox:focus-visible { outline: 2px solid #9060ff; outline-offset: 3px; }
+
+/* Consistent message receipts, independent of the text font. */
+.read-mark { display: inline-flex; align-items: center; flex: 0 0 auto; width: 18px; height: 12px; color: inherit; }
+.read-mark svg { display: block; width: 100%; height: 100%; fill: none; stroke: currentColor; stroke-width: 1.7; stroke-linecap: round; stroke-linejoin: round; }
+.discussion-message-meta { display: inline-flex; align-items: center; gap: 4px; color: #a49ab7; }

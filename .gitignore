@@ -7,3 +7,4 @@ __pycache__/
 _site/
 .playwright-cli/
 output/playwright/
+backend/seed/uploads/

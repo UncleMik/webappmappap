@@ -1,0 +1,20 @@
+/* Shared arrows for material carousels and week selectors. */
+.round-arrow, .recommendations-prev, .recommendations-next {
+  display: grid;
+  place-items: center;
+  padding: 0;
+}
+.round-arrow svg, .recommendations-prev svg, .recommendations-next svg {
+  display: block;
+  width: 1.6rem;
+  height: 1.6rem;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.carousel-prev, .carousel-next, .recommendations-prev, .recommendations-next {
+  top: var(--carousel-cover-center, 4.7rem);
+  transform: translateY(-50%);
+}

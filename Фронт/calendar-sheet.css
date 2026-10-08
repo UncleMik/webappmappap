@@ -42,7 +42,7 @@
 .calendar-week strong { font-size: calc(16 * var(--cal)); line-height: calc(19 * var(--cal)); font-weight: 700; }
 .calendar-week > span { color: #8d98c7; font-size: calc(10.5 * var(--cal)); line-height: calc(14 * var(--cal)); }
 .calendar-week .week-now { color: #8b55ff; font-size: calc(11 * var(--cal)); line-height: calc(13 * var(--cal)); }
-.calendar-week[aria-pressed="true"] { border-color: #a275ff; background: #f8f4ff; box-shadow: 0 0 0 1px #ac85ff24; }
+.calendar-week[aria-pressed="true"] { border-color: var(--selected-week-border); background: #f8f4ff; box-shadow: 0 0 0 1px #ac85ff24; }
 .calendar-go-current { display: block; width: 100%; min-height: calc(51 * var(--cal)); margin-top: calc(11 * var(--cal)); padding: calc(12 * var(--cal)); border-radius: calc(11 * var(--cal)); background: linear-gradient(110deg,#9363ff,#8a5afa); color: white; text-align: center; font-size: calc(14 * var(--cal)); line-height: calc(20 * var(--cal)); }
 @media (prefers-reduced-motion: reduce) { .calendar-dialog { --sheet-duration: 0ms; } }
 
