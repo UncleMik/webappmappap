@@ -66,7 +66,6 @@
     dots.setAttribute('aria-label', ['1–14 недели', '15–28 недели', '29–42 недели'][stage]);
     window.dispatchEvent(new CustomEvent('baby:week-change', { detail: { week } }));
     document.title = `Малыш · ${week}-я неделя`;
-    page.querySelector('.eyebrow').textContent = isCurrent ? 'Ваш малыш сейчас' : 'Малыш на выбранной неделе';
     page.querySelector('#baby-overview-title').textContent = isCurrent ? '27 недель и 4 дня' : `${week} неделя`;
     page.querySelector('.overview-meta').hidden = !isCurrent;
     const measurements = page.querySelector('.baby-week-measurements');
