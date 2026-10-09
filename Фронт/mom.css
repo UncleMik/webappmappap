@@ -38,7 +38,12 @@
 .weight-icon { background-position: -31.4rem -54.1rem; }
 .gain-icon { background-position: -41.4rem -54.1rem; }
 .pressure-icon { background-position: -51.4rem -54.1rem; }
-.wellbeing-icon { background-position: -61.4rem -54.1rem; }
+.wellbeing-icon { background:none; }
+.wellbeing-face { display:block; width:100%; height:100%; }
+.face-good { color:#c8ecc7; }
+.face-normal { color:#ffe7ae; }
+.face-bad { color:#ffc9c7; }
+.metric-wellbeing .metric-note { max-width:100%; padding:0 .5rem; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
 .metric-label { font-size: 1.155rem; line-height: 1.65rem; margin-top: .3rem; white-space: nowrap; }
 .mom-metric > strong { font-size: 1.54rem; line-height: 2.2rem; letter-spacing: -.03rem; }
 .metric-note { font-size: 1.21rem; line-height: 1.98rem; color: #586e94; }
@@ -99,6 +104,19 @@
 .mom-form-actions { display:flex; gap:1rem; justify-content:flex-end; margin-top:2rem; }
 .mom-form-actions button { min-height:44px; padding:1rem 1.6rem; font-size:1.54rem; }
 .mom-form-actions button:not(.primary-button) { border-radius:3rem; background:#f6f3fd; color:#7550cc; }
+.mom-form-actions .primary-button { border:0; border-radius:1.5rem; background:#794aff; color:#fff; }
+.wellbeing-options { min-width:0; margin:0; padding:0; border:0; }
+.wellbeing-options legend { padding:0; font-size:1.54rem; line-height:1.5; }
+.wellbeing-choices { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:.7rem; margin-top:.8rem; }
+.mom-data-dialog .wellbeing-choice { position:relative; min-width:0; margin:0; cursor:pointer; }
+.mom-data-dialog .wellbeing-choice input { position:absolute; width:1px; height:1px; min-height:0; margin:0; padding:0; opacity:0; }
+.wellbeing-choice > span { display:flex; flex-direction:column; align-items:center; gap:1rem; padding:1.4rem .3rem; border:2px solid #eeeaf2; border-radius:1.4rem; background:#fdfcfe; font-size:1.43rem; }
+.wellbeing-choice .wellbeing-face { width:5rem; height:5rem; }
+.wellbeing-choice input:checked + span { border-color:#794aff; background:#f3edff; }
+.wellbeing-choice input:focus-visible + span { outline:2px solid #794aff; outline-offset:3px; }
+.mom-data-dialog .wellbeing-comment { margin-top:1.8rem; }
+.wellbeing-comment > span { color:#727987; }
+.wellbeing-comment textarea { display:block; box-sizing:border-box; width:100%; min-height:10rem; margin-top:.6rem; padding:1rem; border:1px solid #ddd4ee; border-radius:1.2rem; background:#fcfaff; color:#191b24; font:inherit; font-size:17.6px; resize:vertical; }
 .mom-form-error { margin-top:1rem; font-size:1.54rem; color:#a62b39; }
 html:has(.mom-data-dialog[open]) { overflow:hidden; }
 
