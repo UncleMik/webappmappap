@@ -39,7 +39,8 @@
 .carousel-prev, .carousel-next { position: absolute; top: 4.7rem; z-index: 1; }
 .carousel-prev { left: -1.3rem; }
 .carousel-next { right: -1.3rem; }
-.course-card, .video-card { height: var(--journey-card-height, auto); min-height: 16.3rem; }
+.video-card { height: var(--journey-card-height, auto); min-height: 16.3rem; }
+.course-card { height: auto; min-height: max(16.3rem, var(--journey-card-height, 0px)); }
 .course-photo, .video-photo { aspect-ratio: 3 / 2; background-image: none; }
 .course-photo::before, .video-photo::before { content: ''; position: absolute; top: 0; left: 50%; width: calc(100% * var(--w) / var(--h) * 2 / 3); height: 100%; transform: translateX(-50%); background-image: url('assets/journey-reference.webp'); background-repeat: no-repeat; background-size: calc(95100% / var(--w)) calc(147200% / var(--h)); background-position: calc(var(--x) * 100% / (951 - var(--w))) calc(var(--y) * 100% / (1472 - var(--h))); }
 .course-photo::before { background-image: url('assets/journey-courses-clean.webp'); }
@@ -48,7 +49,7 @@
 .journey-page .course-copy h3 { font-size: 1.45rem; line-height: 1.7rem; }
 .course-copy p { color: var(--muted); margin-top: .4rem; font-size: 1.2rem; line-height: 1.5rem; }
 .journey-primary { text-decoration: none; display: flex; align-items: center; justify-content: center; min-height: 2.8rem; border-radius: .8rem; color: white; background: linear-gradient(180deg,#af79ff,#8240f4); font-size: 1.05rem; line-height: 1.4rem; }
-.course-card > .journey-primary { margin: auto 1rem .7rem; padding: .6rem .4rem; font-size: 1.3rem; white-space: nowrap; }
+.course-card > .journey-primary { flex-shrink: 0; margin: auto 1rem .7rem; padding: .6rem .4rem; font-size: 1.3rem; white-space: nowrap; }
 .video-card { min-height: 16.3rem; text-align: left; }
 .video-card > h3 { margin: .7rem 1rem 0; font-size: 1.45rem; line-height: 1.7rem; }
 .video-card > .content-type { margin: auto 1rem .7rem; }
