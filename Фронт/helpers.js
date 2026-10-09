@@ -19,7 +19,12 @@
     if (!block) return;
     try {
       const rows = read();
-      block.querySelector('p').textContent = rows.length ? `Последняя запись: ${format(rows.reduce((latest, value) => Math.max(latest, value), 0))}` : 'Записей пока нет';
+      const lastRecord = block.querySelector('p');
+      if (rows.length) {
+        lastRecord.replaceChildren('Последняя запись:', document.createElement('br'), format(rows.reduce((latest, value) => Math.max(latest, value), 0)));
+      } else {
+        lastRecord.textContent = 'Записей пока нет';
+      }
       block.querySelector('.movement-status').textContent = rows.length ? `Всего шевелений: ${rows.length}` : 'Запишите шевеление, когда почувствуете его';
     } catch {
       block.querySelector('p').textContent = 'Не удалось прочитать записи';
