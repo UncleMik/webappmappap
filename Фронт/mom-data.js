@@ -32,10 +32,12 @@
     weight.querySelector('strong').textContent = last ? `${number.format(last.value)} кг` : '—';
     weight.querySelector('.metric-note').textContent = `Всего: ${last ? delta(difference(last.value, data.weights[0].value)) : '—'}`;
     const change = last && previous ? difference(last.value, previous.value) : null;
+    const changeLabel = change !== null && change < 0 ? 'Снижение' : 'Прибавка';
+    gain.querySelector('.metric-label').textContent = changeLabel;
     gain.querySelector('strong').textContent = change === null ? '—' : delta(change);
     gain.querySelector('.gain-icon').classList.toggle('is-up', change > 0);
     gain.querySelector('.gain-icon').classList.toggle('is-down', change !== null && change < 0);
-    gain.setAttribute('aria-label', `Прибавка с последнего взвешивания: ${change === null ? 'нет данных' : delta(change)}`);
+    gain.setAttribute('aria-label', `${changeLabel} с последнего взвешивания: ${change === null ? 'нет данных' : delta(change)}`);
     const pressure = document.querySelector('.metric-pressure');
     pressure.querySelector('strong').textContent = data.pressure ? `${data.pressure.systolic}/${data.pressure.diastolic}` : '—';
     pressure.querySelector('.metric-note').textContent = data.pressure ? 'мм рт. ст.' : '—';
