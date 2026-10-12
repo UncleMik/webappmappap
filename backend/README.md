@@ -1,8 +1,9 @@
 # wep_pril — статьи и недельные материалы
 
 Рабочий каталог: `/opt/wep_pril` на сервере `129.101.119.250`.
-API: `https://129.101.119.250/api/articles`.
-Фронт: https://unclemik.github.io/webappmappap/.
+API: `https://app.legkie-rody.ru/api/articles`.
+Фронт: https://app.legkie-rody.ru/.
+Прежние адреса по IP и GitHub Pages сохранены.
 
 Здесь хранится код API статей и недельных материалов, не полный бэкенд школы.
 Авторизация, GetCourse, админ-панель, чат и платные права не реализованы.

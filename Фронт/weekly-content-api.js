@@ -1,5 +1,6 @@
 (() => {
-  const base = window.articlesApiBase || 'https://129.101.119.250';
+  const base = window.articlesApiBase || (location.hostname === '129.101.119.250'
+    ? 'https://129.101.119.250' : 'https://app.legkie-rody.ru');
   let pending;
   const statuses = new WeakMap();
 

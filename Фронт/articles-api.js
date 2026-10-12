@@ -1,5 +1,6 @@
 // Article text and illustrations are served by wep_pril; no embedded corpus.
-window.articlesApiBase = 'https://129.101.119.250';
+window.articlesApiBase = location.hostname === '129.101.119.250'
+  ? 'https://129.101.119.250' : 'https://app.legkie-rody.ru';
 window.articleLibrary = {};
 window.pregnancyArticleList = [];
 window.articleImageUrl = image => image ? new URL(image, window.articlesApiBase).href : '';
