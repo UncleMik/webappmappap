@@ -1,4 +1,23 @@
 :root { --ink:#11114e; --muted:#7f8bc2; --purple:#7946ff; --canvas:#fdfcfa; }
+.speaker-carousel { border-radius:2rem; padding:1.6rem 1.8rem .5rem; background:#f6f0fc; overflow:hidden; }
+.speaker-slides { display:grid; }
+.speaker-slide { grid-area:1 / 1; display:grid; grid-template-columns:minmax(0,1fr) 15rem; grid-template-rows:18rem auto; align-content:start; column-gap:1rem; visibility:hidden; opacity:0; transition:opacity 220ms ease; }
+.speaker-slide.is-active { visibility:visible; opacity:1; }
+.speaker-heading { align-self:center; min-width:0; }
+.speaker-label { color:#735095; font-size:1.3rem; margin-bottom:.8rem; }
+.speaker-heading h2 { font-size:2.2rem; line-height:1.15; margin-bottom:.8rem; }
+.speaker-role { color:#51446f; font-size:1.5rem; line-height:1.35; }
+.speaker-slide img { width:100%; height:18rem; object-fit:cover; object-position:center top; }
+.speaker-description { grid-column:1 / -1; padding-left:1.7rem; margin:1.2rem 0 0; color:#51446f; font-size:1.45rem; line-height:1.4; }
+.speaker-description li + li { margin-top:.45rem; }
+.speaker-controls { display:flex; align-items:center; justify-content:space-between; gap:1rem; }
+.speaker-dots { display:flex; }
+.speaker-dots button { display:grid; place-items:center; width:44px; height:44px; background:transparent; }
+.speaker-dots span { width:8px; height:8px; border-radius:50%; background:#d6c7e8; }
+.speaker-dots [aria-current=true] span { background:#794aff; }
+.speaker-pause { background:transparent; color:#65507e; font:inherit; font-size:1.3rem; min-height:44px; padding:0 1rem; }
+.speaker-controls button:focus-visible { outline:2px solid #794aff; outline-offset:-2px; border-radius:1rem; }
+@media (prefers-reduced-motion:reduce) { .speaker-slide { transition:none; } }
 .club-page svg { fill:none; stroke:currentColor; stroke-width:1.65; stroke-linecap:round; stroke-linejoin:round; }
 .club-page [hidden] { display:none !important; }
 .club-page .app { background:radial-gradient(ellipse at 50% 15%,#fff 15%,#ffffff66 65%),var(--canvas); }
@@ -85,12 +104,6 @@
 .club-header p { color:var(--muted); font-size:1.5rem; }
 .club-header .header-actions { gap:.8rem; }
 .club-main { padding:0 1.8rem 2rem; }
-.lara-welcome { display:flex; position:relative; align-items:center; min-height:10.6rem; border-radius:2rem; overflow:hidden; background:#f6f0fc; padding:.8rem 2rem; }
-.lara-welcome > div { position:relative; z-index:1; width:65%; }
-.lara-welcome h2 { font-size:1.65rem; line-height:1.15; margin-bottom:.4rem; }
-.lara-welcome p { font-size:1.3rem; line-height:1.2; color:#51446f; }
-.lara-welcome div > span { display:block; text-align:right; margin-top:.3rem; font:italic 500 1.5rem "Intro",sans-serif; color:#8271ae; }
-.lara-welcome img { position:absolute; right:-1.3rem; bottom:0; width:14rem; height:100%; object-fit:cover; object-position:center 35%; mix-blend-mode:multiply; mask-image:linear-gradient(90deg,transparent,#000 18%); }
 .community-tabs { display:flex; gap:.6rem; margin:1.3rem 0 1rem; }
 .community-tabs button { flex:1; min-height:44px; padding:.7rem .5rem; text-align:center; border-radius:3rem; background:#f7f5fa; font-size:1.5rem; }
 .community-tabs [aria-selected=true] { background:linear-gradient(120deg,#a06eff,#7137ff); color:white; }

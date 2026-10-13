@@ -1,4 +1,38 @@
 (() => {
+ const carousel = document.querySelector('.speaker-carousel');
+ if (carousel) {
+  const slides = [...carousel.querySelectorAll('.speaker-slide')];
+  const dots = [...carousel.querySelectorAll('[data-speaker]')];
+  const pause = carousel.querySelector('.speaker-pause');
+  let current = 0, paused = false, timer;
+  function show(index) {
+   current = index;
+   slides.forEach((slide, i) => {
+    slide.classList.toggle('is-active', i === current);
+    slide.setAttribute('aria-hidden', String(i !== current));
+    slide.inert = i !== current;
+   });
+   dots.forEach((dot, i) => {
+    if (i === current) dot.setAttribute('aria-current', 'true');
+    else dot.removeAttribute('aria-current');
+   });
+  }
+  function schedule() {
+   clearInterval(timer);
+   if (!paused && !document.hidden) timer = setInterval(() => show((current + 1) % slides.length), 5000);
+  }
+  dots.forEach(dot => dot.addEventListener('click', () => { show(Number(dot.dataset.speaker)); schedule(); }));
+  pause.addEventListener('click', () => {
+   paused = !paused;
+   pause.setAttribute('aria-pressed', String(paused));
+   pause.textContent = paused ? 'Продолжить' : 'Пауза';
+   schedule();
+  });
+  document.addEventListener('visibilitychange', schedule);
+  window.addEventListener('pagehide', () => clearInterval(timer));
+  window.addEventListener('pageshow', schedule);
+  schedule();
+ }
  const tabs = [...document.querySelectorAll('[data-tab]')];
  const query = document.querySelector('#club-query');
  const notice = document.querySelector('.club-notice');

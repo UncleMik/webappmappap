@@ -9,8 +9,8 @@
   <link rel="preload" href="assets/fonts/Intro-Regular.woff" as="font" type="font/woff" crossorigin>
   <link rel="preload" href="assets/fonts/Intro-Bold.woff" as="font" type="font/woff" crossorigin>
   <link rel="stylesheet" href="styles.css?v=20261008-close">
-  <link rel="stylesheet" href="club.css?v=20261007-mobile">
-  <script src="club.js?v=20261005-performance3" defer></script>
+  <link rel="stylesheet" href="club.css?v=20261013-speakers">
+  <script src="club.js?v=20261013-speakers" defer></script>
   <link rel="stylesheet" href="app-navigation.css?v=20261006-gotham">
   <link rel="stylesheet" href="mobile-layout.css?v=20261007-darker-sides">
 </head>
@@ -29,7 +29,26 @@
   <div class="app">
     <header class="page-header club-header"><div><h1>Клуб</h1><p>Поддержка по сроку, этапу и теме</p></div><div class="header-actions"><button class="club-tool" id="search-toggle" type="button" aria-label="Поиск в клубе" aria-expanded="false" aria-controls="club-search"><svg aria-hidden="true"><use href="#search"/></svg></button><button class="club-tool" type="button" data-notice="Уведомления клуба пока не подключены." aria-label="Уведомления"><svg aria-hidden="true"><use href="#bell"/></svg></button></div></header>
 <main class="club-main">
-<section class="lara-welcome" aria-label="Ваш доктор Лара"><div><h2>Выберите, что вам<br>сейчас важно</h2><p>Я подскажу, где искать ответы<br>и поддержку 💜</p><span>Ваш доктор Лара</span></div><img src="assets/doctor-lara.jpg" alt="Доктор Лара" width="640" height="640"></section>
+<section class="speaker-carousel" aria-label="Спикеры школы" aria-roledescription="карусель">
+ <div class="speaker-slides">
+  <article class="speaker-slide is-active" aria-label="1 из 3">
+   <div class="speaker-heading"><p class="speaker-label">Наши спикеры</p><h2>Анастасия Сафина</h2><p class="speaker-role">Перинатальный психолог, доула, мама</p></div>
+   <img src="assets/speakers/anastasia-safina.webp" alt="Анастасия Сафина" width="400" height="620" fetchpriority="high">
+   <ul class="speaker-description"><li>Член Ассоциации «АКЕВ»</li><li>Консультант по ГВ, сну и прикорму</li><li>Преподаватель «ВОЗ ЮНИСЕФ» по грудному вскармливанию</li><li>Сооснователь школы «Легкие роды» и ведущая курсов подготовки к родам</li><li>Выпускница «МГУ» кафедры «Психология»</li><li>Сопровождает роды в роддомах г. Москвы</li></ul>
+  </article>
+  <article class="speaker-slide" aria-label="2 из 3" aria-hidden="true" inert>
+   <div class="speaker-heading"><p class="speaker-label">Наши спикеры</p><h2>Юлия Сулейманова</h2><p class="speaker-role">Врач акушер-гинеколог</p></div>
+   <img src="assets/speakers/yulia-suleymanova.webp" alt="Юлия Сулейманова" width="400" height="620">
+   <ul class="speaker-description"><li>Ведёт беременности и роды разной степени сложности</li><li>Проводит оперативные роды</li><li>Приняла более 2000 родов</li><li>Выпускница «БГМУ»</li><li>Проходила стажировку в Хорватии в акушерско-гинекологическом отделении</li><li>С 2017 г. работает в Клиническом госпитале «Мать и дитя» в г. Уфа</li></ul>
+  </article>
+  <article class="speaker-slide" aria-label="3 из 3" aria-hidden="true" inert>
+   <div class="speaker-heading"><p class="speaker-label">Наши спикеры</p><h2>Татьяна Анисимова</h2><p class="speaker-role">Врач-неонатолог</p></div>
+   <img src="assets/speakers/tatyana-anisimova.webp" alt="Татьяна Анисимова" width="400" height="620">
+   <ul class="speaker-description"><li>Опыт работы более 10 лет</li><li>Ведёт врачебную деятельность в одном из топовых родильных отделений Уфы — клиническом госпитале «Мать и дитя»</li><li>Мама двух детей</li><li>Закончила Башкирский медуниверситет, неоднократно проходила повышение квалификации в Санкт-Петербурге. Имеет диплом педиатра</li><li>Более 5 лет проводит «Завтрак с неонатологом», где помогает мамам разобраться с проблемами в развитии малышей</li><li>Максимально придерживается принципов доказательной медицины, но убеждена: в каждом деле важен индивидуальный подход</li></ul>
+  </article>
+ </div>
+ <div class="speaker-controls"><div class="speaker-dots" aria-label="Выбрать спикера"><button type="button" aria-label="Анастасия Сафина" aria-current="true" data-speaker="0"><span></span></button><button type="button" aria-label="Юлия Сулейманова" data-speaker="1"><span></span></button><button type="button" aria-label="Татьяна Анисимова" data-speaker="2"><span></span></button></div><button class="speaker-pause" type="button" aria-pressed="false">Пауза</button></div>
+</section>
 <div class="club-search" id="club-search" hidden><label for="club-query">Поиск по названию и описанию</label><input id="club-query" type="search" placeholder="Найти в клубе" autocomplete="off"></div>
 <div class="community-tabs" role="tablist" aria-label="Разделы клуба"><button role="tab" id="pregnancy-tab" data-tab="pregnancy" aria-selected="true" aria-controls="community-content" tabindex="0">Беременность</button><button role="tab" id="motherhood-tab" data-tab="motherhood" aria-selected="false" aria-controls="community-content" tabindex="-1">Я мама</button><button role="tab" id="events-tab" data-tab="events" aria-selected="false" aria-controls="community-content" tabindex="-1">События</button></div>
 <div id="community-content" role="tabpanel" aria-labelledby="pregnancy-tab">
