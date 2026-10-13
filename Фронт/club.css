@@ -10,7 +10,7 @@
 .speaker-slide img { width:100%; height:18rem; object-fit:cover; object-position:center top; }
 .speaker-description { grid-column:1 / -1; padding-left:1.7rem; margin:1.2rem 0 0; color:#51446f; font-size:1.3rem; line-height:1.4; }
 .speaker-description li + li { margin-top:.45rem; }
-.speaker-controls { display:flex; align-items:center; justify-content:space-between; gap:1rem; }
+.speaker-controls { display:flex; align-items:center; justify-content:center; gap:1rem; }
 .speaker-dots { display:flex; }
 .speaker-dots button { display:grid; place-items:center; width:44px; height:44px; background:transparent; }
 .speaker-dots span { width:8px; height:8px; border-radius:50%; background:#d6c7e8; }
