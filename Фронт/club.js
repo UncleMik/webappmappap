@@ -3,8 +3,7 @@
  if (carousel) {
   const slides = [...carousel.querySelectorAll('.speaker-slide')];
   const dots = [...carousel.querySelectorAll('[data-speaker]')];
-  const pause = carousel.querySelector('.speaker-pause');
-  let current = 0, paused = false, timer;
+  let current = 0, timer;
   function show(index) {
    current = index;
    slides.forEach((slide, i) => {
@@ -19,15 +18,9 @@
   }
   function schedule() {
    clearInterval(timer);
-   if (!paused && !document.hidden) timer = setInterval(() => show((current + 1) % slides.length), 5000);
+   if (!document.hidden) timer = setInterval(() => show((current + 1) % slides.length), 5000);
   }
   dots.forEach(dot => dot.addEventListener('click', () => { show(Number(dot.dataset.speaker)); schedule(); }));
-  pause.addEventListener('click', () => {
-   paused = !paused;
-   pause.setAttribute('aria-pressed', String(paused));
-   pause.textContent = paused ? 'Продолжить' : 'Пауза';
-   schedule();
-  });
   document.addEventListener('visibilitychange', schedule);
   window.addEventListener('pagehide', () => clearInterval(timer));
   window.addEventListener('pageshow', schedule);

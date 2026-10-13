@@ -15,7 +15,6 @@
 .speaker-dots button { display:grid; place-items:center; width:44px; height:44px; background:transparent; }
 .speaker-dots span { width:8px; height:8px; border-radius:50%; background:#d6c7e8; }
 .speaker-dots [aria-current=true] span { background:#794aff; }
-.speaker-pause { background:transparent; color:#65507e; font:inherit; font-size:1.3rem; min-height:44px; padding:0 1rem; }
 .speaker-controls button:focus-visible { outline:2px solid #794aff; outline-offset:-2px; border-radius:1rem; }
 @media (prefers-reduced-motion:reduce) { .speaker-slide { transition:none; } }
 .club-page svg { fill:none; stroke:currentColor; stroke-width:1.65; stroke-linecap:round; stroke-linejoin:round; }
