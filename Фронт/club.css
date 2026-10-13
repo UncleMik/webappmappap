@@ -8,7 +8,7 @@
 .speaker-heading h2 { font-size:2.2rem; line-height:1.15; margin-bottom:.8rem; }
 .speaker-role { color:#51446f; font-size:1.5rem; line-height:1.35; }
 .speaker-slide img { width:100%; height:18rem; object-fit:cover; object-position:center top; }
-.speaker-description { grid-column:1 / -1; padding-left:1.7rem; margin:1.2rem 0 0; color:#51446f; font-size:1.45rem; line-height:1.4; }
+.speaker-description { grid-column:1 / -1; padding-left:1.7rem; margin:1.2rem 0 0; color:#51446f; font-size:1.3rem; line-height:1.4; }
 .speaker-description li + li { margin-top:.45rem; }
 .speaker-controls { display:flex; align-items:center; justify-content:space-between; gap:1rem; }
 .speaker-dots { display:flex; }
