@@ -4,8 +4,8 @@ After=network.target postgresql.service
 
 [Service]
 Type=simple
-User=wep-pril
-Group=wep-pril
+User=wep-pril-auth
+Group=wep-pril-auth
 WorkingDirectory=/opt/wep_pril/backend
 EnvironmentFile=/etc/wep-pril/auth.env
 ExecStart=/usr/local/bin/node /opt/wep_pril/backend/auth/main.mjs
