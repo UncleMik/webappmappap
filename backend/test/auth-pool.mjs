@@ -1,4 +1,3 @@
-import { PGlite } from '@electric-sql/pglite';
 import { readFile } from 'node:fs/promises';
 import { randomUUID } from 'node:crypto';
 import pg from 'pg';
@@ -18,6 +17,7 @@ export async function testPool() {
     } };
   }
   // PostgreSQL compiled to WASM: useful for SQL/functional checks, not a pool/load benchmark.
+  const { PGlite } = await import('@electric-sql/pglite');
   const db = new PGlite();
   await db.exec(schema);
   let tail = Promise.resolve();
