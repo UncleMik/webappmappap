@@ -1,6 +1,24 @@
 (async () => {
 const scroller = document.querySelector('.reader-scroll');
 const params = new URLSearchParams(location.search);
+function showArticleNotFound() {
+  document.title = 'Статья не найдена';
+  document.querySelector('.reader-progress').hidden = true;
+  scroller.removeAttribute('aria-busy');
+  const section = document.createElement('section');
+  section.className = 'reader-section reader-intro';
+  const heading = document.createElement('h1');
+  heading.textContent = 'Статья не найдена';
+  const message = document.createElement('p');
+  message.textContent = 'Возможно, ссылка устарела или материал больше недоступен.';
+  const link = document.createElement('a');
+  link.className = 'reader-button';
+  link.href = 'articles.html';
+  link.textContent = 'Вернуться к списку статей';
+  section.append(heading, message, link);
+  scroller.replaceChildren(section);
+  document.querySelector('[data-reader-return]').href = 'articles.html';
+}
 scroller.setAttribute('aria-busy', 'true');
 const loadingMessage = document.createElement('p');
 loadingMessage.className = 'article-load-status';
@@ -22,12 +40,13 @@ if (params.get('id') === 'mom-week') {
   }
   library['mom-week'] = { title: content.title, type: `${momWeek} неделя · Состояние мамы`, minutes: Math.max(1, Math.ceil(content.paragraphs.join(' ').split(/\s+/).length / 180)), intro: content.paragraphs[0], headings: content.paragraphs.slice(1).map(() => 'Что происходит'), paragraphs: content.paragraphs.slice(1), supplied: true };
 }
-const articleId = Object.hasOwn(library, params.get('id')) ? params.get('id') : 'dating';
+const articleId = params.has('id') ? params.get('id') : 'dating';
 let article;
 try {
-  article = articleId === 'mom-week' ? library[articleId] : await window.loadSchoolArticle(library[articleId]?.id || 'pregnancy-001');
-} catch {
-  window.showArticleLoadError(scroller);
+  article = articleId === 'mom-week' ? library[articleId] : await window.loadSchoolArticle(library[articleId]?.id || articleId);
+} catch (error) {
+  if (error.status === 404) showArticleNotFound();
+  else window.showArticleLoadError(scroller);
   document.querySelector('.reader-progress').hidden = true;
   return;
 }

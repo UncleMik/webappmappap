@@ -68,8 +68,14 @@ codeForm.addEventListener('submit', event => {
 document.querySelector('#logout').addEventListener('click', () => task(async () => {
   await authRequest('logout', {}); location.reload();
 }));
-const timer = setInterval(refresh, 1000);
-addEventListener('pagehide', () => clearInterval(timer), { once: true });
+let timer;
+function startTimer() {
+  refresh();
+  if (timer === undefined) timer = setInterval(refresh, 1000);
+}
+startTimer();
+addEventListener('pagehide', () => { clearInterval(timer); timer = undefined; });
+addEventListener('pageshow', startTimer);
 if (location.hostname === 'unclemik.github.io') {
   emailForm.hidden = true;
   intro.textContent = 'Вход по email ещё подключаем. Сейчас можно посмотреть материалы приложения без входа.';

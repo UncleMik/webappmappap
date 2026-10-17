@@ -5,6 +5,7 @@
 .reader-back { position: absolute; left: -10px; display: grid; place-items: center; width: 44px; height: 44px; color: #26324d; }
 .reader-back svg { width: 22px; height: 22px; }
 .reader-progress { display: flex; align-items: center; gap: 14px; height: 22px; }
+.reader-progress[hidden] { display: none; }
 .reader-progress progress { appearance: none; border: 0; height: 6px; flex: 1; width: 0; overflow: hidden; border-radius: 8px; background: #ebe5ef; }
 .reader-progress progress::-webkit-progress-bar { background: #ebe5ef; border-radius: 8px; }
 .reader-progress progress::-webkit-progress-value { background: #9570ed; border-radius: 8px; }

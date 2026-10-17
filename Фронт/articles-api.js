@@ -22,7 +22,7 @@ window.showArticleLoadError = container => {
 
 async function requestArticleData(path) {
   const response = await fetch(window.articlesApiBase + path, { signal: AbortSignal.timeout(15000) });
-  if (!response.ok) throw new Error('Article request failed');
+  if (!response.ok) throw Object.assign(new Error('Article request failed'), { status: response.status });
   return response.json();
 }
 
@@ -38,7 +38,7 @@ window.articlesReady = requestArticleData('/api/articles').then(payload => {
 window.loadSchoolArticle = async id => {
   await window.articlesReady;
   if (articleLoadingError) throw articleLoadingError;
-  const article = decorateArticle(await requestArticleData(`/api/articles/${id}`));
+  const article = decorateArticle(await requestArticleData(`/api/articles/${encodeURIComponent(id)}`));
   window.articleLibrary[id] = article;
   return article;
 };
