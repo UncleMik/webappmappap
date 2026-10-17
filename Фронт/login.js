@@ -72,9 +72,9 @@ const timer = setInterval(refresh, 1000);
 addEventListener('pagehide', () => clearInterval(timer), { once: true });
 if (location.hostname === 'unclemik.github.io') {
   emailForm.hidden = true;
-  intro.textContent = 'Вход доступен на основном сайте школы.';
-  const link = document.createElement('a'); link.href = 'https://app.legkie-rody.ru/login.html';
-  link.className = 'auth-button login-primary'; link.textContent = 'Перейти ко входу'; emailForm.after(link);
+  intro.textContent = 'Вход по email ещё подключаем. Сейчас можно посмотреть материалы приложения без входа.';
+  const link = document.createElement('a'); link.href = 'index.html';
+  link.className = 'auth-button login-primary'; link.textContent = 'Открыть приложение'; emailForm.after(link);
 } else {
   task(async () => { const session = await authRequest('session'); if (session.authenticated) authenticated(session.user); });
 }
