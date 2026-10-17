@@ -38,6 +38,8 @@ def sql(text, label, database='postgres'):
 def new_file(path, content, mode=0o600):
     descriptor = os.open(path, os.O_WRONLY | os.O_CREAT | os.O_EXCL | os.O_NOFOLLOW, mode)
     with os.fdopen(descriptor, 'w', encoding='utf-8') as stream:
+        # A private umask must not make the non-secret PostgreSQL config unreadable.
+        os.fchmod(stream.fileno(), mode)
         stream.write(content)
         stream.flush()
         os.fsync(stream.fileno())
