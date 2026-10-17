@@ -1,0 +1,23 @@
+.login-page .auth-shell { padding-top: max(24px, env(safe-area-inset-top)); }
+.login-flow label { display: block; font-size: 15px; line-height: 1.5; margin-bottom: 8px; }
+.login-flow input { min-width: 0; }
+.login-flow .auth-title:focus { outline: none; }
+#code { font-size: 28px; letter-spacing: .25em; }
+.login-help, .login-privacy { font-size: 13px; line-height: 1.55; color: #666995; margin-top: 10px; }
+.login-privacy { margin-top: 24px; }
+.login-privacy a { color: #6436d7; text-underline-offset: 3px; }
+.login-primary { text-decoration: none; padding: 14px; }
+.login-secondary { display: block; min-height: 44px; width: 100%; padding: 10px 4px; margin-top: 10px; font-size: 15px; line-height: 1.5; text-align: center; color: #6436d7; background: transparent; border: 0; }
+.login-primary:disabled, .login-secondary:disabled { opacity: .55; cursor: default; }
+.login-primary, .login-secondary { transition: opacity 160ms ease, background 160ms ease; }
+.login-recipient { font-size: 16px; line-height: 1.5; overflow-wrap: anywhere; margin-bottom: 24px; }
+#signed-in { margin-top: 30px; }
+#login-status { font-size: 14px; line-height: 1.5; margin-top: 18px; overflow-wrap: anywhere; color: #a12632; }
+#login-status:empty { display: none; }
+.login-flow [hidden] { display: none !important; }
+.account-access { margin-bottom: 18px; padding: 16px; border-radius: 16px; background: #fff; border: 1px solid #eee8f5; font-size: 15px; line-height: 1.5; }
+.account-access p { overflow-wrap: anywhere; }
+.account-access a, .account-access button { display: inline-flex; align-items: center; min-height: 44px; color: #6436d7; background: transparent; text-decoration: underline; text-underline-offset: 3px; }
+.account-access [hidden] { display: none !important; }
+.account-access[hidden] { display: none !important; }
+@media (prefers-reduced-motion: reduce) { .login-primary, .login-secondary { transition: none; } }

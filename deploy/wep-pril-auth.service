@@ -1,0 +1,22 @@
+[Unit]
+Description=wep_pril email login
+After=network.target postgresql.service
+
+[Service]
+Type=simple
+User=wep-pril
+Group=wep-pril
+WorkingDirectory=/opt/wep_pril/backend
+EnvironmentFile=/etc/wep-pril/auth.env
+ExecStart=/usr/local/bin/node /opt/wep_pril/backend/auth/main.mjs
+Restart=on-failure
+RestartSec=5
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=true
+MemoryMax=256M
+UMask=0077
+
+[Install]
+WantedBy=multi-user.target
