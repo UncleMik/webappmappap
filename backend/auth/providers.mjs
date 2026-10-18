@@ -35,7 +35,14 @@ export function createGetCourse(config, fetcher = fetch) {
   return async email => {
     // add + refresh_if_exists=0 creates a missing card or returns the existing ID.
     // No groups, orders, purchases, name, pregnancy data or marketing opt-in sent.
-    const params = Buffer.from(JSON.stringify({ user: { email }, system: { refresh_if_exists: 0 } })).toString('base64');
+    // The school process filters a custom field, not the separate registration
+    // UTM record. Set both explicitly; refresh=0 leaves existing cards intact.
+    // This marker routes registration messages; it grants no access or consent.
+    const appSource = 'webpril_app_auth';
+    const params = Buffer.from(JSON.stringify({
+      user: { email, addfields: { gc_system_user_utm_source: appSource } },
+      system: { refresh_if_exists: 0 }, session: { utm_source: appSource },
+    })).toString('base64');
     const response = await fetcher(new URL('/pl/api/users', origin), {
       method: 'POST', redirect: 'error', signal: AbortSignal.timeout(8_000),
       headers: { 'Content-Type': 'application/x-www-form-urlencoded' },

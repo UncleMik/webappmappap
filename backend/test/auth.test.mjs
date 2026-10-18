@@ -123,7 +123,12 @@ test('GetCourse adapter preserves existing fields and refuses unexpected redirec
   assert.equal(sent.options.redirect, 'error');
   const body = sent.options.body;
   assert.equal(body.get('action'), 'add');
-  assert.deepEqual(JSON.parse(Buffer.from(body.get('params'), 'base64').toString()), { user: { email: 'student@example.ru' }, system: { refresh_if_exists: 0 } });
+  // Contract with the school process: a new app card must match its exact
+  // marker, while refresh=0 preserves every existing card and its preferences.
+  assert.deepEqual(JSON.parse(Buffer.from(body.get('params'), 'base64').toString()), {
+    user: { email: 'student@example.ru', addfields: { gc_system_user_utm_source: 'webpril_app_auth' } },
+    system: { refresh_if_exists: 0 }, session: { utm_source: 'webpril_app_auth' },
+  });
   const broken = createGetCourse({ origin: 'https://legkierody.ru', key: 'test-key' }, async () => Response.json({ success: true, result: { success: false, user_id: 9876 } }));
   await assert.rejects(broken('student@example.ru'));
 });
