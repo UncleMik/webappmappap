@@ -154,12 +154,47 @@ def nginx_reload():
 
 
 def check_loopback_denied():
-    result = run('/usr/bin/curl', '--noproxy', '*', '--resolve',
-                 'app.legkie-rody.ru:443:127.0.0.1', '-sS', '--max-time', '5',
-                 '-o', '/dev/null', '-w', '%{http_code}',
-                 'https://app.legkie-rody.ru/api/auth/session')
-    if result.stdout.strip() != b'403':
-        raise RuntimeError('IP guard was not confirmed')
+    # A successful reload command does not wait for the new workers to serve.
+    # Keep auth disabled while polling new connections for the actual denial.
+    for attempt in range(20):
+        result = run('/usr/bin/curl', '--noproxy', '*', '--resolve',
+                     'app.legkie-rody.ru:443:127.0.0.1', '-sS', '--max-time', '2',
+                     '-o', '/dev/null', '-w', '%{http_code}',
+                     'https://app.legkie-rody.ru/api/auth/session')
+        if result.stdout.strip() == b'403':
+            return
+        if attempt < 19:
+            time.sleep(0.25)
+    raise RuntimeError('IP guard was not confirmed')
+
+
+def failure_report(error):
+    """Only fixed labels, own code locations and numeric command exit status."""
+    lines = ['AUTH_BROWSER_CHECK_FAILED: keep login closed; no secrets printed']
+    seen = set()
+    for _ in range(3):
+        if error is None or id(error) in seen:
+            break
+        seen.add(id(error))
+        if isinstance(error, subprocess.CalledProcessError):
+            lines.append('ERROR_KIND=COMMAND_FAILED')
+            lines.append('COMMAND_EXIT=' + str(int(error.returncode)))
+        elif isinstance(error, subprocess.TimeoutExpired):
+            lines.append('ERROR_KIND=COMMAND_TIMEOUT')
+        elif isinstance(error, OSError):
+            lines.append('ERROR_KIND=OS_ERROR')
+            if isinstance(error.errno, int):
+                lines.append('OS_ERRNO=' + str(error.errno))
+        else:
+            lines.append('ERROR_KIND=CHECK_FAILED')
+        current = error.__traceback__
+        while current:
+            frame = current.tb_frame
+            if frame.f_code.co_filename == __file__:
+                lines.append('AT=' + frame.f_code.co_name + ':' + str(current.tb_lineno))
+            current = current.tb_next
+        error = error.__context__
+    return '\n'.join(lines)
 
 
 def save_state(path, state):
@@ -264,5 +299,5 @@ if __name__ == '__main__':
                   + ' --close ' + str(state_path))
         else:
             raise RuntimeError('Expected probe or close command')
-    except Exception:
-        raise SystemExit('AUTH_BROWSER_CHECK_FAILED: keep login closed; no secrets printed')
+    except Exception as error:
+        raise SystemExit(failure_report(error))

@@ -3,6 +3,7 @@
 import importlib.util
 import json
 from pathlib import Path
+import subprocess
 import tempfile
 from datetime import datetime, timedelta, timezone
 from types import SimpleNamespace
@@ -35,6 +36,7 @@ class BrowserCheckTests(unittest.TestCase):
         self.guard_loaded = False
         self.fail_once = None
         self.bad_guard_probe = False
+        self.guard_probe_codes = []
         self.bad_enabled_response = False
         self.patches = [
             patch.object(qa, 'ENV_FILE', self.env),
@@ -82,7 +84,8 @@ class BrowserCheckTests(unittest.TestCase):
         elif args[:2] == ('/usr/bin/systemctl', 'stop') and args[2].endswith('.timer'):
             self.timer = False
         elif args[0] == '/usr/bin/curl':
-            code = b'200' if self.bad_guard_probe or not self.guard_loaded else b'403'
+            code = (self.guard_probe_codes.pop(0) if self.guard_probe_codes else
+                    b'200' if self.bad_guard_probe or not self.guard_loaded else b'403')
             return SimpleNamespace(stdout=code, returncode=0)
         elif args not in [('/usr/sbin/nginx', '-t'), ('/usr/bin/systemctl', 'daemon-reload')]:
             raise AssertionError('Unexpected command in isolated test: ' + repr(args))
@@ -116,12 +119,41 @@ class BrowserCheckTests(unittest.TestCase):
         self.assert_closed()
         self.assertFalse(any(runtime for _, runtime, _, _ in self.events))
 
+    def test_nginx_reload_can_finish_after_the_first_guard_request(self):
+        self.guard_probe_codes = [b'503', b'503', b'403']
+        state = qa.start_check(NONCE)
+        requests = [event for event in self.events if event[0][0] == '/usr/bin/curl']
+        self.assertEqual(len(requests), 3)
+        self.assertTrue(all(not runtime and not timer for _, runtime, timer, _ in requests))
+        self.assertTrue(self.enabled)
+        qa.close_check(state)
+        self.assert_closed()
+
     def test_missing_ip_denial_does_not_enable_auth(self):
         self.bad_guard_probe = True
         with self.assertRaises(RuntimeError):
             qa.start_check(NONCE)
         self.assert_closed()
         self.assertFalse(any(runtime for _, runtime, _, _ in self.events))
+        self.assertEqual(sum(event[0][0] == '/usr/bin/curl' for event in self.events), 20)
+
+    def test_curl_certificate_failure_does_not_retry_or_enable_auth(self):
+        original_run = self.fake_run
+
+        def certificate_failure(*args, **kwargs):
+            if args[0] == '/usr/bin/curl':
+                self.events.append((args, self.runtime.exists(), self.timer, self.guard_loaded))
+                raise subprocess.CalledProcessError(60, args, stderr=b'secret-provider-output')
+            return original_run(*args, **kwargs)
+
+        with patch.object(qa, 'run', side_effect=certificate_failure):
+            with self.assertRaises(subprocess.CalledProcessError) as caught:
+                qa.start_check(NONCE)
+        self.assert_closed()
+        self.assertEqual(sum(event[0][0] == '/usr/bin/curl' for event in self.events), 1)
+        report = qa.failure_report(caught.exception)
+        self.assertIn('COMMAND_EXIT=60', report)
+        self.assertNotIn('secret-provider-output', report)
 
     def test_failed_timer_does_not_enable_auth(self):
         self.fail_once = lambda args: args[0] == '/usr/bin/systemd-run'
@@ -184,6 +216,34 @@ class ProbeTests(unittest.TestCase):
         for text in invalid:
             with self.assertRaises(RuntimeError):
                 qa.probe_address(text, NONCE, now)
+
+
+class FailureReportTests(unittest.TestCase):
+    def test_report_includes_own_location_without_exception_text(self):
+        with patch.object(qa, 'run', side_effect=subprocess.CalledProcessError(
+                7, ['curl', '--password=secret-argument'], output=b'secret-stdout',
+                stderr=b'secret-stderr')):
+            try:
+                qa.check_loopback_denied()
+            except subprocess.CalledProcessError as error:
+                report = qa.failure_report(error)
+        self.assertIn('AT=check_loopback_denied:', report)
+        self.assertIn('COMMAND_EXIT=7', report)
+        for secret in ('secret-argument', 'secret-stdout', 'secret-stderr'):
+            self.assertNotIn(secret, report)
+
+    def test_report_preserves_original_error_if_rollback_fails(self):
+        try:
+            try:
+                raise subprocess.CalledProcessError(60, ['curl', 'secret-command'])
+            except subprocess.CalledProcessError:
+                raise RuntimeError('secret-rollback-error')
+        except RuntimeError as error:
+            report = qa.failure_report(error)
+        self.assertIn('COMMAND_EXIT=60', report)
+        self.assertEqual(report.count('ERROR_KIND='), 2)
+        self.assertNotIn('secret-command', report)
+        self.assertNotIn('secret-rollback-error', report)
 
 
 if __name__ == '__main__':
