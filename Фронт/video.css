@@ -74,3 +74,10 @@
 .video-fullscreen-tools #video-time { font-size: 14px; }
 .video-orientation-note { margin: 0; padding: 12px 16px 18px; color: #6a577b; font-size: 14px; line-height: 1.4; }
 .video-orientation-note[hidden] { display: none; }
+
+.video-timestamps { margin-bottom: 1.4rem; }
+.video-timestamps button { display: grid; grid-template-columns: 4.8rem minmax(0, 1fr); align-items: start; gap: 1rem; min-height: 44px; font: inherit; line-height: 1.45; }
+.video-timestamps time { color: #794aff; font-variant-numeric: tabular-nums; }
+.video-timestamps button:hover { background: #eee7ff; }
+.video-timestamps button:focus-visible { outline: 2px solid #794aff; outline-offset: -2px; }
+.video-timestamps button:disabled { opacity: .5; cursor: default; }

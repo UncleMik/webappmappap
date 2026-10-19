@@ -1,9 +1,41 @@
 (() => {
   // One public catalogue for cards and the player. File URLs are issued by the server after sign-in.
   window.webprilWeeklyVideos = Object.freeze([
-    Object.freeze({ id: 'contractions-lesson', title: 'Витамины и дефициты во время беременности', duration: 506, label: '8:26', image: 'assets/weekly-vitamins.png' }),
-    Object.freeze({ id: 'back-relief-video', title: 'Самомассаж головы и расслабление', duration: 298, label: '4:58', image: 'assets/weekly-head-massage.png' }),
-    Object.freeze({ id: 'birth-breathing-video', title: 'Практика поддержки и уверенности в себе', duration: 153, label: '2:33', image: 'assets/weekly-confidence.png' }),
+    Object.freeze({
+      id: "contractions-lesson",
+      title: "Витамины и дефициты во время беременности",
+      duration: 506,
+      label: "8:26",
+      image: "assets/weekly-vitamins.png",
+      description: "На этом уроке мы разберемся, какие витамины и микроэлементы вам необходимы, как выявить дефициты и можно ли принимать нутрицевтики без анализов.",
+      chapters: Object.freeze([
+        Object.freeze({"seconds": 88, "label": "Из-за чего происходит дефицит витаминов в организме?"}),
+        Object.freeze({"seconds": 141, "label": "Что мы должны получать с едой?"}),
+        Object.freeze({"seconds": 158, "label": "Почему витамины так важны для нас?"}),
+        Object.freeze({"seconds": 288, "label": "Дефицит витаминов группы В"}),
+        Object.freeze({"seconds": 393, "label": "Омега 3 жирные кислоты, Магний, Витамин Д"}),
+      ]),
+    }),
+    Object.freeze({
+      id: "back-relief-video",
+      title: "Самомассаж головы и расслабление",
+      duration: 298,
+      label: "4:58",
+      image: "assets/weekly-head-massage.png",
+      description: "Способствует снятию головной боли и усталости, нормализации давления, укреплению корней и усилению роста волос. Прорабатывает ключевые мышцы головы, которые помогают замедлить процессы старения лица и сделать лицо более подтянутым.",
+      chapters: Object.freeze([
+      ]),
+    }),
+    Object.freeze({
+      id: "birth-breathing-video",
+      title: "Практика поддержки и уверенности в себе",
+      duration: 153,
+      label: "2:33",
+      image: "assets/weekly-confidence.png",
+      description: "Практика поможет, если не хватает поддержки и ресурса, если вам одиноко и грустно",
+      chapters: Object.freeze([
+      ]),
+    }),
   ]);
   document.querySelectorAll('.journey-page .video-card').forEach(card => {
     const item = window.webprilWeeklyVideos.find(video => video.id === card.dataset.action);
