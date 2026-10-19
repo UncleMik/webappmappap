@@ -8,9 +8,10 @@
   <link rel="preload" href="assets/fonts/Intro-Regular.woff" as="font" type="font/woff" crossorigin>
   <link rel="preload" href="assets/fonts/Intro-Bold.woff" as="font" type="font/woff" crossorigin>
   <link rel="stylesheet" href="styles.css?v=20261008-close">
-  <link rel="stylesheet" href="video.css?v=20261019-centered-cover">
+  <link rel="stylesheet" href="video.css?v=20261019-fullscreen-1">
   <script src="weekly-videos.js?v=20261019-lessons-2" defer></script>
   <script src="video.js?v=20261019-lessons-2" defer></script>
+  <script src="video-fullscreen.js?v=20261019-fullscreen-1" defer></script>
   <link rel="stylesheet" href="mobile-layout.css?v=20261007-darker-sides">
 </head>
 <body class="video-page">
@@ -28,6 +29,11 @@
           <span class="cover-play"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m8 4 13 8-13 8Z"/></svg></span>
           <span class="cover-label">Смотреть видео</span>
         </button>
+        <button id="video-fullscreen" class="video-fullscreen-button" type="button" aria-label="На весь экран" aria-pressed="false" disabled>
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 3H3v5m13-5h5v5M3 16v5h5m13-5v5h-5"/></svg>
+        </button>
+        <p id="video-rotate-hint" class="video-rotate-hint" role="status" hidden>Поверните телефон для горизонтального просмотра</p>
+        <div class="video-fullscreen-tools" hidden></div>
       </section>
       <section class="video-panel" aria-labelledby="step-title">
         <div class="step-copy" aria-live="polite"><p class="step-count"></p><h2 id="step-title">Устройтесь удобно</h2><p class="step-description">Выберите удобное место и включите видео. Можно смотреть в своём темпе и переключаться между разделами.</p></div>
