@@ -17,6 +17,10 @@ export function mountWeeklyVideo(id) {
   document.querySelector('#step-title').textContent = item.title;
   document.querySelector('.step-description').textContent = 'Можно поставить видео на паузу и перемотать. Следующую запись включите, когда будете готовы.';
   document.querySelector('.video-note p').textContent = 'Три видео школы доступны бесплатно после входа.';
+  cover.classList.add('weekly-cover');
+  cover.querySelector('img').src = item.image;
+  cover.querySelector('img').alt = item.title;
+  video.poster = item.image;
   cover.setAttribute('aria-label', 'Включить видео');
   previous.disabled = index === 0; next.disabled = index === items.length - 1;
   previous.setAttribute('aria-label', 'Предыдущее видео недели');

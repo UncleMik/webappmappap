@@ -49,3 +49,6 @@
 .video-chapters button { display: flex; justify-content: space-between; width: 100%; text-align: left; padding: 1.4rem; border-radius: 1rem; background: transparent; color: #657397; gap: 1rem; }
 .video-chapters button[aria-current="true"] { background: #eee7ff; color: #794aff; }
 @media (prefers-reduced-motion: no-preference) { .video-controls button, .video-favorite { transition: background .2s, opacity .2s, transform .2s; } .video-controls button:active { transform: scale(.96); } }
+
+.video-cover.weekly-cover { background: #faf9ff; }
+.video-cover.weekly-cover > img { inset: 0; width: 100%; height: 100%; object-fit: contain; }

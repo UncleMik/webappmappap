@@ -61,3 +61,6 @@
 .journey-page [hidden] { display: none !important; }
 .journey-week-empty { margin: 2rem 0; padding: 2rem; background: #f7f3ff; border-radius: 1.4rem; color: var(--muted); font-size: 1.5rem; line-height: 1.5; }
 @media (prefers-reduced-motion: reduce) { .article-list, .video-list, .course-list, .week-wheel { scroll-behavior: auto; } .week-dots span { transition: none; } }
+
+.video-photo.weekly-video-photo::before { content: none; }
+.weekly-video-photo > img { display: block; width: 100%; height: 100%; object-fit: cover; }
