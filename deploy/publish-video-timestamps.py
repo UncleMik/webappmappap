@@ -12,7 +12,7 @@ import urllib.request
 
 SUPPORT_REVISION = 'b98269cf110bc92876bb5600ade53cdd4de1745c'
 SUPPORT_SHA = '9bd67620cc53381ee119135c1028f2a044621b9612599656f036644a2aaa5474'
-FILES = {'frontend/weekly-videos.js': {'source': 'Фронт/weekly-videos.js', 'old': '625c36b9aac350ffcfe9994ad702a04f8a98cab5950389f1bf15fb3c935d4fe9', 'new': '7f9c213d6fb4d402c2192f8ab96e898e29a435ff369536b8e7e11db0836cc888'}, 'frontend/weekly-video-player.js': {'source': 'Фронт/weekly-video-player.js', 'old': '1e3738712e3bc751b6186014834c33aa1ace57fdfa1c09126434aa88913537d3', 'new': '02d1cf1286ee685075b6caf4e3997a9e326f94eaef87a9e15efc4e422eccb259'}, 'frontend/video.js': {'source': 'Фронт/video.js', 'old': '3e65f8a47b5f81a779ff3732c3bbdafb0cf829552ded954c8c3de5ddbfb8e656', 'new': '17d6d0edd506d3d9a991a73b458c1e0bb4de3fa8a0490e4ab4e7aade4b491b6c'}, 'frontend/video.css': {'source': 'Фронт/video.css', 'old': '4f269b94f9455bdb2ab659d57bc3f9e0a5937c6af22e4dd16277c9d6f5a03b85', 'new': 'af271f0c283fc7e7ddd3b911a961a670f23203571e4fe1b3467c65b6af8404c5'}, 'frontend/video.html': {'source': 'Фронт/video.html', 'old': '933c12356a45cac9d666fb29042d238533b8de296dc7e04e2ded569b0ee15075', 'new': 'fde07f21d74ae4485877faeb7c7f42f6d0cf4138d74d30830d2974e5e1f78a72'}, 'frontend/journey.html': {'source': 'Фронт/journey.html', 'old': 'ba9d28b142395c0ee0738769d14402953ff07ca4da62a5bdc10c135fb1656acc', 'new': 'd02d034dc1172d545fe5518f176a9f6f324abb042153147c8fd1206c346ecd68'}}
+FILES = {'frontend/weekly-videos.js': {'source': 'Фронт/weekly-videos.js', 'old': '625c36b9aac350ffcfe9994ad702a04f8a98cab5950389f1bf15fb3c935d4fe9', 'new': '7f9c213d6fb4d402c2192f8ab96e898e29a435ff369536b8e7e11db0836cc888'}, 'frontend/weekly-video-player.js': {'source': 'Фронт/weekly-video-player.js', 'old': '1e3738712e3bc751b6186014834c33aa1ace57fdfa1c09126434aa88913537d3', 'new': '02d1cf1286ee685075b6caf4e3997a9e326f94eaef87a9e15efc4e422eccb259'}, 'frontend/video.js': {'source': 'Фронт/video.js', 'old': '3e65f8a47b5f81a779ff3732c3bbdafb0cf829552ded954c8c3de5ddbfb8e656', 'new': '17d6d0edd506d3d9a991a73b458c1e0bb4de3fa8a0490e4ab4e7aade4b491b6c'}, 'frontend/video.css': {'source': 'Фронт/video.css', 'old': '4f269b94f9455bdb2ab659d57bc3f9e0a5937c6af22e4dd16277c9d6f5a03b85', 'new': 'af271f0c283fc7e7ddd3b911a961a670f23203571e4fe1b3467c65b6af8404c5', 'previous': '7e176ed4166b4447e3fe4e3799dd8c6fcfcccf0a07137a8fb5fe90328d57c6bc'}, 'frontend/video.html': {'source': 'Фронт/video.html', 'old': '933c12356a45cac9d666fb29042d238533b8de296dc7e04e2ded569b0ee15075', 'new': 'fde07f21d74ae4485877faeb7c7f42f6d0cf4138d74d30830d2974e5e1f78a72', 'previous': '4fd7dd3c6b396d6c2c2dc622235d12e89675313150c8ddea221e37a185298e03'}, 'frontend/journey.html': {'source': 'Фронт/journey.html', 'old': 'ba9d28b142395c0ee0738769d14402953ff07ca4da62a5bdc10c135fb1656acc', 'new': 'd02d034dc1172d545fe5518f176a9f6f324abb042153147c8fd1206c346ecd68'}, 'frontend/video-fullscreen.js': {'source': 'Фронт/video-fullscreen.js', 'old': None, 'new': 'b8aea6920bb576a90d2ff1ab3af6f9eb85cdeeea69c8834bebbdb3445383b1ce'}}
 
 def read_url(url):
     with urllib.request.urlopen(url, timeout=20) as response:
@@ -50,7 +50,19 @@ def main():
     backup = Path('/root/wep-pril-video-timestamps-backup-' + str(time.time_ns()))
     # The reviewed publisher provides SHA checks, atomic files and rollback.
     # Every target is in frontend/. The restart callback deliberately does nothing.
-    changed = namespace['publish'](Path('/opt/wep_pril'), backup, FILES,
+    root = Path('/opt/wep_pril')
+    files = {name: dict(info) for name, info in FILES.items()}
+    # Accept the two explicitly verified deployment states; reject all others.
+    for name, info in files.items():
+        if 'previous' not in info:
+            continue
+        target = root / name
+        if target.is_symlink() or not target.resolve().is_relative_to(root.resolve()):
+            raise RuntimeError('UNSAFE_TARGET')
+        actual = namespace['digest'](target.read_bytes() if target.exists() else None)
+        if actual == info['previous']:
+            info['old'] = actual
+    changed = namespace['publish'](root, backup, files,
                                    download, lambda: None, healthy)
     print('VIDEO_TIMESTAMPS_PUBLISHED_OK')
     print('BACKUP_DIR=' + str(backup) if changed else 'ALREADY_CURRENT')
