@@ -1,7 +1,7 @@
 (() => {
   const page = document.querySelector('#journey');
   if (!page) return;
-  const currentWeek = 27;
+  let currentWeek = window.webprilAccount?.week || 27;
   const heading = page.querySelector('.journey-week');
   const wheel = heading.querySelector('.week-wheel');
   const dots = heading.querySelector('.week-dots');
@@ -151,6 +151,10 @@
   window.addEventListener('journey:select-week', event => select(event.detail.week));
   window.addEventListener('popstate', () => { render(fromUrl()); align(fromUrl(), false); });
   window.addEventListener('resize', () => align(Number(page.dataset.week), false));
+  window.addEventListener('account:change', event => {
+    currentWeek = event.detail.week || 27;
+    if (!new URLSearchParams(location.search).has('week')) { render(fromUrl()); align(fromUrl(), false); }
+  });
   render(fromUrl());
   new ResizeObserver(() => {
     if (wheel.clientWidth) align(Number(page.dataset.week), false);

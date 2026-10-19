@@ -2,9 +2,17 @@
   const container = document.querySelector('.mom-changes') || document.querySelector('.mom-card');
   if (!container) return;
   window.withWeeklyContent(container, ({ mom: library }) => {
-  const normalize = value => Number.isInteger(Number(value)) && Number(value) >= 1 && Number(value) <= 42 ? Number(value) : 27;
+  const normalize = value => Number.isInteger(Number(value)) && Number(value) >= 1 && Number(value) <= 42 ? Number(value) : (window.webprilAccount?.week || 27);
   const summary = document.querySelector('.mom-description');
-  if (summary) summary.textContent = library[27].paragraphs[0].split(/(?<=[.!?])\s/)[0];
+  function renderToday() {
+    const week = window.webprilAccount?.week || 27;
+    if (summary) {
+      summary.textContent = library[week].paragraphs[0].split(/(?<=[.!?])\s/)[0];
+      summary.closest('a').href = `mom.html?week=${week}`;
+    }
+  }
+  renderToday();
+  window.addEventListener('account:change', renderToday);
   const panel = document.querySelector('.mom-changes');
   if (!panel) return;
   const page = panel;
@@ -142,6 +150,7 @@
     if (suppressClick) { event.preventDefault(); event.stopPropagation(); }
   }, true);
   window.addEventListener('popstate', () => { render(normalize(new URLSearchParams(location.search).get('week'))); align(normalize(new URLSearchParams(location.search).get('week')), false); });
+  window.addEventListener('account:change', () => { if (!new URLSearchParams(location.search).has('week')) { const week = window.webprilAccount?.week || 27; render(week); align(week, false); } });
   window.addEventListener('resize', () => align(Number(page.dataset.week), false));
   render(normalize(new URLSearchParams(location.search).get('week')));
   new ResizeObserver(() => {

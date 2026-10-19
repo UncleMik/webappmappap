@@ -5,6 +5,7 @@ CREATE TABLE IF NOT EXISTS auth_users (
   getcourse_id bigint UNIQUE NOT NULL CHECK (getcourse_id > 0),
   created_at timestamptz NOT NULL DEFAULT now()
 );
+ALTER TABLE auth_users ADD COLUMN IF NOT EXISTS profile jsonb;
 CREATE TABLE IF NOT EXISTS auth_email_state (
   email_key text PRIMARY KEY,
   last_sent_at timestamptz,

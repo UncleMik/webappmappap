@@ -1,4 +1,5 @@
 import { authRequest } from './auth-client.js';
+import { returnPage } from './profile-dates.js';
 
 const emailForm = document.querySelector('#email-form'), codeForm = document.querySelector('#code-form');
 const email = document.querySelector('#email'), code = document.querySelector('#code');
@@ -47,6 +48,13 @@ async function task(run) {
   finally { busy = false; refresh(); }
 }
 function authenticated(user) {
+  if (!user.profile?.completedAt) {
+    const onboarding = new URL('onboarding.html', location.href);
+    if (nextPage) onboarding.searchParams.set('next', nextPage);
+    window.top.location.replace(onboarding.href); return;
+  }
+  window.top.location.replace(returnPage(nextPage));
+
   emailForm.hidden = true; codeForm.hidden = true; signedIn.hidden = false;
   document.querySelector('#account-email').textContent = user.email;
   title.textContent = 'Вы вошли'; intro.textContent = 'Вход сохранён на этом устройстве до 30 дней. На чужом устройстве выйдите после работы.';
@@ -88,9 +96,9 @@ addEventListener('pagehide', () => { clearInterval(timer); timer = undefined; })
 addEventListener('pageshow', startTimer);
 if (location.hostname === 'unclemik.github.io') {
   emailForm.hidden = true;
-  intro.textContent = 'Вход по email ещё подключаем. Сейчас можно посмотреть материалы приложения без входа.';
-  const link = document.createElement('a'); link.href = 'index.html';
-  link.className = 'auth-button login-primary'; link.textContent = 'Открыть приложение'; emailForm.after(link);
+  intro.textContent = 'Вход и регистрация работают на основном сайте приложения.';
+  const link = document.createElement('a'); link.href = 'https://app.legkie-rody.ru/login.html';
+  link.className = 'auth-button login-primary'; link.textContent = 'Войти или зарегистрироваться'; emailForm.after(link);
 } else {
   task(async () => { const session = await authRequest('session'); if (session.authenticated) authenticated(session.user); });
 }

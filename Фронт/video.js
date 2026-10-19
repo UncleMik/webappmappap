@@ -32,7 +32,7 @@
 
   const weeklyIds = ['contractions-lesson', 'back-relief-video', 'birth-breathing-video'];
   if (params.get('from') === 'journey' && weeklyIds.includes(id)) {
-    import('./weekly-video-player.js?v=20261019-timestamps-1').then(module => module.mountWeeklyVideo(id)).catch(() => {
+    import('./weekly-video-player.js?v=20261019-onboarding').then(module => module.mountWeeklyVideo(id)).catch(() => {
       const status = document.querySelector('#player-status'); status.hidden = false;
       status.textContent = 'Не удалось загрузить плеер. Обновите страницу.';
     });

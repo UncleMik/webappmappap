@@ -48,6 +48,7 @@ export function createAuthServer({ service, store, origin, enabled = false, trus
       if (request.method === 'GET' && url.pathname.startsWith('/api/auth/videos/')) {
         const user = await service.session(readSessionCookie(request));
         if (!user) throw new AuthError(401, 'sign_in_required', 'Войдите, чтобы посмотреть бесплатное видео.');
+        if (!user.profile?.completedAt) throw new AuthError(403, 'onboarding_required', 'Заполните профиль, чтобы продолжить.');
         const source = weeklyVideoSource(url.pathname.slice('/api/auth/videos/'.length));
         if (!source) { send(404, { error: 'video_not_found', message: 'Видео не найдено.' }); return; }
         send(200, { source }); return;
@@ -62,6 +63,10 @@ export function createAuthServer({ service, store, origin, enabled = false, trus
       const proxy = trustProxy && ['127.0.0.1', '::1', '::ffff:127.0.0.1'].includes(peer);
       const ip = proxy ? String(request.headers['x-real-ip'] || peer) : peer;
       await store.rateLimit('request_ip', ip, 600);
+      if (url.pathname === '/api/auth/profile') {
+        const user = await service.saveProfile(readSessionCookie(request), data);
+        send(200, { authenticated: true, user }); return;
+      }
       if (url.pathname === '/api/auth/request') {
         const email = normalizeEmail(data.email);
         await store.rateLimit('mail_ip', ip, 120);

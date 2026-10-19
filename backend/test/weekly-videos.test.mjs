@@ -5,9 +5,9 @@ import { createAuthServer } from '../auth/http.mjs';
 import { COOKIE_NAME } from '../auth/security.mjs';
 
 test('weekly video source requires a current session, but no purchase', async () => {
-  let loggedIn = true;
+  let loggedIn = true, completed = true;
   const token = 'a'.repeat(43);
-  const service = { session: async value => loggedIn && value === token ? { id: 'free-user' } : null };
+  const service = { session: async value => loggedIn && value === token ? { id: 'free-user', profile: completed ? {completedAt:'2026-10-19T00:00:00Z'} : null } : null };
   const server = createAuthServer({ service, origin: 'https://app.legkie-rody.ru', enabled: true });
   server.listen(0, '127.0.0.1'); await once(server, 'listening');
   const url = `http://127.0.0.1:${server.address().port}/api/auth/videos/`;
@@ -21,6 +21,11 @@ test('weekly video source requires a current session, but no purchase', async ()
       assert.match((await result.json()).source, /^https:\/\/fs\.getcourse\.ru\/fileservice\/file\/download\//);
       assert.equal(result.headers.get('cache-control'), 'no-store');
     }
+    completed = false;
+    const incomplete = await fetch(url + 'contractions-lesson', { headers: { cookie: `${COOKIE_NAME}=${token}` } });
+    assert.equal(incomplete.status, 403);
+    assert.equal((await incomplete.json()).error, 'onboarding_required');
+    completed = true;
     loggedIn = false;
     assert.equal((await fetch(url + 'contractions-lesson', { headers: { cookie: `${COOKIE_NAME}=${token}` } })).status, 401);
     loggedIn = true;

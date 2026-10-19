@@ -98,7 +98,8 @@ window.renderPregnancyRecommendations = (list, week, from) => renderWhenArticles
   list.replaceChildren(...window.articleReadState.unreadFirst(window.pregnancyArticleList.filter(article => article.week === week)).map(article => window.createSchoolArticleCard(article, from)));
 });
 const todayArticles = document.querySelector('.today-page .article-grid, #today .article-grid');
-if (todayArticles) renderWhenArticlesReady(todayArticles, () => {
+if (todayArticles) {
+const renderTodayArticles = () => renderWhenArticlesReady(todayArticles, () => {
   function createTodayCard(title, minutes, href, practice = false) {
     const card = document.createElement('a');
     card.className = `article-card today-material-card${practice ? ' practice-article' : ''}`;
@@ -108,7 +109,7 @@ if (todayArticles) renderWhenArticlesReady(todayArticles, () => {
     card.querySelector('.article-title').textContent = title;
     return card;
   }
-  const cards = window.articleReadState.unreadFirst(window.pregnancyArticleList.filter(article => article.week === 27)).slice(0, 2)
+  const cards = window.articleReadState.unreadFirst(window.pregnancyArticleList.filter(article => article.week === (window.webprilAccount?.week || 27))).slice(0, 2)
     .map(article => {
       const card = createTodayCard(article.title, article.minutes, `article.html?id=${encodeURIComponent(article.id)}&from=index`);
       const cover = articleCover(article, 'today-material-cover');
@@ -122,3 +123,6 @@ if (todayArticles) renderWhenArticlesReady(todayArticles, () => {
   practice.prepend(practiceCover);
   todayArticles.replaceChildren(...cards, practice);
 });
+renderTodayArticles();
+window.addEventListener('account:change', renderTodayArticles);
+}

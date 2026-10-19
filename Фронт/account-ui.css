@@ -9,3 +9,13 @@
 .account-empty { color: var(--muted, #737795); font-size: 1.4rem; line-height: 1.6; margin: 1rem 0; }
 .owned-page .owned-header { padding-right: 0; }
 .account-materials-link { display: inline-flex; align-items: center; min-height: 44px; color: #6436d7; text-underline-offset: 3px; }
+
+.account-access[data-profile-banner] { margin: 0 0 18px; }
+.account-access[data-profile-banner] strong { display: block; margin-bottom: 6px; }
+.account-journey-summary { font-size: 1.4rem; color: var(--muted); line-height: 1.5; margin-top: 6px; }
+.account-journey-summary:empty { display: none; }
+.account-stage-mother #today .baby-card, .account-stage-mother #today .mom-card { display: none; }
+.identity-copy [data-account-name] { overflow-wrap: anywhere; }
+[data-account-summary], [data-profile-goals], [data-profile-name] { overflow-wrap: anywhere; }
+
+.account-stage-mother #today .recommendations .article-grid { display: none; }

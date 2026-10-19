@@ -1,3 +1,6 @@
+import { authRequest } from './auth-client.js';
+import { todayDate, isoDate, parseDate, formatDate, pregnancyDate, returnPage } from './profile-dates.js';
+
 (() => {
   const form = document.getElementById('onboarding-form');
   const content = document.getElementById('onboarding-content');
@@ -5,37 +8,21 @@
   const back = document.querySelector('.onboarding-back');
   const error = form.querySelector('.onboarding-error');
   const progress = document.querySelector('.step-progress');
-  let step = 1;
-  const state = { stage:'', method:'', conception:'', due:'', weeks:'', days:'', birth:'', goals:[] };
+  let step = 1, busy = false, ready = false;
+  const destination = returnPage(new URLSearchParams(location.search).get('next'));
+  const retry = document.querySelector('#retry-profile');
+  const state = { name:'', stage:'', method:'', conception:'', due:'', weeks:'', days:'', birth:'', goals:[] };
   const pregnancyGoals = ['Спокойно пройти беременность','Подготовиться к родам','Понимать развитие малыша','Подготовить тело к родам','Разобраться с анализами','Справиться с тревогой','Подготовиться к первым дням с малышом'];
   const motherGoals = ['Восстановиться после родов','Наладить грудное вскармливание','Разобраться с уходом за малышом','Наладить сон малыша и свой сон','Вернуться к физической активности','Справиться со стрессом','Общаться с мамами и делиться опытом'];
   const symbols = ['♡','✦','◌','↟','▤','☁','◇'];
-  const dayMs = 86400000;
-  // Calendar dates use UTC midnight so DST never changes their day difference.
-  const today = () => { const d = new Date(); return Date.UTC(d.getFullYear(), d.getMonth(), d.getDate()); };
-  const iso = value => new Date(value).toISOString().slice(0,10);
-  const parse = value => /^\d{4}-\d{2}-\d{2}$/.test(value) ? Date.parse(value+'T00:00:00Z') : NaN;
-  const formatDate = value => new Intl.DateTimeFormat('ru-RU', {day:'numeric',month:'long',year:'numeric',timeZone:'UTC'}).format(value);
-  function pregnancy() {
-    let days, due;
-    if (state.method === 'weeks') {
-      if (state.weeks === '' || state.days === '') return null;
-      const w = Number(state.weeks), d = Number(state.days);
-      if (!Number.isInteger(w) || !Number.isInteger(d) || w < 0 || w > 42 || d < 0 || d > 6) return null;
-      days = w*7+d; due = today() + (280-days)*dayMs;
-    } else if (state.method === 'due') {
-      due = parse(state.due); days = 280-Math.round((due-today())/dayMs);
-    } else if (state.method === 'conception') {
-      const conception = parse(state.conception);
-      if (conception > today()) return null;
-      due = conception+266*dayMs; days = Math.round((today()-conception)/dayMs)+14;
-    } else return null;
-    return Number.isFinite(days) && Number.isFinite(due) && days >= 0 && days <= 300 ? {days,due} : null;
-  }
+  const dayMs = 86400000, today = todayDate, iso = isoDate, parse = parseDate;
+  const pregnancy = () => pregnancyDate(state);
   function valid() {
+    if (!ready || busy) return false;
     if (step === 1) return Boolean(state.stage);
     if (step === 3) return state.goals.length > 0;
-    if (state.stage === 'mother') return Number.isFinite(parse(state.birth)) && parse(state.birth) <= today();
+    if (!state.name.trim() || [...state.name.trim()].length > 80 || /[\p{Cc}\p{Cf}]/u.test(state.name)) return false;
+    if (state.stage === 'mother') return Number.isFinite(parse(state.birth)) && parse(state.birth) <= today() && parse(state.birth) >= Date.UTC(1900,0,1);
     return Boolean(pregnancy());
   }
   function summary() {
@@ -76,17 +63,23 @@
   }
   function render() {
     error.hidden = true;
-    back.hidden = step === 1;
+    back.hidden = step === 1; back.disabled = busy;
     progress.setAttribute('aria-label',`Шаг ${step} из 3`);
     progress.querySelectorAll('span').forEach((bar, i) => bar.classList.toggle('current', i < step));
     document.querySelector('.step-label').textContent = `Шаг ${step} из 3`;
     next.textContent = step === 3 ? 'Начать' : 'Продолжить';
-    if (step === 1) content.innerHTML = `<h1 tabindex="-1">На каком этапе вы сейчас?</h1><p class="onboarding-description">Мы подберём материалы и рекомендации под вашу ситуацию.</p><div class="stage-options"><label class="stage-option"><input type="radio" name="stage" value="pregnancy"><span class="stage-art" aria-hidden="true"></span><span class="stage-copy"><strong>Я беременна</strong><small>Сопровождение по вашему сроку</small></span><span class="stage-arrow" aria-hidden="true">›</span></label><label class="stage-option mother"><input type="radio" name="stage" value="mother"><span class="stage-art" aria-hidden="true"></span><span class="stage-copy"><strong>Я уже мама</strong><small>После рождения малыша</small></span><span class="stage-arrow" aria-hidden="true">›</span></label></div>`;
+    if (step === 1) content.innerHTML = `<h1 tabindex="-1">На каком этапе вы сейчас?</h1><p class="onboarding-description">Сохраним ваш этап в личном профиле.</p><div class="stage-options"><label class="stage-option"><input type="radio" name="stage" value="pregnancy"><span class="stage-art" aria-hidden="true"></span><span class="stage-copy"><strong>Я беременна</strong><small>Сопровождение по вашему сроку</small></span><span class="stage-arrow" aria-hidden="true">›</span></label><label class="stage-option mother"><input type="radio" name="stage" value="mother"><span class="stage-art" aria-hidden="true"></span><span class="stage-copy"><strong>Я уже мама</strong><small>После рождения малыша</small></span><span class="stage-arrow" aria-hidden="true">›</span></label></div>`;
     if (step === 2 && state.stage === 'pregnancy') content.innerHTML = `<h1 tabindex="-1">Уточните срок беременности</h1><p class="onboarding-description">Выберите один удобный способ — мы рассчитаем срок и настроим календарь.</p><fieldset class="method-options"><legend class="sr-only">Способ расчёта срока беременности</legend>${[['conception','♡','Дата зачатия','Рассчитаем предполагаемую дату родов'],['due','▦','Предполагаемая дата родов','Если ПДР уже сообщил врач'],['weeks','◷','Срок беременности','Укажите недели и дни']].map(([value,icon,title,desc])=>`<label class="method-option"><span class="option-icon" aria-hidden="true">${icon}</span><span class="method-copy"><strong>${title}</strong><small>${desc}</small></span><input type="radio" name="method" value="${value}" aria-label="${title}"></label>`).join('')}</fieldset><div class="method-fields"></div><div class="onboarding-summary" aria-live="polite" hidden><strong></strong><small></small></div>`;
-    if (step === 2 && state.stage === 'mother') content.innerHTML = `<h1 tabindex="-1">Когда родился малыш?</h1><p class="onboarding-description">Укажите дату рождения, чтобы подобрать материалы по возрасту малыша.</p><div class="onboarding-fields">${field('birth','Дата рождения малыша','date',`max="${iso(today())}"`)}</div><div class="onboarding-summary" aria-live="polite" hidden><strong></strong><small>Материалы будут подобраны по возрасту</small></div>`;
+    if (step === 2 && state.stage === 'mother') content.innerHTML = `<h1 tabindex="-1">Когда родился малыш?</h1><p class="onboarding-description">Укажите дату рождения малыша.</p><div class="onboarding-fields">${field('birth','Дата рождения малыша','date',`max="${iso(today())}"`)}</div><div class="onboarding-summary" aria-live="polite" hidden><strong></strong><small>Возраст малыша</small></div>`;
     if (step === 3) {
       const goals = state.stage === 'mother' ? motherGoals : pregnancyGoals;
-      content.innerHTML = `<h1 tabindex="-1">Что для вас сейчас важнее всего?</h1><p class="onboarding-description">Отметьте всё, что для вас важно — рекомендации изменятся под ваши цели.</p><div class="goal-options">${goals.map((goal,i)=>`<label class="goal-option"><span class="goal-symbol" aria-hidden="true">${symbols[i]}</span><span>${goal}</span><input type="checkbox" name="goal" value="${i}" aria-label="${goal}" ${state.goals.includes(i)?'checked':''}></label>`).join('')}</div><p class="goal-count" aria-live="polite">Выбрано: ${state.goals.length}</p>`;
+      content.innerHTML = `<h1 tabindex="-1">Что для вас сейчас важнее всего?</h1><p class="onboarding-description">Выберите хотя бы одну цель. Ответы сохранятся в вашем профиле.</p><div class="goal-options">${goals.map((goal,i)=>`<label class="goal-option"><span class="goal-symbol" aria-hidden="true">${symbols[i]}</span><span>${goal}</span><input type="checkbox" name="goal" value="${i}" aria-label="${goal}" ${state.goals.includes(i)?'checked':''}></label>`).join('')}</div><p class="goal-count" aria-live="polite">Выбрано: ${state.goals.length}</p>`;
+    }
+    if (step === 2) {
+      const nameBox = document.createElement('div');
+      nameBox.className = 'onboarding-fields';
+      nameBox.innerHTML = '<label>Как к вам обращаться<input name="name" type="text" autocomplete="given-name" maxlength="80" required placeholder="Ваше имя"></label>';
+      content.querySelector('.onboarding-description').after(nameBox);
     }
     content.querySelectorAll('.stage-art').forEach(holder => {
       const image = document.createElement('img');
@@ -108,23 +101,56 @@
     } else if (Object.hasOwn(state,input.name)) state[input.name] = input.value;
     summary(); next.disabled = !valid();
   });
-  back.addEventListener('click',()=> { if(step > 1) { step--; render(); content.querySelector('h1').focus(); window.scrollTo(0,0); } });
-  form.addEventListener('submit', event => {
+  back.addEventListener('click',()=> { if(!busy && step > 1) { step--; render(); content.querySelector('h1').focus(); window.scrollTo(0,0); } });
+  form.addEventListener('submit', async event => {
     event.preventDefault();
     if(!valid()) return;
     if(step < 3) { step++; render(); content.querySelector('h1').focus(); window.scrollTo(0,0); return; }
-    const p = state.stage === 'pregnancy' ? pregnancy() : null;
-    const answers = {...state, dueDate:p?iso(p.due):null, savedAt:new Date().toISOString()};
-    let saved = true;
-    try { localStorage.setItem('webpril.onboarding.preview.v1', JSON.stringify(answers)); } catch { saved = false; }
-    back.hidden = true; progress.hidden = true; document.querySelector('.step-label').hidden = true;
-    content.innerHTML = `<h1 tabindex="-1">Рады знакомству!</h1><p class="onboarding-description">${saved?'Ваши ответы сохранены в этом браузере.':'Не удалось сохранить ответы в браузере. Можно продолжить просмотр.'}</p><img class="onboarding-complete-art" src="assets/onboarding-motherhood.png" alt="Беременность и первые месяцы материнства"><p class="onboarding-description">Сейчас вы перейдёте к демонстрационной версии приложения. Персональные рекомендации пока не подключены.</p>`;
-    form.querySelector('.onboarding-actions').innerHTML = '<a class="onboarding-open" href="index.html">Открыть приложение</a><p class="onboarding-preview">Предпросмотр · аккаунт пока не создаётся</p>';
+    busy = true; next.disabled = true; back.disabled = true;
+    next.textContent = 'Сохраняем…'; error.hidden = true;
+    form.querySelectorAll('input').forEach(input => { input.disabled = true; });
     try {
-      const name = sessionStorage.getItem('onboardingName')?.trim();
-      if (name) content.querySelector('h1').textContent = `Рады знакомству, ${name}!`;
-    } catch { /* The preview also works without browser storage. */ }
-    content.querySelector('h1').focus(); window.scrollTo(0,0);
+      await authRequest('profile', state);
+      window.top.location.replace(destination);
+    } catch (failure) {
+      if (failure.code === 'sign_in_required') {
+        const login = new URL('login.html', location.href);
+        const requested = new URLSearchParams(location.search).get('next');
+        if (requested) login.searchParams.set('next', requested);
+        window.top.location.replace(login.href); return;
+      }
+      error.textContent = failure.message; error.hidden = false;
+      error.scrollIntoView({block:'nearest'});
+    } finally {
+      busy = false; back.disabled = false;
+      form.querySelectorAll('input').forEach(input => { input.disabled = false; });
+      next.textContent = 'Начать'; next.disabled = !valid();
+    }
   });
-  render();
+  async function load() {
+    retry.hidden = true; form.hidden = true;
+    const status = document.querySelector('#onboarding-status');
+    status.textContent = 'Проверяем аккаунт…';
+    try {
+      const session = await authRequest('session');
+      if (!session.authenticated) {
+        const login = new URL('login.html', location.href);
+        const requested = new URLSearchParams(location.search).get('next');
+        if (requested) login.searchParams.set('next', requested);
+        window.top.location.replace(login.href); return;
+      }
+      if (session.user.profile?.completedAt) { window.top.location.replace(destination); return; }
+      ready = true; status.textContent = ''; form.hidden = false; render();
+    } catch (failure) {
+      status.textContent = failure.message; retry.hidden = false;
+    }
+  }
+  retry.addEventListener('click', load);
+  if (location.hostname === 'unclemik.github.io') {
+    document.querySelector('#onboarding-status').textContent = 'Регистрация доступна на основном сайте приложения.';
+    retry.hidden = true; form.hidden = true;
+    const link = document.createElement('a'); link.href = 'https://app.legkie-rody.ru/login.html';
+    link.className = 'onboarding-open'; link.textContent = 'Перейти к регистрации';
+    document.querySelector('.onboarding-shell').append(link);
+  } else { load(); }
 })();

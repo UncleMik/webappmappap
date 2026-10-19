@@ -1,5 +1,6 @@
 import { randomUUID } from 'node:crypto';
 import { AuthError, CODE_TTL_MS, SESSION_TTL_MS, hashToken, mac, codeMac, equalMac } from './security.mjs';
+import { normalizeProfile } from './profile.mjs';
 
 const invalidCode = () => new AuthError(401, 'invalid_code', 'Код неверный, использован или срок его действия истёк.');
 const limited = seconds => new AuthError(429, 'rate_limited', 'Слишком много попыток. Попробуйте позже.', Math.max(1, Math.ceil(seconds)));
@@ -106,24 +107,33 @@ export function createStore(pool, { secret, clock = Date.now }) {
         await lockEmail(client, lookup.rows[0].email);
         const { rows: [challenge] } = await client.query('SELECT * FROM auth_challenges WHERE token_hash=$1 FOR UPDATE', [hashToken(token)]);
         if (!challenge?.verified_at || challenge.consumed_at || +new Date(challenge.expires_at) <= clock()) return { error: invalidCode() };
-        let { rows: [user] } = await client.query('SELECT id,email,getcourse_id FROM auth_users WHERE email=$1', [challenge.email]);
+        let { rows: [user] } = await client.query('SELECT id,email,profile,getcourse_id FROM auth_users WHERE email=$1', [challenge.email]);
         if (!user) {
           const { rows: [job] } = await client.query('SELECT getcourse_id FROM auth_gc_jobs WHERE email=$1 AND completed_at IS NOT NULL', [challenge.email]);
           if (!job?.getcourse_id) return { pending: true };
-          ({ rows: [user] } = await client.query('INSERT INTO auth_users(id,email,getcourse_id,created_at) VALUES($1,$2,$3,$4) RETURNING id,email',
+          ({ rows: [user] } = await client.query('INSERT INTO auth_users(id,email,getcourse_id,created_at) VALUES($1,$2,$3,$4) RETURNING id,email,profile',
             [randomUUID(), challenge.email, job.getcourse_id, date()]));
         }
         await client.query('UPDATE auth_challenges SET consumed_at=$2 WHERE token_hash=$1', [hashToken(token), date()]);
         await client.query('INSERT INTO auth_sessions(token_hash,user_id,expires_at,created_at) VALUES($1,$2,$3,$4)',
           [hashToken(sessionToken), user.id, new Date(clock() + SESSION_TTL_MS), date()]);
-        return { user: { id: user.id, email: user.email } };
+        return { user: { id: user.id, email: user.email, profile: user.profile ?? null } };
       }));
     },
     async session(token) {
       if (!token) return null;
-      const { rows: [user] } = await pool.query(`SELECT u.id,u.email FROM auth_sessions s JOIN auth_users u ON u.id=s.user_id
+      const { rows: [user] } = await pool.query(`SELECT u.id,u.email,u.profile FROM auth_sessions s JOIN auth_users u ON u.id=s.user_id
         WHERE s.token_hash=$1 AND s.expires_at>$2`, [hashToken(token), date()]);
       return user || null;
+    },
+    async saveProfile(token, data) {
+      if (!token) throw new AuthError(401, 'sign_in_required', 'Войдите, чтобы сохранить профиль.');
+      const profile = normalizeProfile(data, clock());
+      const { rows: [user] } = await pool.query(`UPDATE auth_users u SET profile=$3::jsonb
+        FROM auth_sessions s WHERE s.user_id=u.id AND s.token_hash=$1 AND s.expires_at>$2
+        RETURNING u.id,u.email,u.profile`, [hashToken(token), date(), JSON.stringify(profile)]);
+      if (!user) throw new AuthError(401, 'sign_in_required', 'Войдите, чтобы сохранить профиль.');
+      return user;
     },
     async logout(token) {
       if (token) await pool.query('DELETE FROM auth_sessions WHERE token_hash=$1', [hashToken(token)]);

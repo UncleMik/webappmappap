@@ -17,7 +17,7 @@
   <link rel="stylesheet" href="app-navigation.css?v=20261006-gotham">
   <link rel="stylesheet" href="mobile-layout.css?v=20261007-darker-sides">
   <link rel="stylesheet" href="helpers.css?v=20261008-tools-grid">
-  <link rel="stylesheet" href="account-ui.css?v=20261019-real-account">
+  <link rel="stylesheet" href="account-ui.css?v=20261019-onboarding">
 </head>
 <body>
   <div class="app" id="today">
@@ -33,6 +33,7 @@
     </header>
 
     <main>
+      <section class="account-access" data-profile-banner hidden><strong data-account-stage></strong><p data-account-summary></p></section>
       <a class="feature-card baby-card" href="baby.html" aria-labelledby="baby-title">
         <img class="feature-art baby-art" alt="" width="400" height="400">
         <span class="card-heading"><span class="round-icon baby-icon sprite" aria-hidden="true"></span><span id="baby-title">Малыш</span></span>
@@ -108,13 +109,13 @@
     </div>
   </dialog>
   <script src="article-read-state.js?v=20261007-unread-first"></script>
-<script src="articles-api.js?v=20261007-unread-first"></script>
+<script src="articles-api.js?v=20261019-onboarding"></script>
 <script src="weekly-content-api.js?v=20261008-weekly"></script>
-  <script src="mom-week.js?v=20261008-weekly-api"></script>
-  <script src="baby-week.js?v=20261008-weekly-api"></script>
+  <script src="mom-week.js?v=20261019-onboarding"></script>
+  <script src="baby-week.js?v=20261019-onboarding"></script>
   <script src="app.js?v=20261005-performance3"></script>
-  <script src="calendar-sheet.js?v=20261008-weekly-api"></script>
-<script src="app-navigation.js?v=20261007-current-week"></script>  <script src="helpers.js?v=20261008-close"></script>
+  <script src="calendar-sheet.js?v=20261019-onboarding"></script>
+<script src="app-navigation.js?v=20261019-onboarding"></script>  <script src="helpers.js?v=20261008-close"></script>
 <script src="resource-prefetch.js?v=20261009"></script>
 </body>
 </html>

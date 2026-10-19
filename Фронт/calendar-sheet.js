@@ -2,7 +2,8 @@
   const dialog = document.querySelector('#journey-calendar');
   if (!dialog) return;
   window.withWeeklyContent(document.querySelector('main'), ({ calendar: events, calendarNotes }) => {
-  const currentWeek = 27;
+  let currentWeek = window.webprilAccount?.week || 27;
+  window.addEventListener('account:change', event => { currentWeek = event.detail.week || 27; });
   const icons = {
     visit: '<rect x="5" y="6" width="14" height="15" rx="2"/><path d="M8 3v6m8-6v6M5 11h14"/>',
     tests: '<path d="M9 3h6M10 3v7L5 19a1 1 0 0 0 1 2h12a1 1 0 0 0 1-2l-5-9V3M8 15h8"/>',

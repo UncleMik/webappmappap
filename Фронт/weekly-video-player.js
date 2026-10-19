@@ -113,7 +113,11 @@ export function mountWeeklyVideo(id) {
       await video.play();
       applyRequestedTime();
     } catch (failure) {
-      if (failure.code === 'sign_in_required') signIn();
+      if (failure.code === 'onboarding_required') {
+        const onboarding = new URL('onboarding.html', location.href);
+        onboarding.searchParams.set('next', `video.html${location.search}`);
+        window.top.location.assign(onboarding.href);
+      } else if (failure.code === 'sign_in_required') signIn();
       else if (failure.name === 'NotAllowedError') { pending = false; clearTimeout(timer); cover.hidden = false; message('Нажмите «Смотреть видео», чтобы начать.'); }
       else error(failure.code ? failure.message : undefined);
     } finally { busy = false; }

@@ -53,3 +53,8 @@
 .onboarding-error { color:#ad3152; font-size:14px; margin:0 0 14px; }
 .onboarding-complete-art { display:block; width:100%; border-radius:20px; margin:24px 0; }
 @media(max-width:380px) { .onboarding-shell { padding:24px 20px 20px; } .stage-art { width:88px; height:100px; } .stage-option { gap:10px; } .stage-copy strong { font-size:16px; } #onboarding-content h1 { font-size:27px; } }
+
+#onboarding-status { color: #756e99; margin-bottom: 18px; }
+#onboarding-status:empty { display: none; }
+.onboarding-shell { min-height: 100dvh; }
+.onboarding-next:focus-visible, .onboarding-open:focus-visible { outline: 2px solid #794aff; outline-offset: 3px; }

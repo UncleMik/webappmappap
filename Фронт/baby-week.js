@@ -2,10 +2,11 @@
   const container = document.querySelector('.baby-page') || document.querySelector('.baby-card');
   if (!container) return;
   window.withWeeklyContent(container, ({ baby: library }) => {
-  const currentWeek = 27;
+  let currentWeek = window.webprilAccount?.week || 27;
   const normalize = value => Number.isInteger(Number(value)) && Number(value) >= 1 && Number(value) <= 42 ? Number(value) : currentWeek;
   const todayCard = document.querySelector('.baby-card');
-  if (todayCard) {
+  function renderToday() {
+    if (!todayCard) return;
     const content = library[currentWeek];
     todayCard.href = `baby.html?week=${currentWeek}`;
     todayCard.querySelector('.baby-measurements').textContent = content.measurements;
@@ -17,6 +18,8 @@
     todayCard.querySelector('.baby-measurement-caption')?.remove();
     todayCard.querySelector('.feature-copy').append(note);
   }
+  renderToday();
+  window.addEventListener('account:change', event => { currentWeek = event.detail.week || 27; renderToday(); });
   const page = document.querySelector('.baby-page');
   if (!page) return;
   const heading = page.querySelector('.baby-week-carousel');
@@ -176,6 +179,7 @@
     if (suppressClick) { event.preventDefault(); event.stopPropagation(); }
   }, true);
   window.addEventListener('popstate', () => { render(normalize(new URLSearchParams(location.search).get('week'))); align(normalize(new URLSearchParams(location.search).get('week')), false); });
+  window.addEventListener('account:change', () => { if (!new URLSearchParams(location.search).has('week')) { render(currentWeek); align(currentWeek, false); } });
   window.addEventListener('resize', () => align(Number(page.dataset.week), false));
   render(normalize(new URLSearchParams(location.search).get('week')));
   new ResizeObserver(() => {

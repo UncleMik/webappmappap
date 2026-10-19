@@ -1,3 +1,5 @@
+// Share the server profile across existing application sections.
+import('./account-profile.js?v=20261019-onboarding').catch(() => {});
 /* Keep primary sections alive in isolated panels; detail pages retain native navigation. */
 (() => {
   const sections = new Map([
