@@ -25,12 +25,12 @@ FILES = {
     },
     'frontend/video.css': {
         'source': 'Фронт/video.css',
-        'old': 'f7339e7b2c53ee4f5480f07464fc6cd3982ef6e5839a6272fb0103ccbe86e709',
-        'new': 'cb7d5a955c6529a4d7f41f313baee8f9c6032de40d5042a056e43d4eee1a87f5',
+        'old': 'e981137230574c62c33812ffe7a31404b0fc6a0c592b9208f2ecd883bb5422a5',
+        'new': '289e7935b80b4774afb2d7042b83e51505f21ca838c6a167e7053cf5b8e8bd53',
     },
     'frontend/video.html': {
         'source': 'Фронт/video.html',
-        'old': 'd877f388d479a227c0752bcfa3efe18f9fe2332befa2e6b131132d749546e38c',
+        'old': '95ee4241ca54ad57a9038c4990f6c85280ded8cf5ce25d564422406a44f9ed19',
         'new': '2c493e5162e907b619f0953266e783456f0fe35140d26b83290812bbf5b6d5a6',
     },
 }
