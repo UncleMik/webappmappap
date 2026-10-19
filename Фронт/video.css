@@ -19,9 +19,8 @@
 .video-cover { position: absolute; inset: 0; width: 100%; overflow: hidden; background: #e6d6cf; }
 .video-cover[hidden] { display: none; }
 .video-cover > img { position: absolute; width: 236.098%; max-width: none; height: auto; left: -11.707%; top: -32.398%; }
-.cover-play { position: absolute; display: grid; place-items: center; width: 6.8rem; height: 6.8rem; border-radius: 50%; background: #fffffff2; color: #794aff; left: 50%; top: 50%; transform: translate(-50%, -50%); box-shadow: 0 .4rem 2.4rem #36244830; }
+.cover-play { position: absolute; display: grid; place-items: center; width: 7.6rem; height: 7.6rem; border-radius: 50%; background: #794aff; color: #fff; left: 50%; top: 50%; transform: translate(-50%, -50%); box-shadow: 0 .5rem 2.4rem #794aff55; }
 .cover-play svg { width: 2.9rem; height: 2.9rem; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
-.video-cover:not(:disabled)[aria-label^="Включить"] .cover-label { display: none; }
 .cover-label { position: absolute; left: 50%; bottom: 2.5rem; transform: translateX(-50%); background: #ffffffed; color: #68518f; border-radius: 2rem; padding: .7rem 1.5rem; font-size: 1.4rem; white-space: nowrap; }
 .video-panel { position: relative; margin-top: -.6rem; border-radius: 2.4rem 2.4rem 0 0; background: #faf9ff; padding: 2.4rem 3rem calc(2rem + env(safe-area-inset-bottom, 0px)); flex: 1; }
 .step-count { color: #8190b0; font-size: 1.5rem; margin-bottom: .7rem; }
