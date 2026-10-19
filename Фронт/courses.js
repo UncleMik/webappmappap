@@ -13,5 +13,5 @@ payment.querySelector('.payment-cancel').addEventListener('click', () => payment
 payment.addEventListener('click', event => { if (event.target === payment) { const r = payment.getBoundingClientRect(); if (event.clientX < r.left || event.clientX > r.right || event.clientY < r.top || event.clientY > r.bottom) payment.close(); } });
 payment.querySelector('.payment-confirm').addEventListener('click', () => {
   if (window.courseAccess.grant(selectedPlan)) location.href = 'my-courses.html' + location.search;
-  else { const error = payment.querySelector('.payment-error'); error.textContent = 'Разрешите хранение данных в браузере, чтобы сохранить тестовую оплату.'; error.hidden = false; }
+  else { const error = payment.querySelector('.payment-error'); error.textContent = 'Онлайн-покупка в приложении пока недоступна.'; error.hidden = false; }
 });

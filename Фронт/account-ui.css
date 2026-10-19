@@ -1,0 +1,11 @@
+.account-access { margin-bottom: 18px; padding: 16px; border-radius: 16px; background: #fff; border: 1px solid #eee8f5; font-size: 15px; line-height: 1.5; }
+.account-access p { overflow-wrap: anywhere; }
+.account-access a, .account-access button { display: inline-flex; align-items: center; min-height: 44px; color: #6436d7; background: transparent; text-decoration: underline; text-underline-offset: 3px; }
+.account-access [hidden], .account-access[hidden] { display: none !important; }
+.account-placeholder { background: #efe9ff !important; color: #794aff; display: grid; place-items: center; border-radius: 50%; flex-shrink: 0; }
+.account-placeholder svg { width: 58%; height: 58%; fill: none; stroke: currentColor; stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; }
+[data-account-email] { overflow-wrap: anywhere; }
+[data-account-logout][hidden] { display: none !important; }
+.account-empty { color: var(--muted, #737795); font-size: 1.4rem; line-height: 1.6; margin: 1rem 0; }
+.owned-page .owned-header { padding-right: 0; }
+.account-materials-link { display: inline-flex; align-items: center; min-height: 44px; color: #6436d7; text-underline-offset: 3px; }

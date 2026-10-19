@@ -29,16 +29,11 @@
   <div class="app">
     <header class="ai-header"><h1>AI врач — ваш личный ассистент</h1><button id="history-open" class="history-button" type="button"><svg><use href="#clock"/></svg>История</button></header>
     <main class="ai-main">
-      <section class="assistant-card" aria-label="Ваша беременность: пример данных">
+      <section class="assistant-card" aria-label="Помощник школы">
         <img class="assistant-art" src="assets/doctor-lara-avatar.webp" alt="Доктор Лара" width="64" height="64">
-        <div><h2>Добрый вечер, Виктория! <span class="purple-heart">♥</span></h2><p><svg><use href="#calendar"/></svg>27 недель 4 дня</p><p><svg><use href="#clock"/></svg>До родов ≈ 82 дня</p><p><svg><use href="#heart"/></svg>Малыш активен <span class="pink-heart">♥</span></p></div>
+        <div><h2>Рады видеть вас! <span class="purple-heart">♥</span></h2><p>Личные данные пока не заполнены</p></div>
       </section>
-      <section class="conversation" id="conversation" tabindex="0" role="log" aria-live="polite" aria-label="Пример диалога с ассистентом">
-        <article class="message assistant-message"><span class="bot-avatar" aria-hidden="true"></span><div class="message-content"><div class="bubble">Здравствуйте! Я рядом, чтобы помочь разобраться в вопросах о беременности, родах и восстановлении.<br>Что вас беспокоит сегодня?</div><time>19:30</time></div></article>
-        <article class="message user-message"><div class="message-content"><div class="bubble">Иногда тянет низ живота<br>и поясницу. Это нормально?<div class="message-meta"><time>19:31</time><span class="read-mark" role="img" aria-label="Прочитано"><svg viewBox="0 0 24 16" aria-hidden="true"><path d="m1 8 4 4L15 2m-5 7 3 3L23 2"/></svg></span></div></div></div></article>
-        <article class="message assistant-message"><span class="bot-avatar" aria-hidden="true"></span><div class="message-content"><div class="bubble"><p>Да, такое может быть. Во втором и третьем триместре тянущие ощущения внизу живота и пояснице часто связаны с ростом матки, увеличением нагрузки на связки и изменением центра тяжести.</p><p>Обычно это нормально, если боль несильная, проходит в покое и не сопровождается другими тревожными симптомами.</p></div><time>19:32</time></div></article>
-        <article class="message assistant-message"><span class="bot-avatar" aria-hidden="true"></span><div class="message-content"><div class="bubble">Хотите, я расскажу, как облегчить эти ощущения? Или у вас есть другие вопросы?</div><time>19:32</time></div></article>
-      </section>
+      <section class="conversation" id="conversation" tabindex="0" role="log" aria-live="polite" aria-label="Переписка с ассистентом"><article class="message assistant-message"><span class="bot-avatar" aria-hidden="true"></span><div class="message-content"><div class="bubble">Помощник школы пока недоступен. Здесь появится ваша личная переписка.</div></div></article></section>
       <section class="chat-controls" aria-label="Написать ассистенту">
         <p class="help-label">Чем могу помочь</p>
         <div class="suggestions"><button type="button" data-prompt="Хочу обсудить симптомы: " class="symptoms"><svg><use href="#symptoms"/></svg>Симптомы</button><button type="button" data-prompt="Помоги найти материалы о " class="materials"><svg><use href="#book"/></svg>Материалы</button><button type="button" data-prompt="Хочу добавить напоминание: " class="reminders"><svg><use href="#bell"/></svg>Напоминания</button><button type="button" data-prompt="Помоги сформулировать вопрос врачу: " class="doctor"><svg><use href="#chat"/></svg>Вопрос врачу</button></div>
@@ -56,7 +51,7 @@
       </div>
     </nav>
   </div>
-  <dialog id="history-dialog" aria-labelledby="history-title"><div class="dialog-heading"><h2 id="history-title">История</h2><button type="button" id="history-close" aria-label="Закрыть историю" class="close-button"><svg class="close-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="m6 6 12 12M18 6 6 18"/></svg></button></div><p>Сейчас открыт пример диалога. Сохранение истории пока не подключено.</p><button type="button" id="return-chat">Вернуться к диалогу</button></dialog>
+  <dialog id="history-dialog" aria-labelledby="history-title"><div class="dialog-heading"><h2 id="history-title">История</h2><button type="button" id="history-close" aria-label="Закрыть историю" class="close-button"><svg class="close-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="m6 6 12 12M18 6 6 18"/></svg></button></div><p>Сохранённых разговоров пока нет.</p><button type="button" id="return-chat">Вернуться к диалогу</button></dialog>
 <script src="app-navigation.js?v=20261007-current-week"></script><script src="resource-prefetch.js?v=20261009"></script>
 </body>
 </html>

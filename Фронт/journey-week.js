@@ -51,7 +51,7 @@
   function render(week) {
     page.dataset.week = week;
     document.title = `Мой путь · ${week}-я неделя`;
-    heading.setAttribute('aria-label', `${week}-я неделя беременности${week === currentWeek ? ', текущая' : ''}`);
+    heading.setAttribute('aria-label', `${week}-я неделя беременности`);
     options.forEach(button => {
       const selected = Number(button.dataset.week) === week;
       button.classList.toggle('week-selected', selected);

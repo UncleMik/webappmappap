@@ -55,7 +55,7 @@
     const content = library[week];
     const isCurrent = week === currentWeek;
     page.dataset.week = week;
-    heading.setAttribute('aria-label', `${week}-я неделя беременности${week === currentWeek ? ', текущая' : ''}`);
+    heading.setAttribute('aria-label', `${week}-я неделя беременности`);
     options.forEach(button => {
       const selected = Number(button.dataset.week) === week;
       button.classList.toggle('week-selected', selected);
@@ -69,8 +69,8 @@
     dots.setAttribute('aria-label', ['1–14 недели', '15–28 недели', '29–42 недели'][stage]);
     window.dispatchEvent(new CustomEvent('baby:week-change', { detail: { week } }));
     document.title = `Малыш · ${week}-я неделя`;
-    page.querySelector('#baby-overview-title').textContent = isCurrent ? '27 недель и 4 дня' : `${week} неделя`;
-    page.querySelector('.overview-meta').hidden = !isCurrent;
+    page.querySelector('#baby-overview-title').textContent = `${week} неделя`;
+    page.querySelector('.overview-meta').hidden = true;
     const measurements = page.querySelector('.baby-week-measurements');
     measurements.replaceChildren();
     content.measurements.split(' · ').forEach((text, index) => {

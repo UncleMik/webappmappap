@@ -72,9 +72,8 @@
       button.className = 'calendar-week';
       button.dataset.week = week;
       button.setAttribute('aria-pressed', String(week === selectedWeek));
-      button.setAttribute('aria-label', `${week}-я неделя${week === currentWeek ? ', сейчас' : ''}${events[week]?.length ? ', ' + events[week].map(item => item.title).join(', ') : ''}`);
-      if (week === currentWeek) button.setAttribute('aria-current', 'step');
-      button.innerHTML = `<strong>${week}</strong><span>неделя</span>${events[week]?.length ? `<span class="calendar-week-events">${events[week].map(item => `<span class="calendar-week-event ${safeType(item.type)}">${icon(item.type)}<span>${escapeText(item.label || item.title)}</span></span>`).join('')}</span>` : ''}${week === currentWeek ? '<span class="week-now">Сейчас</span>' : ''}`;
+      button.setAttribute('aria-label', `${week}-я неделя${events[week]?.length ? ', ' + events[week].map(item => item.title).join(', ') : ''}`);
+      button.innerHTML = `<strong>${week}</strong><span>неделя</span>${events[week]?.length ? `<span class="calendar-week-events">${events[week].map(item => `<span class="calendar-week-event ${safeType(item.type)}">${icon(item.type)}<span>${escapeText(item.label || item.title)}</span></span>`).join('')}</span>` : ''}`;
       grid.append(button);
     }
     renderImportant();

@@ -17,17 +17,18 @@
   <link rel="stylesheet" href="app-navigation.css?v=20261006-gotham">
   <link rel="stylesheet" href="mobile-layout.css?v=20261007-darker-sides">
   <link rel="stylesheet" href="helpers.css?v=20261008-tools-grid">
+  <link rel="stylesheet" href="account-ui.css?v=20261019-real-account">
 </head>
 <body>
   <div class="app" id="today">
     <header class="page-header">
       <div>
         <h1>Сегодня</h1>
-        <p class="greeting">Доброе утро, Алина! <span class="greeting-heart sprite" aria-hidden="true"></span></p>
+        <p class="greeting">Рады видеть вас! <span class="greeting-heart sprite" aria-hidden="true"></span></p>
       </div>
       <div class="header-actions">
-        <button class="notification icon-button" type="button" data-action="notifications" aria-label="Уведомления: есть новые"><span class="sprite bell" aria-hidden="true"></span></button>
-        <a class="avatar sprite" href="profile.html" aria-label="Профиль Алины"></a>
+        <button class="notification icon-button" type="button" data-action="notifications" aria-label="Уведомления"><span class="sprite bell" aria-hidden="true"></span></button>
+        <a class="avatar account-placeholder" href="profile.html" aria-label="Открыть профиль"><svg viewBox="0 0 30 30" aria-hidden="true"><circle cx="15" cy="9" r="5"/><path d="M5 26v-3a10 10 0 0 1 20 0v3Z"/></svg></a>
       </div>
     </header>
 
@@ -65,17 +66,10 @@
         </div>
       </section>
 
-      <section class="recommendations" aria-label="Материалы текущей недели">
-        <a class="pregnancy-summary" href="journey.html" aria-label="Открыть текущую неделю. Ваш срок 27 недель и 4 дня, 2 триместр, до родов примерно 82 дня">
-          <span class="summary-row">
-            <strong class="pregnancy-age">Ваш срок 27 недель и 4 дня</strong>
-            <svg class="chevron" aria-hidden="true"><use href="#i-chevron"/></svg>
-          </span>
-          <em class="section-description">Подготовили для вас программу на эту неделю</em>
-          <span class="summary-progress-row">
-            <span class="progress-track" role="progressbar" aria-label="Срок беременности" aria-valuemin="0" aria-valuemax="280" aria-valuenow="193" aria-valuetext="27 недель и 4 дня из 40 недель"><span></span></span>
-            <span class="pregnancy-meta">II триместр<br>До родов ≈ 82 дня</span>
-          </span>
+      <section class="recommendations" aria-label="Материалы по неделям">
+        <a class="pregnancy-summary" href="journey.html" aria-label="Открыть материалы по неделям">
+          <span class="summary-row"><strong class="pregnancy-age">Материалы по неделям</strong><svg class="chevron" aria-hidden="true"><use href="#i-chevron"/></svg></span>
+          <em class="section-description">Выберите интересующую неделю</em>
         </a>
         <div class="article-grid" id="today-articles"></div>
       </section>

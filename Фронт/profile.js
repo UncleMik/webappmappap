@@ -14,6 +14,7 @@
 
 (() => {
   const dialog = document.querySelector('#support-dialog');
+  if (!dialog) return;
   const trigger = document.querySelector('#support-open');
   const close = dialog.querySelector('.calendar-close');
   const handle = dialog.querySelector('.calendar-drag-zone');
