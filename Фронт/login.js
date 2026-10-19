@@ -1,5 +1,5 @@
+import { returnPage } from './auth-return.js';
 import { authRequest } from './auth-client.js';
-import { returnPage } from './profile-dates.js';
 
 const emailForm = document.querySelector('#email-form'), codeForm = document.querySelector('#code-form');
 const email = document.querySelector('#email'), code = document.querySelector('#code');
@@ -7,16 +7,8 @@ const status = document.querySelector('#login-status'), title = document.querySe
 const intro = document.querySelector('#login-intro'), signedIn = document.querySelector('#signed-in');
 const resend = document.querySelector('#resend-code'), verify = document.querySelector('#verify-button');
 let challenge, sentEmail, busy = false, retryAt = 0, completeRetryAt = 0, pending = false;
-// Return only to the agreed video page; never accept an external redirect.
-const nextPage = new URLSearchParams(location.search).get('next');
-if (nextPage?.startsWith('video.html?')) {
-  const destination = new URL(nextPage, location.href);
-  if (destination.origin === location.origin && destination.pathname === new URL('video.html', location.href).pathname &&
-      destination.searchParams.get('from') === 'journey' &&
-      ['contractions-lesson', 'back-relief-video', 'birth-breathing-video'].includes(destination.searchParams.get('id'))) {
-    const link = signedIn.querySelector('a'); link.href = destination.href; link.textContent = 'Вернуться к видео';
-  }
-}
+const nextPage = location.hash.startsWith('#next=') ? location.hash.slice(6) : new URLSearchParams(location.search).get('next');
+signedIn.querySelector('a').href = returnPage(nextPage);
 function cooldown(seconds) { retryAt = Math.max(retryAt, Date.now() + seconds * 1000); refresh(); }
 function refresh() {
   document.querySelectorAll('form button, #logout').forEach(button => { button.disabled = busy; });

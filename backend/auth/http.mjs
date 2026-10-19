@@ -41,6 +41,11 @@ export function createAuthServer({ service, store, origin, enabled = false, trus
       if (!enabled) throw new AuthError(503, 'auth_unavailable', 'Вход ещё не подключён. Попробуйте позже.');
       const url = new URL(request.url, origin);
       if (url.search) throw new AuthError(400, 'invalid_url', 'Неверный запрос.');
+      if (request.method === 'GET' && url.pathname === '/api/auth/check') {
+        const user = await service.session(readSessionCookie(request));
+        if (!user) throw new AuthError(401, 'sign_in_required', 'Войдите в аккаунт.');
+        send(204); return;
+      }
       if (request.method === 'GET' && url.pathname === '/api/auth/session') {
         const user = await service.session(readSessionCookie(request));
         send(200, { authenticated: Boolean(user), user }); return;

@@ -45,11 +45,4 @@ export function profileTiming(profile, now = Date.now()) {
   if (current.getUTCDate() < date.getUTCDate()) months--;
   return { week: null, label: months < 1 ? 'Малышу меньше месяца' : `Малышу ${months} мес.`, birthDate: profile.birthDate };
 }
-export function returnPage(raw, base = location.href) {
-  const fallback = new URL('index.html', base).href;
-  if (!raw?.startsWith('video.html?')) return fallback;
-  const next = new URL(raw, base);
-  return next.origin === new URL(base).origin && next.pathname === new URL('video.html', base).pathname &&
-    next.searchParams.get('from') === 'journey' &&
-    ['contractions-lesson', 'back-relief-video', 'birth-breathing-video'].includes(next.searchParams.get('id')) ? next.href : fallback;
-}
+export { returnPage } from './auth-return.js';

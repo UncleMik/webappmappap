@@ -26,10 +26,7 @@ jobs:
       - name: Prepare static website
         shell: bash
         run: |
-          mkdir -p _site/assets
-          cp Фронт/*.html Фронт/*.css Фронт/*.js _site/
-          cp -R Фронт/assets/. _site/assets/
-          touch _site/.nojekyll
+          python3 tools/prepare-pages.py _site
       - uses: actions/upload-pages-artifact@v3
         with:
           path: _site
