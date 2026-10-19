@@ -1,5 +1,6 @@
 import { createServer } from 'node:http';
 import { AuthError, normalizeEmail, readSessionCookie, sessionCookie } from './security.mjs';
+import { weeklyVideoSource } from './weekly-videos.mjs';
 
 async function readJson(request) {
   if ((request.headers['content-type'] || '').split(';')[0].trim() !== 'application/json') {
@@ -43,6 +44,13 @@ export function createAuthServer({ service, store, origin, enabled = false, trus
       if (request.method === 'GET' && url.pathname === '/api/auth/session') {
         const user = await service.session(readSessionCookie(request));
         send(200, { authenticated: Boolean(user), user }); return;
+      }
+      if (request.method === 'GET' && url.pathname.startsWith('/api/auth/videos/')) {
+        const user = await service.session(readSessionCookie(request));
+        if (!user) throw new AuthError(401, 'sign_in_required', 'Войдите, чтобы посмотреть бесплатное видео.');
+        const source = weeklyVideoSource(url.pathname.slice('/api/auth/videos/'.length));
+        if (!source) { send(404, { error: 'video_not_found', message: 'Видео не найдено.' }); return; }
+        send(200, { source }); return;
       }
       if (request.method !== 'POST') { send(405, { error: 'method_not_allowed' }, { Allow: 'GET, POST' }); return; }
       // Same-origin only. In particular, GitHub Pages cannot create school sessions.
