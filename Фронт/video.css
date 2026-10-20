@@ -53,7 +53,7 @@
 .video-cover.weekly-cover { background: #faf9ff; }
 .video-cover.weekly-cover > img { inset: 0; width: 100%; height: 100%; object-fit: contain; }
 
-.video-fullscreen-button { position: absolute; top: max(12px, env(safe-area-inset-top, 0px)); right: max(12px, env(safe-area-inset-right, 0px)); z-index: 3; display: grid; place-items: center; width: 44px; height: 44px; border-radius: 50%; color: #fff; background: #18151dcc; }
+.video-fullscreen-button { position: absolute; bottom: max(12px, env(safe-area-inset-bottom, 0px)); right: max(12px, env(safe-area-inset-right, 0px)); z-index: 3; display: grid; place-items: center; width: 44px; height: 44px; border-radius: 50%; color: #fff; background: #18151dcc; }
 .video-fullscreen-button:disabled { opacity: .4; cursor: default; }
 .video-fullscreen-button svg { width: 24px; height: 24px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
 .video-fullscreen-button:focus-visible { outline: 3px solid #bca2ff; outline-offset: 3px; }
