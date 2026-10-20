@@ -68,11 +68,18 @@
       if (!active) { enter(); void rotate(attempt); }
     } else if (active && !native) leave();
   }
+  function fitVideo() {
+    if (video?.videoWidth > 0 && video.videoHeight > 0) {
+      stage.style.setProperty('--video-aspect-ratio', `${video.videoWidth} / ${video.videoHeight}`);
+    }
+    render();
+  }
   function observePlayer() {
     const current = stage.querySelector('video');
     if (current && current !== video) {
       video = current;
-      video.addEventListener('loadedmetadata', render);
+      video.addEventListener('loadedmetadata', fitVideo);
+      video.addEventListener('resize', fitVideo);
       video.addEventListener('emptied', render);
       video.addEventListener('webkitbeginfullscreen', () => {
         enter(true);
@@ -80,6 +87,7 @@
         render();
       });
       video.addEventListener('webkitendfullscreen', leave);
+      fitVideo();
     }
     button.disabled = !active && (video ? video.readyState < 1 : !stage.querySelector('iframe'));
   }

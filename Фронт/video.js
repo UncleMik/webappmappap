@@ -33,7 +33,14 @@
   // Reveal only the selected lesson's image after it has loaded. An eager demo
   // image can otherwise stay painted while the weekly cover is downloading.
   const coverImage = document.querySelector('.video-cover > img');
-  coverImage.addEventListener('load', () => { coverImage.hidden = false; });
+  coverImage.addEventListener('load', () => {
+    const stage = document.querySelector('.video-stage');
+    if (coverImage.closest('.weekly-cover') && !stage.querySelector('video')?.videoWidth
+        && coverImage.naturalWidth > 0 && coverImage.naturalHeight > 0) {
+      stage.style.setProperty('--video-aspect-ratio', `${coverImage.naturalWidth} / ${coverImage.naturalHeight}`);
+    }
+    coverImage.hidden = false;
+  });
   coverImage.addEventListener('error', () => { coverImage.hidden = true; });
   const weeklyIds = ['contractions-lesson', 'back-relief-video', 'birth-breathing-video'];
   if (params.get('from') === 'journey' && weeklyIds.includes(id)) {
