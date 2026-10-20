@@ -10,8 +10,7 @@
   };
   const id = Object.hasOwn(titles, params.get('id')) ? params.get('id') : 'back-practice';
   const origins = { index: 'index.html', mom: 'mom.html', baby: 'baby.html', journey: 'journey.html', 'my-courses': 'my-courses.html', club: 'club.html#events', articles: 'articles.html' };
-  document.title = titles[id];
-  document.querySelector('#video-title').textContent = titles[id];
+  const revealPlayer = () => document.querySelector('.video-app').removeAttribute('data-video-pending');
   document.querySelector('.video-back').href = Object.hasOwn(origins, params.get('from')) ? origins[params.get('from')] : 'mom.html';
   if (params.get('from') === 'journey') {
     const week = Number(params.get('week'));
@@ -43,13 +42,25 @@
   });
   coverImage.addEventListener('error', () => { coverImage.hidden = true; });
   const weeklyIds = ['contractions-lesson', 'back-relief-video', 'birth-breathing-video'];
-  if (params.get('from') === 'journey' && weeklyIds.includes(id)) {
-    import('./weekly-video-player.js?v=20261019-onboarding').then(module => module.mountWeeklyVideo(id)).catch(() => {
+  if (weeklyIds.includes(id)) {
+    import('./weekly-video-player.js?v=20261020-initial-content').then(module => {
+      module.mountWeeklyVideo(id);
+      revealPlayer();
+    }).catch(() => {
       const status = document.querySelector('#player-status'); status.hidden = false;
       status.textContent = 'Не удалось загрузить плеер. Обновите страницу.';
+      document.querySelector('.video-cover').disabled = true;
+      document.querySelector('#video-play').disabled = true;
+      document.querySelector('#video-next').disabled = true;
+      revealPlayer();
     });
     return;
   }
+  document.title = titles[id];
+  document.querySelector('#video-title').textContent = titles[id];
+  document.querySelector('#video-duration').textContent = 'демонстрация';
+  document.querySelector('.video-note p').textContent = 'Пока здесь видео-заглушка — Big Buck Bunny. Разделы показывают навигацию будущего занятия.';
+  document.querySelector('.video-note').hidden = false;
   coverImage.alt = 'Спокойная практика на коврике';
   coverImage.src = 'assets/practice-reference.webp';
   const weeklyIndex = weeklyIds.indexOf(id);
@@ -237,4 +248,5 @@
   play.addEventListener('click', start);
   cover.addEventListener('click', start);
   renderChapter(0);
+  revealPlayer();
 })();

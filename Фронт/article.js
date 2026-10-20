@@ -175,5 +175,6 @@ if (origin === 'journey' || origin === 'club-motherhood') {
   });
 }
 updateProgress();
+document.querySelector('.reader-progress').hidden = false;
 
 })();

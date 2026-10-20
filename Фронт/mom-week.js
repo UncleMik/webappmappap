@@ -1,6 +1,19 @@
-(() => {
+(async () => {
   const container = document.querySelector('.mom-changes') || document.querySelector('.mom-card');
   if (!container) return;
+  try {
+    await import('./account-profile.js?v=20261020-initial-content');
+    await window.webprilProfileReady;
+    if (!window.webprilAccount?.user) throw new Error('Profile unavailable');
+  } catch {
+    const status = document.createElement('p');
+    status.className = 'weekly-load-status';
+    status.setAttribute('role', 'status');
+    status.textContent = 'Не удалось загрузить профиль. Обновите страницу.';
+    container.before(status);
+    return;
+  }
+
   window.withWeeklyContent(container, ({ mom: library }) => {
   const normalize = value => Number.isInteger(Number(value)) && Number(value) >= 1 && Number(value) <= 42 ? Number(value) : (window.webprilAccount?.week || 27);
   const summary = document.querySelector('.mom-description');

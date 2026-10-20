@@ -1,6 +1,19 @@
-(() => {
+(async () => {
   const page = document.querySelector('#journey');
   if (!page) return;
+  try {
+    await import('./account-profile.js?v=20261020-initial-content');
+    await window.webprilProfileReady;
+    if (!window.webprilAccount?.user) throw new Error('Profile unavailable');
+  } catch {
+    const status = document.createElement('p');
+    status.className = 'weekly-load-status';
+    status.setAttribute('role', 'status');
+    status.textContent = 'Не удалось загрузить профиль. Обновите страницу.';
+    page.querySelector('.journey-main').before(status);
+    return;
+  }
+
   let currentWeek = window.webprilAccount?.week || 27;
   const heading = page.querySelector('.journey-week');
   const wheel = heading.querySelector('.week-wheel');

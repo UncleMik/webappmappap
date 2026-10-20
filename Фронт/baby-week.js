@@ -1,6 +1,19 @@
-(() => {
+(async () => {
   const container = document.querySelector('.baby-page') || document.querySelector('.baby-card');
   if (!container) return;
+  try {
+    await import('./account-profile.js?v=20261020-initial-content');
+    await window.webprilProfileReady;
+    if (!window.webprilAccount?.user) throw new Error('Profile unavailable');
+  } catch {
+    const status = document.createElement('p');
+    status.className = 'weekly-load-status';
+    status.setAttribute('role', 'status');
+    status.textContent = 'Не удалось загрузить профиль. Обновите страницу.';
+    container.before(status);
+    return;
+  }
+
   window.withWeeklyContent(container, ({ baby: library }) => {
   let currentWeek = window.webprilAccount?.week || 27;
   const normalize = value => Number.isInteger(Number(value)) && Number(value) >= 1 && Number(value) <= 42 ? Number(value) : currentWeek;
@@ -102,6 +115,7 @@
     page.querySelector('#development-title').textContent = `Развитие малыша на ${week}-й неделе`;
     page.querySelector('.baby-development > p').textContent = content.developmentDescription;
     page.querySelector('.development-link').href = `journey.html?week=${week}`;
+    page.querySelector('.development-link').removeAttribute('aria-disabled');
     window.renderPregnancyRecommendations(page.querySelector('.article-grid'), week, 'baby');
     // Movements and community content remain demo data for week 27.
     ['.baby-movements', '.community-card'].forEach(selector => {

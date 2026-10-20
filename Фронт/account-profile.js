@@ -4,6 +4,8 @@ import { profileTiming, formatDate } from './profile-dates.js';
 const pregnancyGoals = ['Спокойно пройти беременность', 'Подготовиться к родам', 'Понимать развитие малыша', 'Подготовить тело к родам', 'Разобраться с анализами', 'Справиться с тревогой', 'Подготовиться к первым дням с малышом'];
 const motherGoals = ['Восстановиться после родов', 'Наладить грудное вскармливание', 'Разобраться с уходом за малышом', 'Наладить сон малыша и свой сон', 'Вернуться к физической активности', 'Справиться со стрессом', 'Общаться с мамами и делиться опытом'];
 let revision = 0;
+let resolveInitialProfile;
+window.webprilProfileReady = new Promise(resolve => { resolveInitialProfile = resolve; });
 function render(user) {
   const profile = user?.profile?.completedAt ? user.profile : null;
   const timing = profileTiming(profile);
@@ -29,6 +31,7 @@ function render(user) {
     summary.href = profile?.stage === 'pregnancy' ? `journey.html?week=${timing.week}` : 'journey.html';
   }
   window.dispatchEvent(new CustomEvent('account:change', { detail: window.webprilAccount }));
+  resolveInitialProfile();
 }
 async function refresh() {
   const current = ++revision;

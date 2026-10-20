@@ -17,9 +17,9 @@
 <div class="app reader-page">
   <header class="reader-header">
     <div class="reader-toolbar"><a class="reader-back" href="index.html#recommendations-title" data-reader-return aria-label="Вернуться к разделу"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m14 5-7 7 7 7"/></svg></a><span>Статья</span></div>
-    <div class="reader-progress"><progress value="1" max="6" aria-label="Прогресс чтения статьи"></progress><output aria-label="Текущий блок">1/6</output></div>
+    <div class="reader-progress" hidden><progress value="1" max="6" aria-label="Прогресс чтения статьи"></progress><output aria-label="Текущий блок">1/6</output></div>
   </header>
-  <main class="reader-scroll" tabindex="0" aria-label="Текст статьи">
+  <main class="reader-scroll" tabindex="0" aria-label="Текст статьи" aria-busy="true">
     <section class="reader-section reader-finish" aria-labelledby="finish-title">
       <svg class="reader-heart" viewBox="0 0 140 120" fill="none" aria-hidden="true"><circle cx="70" cy="57" r="49" fill="#f2eaf9"/><path d="M70 84C28 53 53 24 68 54 83 18 111 44 70 84Z" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/><path d="m8 43-6-3m8 20H3m11 16-5 5m122-38 6-3m-5 20h6m-11 16 5 5" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
       <h2 id="finish-title">Вы разобрались!</h2>
@@ -41,6 +41,6 @@
 <script src="article-read-state.js?v=20261007-unread-first"></script>
 <script src="weekly-content-api.js?v=20261008-weekly"></script>
 <script src="articles-api.js?v=20261017-not-found"></script>
-<script src="article.js?v=20261017-not-found"></script>
+<script src="article.js?v=20261020-initial-content"></script>
 <script src="app.js?v=20261006-week-samples"></script></body>
 </html>
