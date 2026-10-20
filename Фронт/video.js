@@ -30,6 +30,11 @@
     try { localStorage.setItem(favoriteKey, String(value)); } catch { /* Keep the current session usable. */ }
   });
 
+  // Reveal only the selected lesson's image after it has loaded. An eager demo
+  // image can otherwise stay painted while the weekly cover is downloading.
+  const coverImage = document.querySelector('.video-cover > img');
+  coverImage.addEventListener('load', () => { coverImage.hidden = false; });
+  coverImage.addEventListener('error', () => { coverImage.hidden = true; });
   const weeklyIds = ['contractions-lesson', 'back-relief-video', 'birth-breathing-video'];
   if (params.get('from') === 'journey' && weeklyIds.includes(id)) {
     import('./weekly-video-player.js?v=20261019-onboarding').then(module => module.mountWeeklyVideo(id)).catch(() => {
@@ -38,6 +43,8 @@
     });
     return;
   }
+  coverImage.alt = 'Спокойная практика на коврике';
+  coverImage.src = 'assets/practice-reference.webp';
   const weeklyIndex = weeklyIds.indexOf(id);
   const isWeekly = params.get('from') === 'journey' && weeklyIndex !== -1;
   const chapters = isWeekly ? weeklyIds.map((videoId, index) => [titles[videoId], index < weeklyIds.length - 1 ? 'Видео на эту неделю. После просмотра откроется следующее видео — включите его, когда будете готовы. Можно переключаться стрелками или через список ниже.' : 'Последнее видео этой недели. После просмотра появится сообщение о завершении. К предыдущим видео можно вернуться стрелками или через список ниже.']) : [
