@@ -1,0 +1,363 @@
+{
+  "snapshotDate": "2026-10-22",
+  "status": "inventory_only",
+  "source": "Настройки предложений и продуктов GetCourse, проверенные в авторизованном браузере 2026-10-22",
+  "currency": "RUB",
+  "products": [
+    {
+      "productId": 4309095,
+      "trainingId": 935397478,
+      "name": "Курс \"Легкие роды без страха\" - Экспресс 2.0",
+      "url": "https://legkierody.ru/pl/sales/product/update?id=4309095"
+    },
+    {
+      "productId": 4307012,
+      "trainingId": 935397517,
+      "name": "БОНУС. Уход за ребенком ЛР Экспресс 2.0",
+      "url": "https://legkierody.ru/pl/sales/product/update?id=4307012"
+    },
+    {
+      "productId": 4307003,
+      "trainingId": 935397507,
+      "name": "БОНУС. Развитие ребенка от 0 до 6 месяцев. ЛР Экспресс 2.0",
+      "url": "https://legkierody.ru/pl/sales/product/update?id=4307003"
+    },
+    {
+      "productId": 4516222,
+      "trainingId": 935925461,
+      "name": "БОНУС \"Развитие ребенка от 6 до 12 месяцев\" (ЛР Экспресс 2.0)",
+      "url": "https://legkierody.ru/pl/sales/product/update?id=4516222"
+    },
+    {
+      "productId": 4316498,
+      "trainingId": 935397511,
+      "name": "БОНУС. Йога для беременных. ЛР Экспресс 2.0",
+      "url": "https://legkierody.ru/pl/sales/product/update?id=4316498"
+    },
+    {
+      "productId": 4516226,
+      "trainingId": 935925466,
+      "name": "БОНУС Завершение ГВ (ЛР Экспресс 2.0)",
+      "url": "https://legkierody.ru/pl/sales/product/update?id=4516226"
+    },
+    {
+      "productId": 4302509,
+      "trainingId": 935386893,
+      "name": "Курс \"Легкие роды без страха\" 2.0",
+      "url": "https://legkierody.ru/pl/sales/product/update?id=4302509"
+    },
+    {
+      "productId": 4302575,
+      "trainingId": 935386930,
+      "name": "БОНУС. Развитие ребенка от 0 до 6 месяцев. ЛР 2.0",
+      "url": "https://legkierody.ru/pl/sales/product/update?id=4302575"
+    },
+    {
+      "productId": 4302584,
+      "trainingId": 935386936,
+      "name": "БОНУС. Развитие ребенка с 6 месяцев до 1 года. ЛР 2.0",
+      "url": "https://legkierody.ru/pl/sales/product/update?id=4302584"
+    },
+    {
+      "productId": 4302520,
+      "trainingId": 935386905,
+      "name": "Сон ребенка. Курс Легкие роды без страха 2.0",
+      "url": "https://legkierody.ru/pl/sales/product/update?id=4302520"
+    },
+    {
+      "productId": 4302620,
+      "trainingId": 935386951,
+      "name": "БОНУС. Вакцинация и детский иммунитет. ЛР 2.0",
+      "url": "https://legkierody.ru/pl/sales/product/update?id=4302620"
+    },
+    {
+      "productId": 3317400,
+      "trainingId": null,
+      "groupId": 2699461,
+      "groupName": "Участники онлайн-встреч - Все включено, Все включено ПРО, МОРИМ, VIP",
+      "name": "Участие в онлайн-встречах",
+      "url": "https://legkierody.ru/pl/sales/product/update?id=3317400"
+    },
+    {
+      "productId": 3317398,
+      "trainingId": null,
+      "groupId": 3580357,
+      "groupName": "Доступ к чату ЛР_все включено_ПРО",
+      "name": "Доступ к чату телеграм_все включено ПРО",
+      "url": "https://legkierody.ru/pl/sales/product/update?id=3317398"
+    },
+    {
+      "productId": 4302523,
+      "trainingId": 935386911,
+      "name": "Прикорм до года. Курс Легкие роды без страха 2.0",
+      "url": "https://legkierody.ru/pl/sales/product/update?id=4302523"
+    },
+    {
+      "productId": 4302526,
+      "trainingId": 935386912,
+      "name": "Завершение ГВ. Курс Легкие роды без страха 2.0",
+      "url": "https://legkierody.ru/pl/sales/product/update?id=4302526"
+    },
+    {
+      "productId": 4302529,
+      "trainingId": 935386914,
+      "name": "Мягкое восстановление после родов. Курс Легкие роды без страха 2.0",
+      "url": "https://legkierody.ru/pl/sales/product/update?id=4302529"
+    },
+    {
+      "productId": 4302532,
+      "trainingId": 935386917,
+      "name": "БОНУС. Грудничковое плавание. ЛР 2.0",
+      "url": "https://legkierody.ru/pl/sales/product/update?id=4302532"
+    },
+    {
+      "productId": 4302535,
+      "trainingId": 935386918,
+      "name": "БОНУС. Мама в ресурсе. ЛР 2.0",
+      "url": "https://legkierody.ru/pl/sales/product/update?id=4302535"
+    },
+    {
+      "productId": 4302543,
+      "trainingId": 935386921,
+      "name": "БОНУС. Питание во время беременности. ЛР 2.0",
+      "url": "https://legkierody.ru/pl/sales/product/update?id=4302543"
+    },
+    {
+      "productId": 4302546,
+      "trainingId": 935386922,
+      "name": "БОНУС. Правила прикладывания от А до Я. ЛР 2.0",
+      "url": "https://legkierody.ru/pl/sales/product/update?id=4302546"
+    },
+    {
+      "productId": 4302549,
+      "trainingId": 935386923,
+      "name": "БОНУС. Правильное слингоношение. ЛР 2.0",
+      "url": "https://legkierody.ru/pl/sales/product/update?id=4302549"
+    },
+    {
+      "productId": 4302552,
+      "trainingId": 935386924,
+      "name": "БОНУС. Фитнес во время беременности. ЛР 2.0",
+      "url": "https://legkierody.ru/pl/sales/product/update?id=4302552"
+    },
+    {
+      "productId": 4302555,
+      "trainingId": 935386925,
+      "name": "БОНУС. Как избежать разрывов. Массаж промежности. ЛР 2.0",
+      "url": "https://legkierody.ru/pl/sales/product/update?id=4302555"
+    },
+    {
+      "productId": 4302557,
+      "trainingId": 935386926,
+      "name": "БОНУС. Йога после родов. ЛР 2.0",
+      "url": "https://legkierody.ru/pl/sales/product/update?id=4302557"
+    },
+    {
+      "productId": 4302567,
+      "trainingId": 935386927,
+      "name": "БОНУС. Йога для беременных. ЛР 2.0",
+      "url": "https://legkierody.ru/pl/sales/product/update?id=4302567"
+    },
+    {
+      "productId": 4302588,
+      "trainingId": 935386940,
+      "name": "БОНУС. Питание во время ГВ. ЛР 2.0",
+      "url": "https://legkierody.ru/pl/sales/product/update?id=4302588"
+    },
+    {
+      "productId": 4302598,
+      "trainingId": 935386942,
+      "name": "БОНУС. ОРВИ у малышей: что нужно знать маме\" new. ЛР 2.0",
+      "url": "https://legkierody.ru/pl/sales/product/update?id=4302598"
+    },
+    {
+      "productId": 4302602,
+      "trainingId": 935386943,
+      "name": "БОНУС. Массаж лица для мам. ЛР 2.0",
+      "url": "https://legkierody.ru/pl/sales/product/update?id=4302602"
+    },
+    {
+      "productId": 4302570,
+      "trainingId": 935386928,
+      "name": "БОНУС. Плоский живот. ЛР 2.0",
+      "url": "https://legkierody.ru/pl/sales/product/update?id=4302570"
+    },
+    {
+      "productId": 4302617,
+      "trainingId": 935386950,
+      "name": "БОНУС. Первая помощь малышам с 0 до 3 лет. ЛР 2.0",
+      "url": "https://legkierody.ru/pl/sales/product/update?id=4302617"
+    }
+  ],
+  "offers": [
+    {
+      "offerId": 8835218,
+      "name": "[Приложение] Курс \"Легкие роды без страха\". Тариф Экспресс",
+      "url": "https://legkierody.ru/pl/sales/offer/update?id=8835218",
+      "price": 2800,
+      "items": [
+        {
+          "productId": 4309095,
+          "accessDays": 183
+        },
+        {
+          "productId": 4307012,
+          "accessDays": 183
+        },
+        {
+          "productId": 4307003,
+          "accessDays": 183
+        },
+        {
+          "productId": 4516222,
+          "accessDays": 183
+        },
+        {
+          "productId": 4316498,
+          "accessDays": 183
+        },
+        {
+          "productId": 4516226,
+          "accessDays": 183
+        }
+      ]
+    },
+    {
+      "offerId": 8835266,
+      "name": "[Приложение] Курс \"Легкие роды без страха\". Тариф Все включено",
+      "url": "https://legkierody.ru/pl/sales/offer/update?id=8835266",
+      "price": 4680,
+      "items": [
+        {
+          "productId": 4302509,
+          "accessDays": 365
+        },
+        {
+          "productId": 4302575,
+          "accessDays": 365
+        },
+        {
+          "productId": 4302584,
+          "accessDays": 365
+        },
+        {
+          "productId": 4302520,
+          "accessDays": 365
+        },
+        {
+          "productId": 4302620,
+          "accessDays": 365
+        },
+        {
+          "productId": 3317400,
+          "accessDays": 60
+        }
+      ]
+    },
+    {
+      "offerId": 8835331,
+      "name": "[Приложение] Курс \"Легкие роды без страха\". Тариф ПРОФИ",
+      "url": "https://legkierody.ru/pl/sales/offer/update?id=8835331",
+      "price": 7490,
+      "items": [
+        {
+          "productId": 4302509,
+          "accessDays": 1095
+        },
+        {
+          "productId": 4302575,
+          "accessDays": 1095
+        },
+        {
+          "productId": 4302584,
+          "accessDays": 1095
+        },
+        {
+          "productId": 4302520,
+          "accessDays": 1095
+        },
+        {
+          "productId": 4302620,
+          "accessDays": 1095
+        },
+        {
+          "productId": 3317400,
+          "accessDays": 60
+        },
+        {
+          "productId": 3317398,
+          "accessDays": 60
+        },
+        {
+          "productId": 4302523,
+          "accessDays": 1095
+        },
+        {
+          "productId": 4302526,
+          "accessDays": 1095
+        },
+        {
+          "productId": 4302529,
+          "accessDays": 1095
+        },
+        {
+          "productId": 4302532,
+          "accessDays": 1095
+        },
+        {
+          "productId": 4302535,
+          "accessDays": 1095
+        },
+        {
+          "productId": 4302543,
+          "accessDays": 1095
+        },
+        {
+          "productId": 4302546,
+          "accessDays": 1095
+        },
+        {
+          "productId": 4302549,
+          "accessDays": 1095
+        },
+        {
+          "productId": 4302552,
+          "accessDays": 1095
+        },
+        {
+          "productId": 4302555,
+          "accessDays": 1095
+        },
+        {
+          "productId": 4302557,
+          "accessDays": 1095
+        },
+        {
+          "productId": 4302567,
+          "accessDays": 1095
+        },
+        {
+          "productId": 4302588,
+          "accessDays": 1095
+        },
+        {
+          "productId": 4302598,
+          "accessDays": 1095
+        },
+        {
+          "productId": 4302602,
+          "accessDays": 1095
+        },
+        {
+          "productId": 4302570,
+          "accessDays": 1095
+        },
+        {
+          "productId": 4302617,
+          "accessDays": 1095
+        }
+      ],
+      "partialPaymentOpensAccess": false
+    }
+  ]
+}

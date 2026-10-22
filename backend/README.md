@@ -282,3 +282,7 @@ p50 2 мс, p95 4 мс. Это HTTP по localhost с PostgreSQL, без nginx/T
 Изолированный браузерный стенд `test/fixtures/auth-browser.mjs` запускается только
 при `AUTH_BROWSER_QA=1`, слушает localhost и использует синтетические данные.
 Он не отправляет письма и не обращается к GetCourse; в production его не запускать.
+
+## Каталог предложений
+
+`node backend/import-course-offers.mjs docs/content/getcourse-offers-2026-10-22.json /path/to/articles.sqlite` импортирует только коммерческий состав трёх предложений в отдельные таблицы `course_*`. Импорт транзакционный; статьи и недельные данные сохраняются. `GET/HEAD /api/course-offers` содержит только метаданные предложений и не предоставляет права на уроки. На рабочем сервере маршрут закрыт существующим Nginx `auth_request`. Источники, проверка и ограничения: [каталог GetCourse](../docs/GETCOURSE_OFFERS.md).

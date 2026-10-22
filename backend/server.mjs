@@ -2,6 +2,7 @@ import { createServer } from 'node:http';
 import { createHash } from 'node:crypto';
 import { fileURLToPath } from 'node:url';
 import { openDatabase, readArticles, readArticle, readWeeklyContent } from './database.mjs';
+import { readCourseOffers } from './course-catalog.mjs';
 
 export function createArticleServer(db, origin = 'https://unclemik.github.io') {
   return createServer((request, response) => {
@@ -23,6 +24,11 @@ export function createArticleServer(db, origin = 'https://unclemik.github.io') {
     if (!['GET', 'HEAD'].includes(request.method)) { response.setHeader('Allow', 'GET, HEAD, OPTIONS'); send(405, { error: 'Method not allowed' }); return; }
     try {
       const url = new URL(request.url, 'http://localhost');
+      if (url.pathname === '/api/course-offers') {
+        if (url.search) { send(400, { error: 'invalid_query' }); return; }
+        const catalog = readCourseOffers(db);
+        send(catalog ? 200 : 503, catalog || { error: 'courses_unavailable' }); return;
+      }
       if (url.pathname === '/api/health') { send(200, { status: 'ok', project: 'wep_pril', articles: readArticles(db).length }); return; }
       if (url.pathname === '/api/weekly-content') { send(200, readWeeklyContent(db)); return; }
       if (url.pathname === '/api/articles') {
