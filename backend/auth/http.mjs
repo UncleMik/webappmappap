@@ -26,7 +26,7 @@ function challenge(value) {
   return value;
 }
 
-export function createAuthServer({ service, store, origin, enabled = false, trustProxy = false, mailPerMinute = 120 }) {
+export function createAuthServer({ service, store, courseChecks, origin, enabled = false, trustProxy = false, mailPerMinute = 120 }) {
   return createServer({ requestTimeout: 15_000, headersTimeout: 10_000, maxHeaderSize: 8192 }, async (request, response) => {
     const send = (status, body, headers = {}) => {
       if (response.destroyed) return;
@@ -49,6 +49,14 @@ export function createAuthServer({ service, store, origin, enabled = false, trus
       if (request.method === 'GET' && url.pathname === '/api/auth/session') {
         const user = await service.session(readSessionCookie(request));
         send(200, { authenticated: Boolean(user), user }); return;
+      }
+      if (request.method === 'GET' && url.pathname === '/api/auth/course-check') {
+        const user = await service.session(readSessionCookie(request));
+        if (!user) throw new AuthError(401, 'sign_in_required', 'Войдите, чтобы проверить доступ к курсам.');
+        if (!user.profile?.completedAt) throw new AuthError(403, 'onboarding_required', 'Заполните профиль, чтобы продолжить.');
+        if (!courseChecks) throw new AuthError(503, 'course_check_unavailable', 'Не удалось проверить доступ к курсам. Попробуйте ещё раз.', 5);
+        const { checkedAt, expiresAt } = await courseChecks.requireCurrent(user.id);
+        send(200, { verification: 'current', checkedAt, expiresAt }); return;
       }
       if (request.method === 'GET' && url.pathname.startsWith('/api/auth/videos/')) {
         const user = await service.session(readSessionCookie(request));

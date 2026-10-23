@@ -3,6 +3,8 @@ import { createStore } from './store.mjs';
 import { createAuthService } from './service.mjs';
 import { createMailer, createGetCourse } from './providers.mjs';
 import { createAuthServer } from './http.mjs';
+import { createGetCourseTech } from '../getcourse-tech.mjs';
+import { createCourseChecks } from './course-checks.mjs';
 
 let pool;
 async function start() {
@@ -15,7 +17,9 @@ const service = createAuthService({ store, sendMail, ensureGetCourse: async emai
   await store.rateLimit('getcourse_global', 'all', config.gcPerMinute);
   return getcourse(email);
 } });
-const server = createAuthServer({ ...config, service, store, trustProxy: true });
+const courseChecks = config.getcourseTech
+  ? createCourseChecks({ pool, tech: createGetCourseTech(config.getcourseTech) }) : null;
+const server = createAuthServer({ ...config, service, store, courseChecks, trustProxy: true });
 let working = false, stopping = false, lastCleanup = 0;
 const worker = setInterval(async () => {
   if (working || stopping || !config.enabled) return;

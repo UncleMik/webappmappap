@@ -28,6 +28,9 @@ export function readConfig(env = process.env) {
       sender: 'auth@legkierody.ru', replyTo: env.AUTH_REPLY_TO || undefined,
       skipUnsubscribe: env.UNISENDER_TRANSACTIONAL_APPROVED === 'true' },
     getcourse: { origin: env.GETCOURSE_ORIGIN || 'https://legkierody.ru', key: env.GETCOURSE_IMPORT_KEY },
+    getcourseTech: env.GETCOURSE_TECH_DEVELOPER_KEY && env.GETCOURSE_TECH_SCHOOL_KEY ? {
+      developerKey: env.GETCOURSE_TECH_DEVELOPER_KEY, schoolKey: env.GETCOURSE_TECH_SCHOOL_KEY,
+    } : null,
   };
 }
 export function openPool(config) {
