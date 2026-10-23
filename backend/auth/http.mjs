@@ -25,8 +25,11 @@ function challenge(value) {
   }
   return value;
 }
+const positiveId = value => /^[1-9]\d*$/.test(value) && Number.isSafeInteger(Number(value));
+const materialsUnavailable = () => new AuthError(503, 'course_materials_unavailable',
+  'Материалы курсов временно недоступны. Попробуйте ещё раз.');
 
-export function createAuthServer({ service, store, courseChecks, origin, enabled = false, trustProxy = false, mailPerMinute = 120 }) {
+export function createAuthServer({ service, store, courseChecks, courseMaterials, origin, enabled = false, trustProxy = false, mailPerMinute = 120 }) {
   return createServer({ requestTimeout: 15_000, headersTimeout: 10_000, maxHeaderSize: 8192 }, async (request, response) => {
     const send = (status, body, headers = {}) => {
       if (response.destroyed) return;
@@ -57,6 +60,27 @@ export function createAuthServer({ service, store, courseChecks, origin, enabled
         if (!courseChecks) throw new AuthError(503, 'course_check_unavailable', 'Не удалось проверить доступ к курсам. Попробуйте ещё раз.', 5);
         const { checkedAt, expiresAt } = await courseChecks.requireCurrent(user.id);
         send(200, { verification: 'current', checkedAt, expiresAt }); return;
+      }
+      if (request.method === 'GET' && (url.pathname === '/api/auth/courses' || url.pathname.startsWith('/api/auth/courses/'))) {
+        const user = await service.session(readSessionCookie(request));
+        if (!user) throw new AuthError(401, 'sign_in_required', 'Войдите, чтобы посмотреть курсы.');
+        if (!user.profile?.completedAt) throw new AuthError(403, 'onboarding_required', 'Заполните профиль, чтобы продолжить.');
+        const path = url.pathname.slice('/api/auth/courses'.length);
+        const course = path.match(/^\/([1-9]\d*)$/);
+        const lesson = path.match(/^\/([1-9]\d*)\/lessons\/([1-9]\d*)$/);
+        const match = course || lesson;
+        if (path && (!match || !positiveId(match[1]) || (lesson && !positiveId(lesson[2])))) {
+          send(404, { error: 'not_found' }); return;
+        }
+        if (!courseChecks || !courseMaterials) throw materialsUnavailable();
+        try {
+          const result = lesson ? await courseMaterials.lesson(user.id, Number(lesson[1]), Number(lesson[2]))
+            : course ? await courseMaterials.course(user.id, Number(course[1])) : await courseMaterials.list(user.id);
+          send(200, result); return;
+        } catch (error) {
+          if (error instanceof AuthError) throw error;
+          throw materialsUnavailable();
+        }
       }
       if (request.method === 'GET' && url.pathname.startsWith('/api/auth/videos/')) {
         const user = await service.session(readSessionCookie(request));

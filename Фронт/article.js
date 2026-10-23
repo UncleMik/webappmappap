@@ -1,6 +1,10 @@
 (async () => {
 const scroller = document.querySelector('.reader-scroll');
 const params = new URLSearchParams(location.search);
+if (params.has('courseLesson')) {
+  await import('./course-lesson.js?v=20261023-paid-materials');
+  return;
+}
 function showArticleNotFound() {
   document.title = 'Статья не найдена';
   document.querySelector('.reader-progress').hidden = true;

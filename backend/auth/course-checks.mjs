@@ -8,23 +8,28 @@ const unavailable = () => new AuthError(503, 'course_check_unavailable',
 const validId = value => (typeof value === 'number' || typeof value === 'string')
   && /^[1-9]\d*$/.test(String(value)) && Number.isSafeInteger(Number(value));
 const dateValue = value => value === null || typeof value === 'string';
+const MISSION_STATUSES = new Set(['new', 'declined', 'accepted', 'viewed']);
 
 // Keep only evidence needed by the later product/lesson permission check.
 // Payment flags and a training list are not a permission decision on their own.
-function normalizeSnapshot(purchases, trainings, getcourseId) {
-  if (!Array.isArray(purchases) || !Array.isArray(trainings)
+function normalizeSnapshot(purchases, trainings, lessonStatuses, getcourseId) {
+  if (!Array.isArray(purchases) || !Array.isArray(trainings) || !Array.isArray(lessonStatuses)
     || !purchases.every(p => p && validId(p.id) && validId(p.product_id)
       && validId(p.user_id) && Number(p.user_id) === getcourseId
       && typeof p.period_type === 'string' && p.period_type.length > 0
       && dateValue(p.start_at) && dateValue(p.finish_at) && dateValue(p.state)
       && Number.isInteger(p.is_actual) && Number.isInteger(p.is_payed))
-    || !trainings.every(t => t && validId(t.id))) throw unavailable();
+    || !trainings.every(t => t && validId(t.id))
+    || !lessonStatuses.every(s => s && validId(s.lessonId) && MISSION_STATUSES.has(s.status)
+      && dateValue(s.updatedAt))) throw unavailable();
   return {
-    version: 1,
+    version: 2,
     purchases: purchases.map(p => ({ id: Number(p.id), product_id: Number(p.product_id), user_id: getcourseId,
       start_at: p.start_at, finish_at: p.finish_at, period_type: p.period_type,
       is_actual: p.is_actual, is_payed: p.is_payed, state: p.state })),
     trainingIds: [...new Set(trainings.map(t => Number(t.id)))].sort((a, b) => a - b),
+    lessonStates: lessonStatuses.map(s => ({ lessonId: Number(s.lessonId), status: s.status,
+      updatedAt: s.updatedAt })),
   };
 }
 
@@ -34,8 +39,10 @@ function current(row, getcourseId, now) {
     || !Number.isFinite(expiresAt) || checkedAt > now || expiresAt <= now
     || expiresAt <= checkedAt || expiresAt - checkedAt > COURSE_CHECK_TTL_MS) return null;
   try {
-    if (row.snapshot.version !== 1 || !Array.isArray(row.snapshot.trainingIds)) return null;
-    const snapshot = normalizeSnapshot(row.snapshot.purchases, row.snapshot.trainingIds.map(id => ({ id })), getcourseId);
+    if (row.snapshot.version !== 2 || !Array.isArray(row.snapshot.trainingIds)
+      || !Array.isArray(row.snapshot.lessonStates)) return null;
+    const snapshot = normalizeSnapshot(row.snapshot.purchases, row.snapshot.trainingIds.map(id => ({ id })),
+      row.snapshot.lessonStates, getcourseId);
     return { checkedAt: new Date(checkedAt).toISOString(), expiresAt: new Date(expiresAt).toISOString(), snapshot };
   } catch { return null; }
 }
@@ -73,8 +80,10 @@ export function createCourseChecks({ pool, tech, clock = Date.now }) {
         // Recheck after acquiring the lease; another instance may have just finished.
         const completed = await cached(userId, gcId);
         if (completed) return completed;
-        const [purchases, trainings] = await Promise.all([tech.getPurchases(gcId), tech.getUserTrainings(gcId)]);
-        const snapshot = normalizeSnapshot(purchases, trainings, gcId);
+        const [purchases, trainings, lessonStatuses] = await Promise.all([
+          tech.getPurchases(gcId), tech.getUserTrainings(gcId), tech.getLessonStatuses(gcId),
+        ]);
+        const snapshot = normalizeSnapshot(purchases, trainings, lessonStatuses, gcId);
         if (clock() < startedAt || clock() >= startedAt + COURSE_CHECK_TTL_MS) throw unavailable();
         const { rows: saved } = await pool.query(`UPDATE course_access_checks SET getcourse_id=$2,snapshot=$3::jsonb,
           checked_at=$4,expires_at=$5,lease_token=NULL,lease_until=NULL

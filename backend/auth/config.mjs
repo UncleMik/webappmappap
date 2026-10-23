@@ -1,4 +1,5 @@
 import pg from 'pg';
+import { resolve } from 'node:path';
 
 export function readConfig(env = process.env) {
   const required = ['AUTH_DATABASE_URL', 'AUTH_HMAC_SECRET', 'UNISENDER_API_KEY', 'UNISENDER_TEMPLATE_ID', 'GETCOURSE_IMPORT_KEY'];
@@ -24,6 +25,7 @@ export function readConfig(env = process.env) {
     poolSize: positive('AUTH_DB_POOL_SIZE', 10, 30),
     port: positive('AUTH_PORT', 3001, 65535),
     databaseUrl: env.AUTH_DATABASE_URL,
+    courseDatabasePath: resolve(env.COURSE_DATABASE_PATH || resolve(import.meta.dirname, '../../data/articles.sqlite')),
     mail: { key: env.UNISENDER_API_KEY, templateId: env.UNISENDER_TEMPLATE_ID,
       sender: 'auth@legkierody.ru', replyTo: env.AUTH_REPLY_TO || undefined,
       skipUnsubscribe: env.UNISENDER_TRANSACTIONAL_APPROVED === 'true' },

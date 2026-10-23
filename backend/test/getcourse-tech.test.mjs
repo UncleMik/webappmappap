@@ -35,12 +35,14 @@ test('uses exact read-only paths, queries, and combined Bearer header', async ()
   assert.deepEqual(await api.getUserFields({ email: 'student+test@example.org' }), { id: 42, email: 'student+test@example.org' });
   assert.deepEqual(await api.getPurchases(42), []);
   assert.deepEqual(await api.getUserTrainings(42), []);
+  assert.deepEqual(await api.getLessonStatuses(42), []);
   assert.deepEqual(requests.map(({ url }) => `${url.pathname}${url.search}`), [
     '/pl/api/v1/common/get-trainings',
     '/pl/api/v1/user/get-fields?userId=42',
     '/pl/api/v1/user/get-fields?email=student%2Btest%40example.org',
     '/pl/api/v1/user/get-purchases?userId=42',
     '/pl/api/v1/user/get-trainings?userId=42',
+    '/pl/api/v1/user/get-lesson-answers?userId=42',
   ]);
   for (const { url, options } of requests) {
     assert.equal(url.origin, config.schoolOrigin);
@@ -48,6 +50,44 @@ test('uses exact read-only paths, queries, and combined Bearer header', async ()
     assert.equal(options.redirect, 'error');
     assert.equal(options.headers.Authorization, 'Bearer developer-test_school-test');
     assert.ok(options.signal instanceof AbortSignal);
+  }
+});
+
+test('lesson answers return only mission status evidence and discard response text', async () => {
+  const raw = [
+    { id: 7, user_id: 42, lesson_id: 101, type: 'mission_answer', status: 'accepted',
+      updated_at: '2026-10-23 12:00:00', answer_text: 'private student text',
+      user_name: 'private name', files: ['private file'] },
+    { id: 8, user_id: 42, lesson_id: 101, type: 'free_comment', status: 'accepted',
+      comment: 'private comment' },
+    { id: 9, user_id: 42, lesson_id: 102, type: 'mission_answer', status: 'viewed',
+      updated_at: null, created_at: '2026-10-22 10:00:00' },
+    { id: 10, user_id: 42, lesson_id: 103, type: 'mission_answer', status: 'new',
+      updated_at: null, created_at: null },
+    { id: 11, user_id: 42, lesson_id: 104, type: 'unknown_type', status: 'accepted' },
+  ];
+  const result = await client(async () => ok(raw)).getLessonStatuses(42);
+  assert.deepEqual(result, [
+    { lessonId: 101, status: 'accepted', updatedAt: '2026-10-23 12:00:00' },
+    { lessonId: 102, status: 'viewed', updatedAt: '2026-10-22 10:00:00' },
+    { lessonId: 103, status: 'new', updatedAt: null },
+  ]);
+  assert.doesNotMatch(JSON.stringify(result), /private|free_comment|unknown_type|"id":/);
+});
+
+test('malformed mission status or mismatched user fails without exposing raw answers', async () => {
+  const answer = { user_id: 42, lesson_id: 101, type: 'mission_answer', status: 'accepted',
+    answer_text: 'private student text' };
+  for (const data of [
+    {}, [null], [{ ...answer, user_id: 43 }], [{ ...answer, lesson_id: null }],
+    [{ ...answer, status: 'unknown' }], [{ ...answer, status: null }],
+    [{ ...answer, type: 'free_comment', user_id: 43 }],
+  ]) {
+    await assert.rejects(client(async () => ok(data)).getLessonStatuses(42), error => {
+      assert.equal(error.code, 'invalid_response');
+      assert.doesNotMatch(String(error), /private|answer_text|42|43/);
+      return true;
+    });
   }
 });
 
@@ -128,4 +168,5 @@ test('rejects non-school origins and invalid selectors before any request', asyn
   assert.throws(() => api.getUserFields({ email: 'invalid' }), /valid userId or email/);
   assert.throws(() => api.getPurchases(0), /positive integer/);
   assert.throws(() => api.getUserTrainings('1'), /positive integer/);
+  assert.throws(() => api.getLessonStatuses('1'), /positive integer/);
 });

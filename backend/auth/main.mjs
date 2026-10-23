@@ -5,8 +5,14 @@ import { createMailer, createGetCourse } from './providers.mjs';
 import { createAuthServer } from './http.mjs';
 import { createGetCourseTech } from '../getcourse-tech.mjs';
 import { createCourseChecks } from './course-checks.mjs';
+import { DatabaseSync } from 'node:sqlite';
+import { createCourseMaterials } from '../course-materials.mjs';
 
-let pool;
+let pool, courseDb;
+function closeCourseDb() {
+  try { courseDb?.close(); } catch { console.error('course_materials_close_failed'); }
+  courseDb = null;
+}
 async function start() {
 const config = readConfig();
 pool = openPool(config);
@@ -19,7 +25,17 @@ const service = createAuthService({ store, sendMail, ensureGetCourse: async emai
 } });
 const courseChecks = config.getcourseTech
   ? createCourseChecks({ pool, tech: createGetCourseTech(config.getcourseTech) }) : null;
-const server = createAuthServer({ ...config, service, store, courseChecks, trustProxy: true });
+let courseMaterials = null;
+if (courseChecks) {
+  try {
+    courseDb = new DatabaseSync(config.courseDatabasePath, { readOnly: true });
+    courseMaterials = createCourseMaterials({ db: courseDb, courseChecks });
+  } catch {
+    console.error('course_materials_unavailable');
+    closeCourseDb();
+  }
+}
+const server = createAuthServer({ ...config, service, store, courseChecks, courseMaterials, trustProxy: true });
 let working = false, stopping = false, lastCleanup = 0;
 const worker = setInterval(async () => {
   if (working || stopping || !config.enabled) return;
@@ -36,11 +52,13 @@ async function stop() {
   stopping = true; clearInterval(worker);
   await new Promise(resolve => server.close(resolve));
   while (working) await new Promise(resolve => setTimeout(resolve, 50));
+  closeCourseDb();
   await pool.end();
 }
 process.on('SIGTERM', stop); process.on('SIGINT', stop);
 }
 start().catch(async () => {
   console.error('auth_start_failed_check_private_configuration');
+  closeCourseDb();
   await pool?.end(); process.exitCode = 1;
 });

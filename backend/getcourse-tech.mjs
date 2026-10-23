@@ -38,6 +38,23 @@ function purchaseData(value, userId) {
     && (typeof row.state === 'string' || row.state === null));
 }
 
+const MISSION_STATUSES = new Set(['new', 'declined', 'accepted', 'viewed']);
+
+function lessonAnswersData(value, userId) {
+  return recordArray(value, row => positiveId(row.user_id) && Number(row.user_id) === userId
+    && (row.type !== 'mission_answer' || (positiveId(row.lesson_id)
+      && MISSION_STATUSES.has(row.status))));
+}
+
+function lessonStatusesOnly(answers) {
+  return answers.filter(row => row.type === 'mission_answer').map(row => ({
+    lessonId: Number(row.lesson_id),
+    status: row.status,
+    updatedAt: typeof row.updated_at === 'string' ? row.updated_at
+      : typeof row.created_at === 'string' ? row.created_at : null,
+  }));
+}
+
 function userData(value, selector) {
   const valid = row => isRecord(row) && positiveId(row.id)
     && (selector.userId ? Number(row.id) === selector.userId :
@@ -97,7 +114,7 @@ export function createGetCourseTech({
     throw new TypeError('timeoutMs must be 1..15000');
   }
 
-  async function request(path, query, validData) {
+  async function request(path, query, validData, projectData = data => data) {
     const url = new URL(`${API_PREFIX}${path}`, origin);
     for (const [key, value] of Object.entries(query)) url.searchParams.set(key, value);
     const controller = new AbortController();
@@ -130,7 +147,7 @@ export function createGetCourseTech({
       if (!isRecord(body)) throw new GetCourseTechError('invalid_response');
       if (body.status !== true) throw new GetCourseTechError('api_rejected');
       if (!validData(body.data)) throw new GetCourseTechError('invalid_response');
-      return body.data;
+      return projectData(body.data);
     })();
     try {
       return await Promise.race([call, timeout]);
@@ -150,5 +167,7 @@ export function createGetCourseTech({
     getPurchases: userId => request('/user/get-purchases', userQuery(userId),
       data => purchaseData(data, userId)),
     getUserTrainings: userId => request('/user/get-trainings', userQuery(userId), trainingData),
+    getLessonStatuses: userId => request('/user/get-lesson-answers', userQuery(userId),
+      data => lessonAnswersData(data, userId), lessonStatusesOnly),
   });
 }
