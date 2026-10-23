@@ -8,5 +8,10 @@
 .course-lesson-mode .course-content-block th,
 .course-lesson-mode .course-content-block td { border: 1px solid #ded6eb; padding: 8px; }
 .course-lesson-mode .course-media-note { color: #706584; background: #f5efff; padding: 12px 14px; border-radius: 12px; }
+.course-lesson-mode .course-video-caption { margin: 0 0 10px; }
+.course-lesson-mode .course-video-item + .course-video-item { margin-top: 12px; }
+.course-lesson-mode .course-video-start { width: 100%; cursor: pointer; }
+.course-lesson-mode .course-video-element { display: block; width: 100%; max-width: 100%; aspect-ratio: 16 / 9; border: 0; border-radius: 12px; background: #10152f; }
+.course-lesson-mode video.course-video-element { height: auto; }
 .course-lesson-mode .course-copy-disabled { user-select: none; -webkit-user-select: none; }
 .course-lesson-mode .reader-button { width: 100%; margin-top: 12px; }

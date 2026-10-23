@@ -1,6 +1,7 @@
 import { createHash } from 'node:crypto';
 import { activeCourseProducts, parseGetCourseDate } from './course-entitlements.mjs';
 import { AuthError } from './auth/security.mjs';
+import { loadCourseVideoLinks, videoLink, videoReferences } from './course-video-links.mjs';
 
 const id = v => Number.isSafeInteger(v) && v > 0;
 const digest = s => createHash('sha256').update(s).digest('hex');
@@ -93,7 +94,7 @@ export function importCourseDeliveryPolicy(db, source) {
   return { streams: streams.size, lessons: lessons.size, videosEnabled: false };
 }
 
-function publicBlocks(content) {
+function publicBlocks(content, lessonId, contentHash, links) {
   if (!Array.isArray(content.blocks)) throw unavailable();
   return content.blocks.map(block => {
     if (!block || !['text', 'list', 'table', 'video', 'image', 'attachment'].includes(block.type)) throw unavailable();
@@ -104,7 +105,12 @@ function publicBlocks(content) {
       const match = token[1].match(/^\/?([a-z][a-z0-9]*)\s*\/?$/i);
       if (!match || !allowedTags.has(match[1].toLowerCase())) throw unavailable();
     }
-    return ['video', 'image', 'attachment'].includes(block.type) ? { type: block.type, text }
+    if (block.type === 'video') return { type: 'video', text,
+      videos: videoReferences(block).map((ref, index) =>
+        ['getcourse', 'youtube', 'rutube'].includes(ref?.provider)
+          ? { provider: ref.provider, url: videoLink(links, lessonId, block.blockId, index, contentHash) }
+          : { provider: 'unknown', url: null }) };
+    return ['image', 'attachment'].includes(block.type) ? { type: block.type, text }
       : { type: block.type, text, ...(html ? { html } : {}) };
   });
 }
@@ -124,6 +130,7 @@ export function createCourseMaterials({ db, courseChecks, clock = Date.now }) {
   }
   for (const list of siblings.values()) list.sort((a, b) => a.order - b.order || a.id - b.id);
   const lessonStatement = db.prepare('SELECT content_json,sha256 FROM course_lesson_drafts WHERE lesson_id=?');
+  const videoLinks = loadCourseVideoLinks(db);
 
   async function context(userId) {
     const check = await courseChecks.requireCurrent(userId), now = clock();
@@ -234,9 +241,10 @@ export function createCourseMaterials({ db, courseChecks, clock = Date.now }) {
       if (!access) throw denied();
       const record = lessonStatement.get(lessonId);
       if (!record || digest(record.content_json) !== record.sha256 || record.sha256 !== lesson.contentHash) throw unavailable();
-      const blocks = publicBlocks(JSON.parse(record.content_json));
+      const blocks = publicBlocks(JSON.parse(record.content_json), lessonId, record.sha256, videoLinks);
       return { lesson: { lessonId, title: lesson.title, productId, blocks, contentCopyDisabled: access.contentCopyDisabled,
-        videoAvailable: false, hasAssignment: lessonPolicies.get(lessonId).hasMission, assignmentAvailable: false },
+        videoAvailable: blocks.some(block => block.videos?.some(video => video.url !== null)),
+        hasAssignment: lessonPolicies.get(lessonId).hasMission, assignmentAvailable: false },
         ...ctx.meta(access.validUntil) };
     },
   });

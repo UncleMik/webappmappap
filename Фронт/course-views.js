@@ -8,6 +8,43 @@ export function courseErrorText(error) {
   return 'Не удалось проверить доступ. Попробуйте снова.';
 }
 
+// Stop streams before the private lesson nodes are removed from the page.
+export function stopCourseMedia(root) {
+  for (const video of root.querySelectorAll('video')) {
+    try { video.pause(); } catch { /* Continue clearing the source. */ }
+    video.removeAttribute('src');
+    for (const source of video.querySelectorAll('source')) source.removeAttribute('src');
+    try { video.load(); } catch { /* Detached or unsupported media element. */ }
+  }
+  for (const frame of root.querySelectorAll('iframe')) frame.removeAttribute('src');
+}
+
+export function resumeCourseVideo(player, saved, isAllowed) {
+  player.addEventListener('loadedmetadata', () => {
+    if (!isAllowed()) return;
+    const max = Number.isFinite(player.duration) ? Math.max(0, player.duration - 0.25) : saved.time;
+    try { player.currentTime = Math.min(saved.time, max); } catch { return; }
+    if (!saved.playing) return;
+    const play = () => {
+      if (!isAllowed()) return;
+      try {
+        const started = player.play();
+        if (started && typeof started.catch === 'function') started.catch(() => {});
+      } catch { /* The browser may require another user gesture. */ }
+    };
+    if (player.seeking) player.addEventListener('seeked', play, { once: true });
+    else play();
+  }, { once: true });
+}
+
+export function queueCourseVideoRestore(player, url, isAllowed) {
+  queueMicrotask(() => {
+    if (!isAllowed()) return;
+    player.src = url;
+    player.load();
+  });
+}
+
 // A view owns only its current response. Materials disappear on expiry, an
 // inactive tab, a failed check, or a page restored from the back-forward cache.
 export function createCourseView({ url, clear, loading, render, error }) {
@@ -16,20 +53,22 @@ export function createCourseView({ url, clear, loading, render, error }) {
   let expiryTimer = null;
   let active = false;
   let requesting = false;
+  let deadlineAt = null;
 
-  function invalidate() {
+  function invalidate(reason) {
     ++revision;
     controller?.abort();
     controller = null;
     requesting = false;
     clearTimeout(expiryTimer);
     expiryTimer = null;
-    clear();
+    deadlineAt = null;
+    clear(reason);
   }
 
   async function refresh() {
     if (!active || document.visibilityState === 'hidden' || requesting) return;
-    invalidate();
+    invalidate('refresh');
     const current = revision;
     requesting = true;
     controller = new AbortController();
@@ -51,15 +90,16 @@ export function createCourseView({ url, clear, loading, render, error }) {
       const remaining = Math.min(expires, valid) - server - (performance.now() - started);
       if (remaining <= 0) throw new Error('expired');
       const deadline = performance.now() + remaining;
-      clear();
+      clear('render');
+      deadlineAt = deadline;
       render(data);
       if (current !== revision) return;
       const displayFor = deadline - performance.now();
       if (displayFor <= 0) throw new Error('expired');
-      expiryTimer = setTimeout(() => { invalidate(); refresh(); }, Math.min(displayFor, 2_147_483_647));
+      expiryTimer = setTimeout(refresh, Math.min(displayFor, 2_147_483_647));
     } catch (caught) {
       if (current !== revision) return;
-      clear();
+      clear('error');
       error(caught, refresh);
     } finally {
       clearTimeout(requestTimeout);
@@ -82,5 +122,7 @@ export function createCourseView({ url, clear, loading, render, error }) {
       refresh();
     },
     refresh,
+    isCurrent: () => active && !requesting && document.visibilityState !== 'hidden'
+      && deadlineAt !== null && performance.now() < deadlineAt,
   };
 }

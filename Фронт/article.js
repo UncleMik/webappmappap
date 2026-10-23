@@ -2,7 +2,7 @@
 const scroller = document.querySelector('.reader-scroll');
 const params = new URLSearchParams(location.search);
 if (params.has('courseLesson')) {
-  await import('./course-lesson.js?v=20261023-paid-materials');
+  await import('./course-lesson.js?v=20261024-paid-video');
   return;
 }
 function showArticleNotFound() {
