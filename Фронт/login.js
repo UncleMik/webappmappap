@@ -92,5 +92,11 @@ if (location.hostname === 'unclemik.github.io') {
   const link = document.createElement('a'); link.href = 'https://app.legkie-rody.ru/login.html';
   link.className = 'auth-button login-primary'; link.textContent = 'Войти или зарегистрироваться'; emailForm.after(link);
 } else {
-  task(async () => { const session = await authRequest('session'); if (session.authenticated) authenticated(session.user); });
+  task(async () => {
+    const session = await authRequest('session');
+    if (session.authenticated) authenticated(session.user);
+    else if (session.reason === 'session_replaced' || new URLSearchParams(location.search).get('reason') === 'session_replaced') {
+      status.textContent = 'Выполнен вход в другом браузере или на другом устройстве. Войдите заново.';
+    }
+  });
 }

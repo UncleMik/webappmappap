@@ -39,6 +39,7 @@ export function createAuthService({ store, sendMail, ensureGetCourse, makeCode =
     complete,
     processJob,
     session: token => store.session(token),
+    sessionState: token => store.sessionState(token),
     saveProfile: (token, data) => store.saveProfile(token, data),
     logout: token => store.logout(token),
   };

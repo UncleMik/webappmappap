@@ -8,8 +8,9 @@ try {
   new URL(process.env.AUTH_DATABASE_URL);
   pool = new pg.Pool({ connectionString: process.env.AUTH_DATABASE_URL, connectionTimeoutMillis: 3000 });
   const sql = await readFile(new URL('./schema.sql', import.meta.url), 'utf8');
+  const sessions = await readFile(new URL('./single-session-migration.sql', import.meta.url), 'utf8');
   const courses = await readFile(new URL('./course-checks-migration.sql', import.meta.url), 'utf8');
-  await transaction(pool, client => client.query(sql + '\n' + courses));
+  await transaction(pool, client => client.query(sql + '\n' + sessions + '\n' + courses));
   console.log('Auth database migration complete');
 } catch {
   console.error('auth_migration_failed_check_private_configuration'); process.exitCode = 1;

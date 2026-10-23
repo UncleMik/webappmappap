@@ -115,6 +115,9 @@ export function createStore(pool, { secret, clock = Date.now }) {
             [randomUUID(), challenge.email, job.getcourse_id, date()]));
         }
         await client.query('UPDATE auth_challenges SET consumed_at=$2 WHERE token_hash=$1', [hashToken(token), date()]);
+        // lockEmail serializes completion for this account. Revoke and insert commit together;
+        // the partial unique index also enforces one current session at the database level.
+        await client.query('UPDATE auth_sessions SET revoked_at=$2 WHERE user_id=$1 AND revoked_at IS NULL', [user.id, date()]);
         await client.query('INSERT INTO auth_sessions(token_hash,user_id,expires_at,created_at) VALUES($1,$2,$3,$4)',
           [hashToken(sessionToken), user.id, new Date(clock() + SESSION_TTL_MS), date()]);
         return { user: { id: user.id, email: user.email, profile: user.profile ?? null } };
@@ -123,14 +126,24 @@ export function createStore(pool, { secret, clock = Date.now }) {
     async session(token) {
       if (!token) return null;
       const { rows: [user] } = await pool.query(`SELECT u.id,u.email,u.profile FROM auth_sessions s JOIN auth_users u ON u.id=s.user_id
-        WHERE s.token_hash=$1 AND s.expires_at>$2`, [hashToken(token), date()]);
+        WHERE s.token_hash=$1 AND s.expires_at>$2 AND s.revoked_at IS NULL`, [hashToken(token), date()]);
       return user || null;
+    },
+    async sessionState(token) {
+      const anonymous = { authenticated: false, user: null };
+      if (!token) return anonymous;
+      const { rows: [row] } = await pool.query(`SELECT u.id,u.email,u.profile,s.revoked_at
+        FROM auth_sessions s JOIN auth_users u ON u.id=s.user_id
+        WHERE s.token_hash=$1 AND s.expires_at>$2`, [hashToken(token), date()]);
+      if (!row) return anonymous;
+      if (row.revoked_at) return { ...anonymous, reason: 'session_replaced' };
+      return { authenticated: true, user: { id: row.id, email: row.email, profile: row.profile } };
     },
     async saveProfile(token, data) {
       if (!token) throw new AuthError(401, 'sign_in_required', 'Войдите, чтобы сохранить профиль.');
       const profile = normalizeProfile(data, clock());
       const { rows: [user] } = await pool.query(`UPDATE auth_users u SET profile=$3::jsonb
-        FROM auth_sessions s WHERE s.user_id=u.id AND s.token_hash=$1 AND s.expires_at>$2
+        FROM auth_sessions s WHERE s.user_id=u.id AND s.token_hash=$1 AND s.expires_at>$2 AND s.revoked_at IS NULL
         RETURNING u.id,u.email,u.profile`, [hashToken(token), date(), JSON.stringify(profile)]);
       if (!user) throw new AuthError(401, 'sign_in_required', 'Войдите, чтобы сохранить профиль.');
       return user;

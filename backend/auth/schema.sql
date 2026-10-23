@@ -31,7 +31,8 @@ CREATE TABLE IF NOT EXISTS auth_sessions (
   token_hash text PRIMARY KEY,
   user_id uuid NOT NULL REFERENCES auth_users(id) ON DELETE CASCADE,
   expires_at timestamptz NOT NULL,
-  created_at timestamptz NOT NULL DEFAULT now()
+  created_at timestamptz NOT NULL DEFAULT now(),
+  revoked_at timestamptz
 );
 CREATE INDEX IF NOT EXISTS auth_sessions_expiry ON auth_sessions(expires_at);
 CREATE TABLE IF NOT EXISTS auth_gc_jobs (

@@ -50,8 +50,7 @@ export function createAuthServer({ service, store, courseChecks, courseMaterials
         send(204); return;
       }
       if (request.method === 'GET' && url.pathname === '/api/auth/session') {
-        const user = await service.session(readSessionCookie(request));
-        send(200, { authenticated: Boolean(user), user }); return;
+        send(200, await service.sessionState(readSessionCookie(request))); return;
       }
       if (request.method === 'GET' && url.pathname === '/api/auth/course-check') {
         const user = await service.session(readSessionCookie(request));
