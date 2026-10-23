@@ -3,7 +3,8 @@
 Рабочий каталог: `/opt/wep_pril` на сервере `129.101.119.250`.
 API: `https://app.legkie-rody.ru/api/articles`.
 Фронт: https://app.legkie-rody.ru/.
-Прежние адреса по IP и GitHub Pages сохранены.
+Прежний IP перенаправляет на основной домен. GitHub Pages отключён
+23 октября 2026: код обновляется в GitHub, приложение публикуется только на Timeweb.
 
 Здесь хранятся API статей и недельных материалов и отдельный сервис
 входа Node.js + PostgreSQL в `auth/`. Статьи остаются в SQLite.

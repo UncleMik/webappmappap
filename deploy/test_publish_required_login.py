@@ -61,20 +61,5 @@ class RequiredLogin(unittest.TestCase):
                     self.assertEqual(calls.count('reload'), 2)
                 self.assertEqual((root/'backup/0').read_bytes(), b'old')
 
-    def test_pages_artifact_has_only_redirects_and_no_assets_or_materials(self):
-        path = Path(__file__).resolve().parents[1] / 'tools/prepare-pages.py'
-        spec = importlib.util.spec_from_file_location('pages', path)
-        pages = importlib.util.module_from_spec(spec); spec.loader.exec_module(pages)
-        with tempfile.TemporaryDirectory() as directory:
-            target = Path(directory)/'site'; pages.prepare(target)
-            self.assertTrue((target/'404.html').exists())
-            self.assertTrue((target/'article.html').exists())
-            self.assertFalse((target/'assets').exists())
-            for file in target.glob('*.html'):
-                self.assertIn('https://app.legkie-rody.ru/login.html', file.read_text())
-                self.assertNotIn('pregnancy-001', file.read_text())
-            self.assertRaises(RuntimeError, pages.prepare, target)
-
-
 if __name__ == '__main__':
     unittest.main()
