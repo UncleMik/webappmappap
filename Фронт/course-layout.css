@@ -1,0 +1,16 @@
+/* Shared visual language of purchased courses, sections and lessons. */
+.course-cover { display:block; flex:none; background-image:url('assets/course-module-covers.webp'); background-size:300% auto; background-repeat:no-repeat; background-position:0 15%; background-color:#ece6df; }
+.course-cover-calm { background-position:50% 15%; }
+.course-cover-care { background-position:100% 15%; }
+.course-primary { display:flex; align-items:center; justify-content:center; min-height:48px; padding:13px 18px; border-radius:11px; background:linear-gradient(180deg,#a76aff,#794aff); color:white; text-decoration:none; text-align:center; font-size:16px; line-height:1.3; font-weight:700; }
+.course-primary:focus-visible, .course-module-card:focus-visible, .course-product-card:focus-visible, .course-lesson-link:focus-visible, .course-tab:focus-visible, .course-video-start:focus-visible { outline:3px solid #794aff; outline-offset:3px; }
+.course-primary:active, .course-module-card:active, .course-lesson-link:active { opacity:.85; }
+.course-open-badge { justify-self:start; display:inline-block; padding:4px 8px; background:#d5fbef; border-radius:5px; color:#096d5b; font-size:13px; line-height:1.3; }
+.course-list-title { margin:6px 0 0; font-size:20px; line-height:1.25; color:#10152f; }
+.course-lesson-copy { display:grid; align-content:center; gap:6px; min-width:0; }
+.course-lesson-copy strong { font-size:15px; line-height:1.35; overflow-wrap:anywhere; }
+.course-lesson-copy > span { font-size:13px; line-height:1.3; color:#666d88; }
+.course-lesson-link { position:relative; display:grid; grid-template-columns:88px minmax(0,1fr); gap:12px; align-items:stretch; padding:0 30px 0 0; min-height:88px; border:1px solid #eee9f6; border-radius:11px; color:#10152f; text-decoration:none; background:#fff; overflow:hidden; }
+.course-lesson-link > .course-cover { width:88px; min-height:88px; height:100%; background-size:auto 100%; }
+.course-lesson-link::after { content:'›'; position:absolute; right:11px; top:50%; transform:translateY(-50%); color:#794aff; font-size:28px; }
+@media(max-width:360px) { .course-lesson-link { grid-template-columns:72px minmax(0,1fr); gap:10px; } .course-lesson-link > .course-cover { width:72px; } }

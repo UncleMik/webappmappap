@@ -1,121 +1,110 @@
-import { createCourseView, courseErrorText, positiveId } from './course-views.js';
+import { createCourseView, courseErrorText, positiveId } from './course-views.js?v=20261026-course-layout';
+import { node, cover, courseUrl, lessonUrl, validateCourse, primaryLink } from './course-ui.js?v=20261026-course-layout';
 
 const list = document.querySelector('.owned-list');
 const heading = document.querySelector('.owned-header h1');
 const back = document.querySelector('.owned-main > .course-back');
-const productId = new URLSearchParams(location.search).get('course');
+const params = new URLSearchParams(location.search);
+const productId = params.get('course');
+const sectionId = params.get('section');
 const selected = productId !== null;
-const validId = !selected || positiveId(productId);
+const validId = (!selected || positiveId(productId)) && (sectionId === null || (selected && positiveId(sectionId)));
 
-function paragraph(text) {
-  const p = document.createElement('p');
-  p.className = 'account-empty';
-  p.textContent = text;
-  return p;
+function setBack(href, text) {
+  back.href = href;
+  back.setAttribute('aria-label', text);
+  back.replaceChildren(node('span', 'course-back-arrow', '‹'), node('span', 'course-back-label', text));
 }
 
+function paragraph(text) { return node('p', 'account-empty', text); }
+
 function showError(error, retry) {
-  const box = document.createElement('div');
-  box.className = 'course-state';
+  const box = node('div', 'course-state');
   box.append(paragraph(courseErrorText(error)));
-  if (error?.status === 401) {
-    const login = document.createElement('a');
-    login.href = 'login.html';
-    login.textContent = 'Войти';
-    box.append(login);
-  }
-  const button = document.createElement('button');
+  if (error?.status === 401) box.append(primaryLink('Войти', 'login.html'));
+  const button = node('button', '', 'Повторить проверку');
   button.type = 'button';
-  button.textContent = 'Повторить проверку';
   button.addEventListener('click', retry);
   box.append(button);
   list.replaceChildren(box);
+  list.setAttribute('aria-busy', 'false');
+}
+
+function lessonCount(count) {
+  const last = count % 10, lastTwo = count % 100;
+  const noun = lastTwo >= 11 && lastTwo <= 14 ? 'уроков' : last === 1 ? 'урок' : last >= 2 && last <= 4 ? 'урока' : 'уроков';
+  return `${count} ${noun}`;
 }
 
 function renderProducts(data) {
   if (!Array.isArray(data.courses)) throw new Error('invalid_response');
   const fragment = document.createDocumentFragment();
   for (const course of data.courses) {
-    if (!positiveId(course.productId) || typeof course.title !== 'string' || !course.title.trim() ||
-        !Number.isSafeInteger(course.lessonCount) || course.lessonCount < 0) throw new Error('invalid_response');
-    const card = document.createElement('a');
-    card.className = 'owned-course course-card';
-    card.href = `my-courses.html?course=${encodeURIComponent(course.productId)}`;
-    const copy = document.createElement('div');
-    copy.className = 'owned-copy';
-    const label = document.createElement('span');
-    label.className = 'course-label';
-    label.textContent = 'Доступен';
-    const title = document.createElement('h2');
-    title.textContent = course.title;
-    copy.append(label, title);
-    const count = document.createElement('p');
-    const last = course.lessonCount % 10, lastTwo = course.lessonCount % 100;
-    const noun = lastTwo >= 11 && lastTwo <= 14 ? 'уроков' : last === 1 ? 'урок' : last >= 2 && last <= 4 ? 'урока' : 'уроков';
-    count.textContent = `${course.lessonCount} ${noun}`;
-    copy.append(count);
-    card.append(copy);
+    if (!positiveId(course.productId) || typeof course.title !== 'string' || !course.title.trim()
+      || !Number.isSafeInteger(course.lessonCount) || course.lessonCount < 0) throw new Error('invalid_response');
+    const card = node('a', 'owned-course course-product-card');
+    card.href = courseUrl(course.productId);
+    const copy = node('div', 'owned-copy');
+    copy.append(node('span', 'course-label', 'Доступен'), node('h2', '', course.title), node('p', '', lessonCount(course.lessonCount)));
+    card.append(cover(course.title), copy);
     fragment.append(card);
   }
-  if (!data.courses.length) {
-    fragment.append(paragraph('У вас пока нет доступных курсов.'));
-    const tariffs = document.createElement('a');
-    tariffs.className = 'journey-primary';
-    tariffs.href = 'courses.html';
-    tariffs.textContent = 'Посмотреть тарифы';
-    fragment.append(tariffs);
-  }
+  if (!data.courses.length) fragment.append(paragraph('У вас пока нет доступных курсов.'), primaryLink('Посмотреть тарифы', 'courses.html'));
   list.replaceChildren(fragment);
+  list.setAttribute('aria-busy', 'false');
 }
 
 function renderCourse(data) {
-  const course = data.course;
-  if (!course || !positiveId(course.productId) || String(course.productId) !== String(productId) ||
-      typeof course.title !== 'string' || !Array.isArray(course.sections)) throw new Error('invalid_response');
+  const course = validateCourse(data.course, productId);
   const fragment = document.createDocumentFragment();
-  for (const section of course.sections) {
-    if (typeof section.title !== 'string' || !Array.isArray(section.lessons)) throw new Error('invalid_response');
-    const group = document.createElement('section');
-    group.className = 'course-section';
-    const title = document.createElement('h2');
-    title.textContent = section.title;
-    group.append(title);
+  if (sectionId !== null) {
+    const section = course.sections.find(item => String(item.streamId) === sectionId);
+    if (!section) throw Object.assign(new Error('section_not_found'), { status: 404 });
+    setBack(courseUrl(productId), 'К программе курса');
+    heading.textContent = section.title;
+    document.title = section.title;
+    fragment.append(node('h2', 'course-list-title', 'Уроки раздела'));
     for (const lesson of section.lessons) {
-      if (!positiveId(lesson.lessonId) || typeof lesson.title !== 'string' ||
-          typeof lesson.hasVideo !== 'boolean' || typeof lesson.hasText !== 'boolean') throw new Error('invalid_response');
-      const link = document.createElement('a');
-      link.className = 'course-lesson-link';
-      link.href = `article.html?courseLesson=${encodeURIComponent(lesson.lessonId)}&course=${encodeURIComponent(productId)}`;
-      const name = document.createElement('strong');
-      name.textContent = lesson.title;
-      link.append(name);
-      const note = document.createElement('span');
-      note.textContent = lesson.hasVideo && !lesson.hasText ? 'Видео пока недоступно'
-        : lesson.hasVideo ? 'Текст урока · видео пока недоступно' : lesson.hasText ? 'Текст урока' : 'Материалы урока';
-      link.append(note);
-      group.append(link);
+      const link = node('a', 'course-lesson-link');
+      link.href = lessonUrl(productId, lesson.lessonId, section.streamId);
+      const copy = node('div', 'course-lesson-copy');
+      copy.append(node('strong', '', lesson.title), node('span', '', lesson.hasVideo ? 'Видеоурок' : lesson.hasText ? 'Текст урока' : 'Материалы урока'));
+      link.append(cover(lesson.title), copy);
+      fragment.append(link);
     }
-    fragment.append(group);
+    const first = section.lessons[0];
+    if (first) fragment.append(primaryLink('Открыть первый урок', lessonUrl(productId, first.lessonId, section.streamId)));
+    else fragment.append(paragraph('Доступных уроков сейчас нет.'));
+  } else {
+    setBack('my-courses.html', 'Мои курсы');
+    heading.textContent = course.title;
+    document.title = course.title;
+    fragment.append(node('span', 'course-open-badge', 'Курс доступен'), node('h2', 'course-list-title', 'Программа курса'));
+    for (const section of course.sections) {
+      const card = node('a', 'course-module-card');
+      card.href = courseUrl(productId, section.streamId);
+      const copy = node('div', 'course-module-copy');
+      copy.append(node('h3', '', section.title), node('span', '', lessonCount(section.lessons.length)));
+      card.append(cover(section.title), copy);
+      fragment.append(card);
+    }
+    const firstSection = course.sections.find(item => item.lessons.length);
+    if (firstSection) fragment.append(primaryLink('Начать обучение', lessonUrl(productId, firstSection.lessons[0].lessonId, firstSection.streamId)));
+    else fragment.append(paragraph('Доступных уроков сейчас нет.'));
   }
-  if (!course.sections.length) fragment.append(paragraph('Доступных уроков сейчас нет.'));
-  heading.textContent = course.title;
-  document.title = course.title;
   list.replaceChildren(fragment);
+  list.setAttribute('aria-busy', 'false');
 }
 
-if (selected) {
-  back.href = 'my-courses.html';
-  back.setAttribute('aria-label', 'Вернуться к моим курсам');
-}
+setBack(selected ? 'my-courses.html' : 'journey.html', selected ? 'Мои курсы' : 'Мой путь');
 if (!validId) {
   showError({ status: 404 }, () => location.assign('my-courses.html'));
 } else {
-  const view = createCourseView({
+  createCourseView({
     url: selected ? `/api/auth/courses/${productId}` : '/api/auth/courses',
-    clear: () => { list.replaceChildren(); document.title = 'Мои курсы'; if (selected) heading.textContent = 'Мои курсы'; },
+    clear: () => { list.replaceChildren(); list.setAttribute('aria-busy', 'true'); document.title = 'Мои курсы'; heading.textContent = selected ? 'Курс' : 'Мои курсы'; },
     loading: () => list.replaceChildren(paragraph('Проверяем доступ к курсам…')),
     render: selected ? renderCourse : renderProducts,
     error: showError,
-  });
-  view.start();
+  }).start();
 }
