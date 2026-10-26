@@ -110,6 +110,7 @@ function getcoursePlayer(video, container, key, saved = null) {
   player.className = 'course-video-element';
   player.courseVideoKey = key;
   player.controls = true;
+  player.setAttribute('controlslist', 'nodownload');
   player.playsInline = true;
   player.preload = saved ? 'metadata' : 'none';
   player.addEventListener('error', () => {
