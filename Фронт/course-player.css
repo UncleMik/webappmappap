@@ -1,0 +1,31 @@
+/* Course players use the same visual controls as the free weekly lesson. */
+.course-lesson-mode .course-player { background:#faf9ff; border-radius:20px; overflow:hidden; }
+.course-lesson-mode .course-player .video-stage { background:#18151d; }
+.course-lesson-mode .course-player .video-stage > .course-video-element { position:absolute; inset:0; width:100%; height:100%; max-width:100%; aspect-ratio:auto; border-radius:0; object-fit:contain; }
+.course-lesson-mode .course-player .video-cover { position:absolute; inset:0; width:100%; height:100%; display:block; min-height:0; aspect-ratio:auto; margin:0; padding:0; border:0; border-radius:0; background:#eee8e5; text-shadow:none; color:#68518f; }
+.course-lesson-mode .course-player .video-cover[hidden],
+.course-lesson-mode .course-player [hidden] { display:none !important; }
+.course-lesson-mode .course-player .video-panel { padding:10px 20px 18px; border-radius:0 0 20px 20px; }
+.course-lesson-mode .course-player .video-timeline { margin-top:7px; }
+.course-video-progress { --progress:0%; appearance:none; flex:1; min-width:0; height:44px; border-radius:20px; margin:0; background:linear-gradient(to right,#9a73ff var(--progress),#e8e3f7 var(--progress)) center / 100% 9px no-repeat; cursor:pointer; }
+.course-video-progress::-webkit-slider-thumb { appearance:none; width:14px; height:14px; border-radius:50%; background:#9869ff; }
+.course-video-progress::-moz-range-thumb { width:14px; height:14px; border:0; border-radius:50%; background:#9869ff; }
+.course-video-time { font-size:14px; color:#7585a9; font-variant-numeric:tabular-nums; min-width:35px; }
+.course-lesson-mode .course-player .video-controls { gap:43px; margin:22px 0; }
+.course-lesson-mode .course-player .video-controls button { flex:none; }
+.course-player button, .course-video-progress { touch-action:manipulation; }
+.course-player button:focus-visible, .course-video-progress:focus-visible { outline:3px solid #794aff; outline-offset:3px; }
+.course-lesson-mode .course-player .course-player-status { margin:8px 0 0; color:#6a577b; font-size:14px; line-height:1.45; }
+.course-lesson-mode .course-player .video-timestamps { margin:0; }
+.course-lesson-mode .course-player .video-timestamps ol { padding:0; margin:10px 0 0; }
+.course-lesson-mode .course-player .video-timestamps li { margin:0; }
+.course-lesson-mode .course-player .video-timestamps button { padding:12px 8px; overflow-wrap:anywhere; }
+.course-lesson-mode .course-player .video-timestamps button[aria-current="true"] { background:#eee7ff; }
+.course-player:fullscreen, .course-player:-webkit-full-screen { width:100%; height:100%; max-width:none; border-radius:0; background:#18151d; display:flex; flex-direction:column; }
+.course-player:fullscreen .video-stage, .course-player:-webkit-full-screen .video-stage { flex:1; min-height:0; aspect-ratio:auto; border-radius:0; }
+.course-player:fullscreen .video-panel, .course-player:-webkit-full-screen .video-panel { flex:none; padding-bottom:max(12px,env(safe-area-inset-bottom,0px)); }
+.course-player:fullscreen .video-controls, .course-player:-webkit-full-screen .video-controls { margin:6px 0; }
+.course-player:fullscreen .skip-button, .course-player:-webkit-full-screen .skip-button { width:44px; height:44px; }
+.course-player:fullscreen .play-button, .course-player:-webkit-full-screen .play-button { width:56px; height:56px; }
+.course-player:fullscreen .video-timestamps, .course-player:-webkit-full-screen .video-timestamps { display:none; }
+@media(max-width:360px) { .course-lesson-mode .course-player .video-controls { gap:25px; } }

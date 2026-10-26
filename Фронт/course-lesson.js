@@ -1,4 +1,6 @@
-import { createCourseView, courseErrorText, positiveId, stopCourseMedia, resumeCourseVideo, queueCourseVideoRestore } from './course-views.js?v=20261026-course-layout';
+import { mountCourseVideo } from './course-video-player.js?v=20261026-weekly-style';
+import { courseChapters } from './course-video-chapters.js?v=20261026-weekly-style';
+import { createCourseView, courseErrorText, positiveId, stopCourseMedia } from './course-views.js?v=20261026-course-layout';
 import { node, courseUrl, lessonUrl, validateCourse, primaryLink } from './course-ui.js?v=20261026-course-layout';
 
 const params = new URLSearchParams(location.search);
@@ -105,71 +107,75 @@ function currentVideoPositions() {
   return positions;
 }
 
-function getcoursePlayer(video, container, key, saved = null) {
-  const player = document.createElement('video');
-  player.className = 'course-video-element';
-  player.courseVideoKey = key;
-  player.controls = true;
-  player.setAttribute('controlslist', 'nodownload');
-  player.playsInline = true;
-  player.preload = saved ? 'metadata' : 'none';
-  player.addEventListener('error', () => {
-    stopCourseMedia(container);
-    container.replaceChildren(mediaNote('Не удалось открыть видео.'));
-  });
-  if (saved) resumeCourseVideo(player, saved, () => scroller.contains(player)
-    && document.visibilityState === 'visible' && courseView?.isCurrent()
-    && player.getAttribute('src') === saved.url);
-  return player;
-}
-
-function videoPlayer(video, index, total, available, key, positions, restoreJobs) {
+function videoPlayer(video, index, total, available, key, positions, restoreJobs, navigation, chapters) {
   const container = document.createElement('div');
   container.className = 'course-video-item';
   if (!playableVideo(video, available)) {
     container.append(mediaNote(total > 1 ? `Видео ${index + 1} пока недоступно.` : 'Видео пока недоступно.'));
     return container;
   }
-  const saved = video.provider === 'getcourse' ? positions.get(key) : null;
-  if (saved?.url === video.url) {
-    const player = getcoursePlayer(video, container, key, saved);
-    container.append(player);
-    restoreJobs.push(() => queueCourseVideoRestore(player, video.url, () =>
-      scroller.contains(player) && document.visibilityState === 'visible' && courseView?.isCurrent()));
+  if (video.provider === 'getcourse') {
+    const snapshot = positions.get(key);
+    const saved = snapshot?.url === video.url ? snapshot : null;
+    const mounted = mountCourseVideo({ video, container, key, saved,
+      isAllowed: () => scroller.contains(container) && courseView?.isCurrent(),
+      refresh: () => courseView?.refresh(), ...navigation, chapters });
+    if (saved) restoreJobs.push(mounted.restore);
     return container;
   }
-  const button = document.createElement('button');
+  container.classList.add('course-player');
+  const stage = node('div', 'video-stage');
+  const button = node('button', 'video-cover course-video-start');
   button.type = 'button';
-  button.className = 'reader-button course-video-start';
-  button.append(node('span', 'course-play-symbol', '▶'),
-    node('span', 'course-play-label', total > 1 ? `Смотреть видео ${index + 1}` : 'Смотреть видео'));
-  container.courseStartButton = button;
+  button.setAttribute('aria-label', total > 1 ? `Смотреть видео ${index + 1}` : 'Смотреть видео');
+  const symbol = node('span', 'cover-play');
+  symbol.innerHTML = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="m8 4 13 8-13 8Z"/></svg>';
+  button.append(symbol, node('span', 'cover-label', 'Смотреть видео'));
+  const panel = node('div', 'video-panel');
+  const controls = node('div', 'video-controls');
+  const go = destination => {
+    if (!destination || !scroller.contains(container)) return;
+    if (!courseView?.isCurrent()) { courseView?.refresh(); return; }
+    stopCourseMedia(scroller);
+    location.assign(destination.href);
+  };
+  for (const [destination, label, path] of [
+    [navigation.previous, 'Предыдущий урок', 'M5 5h3v14H5zm14 0v14L8 12Z'],
+    [navigation.next, 'Следующий урок', 'M16 5h3v14h-3zM5 5l11 7-11 7Z'],
+  ]) {
+    const arrow = node('button', 'skip-button');
+    arrow.type = 'button'; arrow.disabled = !destination;
+    arrow.setAttribute('aria-label', destination ? `${label}: ${destination.title}` : `${label} отсутствует`);
+    arrow.innerHTML = `<svg viewBox="0 0 24 24" aria-hidden="true"><path d="${path}"/></svg>`;
+    arrow.addEventListener('click', () => go(destination));
+    controls.append(arrow);
+  }
+  panel.append(controls);
+  const reset = () => { stopCourseMedia(stage); stage.replaceChildren(button); };
+  container.courseReset = reset;
   button.addEventListener('click', () => {
     if (!scroller.contains(button)) return;
     if (!courseView?.isCurrent()) { courseView?.refresh(); return; }
-    if (video.provider === 'getcourse') {
-      const player = getcoursePlayer(video, container, key);
-      player.src = video.url;
-      container.replaceChildren(player);
-      const started = player.play();
-      if (started && typeof started.catch === 'function') started.catch(() => {});
-    } else {
-      const player = document.createElement('iframe');
-      player.className = 'course-video-element';
-      player.title = total > 1 ? `Видео ${index + 1}` : 'Видео урока';
-      player.setAttribute('sandbox', 'allow-scripts allow-same-origin allow-presentation');
-      player.setAttribute('allow', 'fullscreen; picture-in-picture');
-      player.setAttribute('allowfullscreen', '');
-      player.referrerPolicy = 'strict-origin-when-cross-origin';
-      player.src = video.url;
-      player.addEventListener('error', () => {
-        stopCourseMedia(container);
-        container.replaceChildren(mediaNote('Не удалось открыть видео.'));
-      });
-      container.replaceChildren(player);
+    for (const player of scroller.querySelectorAll('video')) player.pause();
+    for (const item of scroller.querySelectorAll('.course-video-item')) {
+      if (item !== container && item.courseReset) item.courseReset();
     }
+    const player = document.createElement('iframe');
+    player.className = 'course-video-element';
+    player.title = total > 1 ? `Видео ${index + 1}` : 'Видео урока';
+    player.setAttribute('sandbox', 'allow-scripts allow-same-origin allow-presentation');
+    player.setAttribute('allow', 'fullscreen; picture-in-picture');
+    player.setAttribute('allowfullscreen', '');
+    player.referrerPolicy = 'strict-origin-when-cross-origin';
+    player.src = video.url;
+    player.addEventListener('error', () => {
+      reset();
+      panel.append(mediaNote('Не удалось открыть видео. Попробуйте ещё раз.'));
+    });
+    stage.replaceChildren(player);
   });
-  container.append(button);
+  stage.append(button);
+  container.append(stage, panel);
   return container;
 }
 
@@ -184,7 +190,13 @@ function renderLesson(data) {
   const section = course.sections.find(item => item.lessons.some(row => String(row.lessonId) === String(lessonId)));
   if (!section) throw Object.assign(new Error('lesson_not_in_course'), { status: 403 });
   const ordered = course.sections.flatMap(item => item.lessons.map(row => ({ ...row, sectionId: item.streamId })));
-  const next = ordered[ordered.findIndex(row => String(row.lessonId) === String(lessonId)) + 1];
+  const lessonIndex = ordered.findIndex(row => String(row.lessonId) === String(lessonId));
+  const next = ordered[lessonIndex + 1];
+  const previous = ordered[lessonIndex - 1];
+  const target = row => row ? { href: lessonUrl(productId, row.lessonId, row.sectionId), title: row.title } : null;
+  const playerNavigation = { previous: target(previous), next: target(next), title: lesson.title };
+  const { byVideo: lessonChapters, tableIndexes: chapterTableIndexes } = courseChapters(lesson.blocks);
+
   back.href = courseUrl(productId, section.streamId);
   back.setAttribute('aria-label', 'К урокам раздела');
   const fragment = document.createDocumentFragment();
@@ -219,7 +231,7 @@ function renderLesson(data) {
     if (id === 'materials') for (const frame of about.querySelectorAll('iframe')) {
       const item = frame.closest('.course-video-item');
       frame.removeAttribute('src');
-      if (item?.courseStartButton) item.replaceChildren(item.courseStartButton);
+      item?.courseReset?.();
     }
   }
   tabItems.forEach(([key, label, panel], index) => {
@@ -242,6 +254,7 @@ function renderLesson(data) {
   });
   let hasHero = false;
   for (const [blockIndex, block] of lesson.blocks.entries()) {
+    if (chapterTableIndexes.has(blockIndex)) continue;
     if (!block || typeof block.type !== 'string' || typeof block.text !== 'string') throw new Error('invalid_response');
     const section = document.createElement('section');
     section.className = 'reader-section course-content-block';
@@ -269,7 +282,7 @@ function renderLesson(data) {
             !(video.url === null || typeof video.url === 'string')) throw new Error('invalid_response');
         const key = JSON.stringify([blockIndex, block.text, index]);
         section.append(videoPlayer(video, index, block.videos.length, lesson.videoAvailable,
-          key, positions, restoreJobs));
+          key, positions, restoreJobs, playerNavigation, lessonChapters.get(blockIndex) || []));
       }
     } else if (block.type === 'image' || block.type === 'attachment') {
       const text = document.createElement('p');
