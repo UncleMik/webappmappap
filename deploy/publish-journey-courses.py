@@ -10,7 +10,7 @@ import time
 import urllib.parse
 import urllib.request
 
-FILES = {'journey-courses.js': {'old': None, 'new': 'd6669b13383da5240adbbcd4bc7fab9c3def2ba1faff12305cc1aeb91f6e57a7'}, 'my-courses.js': {'old': 'f0e156ba6e1a878b14ad2a5f16f45f4d00697bfd6301f318cb8bdfed72c113be', 'new': '7f603a858d4dbe11c27371bb67b15ca65db25cda0f5660ec4a0df261cffee51f'}, 'journey.css': {'old': '43de1a922eba3901c650f76fd656931d13f8924355da73b7256cc75ee113ec01', 'new': '201807676dde88fbb3bb3bcb7936ffb6346de0eae5b968e47d6abfd030b8d426'}, 'my-courses.html': {'old': '73e549fbccc7c5e8cb5f006ca3522d4afc70a5dbca5953e7d0e13524e6d4766d', 'new': 'b3f60532437c904794fd88816888d6dce08597c8537213f3014072a9f94d542b'}, 'journey.html': {'old': '861120a8028fe22889b4bf7bfb36b1e507e31aa40dcf8f004b9720563e35786c', 'new': '5f059faa6528d5835bc1dfb69f24e97aec01d6fe59ecc18bb6ff08988c647fbf'}}
+FILES = {'journey-courses.js': {'old': None, 'new': 'd6669b13383da5240adbbcd4bc7fab9c3def2ba1faff12305cc1aeb91f6e57a7'}, 'my-courses.js': {'old': 'f0e156ba6e1a878b14ad2a5f16f45f4d00697bfd6301f318cb8bdfed72c113be', 'new': '1fa955301832c65962579966555c9a0d444eefd4f39117f9a443096c419e1b2f'}, 'journey.css': {'old': '43de1a922eba3901c650f76fd656931d13f8924355da73b7256cc75ee113ec01', 'new': '7164b1ec0964508bb5df50db5c40df6b9676e8f63da9031d930649cce473aa24'}, 'my-courses.html': {'old': '73e549fbccc7c5e8cb5f006ca3522d4afc70a5dbca5953e7d0e13524e6d4766d', 'new': '853fe51203b615f6a48ce30b3b253251b0e368cdb6bc90425690b115662e99d9'}, 'journey.html': {'old': '861120a8028fe22889b4bf7bfb36b1e507e31aa40dcf8f004b9720563e35786c', 'new': '3024fec7611aa6f61fb77d8a2fe389b15298eba1ba110c244a068efce426ecf0'}}
 
 
 def digest(data):
