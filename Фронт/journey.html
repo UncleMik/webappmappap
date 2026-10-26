@@ -12,7 +12,7 @@
   <link rel="preload" href="assets/fonts/Intro-Regular.woff" as="font" type="font/woff" crossorigin>
   <link rel="preload" href="assets/fonts/Intro-Bold.woff" as="font" type="font/woff" crossorigin>
   <link rel="stylesheet" href="styles.css?v=20261008-close">
-  <link rel="stylesheet" href="journey.css?v=20261019-lessons-2">
+  <link rel="stylesheet" href="journey.css?v=20261026-course-access">
   <link rel="stylesheet" href="calendar-sheet.css?v=20261008-purple-week">
   <link rel="stylesheet" href="app-navigation.css?v=20261006-gotham">
   <link rel="stylesheet" href="mobile-layout.css?v=20261007-darker-sides">
@@ -38,12 +38,10 @@
       </section>
 
       <section class="journey-section" aria-labelledby="courses-title">
-        <div class="section-heading"><h2 id="courses-title">Курсы для вас</h2><a class="text-link" href="courses.html">Все курсы<svg class="chevron" aria-hidden="true"><use href="#i-chevron"/></svg></a></div><p class="journey-subtitle">Глубокая программа с поддержкой специалистов</p>
-        <div class="content-carousel"><button class="round-arrow carousel-prev" type="button" aria-label="Предыдущие курсы"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m15 5-6 7 6 7"/></svg></button><div class="journey-three-grid course-list">
-          <article class="journey-content-card course-card"><span class="course-photo journey-photo" style="--x:282;--y:686;--w:123;--h:45" aria-hidden="true"><svg class="course-lock-icon"><use href="#j-lock"/></svg></span><div class="course-copy"><h3>Подготовка к родам</h3><p>Пошаговая программа<br>с сопровождением</p></div><a class="journey-primary" href="courses.html?course=birth" aria-label="Открыть доступ к курсу Подготовка к родам">Открыть доступ</a></article>
-          <article class="journey-content-card course-card"><span class="course-photo journey-photo" style="--x:412;--y:686;--w:122;--h:45" aria-hidden="true"><svg class="course-lock-icon"><use href="#j-lock"/></svg></span><div class="course-copy"><h3>Здоровая спина<br>во время беременности</h3><p>Комплексная программа<br>упражнений</p></div><a class="journey-primary" href="courses.html?course=back" aria-label="Открыть доступ к курсу Здоровая спина">Открыть доступ</a></article>
-          <article class="journey-content-card course-card"><span class="course-photo journey-photo" style="--x:541;--y:686;--w:122;--h:45" aria-hidden="true"><svg class="course-lock-icon"><use href="#j-lock"/></svg></span><div class="course-copy"><h3>Эмоциональная<br>уверенность</h3><p>Техники для спокойствия<br>и поддержки</p></div><a class="journey-primary" href="courses.html?course=confidence" aria-label="Открыть доступ к курсу Эмоциональная уверенность">Открыть доступ</a></article>
-        </div><button class="round-arrow carousel-next" type="button" aria-label="Следующие курсы"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m9 5 6 7-6 7"/></svg></button></div>
+        <div class="section-heading"><h2 id="courses-title">Курсы для вас</h2><a class="text-link" href="my-courses.html">Все курсы<svg class="chevron" aria-hidden="true"><use href="#i-chevron"/></svg></a></div><p class="journey-subtitle">Глубокая программа с поддержкой специалистов</p>
+        <p class="journey-courses-status" role="status">Проверяем доступ к курсам…</p>
+        <button class="journey-courses-retry" type="button" hidden>Повторить проверку</button>
+        <div class="content-carousel"><button class="round-arrow carousel-prev" type="button" aria-label="Предыдущие курсы" hidden><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m15 5-6 7 6 7"/></svg></button><div class="journey-three-grid course-list" aria-busy="true"></div><button class="round-arrow carousel-next" type="button" aria-label="Следующие курсы" hidden><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m9 5 6 7-6 7"/></svg></button></div>
       </section>
 
       <section class="journey-section" aria-labelledby="videos-title"><h2 id="videos-title">Полезные видео на эту неделю</h2><p class="journey-subtitle">3 видео, которые помогут сейчас</p>
@@ -95,7 +93,7 @@
     </div>
   </dialog>
   <script src="weekly-videos.js?v=20261019-timestamps-1"></script>
-  <script src="course-access.js"></script>
+  <script type="module" src="journey-courses.js?v=20261026-course-access"></script>
   <script src="article-read-state.js?v=20261007-unread-first"></script>
 <script src="weekly-content-api.js?v=20261008-weekly"></script>
   <script src="mom-week.js?v=20261020-initial-content"></script>

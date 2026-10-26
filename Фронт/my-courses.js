@@ -57,7 +57,14 @@ function renderProducts(data) {
     card.append(copy);
     fragment.append(card);
   }
-  if (!data.courses.length) fragment.append(paragraph('У вас пока нет доступных курсов.'));
+  if (!data.courses.length) {
+    fragment.append(paragraph('У вас пока нет доступных курсов.'));
+    const tariffs = document.createElement('a');
+    tariffs.className = 'journey-primary';
+    tariffs.href = 'courses.html';
+    tariffs.textContent = 'Посмотреть тарифы';
+    fragment.append(tariffs);
+  }
   list.replaceChildren(fragment);
 }
 
