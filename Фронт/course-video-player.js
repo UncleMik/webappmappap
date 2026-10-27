@@ -71,7 +71,7 @@ export function mountCourseVideo({ video, container, key, saved, isAllowed, refr
   const previousButton = element('button', 'skip-button');
   previousButton.type = 'button';
   previousButton.disabled = !previous;
-  previousButton.setAttribute('aria-label', previous ? `Предыдущий урок: ${previous.title}` : 'Предыдущего урока нет');
+  previousButton.setAttribute('aria-label', previous ? `${previous.activate ? 'Предыдущее видео' : 'Предыдущий урок'}: ${previous.title}` : 'Предыдущего урока нет');
   previousButton.append(svg('M5 5h3v14H5zm14 0v14L8 12Z').icon);
   const playButton = element('button', 'play-button');
   playButton.type = 'button';
@@ -81,7 +81,7 @@ export function mountCourseVideo({ video, container, key, saved, isAllowed, refr
   const nextButton = element('button', 'skip-button');
   nextButton.type = 'button';
   nextButton.disabled = !next;
-  nextButton.setAttribute('aria-label', next ? `Следующий урок: ${next.title}` : 'Следующего урока нет');
+  nextButton.setAttribute('aria-label', next ? `${next.activate ? 'Следующее видео' : 'Следующий урок'}: ${next.title}` : 'Следующего урока нет');
   nextButton.append(svg('M16 5h3v14h-3zM5 5l11 7-11 7Z').icon);
   controls.append(previousButton, playButton, nextButton);
   const status = element('p', 'course-player-status');
@@ -154,6 +154,7 @@ export function mountCourseVideo({ video, container, key, saved, isAllowed, refr
   });
   function navigate(destination) {
     if (!destination || !allowed()) return;
+    if (destination.activate) { destination.activate(); return; }
     const target = new URL(destination.href, location.href);
     if (target.origin !== location.origin || !target.pathname.endsWith('/article.html')) return;
     stopCourseMedia(document.querySelector('.reader-scroll') || container);
@@ -211,7 +212,7 @@ export function mountCourseVideo({ video, container, key, saved, isAllowed, refr
     });
   });
   player.addEventListener('pause', () => playing(false));
-  player.addEventListener('ended', () => { playing(false); message('Видео завершено. Можно перейти к следующему уроку.'); });
+  player.addEventListener('ended', () => { playing(false); message(next?.activate ? 'Видео завершено. Можно перейти к следующей подтеме.' : next ? 'Видео завершено. Можно перейти к следующему уроку.' : 'Видео завершено.'); });
   player.addEventListener('error', () => {
     if (!valid() || !player.getAttribute('src')) return;
     player.pause();

@@ -1,4 +1,4 @@
-import { mountCourseVideo } from './course-video-player.js?v=20261026-weekly-style';
+import { mountCourseVideo } from './course-video-player.js?v=20261027-subtopics';
 import { courseChapters } from './course-video-chapters.js?v=20261026-weekly-style';
 import { createCourseView, courseErrorText, positiveId, stopCourseMedia } from './course-views.js?v=20261026-course-layout';
 import { node, courseUrl, lessonUrl, validateCourse, primaryLink } from './course-ui.js?v=20261026-course-layout';
@@ -13,6 +13,7 @@ const progress = document.querySelector('.reader-progress');
 let courseView = null;
 let pendingVideoPositions = new Map();
 let selectedTab = 'about';
+let selectedVideoKey = null;
 document.querySelector('.reader-page').classList.add('course-lesson-mode');
 progress.hidden = true;
 toolbar.textContent = 'Урок';
@@ -101,7 +102,7 @@ function currentVideoPositions() {
     const time = player.currentTime;
     if (typeof key === 'string' && typeof url === 'string' &&
         Number.isFinite(time) && time >= 0) {
-      positions.set(key, { url, time, playing: !player.paused && !player.ended });
+      positions.set(key, { url, time, playing: !player.paused && !player.ended && !player.closest('[hidden]') });
     }
   }
   return positions;
@@ -118,7 +119,7 @@ function videoPlayer(video, index, total, available, key, positions, restoreJobs
     const snapshot = positions.get(key);
     const saved = snapshot?.url === video.url ? snapshot : null;
     const mounted = mountCourseVideo({ video, container, key, saved,
-      isAllowed: () => scroller.contains(container) && courseView?.isCurrent(),
+      isAllowed: () => scroller.contains(container) && !container.closest('[hidden]') && courseView?.isCurrent(),
       refresh: () => courseView?.refresh(), ...navigation, chapters });
     if (saved) restoreJobs.push(mounted.restore);
     return container;
@@ -136,12 +137,13 @@ function videoPlayer(video, index, total, available, key, positions, restoreJobs
   const go = destination => {
     if (!destination || !scroller.contains(container)) return;
     if (!courseView?.isCurrent()) { courseView?.refresh(); return; }
+    if (destination.activate) { destination.activate(); return; }
     stopCourseMedia(scroller);
     location.assign(destination.href);
   };
   for (const [destination, label, path] of [
-    [navigation.previous, 'Предыдущий урок', 'M5 5h3v14H5zm14 0v14L8 12Z'],
-    [navigation.next, 'Следующий урок', 'M16 5h3v14h-3zM5 5l11 7-11 7Z'],
+    [navigation.previous, navigation.previous?.activate ? 'Предыдущее видео' : 'Предыдущий урок', 'M5 5h3v14H5zm14 0v14L8 12Z'],
+    [navigation.next, navigation.next?.activate ? 'Следующее видео' : 'Следующий урок', 'M16 5h3v14h-3zM5 5l11 7-11 7Z'],
   ]) {
     const arrow = node('button', 'skip-button');
     arrow.type = 'button'; arrow.disabled = !destination;
@@ -194,7 +196,34 @@ function renderLesson(data) {
   const next = ordered[lessonIndex + 1];
   const previous = ordered[lessonIndex - 1];
   const target = row => row ? { href: lessonUrl(productId, row.lessonId, row.sectionId), title: row.title } : null;
-  const playerNavigation = { previous: target(previous), next: target(next), title: lesson.title };
+  const videos = [];
+  for (const [blockIndex, block] of lesson.blocks.entries()) {
+    if (block?.type !== 'video' || !Array.isArray(block.videos)) continue;
+    for (const [index] of block.videos.entries()) {
+      const key = JSON.stringify([blockIndex, block.text, index]);
+      const caption = typeof block.text === 'string' ? block.text.trim() : '';
+      videos.push({ key, title: caption ? caption + (block.videos.length > 1 ? ` — видео ${index + 1}` : '') : `Видео ${videos.length + 1}` });
+    }
+  }
+  if (!videos.some(item => item.key === selectedVideoKey)) selectedVideoKey = videos[0]?.key ?? null;
+  const videoNodes = new Map(), topicButtons = new Map();
+  function selectVideo(key) {
+    if (!courseView?.isCurrent()) { courseView?.refresh(); return; }
+    selectedVideoKey = key;
+    for (const [id, section] of videoNodes) {
+      const active = id === key;
+      if (!active) {
+        if (document.fullscreenElement && section.contains(document.fullscreenElement)) void document.exitFullscreen().catch(() => {});
+        for (const player of section.querySelectorAll('video')) player.pause();
+        section.querySelector('.course-video-item')?.courseReset?.();
+      }
+      section.hidden = !active;
+      const button = topicButtons.get(id);
+      if (active) button?.setAttribute('aria-current', 'true');
+      else button?.removeAttribute('aria-current');
+    }
+  }
+  const videoTarget = item => item ? { title: item.title, activate: () => selectVideo(item.key) } : null;
   const { byVideo: lessonChapters, tableIndexes: chapterTableIndexes } = courseChapters(lesson.blocks);
 
   back.href = courseUrl(productId, section.streamId);
@@ -252,7 +281,23 @@ function renderLesson(data) {
     });
     tabs.append(button);
   });
-  let hasHero = false;
+  const topics = node('section', 'reader-section course-subtopics');
+  topics.setAttribute('aria-label', 'Подтемы урока');
+  if (videos.length > 1) {
+    topics.append(node('h2', '', 'Подтемы урока'));
+    const list = node('ol', 'course-subtopic-list');
+    for (const [index, item] of videos.entries()) {
+      const row = node('li');
+      const button = node('button', 'course-subtopic-button', `${index + 1}. ${item.title}`);
+      button.type = 'button';
+      button.setAttribute('aria-controls', `course-subtopic-${index + 1}`);
+      if (item.key === selectedVideoKey) button.setAttribute('aria-current', 'true');
+      button.addEventListener('click', () => selectVideo(item.key));
+      topicButtons.set(item.key, button);
+      row.append(button); list.append(row);
+    }
+    topics.append(list);
+  }
   for (const [blockIndex, block] of lesson.blocks.entries()) {
     if (chapterTableIndexes.has(blockIndex)) continue;
     if (!block || typeof block.type !== 'string' || typeof block.text !== 'string') throw new Error('invalid_response');
@@ -281,8 +326,21 @@ function renderLesson(data) {
               !(video.provider === 'unknown' && video.url === null)) ||
             !(video.url === null || typeof video.url === 'string')) throw new Error('invalid_response');
         const key = JSON.stringify([blockIndex, block.text, index]);
-        section.append(videoPlayer(video, index, block.videos.length, lesson.videoAvailable,
+        const videoIndex = videos.findIndex(item => item.key === key);
+        const item = videos[videoIndex];
+        const part = node('section', 'reader-section course-content-block course-subtopic-video');
+        part.id = `course-subtopic-${videoIndex + 1}`;
+        part.hidden = key !== selectedVideoKey;
+        part.setAttribute('aria-label', item.title);
+        part.append(node('p', 'course-video-caption', item.title));
+        const playerNavigation = {
+          previous: videoTarget(videos[videoIndex - 1]) || target(previous),
+          next: videoTarget(videos[videoIndex + 1]) || target(next), title: item.title,
+        };
+        part.append(videoPlayer(video, index, block.videos.length, lesson.videoAvailable,
           key, positions, restoreJobs, playerNavigation, lessonChapters.get(blockIndex) || []));
+        videoNodes.set(key, part);
+        videoHero.append(part);
       }
     } else if (block.type === 'image' || block.type === 'attachment') {
       const text = document.createElement('p');
@@ -301,7 +359,7 @@ function renderLesson(data) {
       section.append(text);
     }
     if (section.childNodes.length) {
-      if (block.type === 'video' && !hasHero) { videoHero.append(section); hasHero = true; }
+      if (block.type === 'video') { if (!block.videos.length) videoHero.append(section); }
       else if (block.type === 'image' || block.type === 'attachment') materials.append(section);
       else about.append(section);
     }
@@ -325,7 +383,9 @@ function renderLesson(data) {
   }
   if (!about.childNodes.length) about.append(sectionWithMessage('Описание этого урока пока не добавлено.', 'Об уроке'));
   if (!materials.childNodes.length) materials.append(sectionWithMessage('Отдельных материалов в этом уроке нет.', 'Материалы'));
-  fragment.append(videoHero, tabs, about, materials);
+  fragment.append(videoHero);
+  if (videos.length > 1) fragment.append(topics);
+  fragment.append(tabs, about, materials);
   const navigation = node('section', 'reader-section course-lesson-navigation');
   if (next) {
     navigation.append(node('h2', '', 'Следующий урок'), node('p', '', next.title),
