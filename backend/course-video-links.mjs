@@ -18,7 +18,10 @@ function validUrl(provider, url, source) {
   if (typeof source.videoId !== 'string' || !/^[A-Za-z0-9_-]{1,200}$/.test(source.videoId)) return false;
   if (provider === 'youtube') return url === `https://www.youtube.com/embed/${source.videoId}`
     || url === `https://www.youtube-nocookie.com/embed/${source.videoId}`;
-  return provider === 'rutube' && url === `https://rutube.ru/play/embed/${source.videoId}`;
+  // Unlisted Rutube videos require the original access key from the school embed.
+  // Accept only that key, on the exact host/path/video already in this lesson.
+  const rutube = url.match(/^https:\/\/rutube\.ru\/play\/embed\/([A-Za-z0-9_-]{1,200})\/?(?:\?p=[A-Za-z0-9_-]{1,200})?$/);
+  return provider === 'rutube' && rutube?.[1] === source.videoId;
 }
 
 function validatedRows(db, source, stored = false) {

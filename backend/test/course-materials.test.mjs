@@ -258,6 +258,29 @@ const videoRows = [
   { lessonId: 1001, blockId: 'video-main', videoIndex: 2, provider: 'rutube', url: 'https://rutube.ru/play/embed/safe-id-3' },
 ];
 
+test('Rutube original access keys survive protected delivery and remain bound to the video', async () => {
+  const f = fixture();
+  try {
+    for (const suffix of ['/?p=SchoolKey_123-test', '?p=SchoolKey_123-test', '/']) {
+      const row = { ...videoRows[2], url: videoRows[2].url + suffix };
+      importCourseVideoLinks(f.db, { schemaVersion: 1, rows: [row] });
+      assert.equal((await f.make().lesson(42, 10, 1001)).lesson.blocks[1].videos[2].url, row.url);
+      assert.doesNotMatch(JSON.stringify(await f.make().list(42)), /SchoolKey/);
+      await denied(f.make().lesson(42, 20, 1001));
+    }
+    const before = f.db.prepare('SELECT body_json,sha256 FROM course_video_links').get();
+    for (const url of [
+      'https://rutube.ru/play/embed/other-id/?p=SchoolKey',
+      videoRows[2].url + '/?p=', videoRows[2].url + '/?p=key&x=1',
+      videoRows[2].url + '/?p=key&p=other', videoRows[2].url + '/?p=key#fragment',
+      videoRows[2].url + '/?p=key%26x', videoRows[2].url.replace('rutube.ru', 'rutube.ru.evil.test'),
+    ]) assert.throws(() => importCourseVideoLinks(f.db, { schemaVersion: 1, rows: [{ ...videoRows[2], url }] }));
+    assert.deepEqual(f.db.prepare('SELECT body_json,sha256 FROM course_video_links').get(), before);
+    f.check.snapshot.purchases = [];
+    await denied(f.make().lesson(42, 10, 1001));
+  } finally { f.close(); }
+});
+
 test('private video registry preserves order, partial links, and exact access gates', async () => {
   const f = fixture();
   try {

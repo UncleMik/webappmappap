@@ -78,7 +78,7 @@ function safeFragment(html) {
 
 const getcourseVideoUrl = /^https:\/\/fs\.getcourse\.ru\/fileservice\/file\/download\/a\/25918\/sc\/(?:0|[1-9][0-9]*)\/h\/[a-fA-F0-9]{32}\.(?:mp4|m4v|mov|webm)$/;
 const youtubeVideoUrl = /^https:\/\/www\.youtube(?:-nocookie)?\.com\/embed\/[A-Za-z0-9_-]{1,200}$/;
-const rutubeVideoUrl = /^https:\/\/rutube\.ru\/play\/embed\/[A-Za-z0-9_-]{1,200}$/;
+const rutubeVideoUrl = /^https:\/\/rutube\.ru\/play\/embed\/[A-Za-z0-9_-]{1,200}\/?(?:\?p=[A-Za-z0-9_-]{1,200})?$/;
 
 function playableVideo(video, available) {
   if (!available || !video || typeof video !== 'object' || typeof video.url !== 'string') return false;
@@ -167,7 +167,7 @@ function videoPlayer(video, index, total, available, key, positions, restoreJobs
     player.className = 'course-video-element';
     player.title = total > 1 ? `Видео ${index + 1}` : 'Видео урока';
     player.setAttribute('sandbox', 'allow-scripts allow-same-origin allow-presentation');
-    player.setAttribute('allow', 'fullscreen; picture-in-picture');
+    player.setAttribute('allow', 'autoplay; encrypted-media; fullscreen; picture-in-picture; clipboard-write');
     player.setAttribute('allowfullscreen', '');
     player.referrerPolicy = 'strict-origin-when-cross-origin';
     player.src = video.url;
