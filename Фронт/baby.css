@@ -21,7 +21,8 @@
 .cauliflower { width: 4.7rem; height: 4.3rem; background-position: -47.1rem -43.6rem; border-radius: .6rem; }
 .size-comparison p { font-size: 1.155rem; line-height: 1.54rem; color: #79828f; }
 .size-comparison p strong { font-weight: 700; color: #2d3341; }
-.baby-hero-art { position: absolute; right: 0; top: -1rem; width: 13.5rem; height: 17.2rem; object-fit: contain; border-radius: 0 1.4rem 1.4rem 0; }
+.baby-hero-frame { position: absolute; right: 0; top: -1rem; width: 13.5rem; height: 17.2rem; overflow: hidden; border-radius: 0 1.4rem 1.4rem 0; }
+.baby-hero-art { position: absolute; right: 0; top: 1.85rem; width: 13.5rem; height: 13.5rem; object-fit: contain; transform-origin: center; }
 .baby-panel { margin-top: 1rem; padding: .9rem 1rem; background: #fff; border: 1px solid #f5f1ef; border-radius: 1.5rem; box-shadow: 0 .2rem .6rem #715e5d03; }
 .baby-panel h2 { font-size: 1.76rem; line-height: 2.42rem; letter-spacing: -.035rem; }
 .baby-panel .section-heading { min-height: 2.2rem; height: auto; gap: .5rem; }

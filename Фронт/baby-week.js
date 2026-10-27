@@ -102,16 +102,19 @@
     comparison.hidden = !content.comparison;
     const image = page.querySelector('.baby-size-image');
     image.hidden = !content.comparison;
+    let comparisonReady = Promise.resolve();
     if (content.comparison) {
-      image.src = window.weeklyImageUrl(content.comparisonImage);
+      comparisonReady = window.babyIllustrations.show(image, content.comparisonImage);
       comparison.querySelector('.baby-size-name').textContent = content.comparison;
     } else {
-      image.removeAttribute('src');
+      window.babyIllustrations.show(image, null);
     }
     const illustration = page.querySelector('.baby-hero-art');
-    illustration.src = window.weeklyImageUrl(content.illustration);
     illustration.alt = `Иллюстрация развития малыша: ${week}-я неделя`;
-    illustration.hidden = false;
+    const illustrationReady = window.babyIllustrations.show(illustration, content.illustration, true);
+    Promise.all([illustrationReady, comparisonReady]).then(() => {
+      if (Number(page.dataset.week) === week) window.babyIllustrations.prefetch(library, week);
+    });
     page.querySelector('#development-title').textContent = `Развитие малыша на ${week}-й неделе`;
     page.querySelector('.baby-development > p').textContent = content.developmentDescription;
     page.querySelector('.development-link').href = `journey.html?week=${week}`;
