@@ -10,7 +10,7 @@ import time
 import urllib.parse
 import urllib.request
 
-FILES = {'school-video-routes.js': {'old': None, 'new': 'b3f855bbfc124c5f006ba540736fde7bb27393a5d2228b267b1d9fc46c167b81'}, 'video.js': {'old': '5418fff8b18d92286bdd2c2d86a08b0edfd9c97aa763e7e35123b9cd29cc6c09', 'new': 'a2147ac96f2b11852cb32cd6730a3b7bed23ceeaabe251bd6207bdf692ad48ef'}, 'video.html': {'old': '5c1e1b9b22ea6b4e5046b2c1cc4248b8b482792c19900e489fb68b289df4208f', 'new': '403c832fd98c9445b008c8e8203e54b5ecc91021a7dc491442c59b11caa547af'}}
+FILES = {'school-video-routes.js': {'old': None, 'new': 'b3f855bbfc124c5f006ba540736fde7bb27393a5d2228b267b1d9fc46c167b81'}, 'video.js': {'old': '5418fff8b18d92286bdd2c2d86a08b0edfd9c97aa763e7e35123b9cd29cc6c09', 'new': '1fc80aba0c6f3ecfbe321bede130089eb5941ff4f3a51998508f451d9f9f47ee'}, 'video.html': {'old': '5c1e1b9b22ea6b4e5046b2c1cc4248b8b482792c19900e489fb68b289df4208f', 'new': 'f8d6b631b9076039861c2d6f5be2ff1f53b22a6f8e828fd2c9501d122b680eab'}}
 
 
 def digest(data):
@@ -64,7 +64,7 @@ def main():
             metadata[name] = (stat.st_mode & 0o777, stat.st_uid, stat.st_gid)
         else:
             metadata[name] = (0o644, 0, 0)
-        url = 'https://raw.githubusercontent.com/UncleMik/webappmappap/' + revision + '/' + urllib.parse.quote('Фронт/' + name)
+        url = 'https://raw.githubusercontent.com/UncleMik/webappmappap/' + revision + '/' + urllib.parse.quote('Р¤СЂРѕРЅС‚/' + name)
         with urllib.request.urlopen(url, timeout=25) as response:
             data = response.read(200001)
         if len(data) > 200000 or digest(data) != expected['new']:
