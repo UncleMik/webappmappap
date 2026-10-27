@@ -146,12 +146,22 @@ function updateProgress() {
   counter.value = `${current + 1}/${sections.length}`;
   scheduled = false;
 }
-scroller.addEventListener('scroll', () => {
+function markReadAtEnd() {
   if (scroller.scrollTop > 0 && scroller.scrollTop + scroller.clientHeight >= scroller.scrollHeight - 2) {
-    window.articleReadState.setRead(readArticleId);
+    window.articleReadState.setRead(readArticleId).catch(error => {
+      const status = document.createElement('p');
+      status.setAttribute('role', 'alert');
+      status.textContent = error.message;
+      document.querySelector('.reader-progress').append(status);
+      setTimeout(() => status.remove(), 5000);
+    });
   }
+}
+scroller.addEventListener('scroll', () => {
+  markReadAtEnd();
   if (!scheduled) { scheduled = true; requestAnimationFrame(updateProgress); }
 }, { passive: true });
+window.articleReadState.ready.then(markReadAtEnd).catch(() => {});
 new ResizeObserver(updateProgress).observe(scroller);
 const origins = { index: 'index.html#recommendations-title', journey: 'journey.html#weekly-articles-title', baby: 'baby.html#learn-title', mom: 'mom.html#mom-recommendations-title', articles: 'articles.html', 'club-motherhood': 'club.html#motherhood' };
 const origin = Object.hasOwn(origins, params.get('from')) ? params.get('from') : 'index';

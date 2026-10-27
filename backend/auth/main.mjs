@@ -7,6 +7,7 @@ import { createGetCourseTech } from '../getcourse-tech.mjs';
 import { createCourseChecks } from './course-checks.mjs';
 import { DatabaseSync } from 'node:sqlite';
 import { createCourseMaterials } from '../course-materials.mjs';
+import { createPersonalData } from './personal-data.mjs';
 
 let pool, courseDb;
 function closeCourseDb() {
@@ -17,6 +18,7 @@ async function start() {
 const config = readConfig();
 pool = openPool(config);
 await pool.query('SELECT id FROM auth_users LIMIT 0'); // Migration must be applied first.
+await pool.query('SELECT user_id FROM auth_personal_records LIMIT 0');
 const store = createStore(pool, config);
 const sendMail = createMailer(config.mail), getcourse = createGetCourse(config.getcourse);
 const service = createAuthService({ store, sendMail, ensureGetCourse: async email => {
@@ -35,7 +37,8 @@ if (courseChecks) {
     closeCourseDb();
   }
 }
-const server = createAuthServer({ ...config, service, store, courseChecks, courseMaterials, trustProxy: true });
+const server = createAuthServer({ ...config, service, store, courseChecks, courseMaterials,
+  personalData: createPersonalData(pool), trustProxy: true });
 let working = false, stopping = false, lastCleanup = 0;
 const worker = setInterval(async () => {
   if (working || stopping || !config.enabled) return;

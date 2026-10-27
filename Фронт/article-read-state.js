@@ -1,13 +1,10 @@
 (() => {
-  const storageKey = 'webpril-read-articles-v1';
+  const api = window.personalDataApi;
   let read = new Set();
+  let loaded = false;
   const lists = new Map();
-  function load() {
-    try {
-      const saved = JSON.parse(localStorage.getItem(storageKey) || '[]');
-      if (Array.isArray(saved)) read = new Set(saved.filter(id => typeof id === 'string'));
-    } catch { /* Keep the in-memory state when browser storage is unavailable. */ }
-  }
+  const pending = new Set();
+  function load() { read = new Set(api.get().readArticles.filter(id => typeof id === 'string')); }
   function sync() {
     const focusedId = document.activeElement?.dataset.readArticleId;
     lists.forEach(render => render());
@@ -16,15 +13,14 @@
       if (focusedId === checkbox.dataset.readArticleId) checkbox.focus({ preventScroll: true });
     });
   }
-  function setRead(id, completed = true) {
-    load();
+  async function setRead(id, completed = true) {
+    if (!loaded) return;
     if (read.has(id) === completed) return;
-    if (completed) read.add(id);
-    else read.delete(id);
-    try { localStorage.setItem(storageKey, JSON.stringify([...read])); } catch { /* Session state still works. */ }
-    sync();
+    if (pending.has(id)) return;
+    pending.add(id);
+    try { await api.write({ operation: 'setArticleRead', id, read: completed }); }
+    finally { pending.delete(id); }
   }
-  load();
   window.articleReadState = {
     setRead,
     // Stable partition: preserve the source order inside each read-state group.
@@ -34,19 +30,41 @@
     },
     bindList(list, render) {
       lists.set(list, render);
-      render();
+      if (loaded) render();
+      else { list.setAttribute('aria-busy', 'true'); list.textContent = 'Загружаем отметки статей…'; }
     },
     bindCheckbox(checkbox, id) {
       checkbox.dataset.readArticleId = id;
       checkbox.checked = read.has(id);
     }
   };
-  document.addEventListener('change', event => {
+  document.addEventListener('change', async event => {
     const checkbox = event.target.closest('input[data-read-article-id]');
-    if (checkbox) setRead(checkbox.dataset.readArticleId, checkbox.checked);
+    if (!checkbox) return;
+    checkbox.disabled = true;
+    try { await setRead(checkbox.dataset.readArticleId, checkbox.checked); }
+    catch (failure) {
+      checkbox.checked = read.has(checkbox.dataset.readArticleId);
+      const status = document.createElement('span');
+      status.setAttribute('role', 'alert'); status.textContent = failure.message;
+      checkbox.after(status); setTimeout(() => status.remove(), 5000);
+    } finally { checkbox.disabled = false; }
   });
-  window.addEventListener('storage', event => {
-    if (event.key === storageKey || event.key === null) { load(); sync(); }
+  api.subscribe(() => {
+    if (!api.isLoaded()) { loaded = false; read.clear(); return; }
+    if (!loaded) return;
+    load(); sync();
   });
-  window.addEventListener('pageshow', () => { load(); sync(); });
+  window.articleReadState.ready = api.load().then(() => {
+    loaded = true; load();
+    lists.forEach((render, list) => list.removeAttribute('aria-busy'));
+    sync();
+  }).catch(error => {
+    lists.forEach((_, list) => {
+      list.removeAttribute('aria-busy');
+      list.textContent = 'Не удалось загрузить отметки статей. Обновите страницу.';
+    });
+    throw error;
+  });
+  window.articleReadState.ready.catch(() => {});
 })();

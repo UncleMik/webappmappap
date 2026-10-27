@@ -4,8 +4,7 @@
   if (!button || !dialog) return;
   const form = dialog.querySelector('form');
   const error = dialog.querySelector('.baby-form-error');
-  const legacyKey = 'webpril:baby-data:v1';
-  const weekKey = week => `webpril:baby-data:v2:week:${week}`;
+  const api = window.personalDataApi;
   const normalizeWeek = value => integer(value, 42) ? Number(value) : 27;
   const positions = { head: 'Головное', breech: 'Тазовое', transverse: 'Поперечное' };
   const fields = ['heartRate', 'ultrasoundDate', 'ultrasoundWeek', 'position'];
@@ -21,12 +20,8 @@
   }
   let selectedWeek = normalizeWeek(new URLSearchParams(location.search).get('week'));
   let editingWeek = selectedWeek;
-  function read(week) {
-    try {
-      const stored = localStorage.getItem(weekKey(week));
-      return normalize(JSON.parse(stored ?? (week === 27 ? localStorage.getItem(legacyKey) : null)));
-    } catch { return normalize({}); }
-  }
+  let saving = false;
+  function read(week) { return normalize(api.get().baby[String(week)] || {}); }
   let saved = read(selectedWeek);
   const tiles = document.querySelectorAll('.baby-data .data-tile');
   function render() {
@@ -47,6 +42,7 @@
     render();
   });
   button.addEventListener('click', () => {
+    if (!api.isLoaded()) { error.textContent = 'Загружаем записи. Попробуйте через несколько секунд.'; error.hidden = false; return; }
     editingWeek = selectedWeek;
     saved = read(editingWeek);
     dialog.querySelector('#baby-form-title').textContent = `Данные о малыше · ${editingWeek} неделя`;
@@ -55,23 +51,41 @@
     dialog.showModal();
   });
   dialog.querySelectorAll('[data-close-baby-form]').forEach(control => control.addEventListener('click', () => dialog.close()));
+  dialog.addEventListener('cancel', event => { if (saving) event.preventDefault(); });
   dialog.addEventListener('click', event => {
+    if (saving) return;
     const rect = dialog.getBoundingClientRect();
     if (event.target === dialog && (event.clientX < rect.left || event.clientX > rect.right || event.clientY < rect.top || event.clientY > rect.bottom)) dialog.close();
   });
   dialog.addEventListener('close', () => button.focus());
-  form.addEventListener('submit', event => {
+  form.addEventListener('submit', async event => {
     event.preventDefault();
     if (!form.reportValidity()) return;
     const data = normalize(Object.fromEntries(new FormData(form)));
-    try { localStorage.setItem(weekKey(editingWeek), JSON.stringify(data)); } catch {
-      error.textContent = 'Не удалось сохранить данные в браузере. Проверьте настройки хранения и попробуйте снова.';
+    const formControls = [...form.querySelectorAll('input, select, button')];
+    saving = true;
+    formControls.forEach(control => { control.disabled = true; });
+    error.hidden = true;
+    try { await api.write({ operation: 'setBaby', week: editingWeek, ...data }); } catch (failure) {
+      error.textContent = failure.message;
       error.hidden = false;
+      saving = false;
+      formControls.forEach(control => { control.disabled = false; });
       return;
     }
+    saving = false;
+    formControls.forEach(control => { control.disabled = false; });
     saved = read(selectedWeek);
     render();
     dialog.close();
   });
-  render();
+  const loadStatus = document.createElement('p');
+  loadStatus.className = 'weekly-load-status';
+  loadStatus.setAttribute('role', 'status'); loadStatus.textContent = 'Загружаем личные записи…';
+  document.querySelector('.baby-data-grid').before(loadStatus);
+  api.subscribe(() => {
+    saved = read(selectedWeek); render(); button.disabled = !api.isLoaded();
+    if (api.isLoaded()) loadStatus.remove();
+  });
+  api.load().catch(() => { loadStatus.textContent = 'Не удалось загрузить личные записи. Обновите страницу.'; });
 })();

@@ -26,20 +26,22 @@ function gate({ iframe = false, replies = [valid], href = 'https://app.legkie-ro
     location: { href, replace(value) { redirects.push(value); } },
     webprilSessionGate: { end(reason) { redirects.push({ ownerEnd: reason }); } },
   } : null;
-  const window = { location, addEventListener(name, listener) { windowEvents.set(name, listener); } };
+  const dispatched = [];
+  const window = { location, addEventListener(name, listener) { windowEvents.set(name, listener); },
+    dispatchEvent(event) { dispatched.push(event.type); } };
   window.top = owner ?? window;
   const document = {
     hidden: false,
     querySelector(selector) { assert.equal(selector, '#account-lock'); return lock; },
     querySelectorAll(selector) {
       if (selector === 'video, audio') return media;
-      if (selector === 'iframe') return frames;
+      if (selector === 'iframe' || selector === 'iframe.app-section-frame') return frames;
       throw new Error(`Unexpected selector: ${selector}`);
     },
     addEventListener(name, listener) { documentEvents.set(name, listener); },
   };
   const context = {
-    window, document, location, URL, AbortSignal,
+    window, document, location, URL, AbortSignal, Event,
     setInterval(callback, delay) { const id = nextTimer++; timers.set(id, { callback, delay }); return id; },
     clearInterval(id) { timers.delete(id); },
     fetch(path, options) {
@@ -53,7 +55,7 @@ function gate({ iframe = false, replies = [valid], href = 'https://app.legkie-ro
   };
   vm.runInNewContext(source, context, { filename: 'auth-gate.js' });
   return {
-    lock, document, window, requests, redirects, timers,
+    lock, document, window, requests, redirects, timers, dispatched,
     fireWindow(name, event = {}) { windowEvents.get(name)?.(event); },
     fireDocument(name, event = {}) { documentEvents.get(name)?.(event); },
     tick() { for (const { callback } of [...timers.values()]) callback(); },
@@ -99,6 +101,7 @@ test('replacement clears media and preserved frames, then redirects with reason 
   app.tick();
   await flush();
   assert.equal(app.lock.sheet.disabled, false);
+  assert.deepEqual(app.dispatched, ['webpril:session-ended']);
   assert.equal(app.timers.size, 0);
   assert.deepEqual(actions, ['pause', 'remove src', 'remove source', 'load', 'remove frame']);
   assert.equal(app.redirects.length, 1);
@@ -107,6 +110,16 @@ test('replacement clears media and preserved frames, then redirects with reason 
   assert.equal(url.pathname, '/login.html');
   assert.equal(url.searchParams.get('reason'), 'session_replaced');
   assert.equal(url.searchParams.get('next'), '/journey.html?week=25#day');
+});
+
+test('a different account on the same open page closes its previous personal view', async () => {
+  const app = gate({ replies: [valid, { authenticated: true, user: { id: 'user-2', email: 'two@example.ru' } }] });
+  await flush();
+  app.tick();
+  await flush();
+  assert.equal(app.lock.sheet.disabled, false);
+  assert.equal(app.dispatched.includes('webpril:session-ended'), true);
+  assert.equal(new URL(app.redirects[0]).searchParams.get('reason'), 'session_replaced');
 });
 
 test('unauthenticated response and network error both close the page', async () => {

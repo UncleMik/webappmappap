@@ -2,7 +2,7 @@
 <html lang="ru">
 <head>
   <style id="account-lock">html { visibility: hidden !important; }</style>
-  <script src="auth-gate.js?v=20261019-required"></script>
+  <script src="auth-gate.js?v=20261027-personal"></script><script src="personal-data-api.js?v=20261027"></script>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <meta name="theme-color" content="#fcfaf7">
@@ -102,7 +102,7 @@
   <dialog class="baby-data-dialog" aria-labelledby="baby-form-title">
     <form id="baby-data-form">
       <div class="baby-form-heading"><h2 id="baby-form-title">Данные о малыше</h2><button type="button" data-close-baby-form aria-label="Закрыть" class="close-button"><svg class="close-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="m6 6 12 12M18 6 6 18"/></svg></button></div>
-      <p class="baby-form-note">Данные сохраняются только в этом браузере.</p>
+      <p class="baby-form-note">Данные сохраняются в вашем аккаунте.</p>
       <label>ЧСС, уд/мин<input name="heartRate" type="number" min="1" step="1" inputmode="numeric"></label>
       <label>Дата последнего УЗИ<input name="ultrasoundDate" type="date"></label>
       <label>Неделя на последнем УЗИ<input name="ultrasoundWeek" type="number" min="1" max="42" step="1" inputmode="numeric"></label>
@@ -111,14 +111,14 @@
       <div class="baby-form-actions"><button type="button" data-close-baby-form>Отмена</button><button class="primary-button" type="submit">Сохранить</button></div>
     </form>
   </dialog>
-  <script src="baby-data.js?v=20261007-weekly-data"></script>
-  <script src="article-read-state.js?v=20261007-unread-first"></script>
+  <script src="baby-data.js?v=20261027-personal"></script>
+  <script src="article-read-state.js?v=20261027-personal"></script>
 <script src="articles-api.js?v=20261007-unread-first"></script>
 <script src="weekly-content-api.js?v=20261008-weekly"></script>
   <script src="baby-week.js?v=20261020-initial-content"></script>
   <script src="recommendations-carousel.js?v=20261007-journey-articles"></script>
   <script src="app.js"></script>
-  <script src="helpers.js?v=20261009-movement-date"></script>
+  <script src="helpers.js?v=20261027-personal"></script>
   <script src="carousel-controls.js?v=20261008-centered-arrows"></script>
 <script src="resource-prefetch.js?v=20261009"></script>
 </body>

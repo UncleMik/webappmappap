@@ -17,16 +17,26 @@
     document.querySelector('.video-back').href = `journey.html?week=${Number.isInteger(week) && week >= 1 && week <= 42 ? week : 27}#videos-title`;
   }
   const favorite = document.querySelector('.video-favorite');
-  const favoriteKey = `webpril.videoFavorite.${id}`;
+  const personal = window.personalDataApi;
   function setFavorite(value) {
     favorite.setAttribute('aria-pressed', String(value));
     favorite.setAttribute('aria-label', value ? 'Удалить из избранного' : 'Добавить в избранное');
   }
-  try { setFavorite(localStorage.getItem(favoriteKey) === 'true'); } catch { /* Optional persistence. */ }
-  favorite.addEventListener('click', () => {
+  favorite.disabled = true;
+  personal.subscribe(data => { setFavorite(data.favorites.includes(id)); favorite.disabled = !personal.isLoaded(); });
+  personal.load().catch(() => {
+    favorite.disabled = true;
+    const status = document.querySelector('#player-status');
+    status.hidden = false; status.textContent = 'Не удалось загрузить избранное. Обновите страницу.';
+  });
+  favorite.addEventListener('click', async () => {
     const value = favorite.getAttribute('aria-pressed') !== 'true';
-    setFavorite(value);
-    try { localStorage.setItem(favoriteKey, String(value)); } catch { /* Keep the current session usable. */ }
+    favorite.disabled = true;
+    try { await personal.write({ operation: 'setFavorite', id, favorite: value }); }
+    catch (failure) {
+      const status = document.querySelector('#player-status');
+      status.hidden = false; status.textContent = failure.message;
+    } finally { favorite.disabled = false; }
   });
 
   // Reveal only the selected lesson's image after it has loaded. An eager demo

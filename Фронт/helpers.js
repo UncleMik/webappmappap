@@ -1,5 +1,5 @@
 (() => {
-  const key = 'webpril:movements:v1';
+  const api = window.personalDataApi;
   const dialog = document.createElement('dialog');
   dialog.className = 'helper-dialog';
   dialog.setAttribute('aria-labelledby', 'helper-title');
@@ -8,15 +8,19 @@
   const content = dialog.querySelector('.helper-content');
   let opener;
   let mode;
-  function read() {
-    const rows = JSON.parse(localStorage.getItem(key) || '[]');
-    if (!Array.isArray(rows) || rows.some(value => !Number.isSafeInteger(value) || value <= 0 || !Number.isFinite(new Date(value).getTime()))) throw new Error('Invalid movement history');
-    return rows;
-  }
+  let retryMovement;
+  let savingMovement = false;
+  function read() { return api.get().movements.map(row => new Date(row.recordedAt).getTime()); }
   const format = value => new Intl.DateTimeFormat('ru-RU', { day: 'numeric', month: 'long', year: 'numeric', hour: '2-digit', minute: '2-digit' }).format(new Date(value));
   function summary() {
     const block = document.querySelector('.movement-copy');
     if (!block) return;
+    if (!api.isLoaded()) {
+      block.querySelector('p').textContent = 'Загружаем записи…';
+      block.querySelector('.movement-status').disabled = true;
+      return;
+    }
+    block.querySelector('.movement-status').disabled = false;
     try {
       const rows = read();
       const lastRecord = block.querySelector('p');
@@ -84,13 +88,14 @@
     }
   }
   function open(type, trigger) {
+    if (type === 'movements' && !api.isLoaded()) return;
     opener = trigger;
     mode = type;
     dialog.querySelector('h2').textContent = type === 'tools' ? 'Все инструменты' : 'Шевеления малыша';
     if (type === 'tools') {
       content.innerHTML = `<div class="helper-options"><button class="helper" type="button" data-helper-calendar><span class="helper-icon calendar-icon sprite" aria-hidden="true"></span><span>Календарь</span></button><button class="helper" type="button" data-action="breathing"><span class="helper-icon breathing-icon sprite" aria-hidden="true"></span><span>Дыхание</span></button><button class="helper" type="button" data-action="movements"><span class="helper-icon movements-icon sprite" aria-hidden="true"></span><span>Шевеления</span></button></div>`;
     } else {
-      content.innerHTML = `<p>Нажмите, когда почувствуете шевеление: сохраним текущие дату и время.</p><button type="button" class="helper-save">Записать сейчас</button><p class="helper-feedback" role="status"></p><p class="helper-error" role="alert" hidden></p><h3>История записей</h3><ul class="movement-history"></ul><p class="helper-storage-note">Записи сохраняются в этом браузере, без синхронизации между устройствами.</p>`;
+      content.innerHTML = `<p>Нажмите, когда почувствуете шевеление: сохраним текущие дату и время.</p><button type="button" class="helper-save">Записать сейчас</button><p class="helper-feedback" role="status"></p><p class="helper-error" role="alert" hidden></p><h3>История записей</h3><ul class="movement-history"></ul><p class="helper-storage-note">Записи сохраняются в вашем аккаунте.</p>`;
       history();
     }
     if (!dialog.open) dialog.showModal();
@@ -102,35 +107,39 @@
     const trigger = dialog.contains(control) ? opener : control;
     open(control.dataset.action, trigger);
   });
-  dialog.addEventListener('click', event => {
+  dialog.addEventListener('click', async event => {
+    if (savingMovement) return;
     if (event.target.closest('[data-helper-close]')) dialog.close();
     if (event.target.closest('[data-helper-calendar]')) {
       dialog.close();
       document.querySelector('[data-action="calendar"]').click();
     }
     if (event.target.closest('.helper-save')) {
+      const button = content.querySelector('.helper-save');
+      const error = content.querySelector('.helper-error');
+      button.disabled = true;
+      savingMovement = true;
+      error.hidden = true;
+      retryMovement ||= { id: crypto.randomUUID(), recordedAt: new Date().toISOString() };
       try {
-        const rows = read();
-        rows.push(Date.now());
-        localStorage.setItem(key, JSON.stringify(rows));
-        history();
-        summary();
+        await api.write({ operation: 'addMovement', ...retryMovement });
+        retryMovement = null;
+        history(); summary();
         content.querySelector('.helper-feedback').textContent = 'Шевеление записано';
-      } catch {
-        const error = content.querySelector('.helper-error');
-        error.textContent = 'Не удалось сохранить запись. Проверьте настройки хранения в браузере и попробуйте снова.';
+      } catch (failure) {
+        error.textContent = failure.message;
         error.hidden = false;
         content.querySelector('.helper-feedback').textContent = '';
-      }
+      } finally { button.disabled = false; savingMovement = false; }
     }
     const rect = dialog.getBoundingClientRect();
     if (event.target === dialog && (event.clientX < rect.left || event.clientX > rect.right || event.clientY < rect.top || event.clientY > rect.bottom)) dialog.close();
   });
+  dialog.addEventListener('cancel', event => { if (savingMovement) event.preventDefault(); });
   dialog.addEventListener('close', () => opener?.focus());
-  window.addEventListener('storage', event => {
-    if (event.key !== key && event.key !== null) return;
-    summary();
-    if (dialog.open && mode === 'movements') history();
+  api.subscribe(() => { summary(); if (dialog.open && mode === 'movements') history(); });
+  api.load().catch(() => {
+    const block = document.querySelector('.movement-copy');
+    if (block) block.querySelector('p').textContent = 'Не удалось загрузить записи. Обновите страницу.';
   });
-  summary();
 })();

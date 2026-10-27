@@ -2,11 +2,15 @@
 (() => {
   const lock = document.querySelector('#account-lock');
   const owner = window.top;
-  let checking, heartbeat, exiting = false, suspended = false;
+  let checking, heartbeat, exiting = false, suspended = false, sessionUserId;
   function hide() { lock.sheet.disabled = false; }
   function login(reason) {
     if (exiting) return;
     exiting = true;
+    window.dispatchEvent(new Event('webpril:session-ended'));
+    document.querySelectorAll('iframe.app-section-frame').forEach(frame => {
+      try { frame.contentWindow.dispatchEvent(new Event('webpril:session-ended')); } catch {}
+    });
     hide();
     clearInterval(heartbeat);
     if (owner !== window && owner.webprilSessionGate) {
@@ -37,6 +41,12 @@
         const session = response.ok ? await response.json() : null;
         if (session?.authenticated !== true || typeof session.user?.id !== 'string' ||
             typeof session.user?.email !== 'string') { login(session?.reason); return; }
+        if (sessionUserId && sessionUserId !== session.user.id) { login('session_replaced'); return; }
+        if (window.personalDataApi?.isLoaded() && window.personalDataApi.get().accountId !== session.user.id) {
+          login('session_replaced'); return;
+        }
+        sessionUserId = session.user.id;
+        window.webprilSessionAccountId = sessionUserId;
         if (!suspended && !document.hidden && !exiting) lock.sheet.disabled = true;
       } catch { login(); }
       finally { checking = undefined; }

@@ -2,7 +2,7 @@ import { createServer } from 'node:http';
 import { AuthError, normalizeEmail, readSessionCookie, sessionCookie } from './security.mjs';
 import { weeklyVideoSource } from './weekly-videos.mjs';
 
-async function readJson(request) {
+async function readJson(request, maxSize = 4096) {
   if ((request.headers['content-type'] || '').split(';')[0].trim() !== 'application/json') {
     throw new AuthError(415, 'json_required', 'Нужен запрос JSON.');
   }
@@ -10,7 +10,7 @@ async function readJson(request) {
   const chunks = [];
   for await (const chunk of request) {
     size += chunk.length;
-    if (size > 4096) throw new AuthError(413, 'body_too_large', 'Слишком большой запрос.');
+    if (size > maxSize) throw new AuthError(413, 'body_too_large', 'Слишком большой запрос.');
     chunks.push(chunk);
   }
   try {
@@ -29,7 +29,7 @@ const positiveId = value => /^[1-9]\d*$/.test(value) && Number.isSafeInteger(Num
 const materialsUnavailable = () => new AuthError(503, 'course_materials_unavailable',
   'Материалы курсов временно недоступны. Попробуйте ещё раз.');
 
-export function createAuthServer({ service, store, courseChecks, courseMaterials, origin, enabled = false, trustProxy = false, mailPerMinute = 120 }) {
+export function createAuthServer({ service, store, courseChecks, courseMaterials, personalData, origin, enabled = false, trustProxy = false, mailPerMinute = 120 }) {
   return createServer({ requestTimeout: 15_000, headersTimeout: 10_000, maxHeaderSize: 8192 }, async (request, response) => {
     const send = (status, body, headers = {}) => {
       if (response.destroyed) return;
@@ -51,6 +51,10 @@ export function createAuthServer({ service, store, courseChecks, courseMaterials
       }
       if (request.method === 'GET' && url.pathname === '/api/auth/session') {
         send(200, await service.sessionState(readSessionCookie(request))); return;
+      }
+      if (request.method === 'GET' && url.pathname === '/api/auth/personal') {
+        if (!personalData) throw new AuthError(503, 'personal_data_unavailable', 'Личные данные временно недоступны.');
+        send(200, await personalData.read(readSessionCookie(request))); return;
       }
       if (request.method === 'GET' && url.pathname === '/api/auth/course-check') {
         const user = await service.session(readSessionCookie(request));
@@ -94,11 +98,19 @@ export function createAuthServer({ service, store, courseChecks, courseMaterials
       if (request.headers.origin !== origin || ['cross-site', 'same-site'].includes(request.headers['sec-fetch-site'])) {
         throw new AuthError(403, 'origin_rejected', 'Откройте вход на сайте приложения.');
       }
-      const data = await readJson(request);
+      const data = await readJson(request, url.pathname === '/api/auth/personal' ? 1_000_000 : 4096);
       const peer = request.socket.remoteAddress;
       const proxy = trustProxy && ['127.0.0.1', '::1', '::ffff:127.0.0.1'].includes(peer);
       const ip = proxy ? String(request.headers['x-real-ip'] || peer) : peer;
       await store.rateLimit('request_ip', ip, 600);
+      if (url.pathname === '/api/auth/personal') {
+        if (!personalData) throw new AuthError(503, 'personal_data_unavailable', 'Личные данные временно недоступны.');
+        const expectedAccountId = request.headers['x-webpril-account'];
+        if (typeof expectedAccountId !== 'string' || !/^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(expectedAccountId)) {
+          throw new AuthError(400, 'account_required', 'Обновите страницу и повторите действие.');
+        }
+        send(200, await personalData.write(readSessionCookie(request), data, expectedAccountId)); return;
+      }
       if (url.pathname === '/api/auth/profile') {
         const user = await service.saveProfile(readSessionCookie(request), data);
         send(200, { authenticated: true, user }); return;

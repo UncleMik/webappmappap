@@ -56,7 +56,7 @@ API: `https://app.legkie-rody.ru/api/articles`.
   uploads/articles/         WebP с именами по хешу исходного файла
   uploads/articles/originals/ все исходные PNG, недоступные через HTTP
   uploads/weekly/          иллюстрации недель с именами по SHA-256
-  backups/                  семь последних завершённых резервных копий
+  backups/                  семь последних завершённых наборов SQLite, uploads и PostgreSQL
   deploy/                   systemd, nginx, Certbot, исходный импорт и отчёт
 ```
 
@@ -86,6 +86,8 @@ API: `https://app.legkie-rody.ru/api/articles`.
    `tools/prepare-server-articles.py` проверяет архив против инвентаря Drive,
    сопоставляет названия и создаёт WebP с проверкой пикселей и SHA-256.
 2. Создать резервную копию: `python3 /opt/wep_pril/deploy/backup.py`.
+   Состав набора и отдельная проверка восстановления — в
+   [документе о копиях](../docs/PERSONAL_DATA_BACKUP.md).
 3. Загрузить картинки и JSON на сервер.
 4. Импортировать:
 
