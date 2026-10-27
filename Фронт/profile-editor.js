@@ -13,7 +13,7 @@ const fields = {
 const dialog = document.createElement('dialog');
 dialog.className = 'profile-editor';
 dialog.setAttribute('aria-labelledby', 'profile-editor-title');
-dialog.innerHTML = '<header><h2 id="profile-editor-title"></h2><button class="editor-close" type="button" aria-label="Закрыть"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m6 6 12 12M18 6 6 18"/></svg></button></header><form><div class="editor-body"></div><p class="editor-error" role="alert" hidden></p><div class="editor-actions"><button type="button" data-cancel>Отмена</button><button type="submit">Сохранить</button></div></form>';
+dialog.innerHTML = '<header><h2 id="profile-editor-title"></h2><button class="editor-close close-button" type="button" aria-label="Закрыть"><svg class="close-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="m6 6 12 12M18 6 6 18"/></svg></button></header><form><div class="editor-body"></div><p class="editor-error" role="alert" hidden></p><div class="editor-actions"><button type="button" data-cancel>Отмена</button><button type="submit">Сохранить</button></div></form>';
 document.body.append(dialog);
 const form = dialog.querySelector('form'), body = dialog.querySelector('.editor-body');
 const error = dialog.querySelector('.editor-error'), submit = form.querySelector('[type=submit]');

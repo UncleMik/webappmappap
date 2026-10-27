@@ -49,9 +49,19 @@ else await context.route('**/*', async route => {
   } catch { await route.fulfill({ status: 404, body: '' }); }
 });
 const page = await context.newPage(); page.on('pageerror', error => errors.push(error.message));
+async function checkClose() {
+  const geometry = await page.locator('.profile-editor .editor-close').evaluate(button => {
+    const icon = button.querySelector('svg'), b = button.getBoundingClientRect(), s = icon.getBoundingClientRect();
+    return { common: button.classList.contains('close-button') && icon.classList.contains('close-icon'),
+      dx: Math.abs(b.x + b.width / 2 - s.x - s.width / 2), dy: Math.abs(b.y + b.height / 2 - s.y - s.height / 2), width: s.width, height: s.height };
+  });
+  assert.equal(geometry.common, true); assert.ok(geometry.dx < .6 && geometry.dy < .6, JSON.stringify(geometry));
+  assert.equal(geometry.width, 22); assert.equal(geometry.height, 22);
+}
 const open = async kind => {
   await page.locator(`[data-edit="${kind}"]`).first().click();
   await page.locator('.profile-editor').waitFor({ state: 'visible' });
+  await checkClose();
 };
 const save = async () => { await page.locator('.profile-editor [type=submit]').click(); await page.locator('.profile-editor').waitFor({ state: 'hidden' }); };
 const cancel = async () => { await page.locator('.profile-editor [data-cancel]').click(); await page.locator('.profile-editor').waitFor({ state: 'hidden' }); };
@@ -78,6 +88,9 @@ try {
     await page.locator('.profile-editor [type=submit]').click(); await page.locator('.editor-error:not([hidden])').waitFor();
     assert.equal(await page.locator('[name=surname]').inputValue(), 'Черновик'); forceFail = false; await cancel(); checks++;
   }
+  await open('stage');
+  await page.locator('[name=method]').selectOption('conception'); await page.locator('[name=conception]').fill('2026-08-01'); await save();
+  assert.equal((await session()).profile.dueDate, '2027-04-24'); checks++;
   await open('stage');
   await page.locator('[name=method]').selectOption('weeks'); await page.locator('[name=weeks]').fill('20'); await page.locator('[name=days]').fill('3');
   await save(); const due = (await session()).profile.dueDate; assert.ok(due); checks++;
