@@ -64,7 +64,7 @@ def main():
             metadata[name] = (stat.st_mode & 0o777, stat.st_uid, stat.st_gid)
         else:
             metadata[name] = (0o644, 0, 0)
-        url = 'https://raw.githubusercontent.com/UncleMik/webappmappap/' + revision + '/' + urllib.parse.quote('Р¤СЂРѕРЅС‚/' + name)
+        url = 'https://raw.githubusercontent.com/UncleMik/webappmappap/' + revision + '/%D0%A4%D1%80%D0%BE%D0%BD%D1%82/' + name + '?release=' + revision
         with urllib.request.urlopen(url, timeout=25) as response:
             data = response.read(200001)
         if len(data) > 200000 or digest(data) != expected['new']:
