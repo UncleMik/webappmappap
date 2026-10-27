@@ -1,4 +1,5 @@
 import { positiveId } from './course-views.js?v=20261026-course-layout';
+import { applyCourseBanner } from './course-banners.js?v=20261027';
 
 export function node(tag, className, text) {
   const element = document.createElement(tag);
@@ -7,11 +8,12 @@ export function node(tag, className, text) {
   return element;
 }
 
-export function cover(title) {
+export function cover(title, id, kind = 'product') {
   const tone = /психолог|медитац|эмоци|страх|дыхани/i.test(title) ? 'calm'
     : /врач|медицин|тревог|кесар|КС|вакцин/i.test(title) ? 'care' : 'prepare';
   const photo = node('span', `course-cover course-cover-${tone}`);
   photo.setAttribute('aria-hidden', 'true');
+  applyCourseBanner(photo, id, kind);
   return photo;
 }
 

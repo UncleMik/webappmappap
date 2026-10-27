@@ -1,0 +1,5 @@
+/* Keep the complete GetCourse artwork visible, including its lettering. */
+.course-cover { position:relative; overflow:hidden; }
+.course-banner-image { position:absolute; inset:0; display:block; width:100%; height:100%; object-fit:contain; background:#f4f0f7; }
+.has-course-banner::before { display:none; }
+.has-course-banner .course-lock-icon { z-index:1; filter:drop-shadow(0 1px 2px white); }

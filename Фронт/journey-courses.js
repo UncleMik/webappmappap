@@ -1,4 +1,5 @@
 import { createCourseView, courseErrorText, positiveId } from './course-views.js';
+import { applyCourseBanner } from './course-banners.js?v=20261027';
 
 const section = document.querySelector('[aria-labelledby="courses-title"]');
 const list = section.querySelector('.course-list');
@@ -74,6 +75,7 @@ function render(data) {
     const photo = node('span', 'course-photo journey-photo');
     photo.setAttribute('style', '--x:282;--y:686;--w:123;--h:45');
     photo.setAttribute('aria-hidden', 'true');
+    applyCourseBanner(photo, course.productId);
     if (!course.owned) {
       const icon = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
       icon.setAttribute('class', 'course-lock-icon');

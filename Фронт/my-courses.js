@@ -1,5 +1,5 @@
 import { createCourseView, courseErrorText, positiveId } from './course-views.js?v=20261026-course-layout';
-import { node, cover, courseUrl, lessonUrl, validateCourse, primaryLink } from './course-ui.js?v=20261026-course-layout';
+import { node, cover, courseUrl, lessonUrl, validateCourse, primaryLink } from './course-ui.js?v=20261027-banners';
 
 const list = document.querySelector('.owned-list');
 const heading = document.querySelector('.owned-header h1');
@@ -46,7 +46,7 @@ function renderProducts(data) {
     card.href = courseUrl(course.productId);
     const copy = node('div', 'owned-copy');
     copy.append(node('span', 'course-label', 'Доступен'), node('h2', '', course.title), node('p', '', lessonCount(course.lessonCount)));
-    card.append(cover(course.title), copy);
+    card.append(cover(course.title, course.productId), copy);
     fragment.append(card);
   }
   if (!data.courses.length) fragment.append(paragraph('У вас пока нет доступных курсов.'), primaryLink('Посмотреть тарифы', 'courses.html'));
@@ -85,7 +85,7 @@ function renderCourse(data) {
       card.href = courseUrl(productId, section.streamId);
       const copy = node('div', 'course-module-copy');
       copy.append(node('h3', '', section.title), node('span', '', lessonCount(section.lessons.length)));
-      card.append(cover(section.title), copy);
+      card.append(cover(section.title, section.streamId, 'training'), copy);
       fragment.append(card);
     }
     const firstSection = course.sections.find(item => item.lessons.length);

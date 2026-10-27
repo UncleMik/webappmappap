@@ -5,7 +5,8 @@ import vm from 'node:vm';
 
 const viewSource = readFileSync(new URL('../Фронт/course-views.js', import.meta.url), 'utf8').replaceAll('export ', '');
 const source = readFileSync(new URL('../Фронт/journey-courses.js', import.meta.url), 'utf8')
-  .replace(/^import .*\n/, '').replaceAll('export ', '');
+  .replace(/^import .*\n/gm, '').replaceAll('export ', '');
+const bannerSource = readFileSync(new URL('../Фронт/course-banners.js', import.meta.url), 'utf8').replaceAll('export ', '');
 const flush = async () => { for (let i = 0; i < 5; i++) await new Promise(resolve => setImmediate(resolve)); };
 class Element {
   constructor(tag) { this.tag = tag; this.children = []; this.attributes = {}; this.dataset = {}; }
@@ -37,7 +38,7 @@ function harness(replies = [response(offers), response(payload())]) {
     Date, performance: { now: () => 0 }, AbortController, AbortSignal, queueMicrotask,
     setTimeout: (fn, ms) => { timers.set(++timerId, { fn, ms }); return timerId; }, clearTimeout: id => timers.delete(id),
     fetch: async (url, options) => { requests.push({ url, options }); const r = replies.shift(); if (!r) throw new Error('missing response'); return typeof r === 'function' ? r() : r; } });
-  vm.runInContext(viewSource + '\n' + source, context);
+  vm.runInContext(viewSource + '\n' + bannerSource + '\n' + source, context);
   return { list, status, retry, arrows, document, docEvents, windowEvents, requests, replies, timers, context };
 }
 const buttonOf = card => card.children.find(n => n.tag === 'a');
