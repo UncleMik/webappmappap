@@ -1,5 +1,9 @@
 (() => {
   const params = new URLSearchParams(location.search);
+  if (params.get('id') === 'breathing' && params.get('from') === 'index') {
+    document.querySelector('.bottom-navigation').hidden = false;
+    document.body.classList.add('breathing-navigation');
+  }
   const titles = {
     'back-practice': 'Расслабление спины', breathing: 'Дыхательная практика',
     'practice-article': 'Расслабление тазового дна', 'birth-course': 'Подготовка к родам',
@@ -17,7 +21,7 @@
     document.querySelector('.video-back').href = `journey.html?week=${Number.isInteger(week) && week >= 1 && week <= 42 ? week : 27}#videos-title`;
   }
   if (!['contractions-lesson', 'back-relief-video', 'birth-breathing-video'].includes(id)) {
-    import('./school-video-routes.js?v=20261027-real-videos').then(module => {
+    import('./school-video-routes.js?v=20261027-breathing-nav').then(module => {
       module.mountSchoolVideo(id);
     }).catch(() => {
       document.querySelector('.video-stage').hidden = true;

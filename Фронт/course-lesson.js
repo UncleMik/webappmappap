@@ -24,7 +24,7 @@ back.setAttribute('aria-label', 'Вернуться к курсу');
 toolbar.textContent = 'К программе курса';
 toolbar.addEventListener('click', () => back.click());
 document.querySelectorAll('.nav-item').forEach(link => {
-  const selected = link.getAttribute('href') === 'journey.html';
+  const selected = params.get('from') !== 'index-breathing' && link.getAttribute('href') === 'journey.html';
   link.classList.toggle('active', selected);
   if (selected) link.setAttribute('aria-current', 'page');
   else link.removeAttribute('aria-current');

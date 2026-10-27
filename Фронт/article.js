@@ -2,7 +2,13 @@
 const scroller = document.querySelector('.reader-scroll');
 const params = new URLSearchParams(location.search);
 if (params.has('courseLesson')) {
-  await import('./course-lesson.js?v=20261027-topic-titles');
+  if (params.get('from') === 'index-breathing') {
+    document.querySelectorAll('.nav-item').forEach(link => {
+      link.classList.remove('active');
+      link.removeAttribute('aria-current');
+    });
+  }
+  await import('./course-lesson.js?v=20261027-breathing-nav');
   return;
 }
 function showArticleNotFound() {

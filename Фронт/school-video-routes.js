@@ -75,7 +75,14 @@ export async function mountSchoolVideo(id) {
   document.querySelector('.video-app').removeAttribute('data-video-pending');
   try {
     const result = await resolveSchoolVideo(id);
-    if (result.state === 'available') { location.replace(result.href); return; }
+    if (result.state === 'available') {
+      const destination = new URL(result.href, location.href);
+      if (id === 'breathing' && new URLSearchParams(location.search).get('from') === 'index') {
+        destination.searchParams.set('from', 'index-breathing');
+      }
+      location.replace(destination.href);
+      return;
+    }
     status.textContent = result.state === 'missing'
       ? route ? 'Видео «Расслабление тазового дна» пока не добавлено.' : 'Видео по этой ссылке не найдено.'
       : 'Этот урок входит в платный курс. Сейчас доступ к нему не подтверждён: проверьте покупку и условия открытия урока.';

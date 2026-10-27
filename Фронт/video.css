@@ -9,6 +9,7 @@
 .video-favorite { background: #fcebf3; color: #e696bd; }
 .video-favorite[aria-pressed="true"] { color: #fa5ba5; background: #fde3ef; }
 .video-favorite svg { width: 2.2rem; height: 2.2rem; fill: currentColor; }
+.breathing-navigation .video-main { flex: 1; }
 .video-main { padding: 0 1rem; display: flex; flex-direction: column; }
 .video-stage { position: relative; overflow: hidden; border-radius: 2rem 2rem 0 0; aspect-ratio: var(--video-aspect-ratio, 16 / 9); background: #e6d6cf; }
 .video-stage iframe, #youtube-player { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; }
