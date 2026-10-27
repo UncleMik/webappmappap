@@ -13,6 +13,23 @@ function render(user) {
   document.documentElement.classList.toggle('account-stage-mother', profile?.stage === 'mother');
   document.querySelectorAll('[data-account-name]').forEach(element => { element.textContent = profile?.name || 'Мой аккаунт'; });
   document.querySelectorAll('[data-profile-name]').forEach(element => { element.textContent = profile?.name || '—'; });
+  document.querySelectorAll('[data-profile-field]').forEach(element => {
+    const key = element.dataset.profileField;
+    element.textContent = profile?.[key] ? (key === 'birthday' ? formatDate(profile[key]) : profile[key]) : (key === 'phone' ? 'Не указан' : '—');
+  });
+  document.querySelectorAll('[data-account-photo]').forEach(element => {
+    const version = profile?.photoVersion || '';
+    const key = `${user?.id || ''}:${version}`;
+    if (element.profilePhotoKey === key) return;
+    element.profilePhotoKey = key;
+    element.profilePlaceholder ??= element.innerHTML;
+    element.setAttribute('aria-label', version ? 'Фото профиля' : 'Фото пока не добавлено');
+    if (!version) { element.innerHTML = element.profilePlaceholder; return; }
+    const img = document.createElement('img'); img.alt = '';
+    img.src = '/api/auth/profile-photo?v=' + encodeURIComponent(version);
+    img.addEventListener('error', () => { if (element.profilePhotoKey === key) { element.innerHTML = element.profilePlaceholder; element.profilePhotoKey = ''; element.setAttribute('aria-label', 'Не удалось загрузить фото'); } });
+    element.replaceChildren(img);
+  });
   document.querySelectorAll('[data-account-summary]').forEach(element => {
     element.textContent = timing ? timing.label + (profile.stage === 'pregnancy' ? ` · ПДР ${formatDate(profile.dueDate)}` : ` · ${formatDate(profile.birthDate)}`) : '';
   });
@@ -51,4 +68,15 @@ if (location.hostname === 'app.legkie-rody.ru' || ['localhost', '127.0.0.1'].inc
   refresh();
   window.addEventListener('focus', refresh);
   window.addEventListener('pageshow', event => { if (event.persisted) refresh(); });
+  window.addEventListener('profile:saved', refresh);
+  if (typeof BroadcastChannel === 'function') {
+    const channel = new BroadcastChannel('webpril-profile');
+    channel.addEventListener('message', event => { if (event.data?.type === 'saved') refresh(); });
+  }
+  window.addEventListener('message', event => {
+    if (event.origin !== location.origin || event.data?.type !== 'profile-saved') return;
+    if (event.source !== window.parent && ![...document.querySelectorAll('iframe.app-section-frame')].some(frame => frame.contentWindow === event.source)) return;
+    refresh();
+    document.querySelectorAll('iframe.app-section-frame').forEach(frame => { if (frame.contentWindow !== event.source) frame.contentWindow.postMessage({ type: 'profile-saved' }, location.origin); });
+  });
 } else { render(null); }

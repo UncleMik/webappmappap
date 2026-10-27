@@ -1,9 +1,11 @@
 import datetime
 import importlib.util
 import json
+import os
 import pathlib
 import sqlite3
 import subprocess
+import tarfile
 import tempfile
 import unittest
 from contextlib import closing
@@ -96,6 +98,68 @@ class BackupTests(unittest.TestCase):
 
         with self.assertRaises(subprocess.CalledProcessError):
             backup.run_backup(self.root, command=failing, now=STAMP)
+        self.assertFalse((self.root / 'backups' / '20261027T031500Z' / 'complete').exists())
+
+    def test_private_profile_photo_is_inside_verified_archive(self):
+        photos = self.root / 'private-photos'
+        photos.mkdir()
+        name = '11111111-1111-4111-8111-111111111111-22222222-2222-4222-8222-222222222222.jpg'
+        (photos / name).write_bytes(b'jpeg-fixture')
+        target = backup.run_backup(self.root, command=self.command, now=STAMP,
+                                   profile_photos=photos)
+        with tarfile.open(target / 'uploads.tar.gz', 'r:gz') as archive:
+            member = archive.extractfile('uploads/private-profile-photos/' + name)
+            self.assertEqual(member.read(), b'jpeg-fixture')
+        import hashlib
+        manifest = json.loads((target / 'manifest.json').read_text())
+        self.assertEqual(hashlib.sha256((target / 'uploads.tar.gz').read_bytes()).hexdigest(),
+                         manifest['files']['uploads.tar.gz'])
+
+    def test_symlinked_photo_is_rejected_without_marking_backup_complete(self):
+        photos = self.root / 'private-photos'
+        photos.mkdir()
+        name = '11111111-1111-4111-8111-111111111111-22222222-2222-4222-8222-222222222222.jpg'
+        try:
+            (photos / name).symlink_to(self.root / 'uploads' / 'sample.txt')
+        except OSError:
+            if os.name == 'nt':
+                self.skipTest('Windows account cannot create symlinks')
+            raise
+        with self.assertRaisesRegex(RuntimeError, 'Profile photo entry'):
+            backup.run_backup(self.root, command=self.command, now=STAMP,
+                              profile_photos=photos)
+        self.assertFalse((self.root / 'backups' / '20261027T031500Z' / 'complete').exists())
+
+    def test_missing_referenced_photo_is_not_marked_complete(self):
+        name = '11111111-1111-4111-8111-111111111111-22222222-2222-4222-8222-222222222222.jpg'
+
+        def referenced(arguments, **kwargs):
+            if 'psql' in arguments:
+                return SimpleNamespace(stdout=name + '\n')
+            return self.command(arguments, **kwargs)
+
+        with self.assertRaisesRegex(RuntimeError, 'missing from backup'):
+            backup.run_backup(self.root, command=referenced, now=STAMP)
+        self.assertFalse((self.root / 'backups' / '20261027T031500Z' / 'complete').exists())
+
+    def test_photo_change_during_backup_is_not_marked_complete(self):
+        photos = self.root / 'private-photos'
+        photos.mkdir()
+        one = '11111111-1111-4111-8111-111111111111-22222222-2222-4222-8222-222222222222.jpg'
+        two = '11111111-1111-4111-8111-111111111111-33333333-3333-4333-8333-333333333333.jpg'
+        (photos / one).write_bytes(b'one')
+        seen = 0
+
+        def changing(arguments, **kwargs):
+            nonlocal seen
+            if 'psql' in arguments:
+                seen += 1
+                return SimpleNamespace(stdout=(one if seen == 1 else two) + '\n')
+            return self.command(arguments, **kwargs)
+
+        with self.assertRaisesRegex(RuntimeError, 'changed during backup'):
+            backup.run_backup(self.root, command=changing, now=STAMP,
+                              profile_photos=photos)
         self.assertFalse((self.root / 'backups' / '20261027T031500Z' / 'complete').exists())
 
 

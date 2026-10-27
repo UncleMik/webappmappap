@@ -8,6 +8,7 @@ import { createCourseChecks } from './course-checks.mjs';
 import { DatabaseSync } from 'node:sqlite';
 import { createCourseMaterials } from '../course-materials.mjs';
 import { createPersonalData } from './personal-data.mjs';
+import { createProfilePhoto } from './profile-photo.mjs';
 
 let pool, courseDb;
 function closeCourseDb() {
@@ -38,7 +39,7 @@ if (courseChecks) {
   }
 }
 const server = createAuthServer({ ...config, service, store, courseChecks, courseMaterials,
-  personalData: createPersonalData(pool), trustProxy: true });
+  personalData: createPersonalData(pool), profilePhoto: createProfilePhoto(pool), trustProxy: true });
 let working = false, stopping = false, lastCleanup = 0;
 const worker = setInterval(async () => {
   if (working || stopping || !config.enabled) return;

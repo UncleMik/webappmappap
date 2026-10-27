@@ -37,6 +37,76 @@ function integer(value, min, max) {
   return Number.isInteger(number) && number >= min && number <= max ? number : null;
 }
 
+function textField(value, label, max, required = false) {
+  if (typeof value !== 'string') throw invalid(`Проверьте поле «${label}».`);
+  const result = value.trim();
+  if ((required && !result) || [...result].length > max || /[\p{Cc}\p{Cf}]/u.test(result)) {
+    throw invalid(`Проверьте поле «${label}».`);
+  }
+  return result;
+}
+
+// Edits are deliberately partial: an expired due date must not prevent a name edit.
+export function normalizeProfileEdit(existing, changes, confirmMother = false, now = Date.now()) {
+  if (!existing?.completedAt || !changes || typeof changes !== 'object' || Array.isArray(changes)) {
+    throw invalid('Проверьте данные профиля.');
+  }
+  const allowed = new Set(['name', 'surname', 'birthday', 'city', 'phone', 'stage', 'dueDate', 'birthDate', 'goals']);
+  if (!Object.keys(changes).length || Object.keys(changes).some(key => !allowed.has(key))) throw invalid('Проверьте данные профиля.');
+  const result = { ...existing };
+  if (Object.hasOwn(changes, 'name')) result.name = textField(changes.name, 'Имя', 80, true);
+  if (Object.hasOwn(changes, 'surname')) result.surname = textField(changes.surname, 'Фамилия', 80);
+  if (Object.hasOwn(changes, 'city')) result.city = textField(changes.city, 'Город', 100);
+  if (Object.hasOwn(changes, 'birthday')) {
+    if (changes.birthday === '') result.birthday = '';
+    else {
+      const date = calendarDate(changes.birthday, 'дату рождения');
+      if (date < Date.UTC(1900, 0, 1) || date > moscowToday(now)) throw invalid('Проверьте дату рождения.');
+      result.birthday = changes.birthday;
+    }
+  }
+  if (Object.hasOwn(changes, 'phone')) {
+    const phone = textField(changes.phone, 'Номер телефона', 20);
+    if (phone && !/^\+[1-9]\d{6,14}$/.test(phone)) throw invalid('Укажите номер с кодом страны, например +79991234567.');
+    result.phone = phone;
+  }
+  const oldStage = existing.stage;
+  const stage = Object.hasOwn(changes, 'stage') ? changes.stage : oldStage;
+  if (stage !== 'pregnancy' && stage !== 'mother') throw invalid('Выберите этап.');
+  if (stage !== oldStage && !Object.hasOwn(changes, 'goals')) throw invalid('Выберите цели для нового этапа.');
+  if (oldStage === 'pregnancy' && stage === 'mother' && confirmMother !== true) {
+    throw invalid('Подтвердите рождение малыша и укажите дату рождения.');
+  }
+  if (Object.hasOwn(changes, 'goals')) {
+    const goals = changes.goals;
+    if (!Array.isArray(goals) || goals.length < 1 || goals.length > 7 ||
+      goals.some(goal => !Number.isInteger(goal) || goal < 0 || goal > 6) || new Set(goals).size !== goals.length) {
+      throw invalid('Выберите хотя бы одну цель.');
+    }
+    result.goals = [...goals];
+  }
+  if (stage === 'pregnancy') {
+    if (Object.hasOwn(changes, 'birthDate')) throw invalid('Дата рождения малыша доступна на этапе материнства.');
+    if (oldStage !== stage && !Object.hasOwn(changes, 'dueDate')) throw invalid('Укажите ПДР.');
+    if (Object.hasOwn(changes, 'dueDate')) {
+      const normalized = normalizeProfile({ name: result.name, stage, method: 'due', due: changes.dueDate, goals: result.goals }, now);
+      result.dueDate = normalized.dueDate;
+      result.method = 'due';
+    }
+    if (oldStage !== stage) result.birthDate = null;
+  } else {
+    if (Object.hasOwn(changes, 'dueDate')) throw invalid('ПДР доступна на этапе беременности.');
+    if (oldStage !== stage && !Object.hasOwn(changes, 'birthDate')) throw invalid('Укажите дату рождения малыша.');
+    if (Object.hasOwn(changes, 'birthDate')) {
+      const normalized = normalizeProfile({ name: result.name, stage, birth: changes.birthDate, goals: result.goals }, now);
+      result.birthDate = normalized.birthDate;
+    }
+    if (oldStage !== stage) { result.dueDate = null; result.method = null; }
+  }
+  result.stage = stage;
+  return result;
+}
+
 export function normalizeProfile(data, now = Date.now()) {
   if (!data || typeof data !== 'object' || Array.isArray(data)) throw invalid('Проверьте данные профиля.');
   const name = typeof data.name === 'string' ? data.name.trim() : '';

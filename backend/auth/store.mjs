@@ -1,6 +1,6 @@
 import { randomUUID } from 'node:crypto';
 import { AuthError, CODE_TTL_MS, SESSION_TTL_MS, hashToken, mac, codeMac, equalMac } from './security.mjs';
-import { normalizeProfile } from './profile.mjs';
+import { normalizeProfile, normalizeProfileEdit } from './profile.mjs';
 
 const invalidCode = () => new AuthError(401, 'invalid_code', 'Код неверный, использован или срок его действия истёк.');
 const limited = seconds => new AuthError(429, 'rate_limited', 'Слишком много попыток. Попробуйте позже.', Math.max(1, Math.ceil(seconds)));
@@ -142,11 +142,34 @@ export function createStore(pool, { secret, clock = Date.now }) {
     async saveProfile(token, data) {
       if (!token) throw new AuthError(401, 'sign_in_required', 'Войдите, чтобы сохранить профиль.');
       const profile = normalizeProfile(data, clock());
-      const { rows: [user] } = await pool.query(`UPDATE auth_users u SET profile=$3::jsonb
-        FROM auth_sessions s WHERE s.user_id=u.id AND s.token_hash=$1 AND s.expires_at>$2 AND s.revoked_at IS NULL
-        RETURNING u.id,u.email,u.profile`, [hashToken(token), date(), JSON.stringify(profile)]);
-      if (!user) throw new AuthError(401, 'sign_in_required', 'Войдите, чтобы сохранить профиль.');
-      return user;
+      return transaction(pool, async client => {
+        const { rows: [user] } = await client.query(`SELECT u.id,u.email,u.profile FROM auth_sessions s
+          JOIN auth_users u ON u.id=s.user_id WHERE s.token_hash=$1 AND s.expires_at>$2 AND s.revoked_at IS NULL
+          FOR UPDATE OF s,u`, [hashToken(token), date()]);
+        if (!user) throw new AuthError(401, 'sign_in_required', 'Войдите, чтобы сохранить профиль.');
+        if (user.profile?.completedAt) throw new AuthError(409, 'profile_completed', 'Профиль уже заполнен. Обновите страницу.');
+        const { rows: [updated] } = await client.query('UPDATE auth_users SET profile=$2::jsonb WHERE id=$1 RETURNING id,email,profile',
+          [user.id, JSON.stringify(profile)]);
+        return updated;
+      });
+    },
+    async editProfile(token, data) {
+      if (!token) throw new AuthError(401, 'sign_in_required', 'Войдите, чтобы изменить профиль.');
+      if (!data || typeof data !== 'object' || Array.isArray(data) ||
+        Object.keys(data).some(key => !['accountId', 'changes', 'confirmMother'].includes(key))) {
+        throw new AuthError(400, 'invalid_profile', 'Проверьте данные профиля.');
+      }
+      return transaction(pool, async client => {
+        const { rows: [user] } = await client.query(`SELECT u.id,u.email,u.profile FROM auth_sessions s
+          JOIN auth_users u ON u.id=s.user_id WHERE s.token_hash=$1 AND s.expires_at>$2 AND s.revoked_at IS NULL
+          FOR UPDATE OF s,u`, [hashToken(token), date()]);
+        if (!user) throw new AuthError(401, 'sign_in_required', 'Войдите, чтобы изменить профиль.');
+        if (data.accountId !== user.id) throw new AuthError(409, 'account_changed', 'Аккаунт изменился. Обновите страницу.');
+        const profile = normalizeProfileEdit(user.profile, data.changes, data.confirmMother, clock());
+        const { rows: [updated] } = await client.query('UPDATE auth_users SET profile=$2::jsonb WHERE id=$1 RETURNING id,email,profile',
+          [user.id, JSON.stringify(profile)]);
+        return updated;
+      });
     },
     async logout(token) {
       if (token) await pool.query('DELETE FROM auth_sessions WHERE token_hash=$1', [hashToken(token)]);

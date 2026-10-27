@@ -6,6 +6,7 @@ import hashlib
 import json
 import os
 import pathlib
+import re
 import shutil
 import sqlite3
 import subprocess
@@ -15,6 +16,7 @@ from contextlib import closing
 
 ROOT = pathlib.Path('/opt/wep_pril')
 AUTH_DATABASE = 'wep_pril_auth'
+PROFILE_PHOTOS = pathlib.Path('/var/lib/wep-pril-auth/profile-photos')
 
 
 def require_posix():
@@ -22,7 +24,16 @@ def require_posix():
         raise RuntimeError('Server backup requires POSIX file permissions')
 
 
-def run_backup(root=ROOT, *, command=subprocess.run, now=None):
+def photo_references(command):
+    query = "SELECT id::text || '-' || (profile->>'photoVersion') || '.jpg' FROM auth_users WHERE profile ? 'photoVersion' ORDER BY id"
+    result = command(['runuser', '-u', 'postgres', '--', 'psql', '-XAt',
+                      '-v', 'ON_ERROR_STOP=1', '-d', AUTH_DATABASE, '-c', query],
+                     stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True, check=True)
+    output = result.stdout.decode() if isinstance(result.stdout, bytes) else result.stdout
+    return {line for line in output.splitlines() if line}
+
+
+def run_backup(root=ROOT, *, command=subprocess.run, now=None, profile_photos=PROFILE_PHOTOS):
     require_posix()
     root = pathlib.Path(root).resolve()
     backups = root / 'backups'
@@ -40,8 +51,21 @@ def run_backup(root=ROOT, *, command=subprocess.run, now=None):
                     raise RuntimeError('Invalid SQLite backup')
         (target / 'articles.sqlite').chmod(0o600)
 
+        referenced_before = photo_references(command)
         with tarfile.open(target / 'uploads.tar.gz', 'w:gz') as archive:
             archive.add(root / 'uploads', arcname='uploads')
+            photos = pathlib.Path(profile_photos)
+            if photos.is_symlink():
+                raise RuntimeError('Profile photo directory is invalid')
+            if photos.exists():
+                if not photos.is_dir():
+                    raise RuntimeError('Profile photo directory is invalid')
+                for item in sorted(photos.iterdir()):
+                    if item.is_symlink() or not item.is_file() or not re.fullmatch(
+                            r'[0-9a-f]{8}-(?:[0-9a-f]{4}-){3}[0-9a-f]{12}-[0-9a-f]{8}-(?:[0-9a-f]{4}-){3}[0-9a-f]{12}\.jpg',
+                            item.name):
+                        raise RuntimeError('Profile photo entry is invalid')
+                archive.add(photos, arcname='uploads/private-profile-photos')
         (target / 'uploads.tar.gz').chmod(0o600)
 
         # Root creates this file before changing user. The postgres account can
@@ -58,6 +82,16 @@ def run_backup(root=ROOT, *, command=subprocess.run, now=None):
                 stderr=subprocess.PIPE, check=True)
         command(['pg_restore', '--file', '/dev/null', str(pg_file)], stdout=subprocess.DEVNULL,
                 stderr=subprocess.PIPE, check=True)
+        # Do not declare a complete backup if a concurrent photo change made
+        # the database and the private file archive disagree.
+        if referenced_before != photo_references(command):
+            raise RuntimeError('Profile photos changed during backup')
+        with tarfile.open(target / 'uploads.tar.gz', 'r:gz') as archive:
+            archived = {member.name.removeprefix('uploads/private-profile-photos/')
+                        for member in archive.getmembers()
+                        if member.isfile() and member.name.startswith('uploads/private-profile-photos/')}
+        if not referenced_before <= archived:
+            raise RuntimeError('Profile photo missing from backup')
 
         def checksum(name):
             digest = hashlib.sha256()
