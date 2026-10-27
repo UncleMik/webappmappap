@@ -48,11 +48,11 @@
   const requests = new WeakMap();
   let ended = false;
 
-  function load(path) {
+  function load(path, priority = 'high') {
     const url = window.weeklyImageUrl(path);
     if (ended) return Promise.reject(new Error('Session ended'));
     if (!cache.has(url)) {
-      const pending = fetch(url, { credentials: 'same-origin', signal: AbortSignal.timeout(15000) })
+      const pending = fetch(url, { credentials: 'same-origin', priority, signal: AbortSignal.timeout(15000) })
         .then(async response => {
           if (!response.ok || !response.headers.get('content-type')?.startsWith('image/')) {
             throw new Error('Image unavailable');
@@ -103,7 +103,7 @@
       const content = library[neighbour];
       if (!content) continue;
       for (const path of [content.illustration, content.comparisonImage]) {
-        if (path) load(path).catch(() => {});
+        if (path) load(path, 'low').catch(() => {});
       }
     }
   }

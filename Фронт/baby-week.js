@@ -1,6 +1,8 @@
 (async () => {
   const container = document.querySelector('.baby-page') || document.querySelector('.baby-card');
   if (!container) return;
+  // The protected weekly request can run alongside the profile request.
+  if (container.matches('.baby-page')) window.loadWeeklyContent().catch(() => {});
   try {
     await import('./account-profile.js?v=20261020-initial-content');
     await window.webprilProfileReady;
@@ -112,14 +114,18 @@
     const illustration = page.querySelector('.baby-hero-art');
     illustration.alt = `Иллюстрация развития малыша: ${week}-я неделя`;
     const illustrationReady = window.babyIllustrations.show(illustration, content.illustration, true);
+    const recommendations = page.querySelector('.article-grid');
+    recommendations.replaceChildren();
     Promise.all([illustrationReady, comparisonReady]).then(() => {
-      if (Number(page.dataset.week) === week) window.babyIllustrations.prefetch(library, week);
+      if (Number(page.dataset.week) !== week) return;
+      // Large article covers must not compete with the current baby's images.
+      window.babyIllustrations.prefetch(library, week);
+      window.renderPregnancyRecommendations(recommendations, week, 'baby');
     });
     page.querySelector('#development-title').textContent = `Развитие малыша на ${week}-й неделе`;
     page.querySelector('.baby-development > p').textContent = content.developmentDescription;
     page.querySelector('.development-link').href = `journey.html?week=${week}`;
     page.querySelector('.development-link').removeAttribute('aria-disabled');
-    window.renderPregnancyRecommendations(page.querySelector('.article-grid'), week, 'baby');
     // Movements and community content remain demo data for week 27.
     ['.baby-movements', '.community-card'].forEach(selector => {
       page.querySelector(selector).hidden = !isCurrent;

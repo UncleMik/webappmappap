@@ -10,7 +10,7 @@ import time
 import urllib.parse
 import urllib.request
 
-FILES = {'baby-illustrations.js': {'old': None, 'new': '30a73f35e2b56f7c15b40dbcc0418f6cdf9b310ea934b3bed965142adbb6a071'}, 'baby-week.js': {'old': 'deb13a7589d863903537b9da820664f0e7bcd80037641103663215c9d89ee22e', 'new': '3c5e0c93ed04b0e5db9137fe32b1d9b5d22d7e7083a9c2c2a3324dd4d884f565'}, 'baby.css': {'old': '2d45a4eb47d4d14a95dca5d08e7728aea5840a189d3617d62938c63524ac7d12', 'new': 'd2984ef31e5f4eebc6aec8e4d04dba82cea4af0ed4226e43da4fde3e9a18ed1d'}, 'baby.html': {'old': '3ab49c8de768b66cc1c2d6cd689d07e7f2e14548127776869e42a2c8136bc117', 'new': '1032459bdb7018281e605c8faa5f07e7f1d461036c6942c96f3edf04aded0cf5'}}
+FILES = {'baby-illustrations.js': {'old': '30a73f35e2b56f7c15b40dbcc0418f6cdf9b310ea934b3bed965142adbb6a071', 'new': '5f7ecc224087a7d154a3b771a3bb406038dbb03b5ae02a5c617e3a1069b7c2fd'}, 'baby-week.js': {'old': '3c5e0c93ed04b0e5db9137fe32b1d9b5d22d7e7083a9c2c2a3324dd4d884f565', 'new': '72b5cb2d7291c42f64f310cd8c763eb4e17517077977f7f7ae36b652777cd349'}, 'baby.html': {'old': '1032459bdb7018281e605c8faa5f07e7f1d461036c6942c96f3edf04aded0cf5', 'new': 'b2673c2c11caaf3c6f2bdf38299a7a418e526879ee65d79adb7652e8e71208bd'}}
 
 
 def digest(data):
