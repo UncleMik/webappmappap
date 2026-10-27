@@ -2,7 +2,7 @@
 const scroller = document.querySelector('.reader-scroll');
 const params = new URLSearchParams(location.search);
 if (params.has('courseLesson')) {
-  await import('./course-lesson.js?v=20261027-subtopics');
+  await import('./course-lesson.js?v=20261027-topic-titles');
   return;
 }
 function showArticleNotFound() {

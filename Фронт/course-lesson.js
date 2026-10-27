@@ -1,3 +1,4 @@
+import { courseVideoTopic } from './course-video-topics.js?v=20261027-topic-titles';
 import { mountCourseVideo } from './course-video-player.js?v=20261027-subtopics';
 import { courseChapters } from './course-video-chapters.js?v=20261026-weekly-style';
 import { createCourseView, courseErrorText, positiveId, stopCourseMedia } from './course-views.js?v=20261026-course-layout';
@@ -201,8 +202,7 @@ function renderLesson(data) {
     if (block?.type !== 'video' || !Array.isArray(block.videos)) continue;
     for (const [index] of block.videos.entries()) {
       const key = JSON.stringify([blockIndex, block.text, index]);
-      const caption = typeof block.text === 'string' ? block.text.trim() : '';
-      videos.push({ key, title: caption ? caption + (block.videos.length > 1 ? ` — видео ${index + 1}` : '') : `Видео ${videos.length + 1}` });
+      videos.push({ key, title: courseVideoTopic(lesson.blocks, blockIndex, lesson.title) });
     }
   }
   if (!videos.some(item => item.key === selectedVideoKey)) selectedVideoKey = videos[0]?.key ?? null;
