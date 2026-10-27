@@ -5,7 +5,7 @@ import vm from 'node:vm';
 
 const viewSource = readFileSync(new URL('../Фронт/course-views.js', import.meta.url), 'utf8').replaceAll('export ', '');
 const source = readFileSync(new URL('../Фронт/journey-courses.js', import.meta.url), 'utf8')
-  .replace(/^import .*\n/gm, '').replaceAll('export ', '');
+  .replace(/^import [^\n]*\n/gm, '').replaceAll('export ', '');
 const bannerSource = readFileSync(new URL('../Фронт/course-banners.js', import.meta.url), 'utf8').replaceAll('export ', '');
 const flush = async () => { for (let i = 0; i < 5; i++) await new Promise(resolve => setImmediate(resolve)); };
 class Element {
