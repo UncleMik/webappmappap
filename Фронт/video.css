@@ -27,6 +27,7 @@
 .step-count { color: #8190b0; font-size: 1.5rem; margin-bottom: .7rem; }
 .step-copy h2 { font-size: 2.7rem; line-height: 1.15; letter-spacing: -.07rem; }
 .step-description { color: #7383a6; font-size: 1.7rem; line-height: 1.4; margin-top: 1rem; min-height: 7.2rem; }
+.video-main > .weekly-video-description { margin:0; padding:0 2rem 1.6rem; min-height:0; color:#51475f; font-size:1.6rem; line-height:1.5; overflow-wrap:anywhere; }
 .video-timeline { display: flex; align-items: center; gap: 1.5rem; margin-top: 1.7rem; }
 #video-progress { --progress: 0%; appearance: none; height: .9rem; border-radius: 2rem; flex: 1; min-width: 0; margin: 1rem 0; background: linear-gradient(to right, #9a73ff var(--progress), #e8e3f7 var(--progress)); cursor: pointer; }
 #video-progress::-webkit-slider-thumb { appearance: none; width: 1.4rem; height: 1.4rem; background: #9869ff; border-radius: 50%; }

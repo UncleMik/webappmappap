@@ -71,7 +71,7 @@
   coverImage.addEventListener('error', () => { coverImage.hidden = true; });
   const weeklyIds = ['contractions-lesson', 'back-relief-video', 'birth-breathing-video'];
   if (weeklyIds.includes(id)) {
-    import('./weekly-video-player.js?v=20261020-initial-content').then(module => {
+    import('./weekly-video-player.js?v=20261028-descriptions').then(module => {
       module.mountWeeklyVideo(id);
       revealPlayer();
     }).catch(() => {

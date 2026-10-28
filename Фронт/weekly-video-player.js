@@ -15,7 +15,11 @@ export function mountWeeklyVideo(id) {
   document.querySelector('#video-duration').textContent = item.label;
   document.querySelector('.step-count').textContent = `${index + 1} из ${items.length}`;
   document.querySelector('#step-title').textContent = item.title;
-  document.querySelector('.step-description').textContent = item.description;
+  const description = document.querySelector('.step-description');
+  description.textContent = item.description;
+  description.classList.add('weekly-video-description');
+  // The source description belongs above the video, including on narrow screens.
+  stage.before(description);
   document.querySelector('.video-note p').textContent = 'Три видео школы доступны бесплатно после входа.';
   document.querySelector('.video-note').hidden = false;
   cover.classList.add('weekly-cover');

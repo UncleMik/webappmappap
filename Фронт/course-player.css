@@ -31,6 +31,7 @@
 @media(max-width:360px) { .course-lesson-mode .course-player .video-controls { gap:25px; } }
 
 .course-subtopic-video[hidden] { display:none !important; }
+.course-video-description { margin:0 0 16px; font-size:16px; line-height:1.5; overflow-wrap:anywhere; }
 .course-subtopic-list { list-style:none; margin:0; padding:0; display:grid; gap:8px; }
 .course-subtopic-button { width:100%; text-align:left; padding:12px 14px; border:1px solid #e8e3f7; border-radius:14px; background:#faf9ff; color:inherit; font:inherit; line-height:1.45; overflow-wrap:anywhere; cursor:pointer; }
 .course-subtopic-button[aria-current="true"] { border-color:#794aff; background:#eee7ff; color:#794aff; }

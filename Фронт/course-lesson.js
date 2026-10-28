@@ -1,4 +1,5 @@
 import { courseVideoTopic } from './course-video-topics.js?v=20261027-topic-titles';
+import { courseVideoDescription } from './course-video-description.js?v=20261028-descriptions';
 import { mountCourseVideo } from './course-video-player.js?v=20261027-subtopics';
 import { courseChapters } from './course-video-chapters.js?v=20261026-weekly-style';
 import { createCourseView, courseErrorText, positiveId, stopCourseMedia } from './course-views.js?v=20261026-course-layout';
@@ -341,6 +342,10 @@ function renderLesson(data) {
         part.hidden = key !== selectedVideoKey;
         part.setAttribute('aria-label', item.title);
         part.append(node('p', 'course-video-caption', item.title));
+        part.append(node('p', 'course-video-description', courseVideoDescription({
+          blocks: lesson.blocks, blockIndex, title: item.title, lessonTitle: lesson.title,
+          chapters: lessonChapters.get(blockIndex) || [],
+        })));
         const playerNavigation = {
           previous: videoTarget(videos[videoIndex - 1]) || target(previous),
           next: videoTarget(videos[videoIndex + 1]) || target(next), title: item.title,
