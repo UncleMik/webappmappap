@@ -13,7 +13,7 @@
     webinars: 'Запись вебинара'
   };
   const id = Object.hasOwn(titles, params.get('id')) ? params.get('id') : null;
-  const origins = { index: 'index.html', mom: 'mom.html', baby: 'baby.html', journey: 'journey.html', 'my-courses': 'my-courses.html', club: 'club.html#events', articles: 'articles.html' };
+  const origins = { index: 'index.html', mom: 'mom.html', baby: 'baby.html', journey: 'journey.html', 'my-courses': 'my-courses.html', club: 'club.html#events', articles: 'journey.html' };
   const revealPlayer = () => document.querySelector('.video-app').removeAttribute('data-video-pending');
   document.querySelector('.video-back').href = Object.hasOwn(origins, params.get('from')) ? origins[params.get('from')] : 'mom.html';
   if (params.get('from') === 'journey') {

@@ -23,11 +23,11 @@ function showArticleNotFound() {
   message.textContent = 'Возможно, ссылка устарела или материал больше недоступен.';
   const link = document.createElement('a');
   link.className = 'reader-button';
-  link.href = 'articles.html';
+  link.href = 'journey.html';
   link.textContent = 'Вернуться к списку статей';
   section.append(heading, message, link);
   scroller.replaceChildren(section);
-  document.querySelector('[data-reader-return]').href = 'articles.html';
+  document.querySelector('[data-reader-return]').href = 'journey.html';
 }
 scroller.setAttribute('aria-busy', 'true');
 const loadingMessage = document.createElement('p');
@@ -169,7 +169,7 @@ scroller.addEventListener('scroll', () => {
 }, { passive: true });
 window.articleReadState.ready.then(markReadAtEnd).catch(() => {});
 new ResizeObserver(updateProgress).observe(scroller);
-const origins = { index: 'index.html#recommendations-title', journey: 'journey.html#weekly-articles-title', baby: 'baby.html#learn-title', mom: 'mom.html#mom-recommendations-title', articles: 'articles.html', 'club-motherhood': 'club.html#motherhood' };
+const origins = { index: 'index.html#recommendations-title', journey: 'journey.html#weekly-articles-title', baby: 'baby.html#learn-title', mom: 'mom.html#mom-recommendations-title', articles: 'journey.html', 'club-motherhood': 'club.html#motherhood' };
 const origin = Object.hasOwn(origins, params.get('from')) ? params.get('from') : 'index';
 const returnWeek = article.pregnancy ? article.week : momWeek;
 const returnUrl = (origin === 'journey' || article.supplied && ['mom', 'baby'].includes(origin)) ? `${origin}.html?week=${returnWeek}#${origin === 'mom' ? 'mom-changes-title' : origin === 'baby' ? 'learn-title' : 'weekly-articles-title'}` : origins[origin];
