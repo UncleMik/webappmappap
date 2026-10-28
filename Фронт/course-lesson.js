@@ -7,6 +7,8 @@ import { node, courseUrl, lessonUrl, validateCourse, primaryLink } from './cours
 const params = new URLSearchParams(location.search);
 const productId = params.get('course');
 const lessonId = params.get('courseLesson');
+const freeLesson = (productId === '4302509' && lessonId === '347472707')
+  || (productId === '4309095' && lessonId === '347531402');
 const scroller = document.querySelector('.reader-scroll');
 const toolbar = document.querySelector('.reader-toolbar > span');
 const back = document.querySelector('[data-reader-return]');
@@ -226,8 +228,8 @@ function renderLesson(data) {
   const videoTarget = item => item ? { title: item.title, activate: () => selectVideo(item.key) } : null;
   const { byVideo: lessonChapters, tableIndexes: chapterTableIndexes } = courseChapters(lesson.blocks);
 
-  back.href = courseUrl(productId, section.streamId);
-  back.setAttribute('aria-label', 'К урокам раздела');
+  back.href = freeLesson ? 'index.html' : courseUrl(productId, section.streamId);
+  back.setAttribute('aria-label', freeLesson ? 'На главную' : 'К урокам раздела');
   const fragment = document.createDocumentFragment();
   const restoreJobs = [];
   const positions = pendingVideoPositions;
@@ -394,7 +396,7 @@ function renderLesson(data) {
   if (next) {
     navigation.append(node('h2', '', 'Следующий урок'), node('p', '', next.title),
       primaryLink('Следующий урок', lessonUrl(productId, next.lessonId, next.sectionId)));
-  } else navigation.append(primaryLink('К программе курса', courseUrl(productId)));
+  } else navigation.append(primaryLink(freeLesson ? 'На главную' : 'К программе курса', freeLesson ? 'index.html' : courseUrl(productId)));
   fragment.append(navigation);
   stopCourseMedia(scroller);
   scroller.replaceChildren(fragment);
@@ -403,7 +405,7 @@ function renderLesson(data) {
   for (const restore of restoreJobs) restore();
   scroller.removeAttribute('aria-busy');
   scroller.classList.toggle('course-copy-disabled', lesson.contentCopyDisabled);
-  toolbar.textContent = 'К урокам раздела';
+  toolbar.textContent = freeLesson ? 'На главную' : 'К урокам раздела';
   document.title = lesson.title;
 }
 
@@ -412,7 +414,7 @@ if (!positiveId(productId) || !positiveId(lessonId)) {
 } else {
   courseView = createCourseView({
     url: `/api/auth/courses/${productId}/lessons/${lessonId}`,
-    relatedUrl: `/api/auth/courses/${productId}`,
+    relatedUrl: freeLesson ? null : `/api/auth/courses/${productId}`,
     clear: reason => {
       if (reason === 'refresh' && document.visibilityState === 'visible') pendingVideoPositions = currentVideoPositions();
       else if (reason !== 'render') pendingVideoPositions = new Map();

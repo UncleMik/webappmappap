@@ -236,6 +236,29 @@ export function createCourseMaterials({ db, courseChecks, clock = Date.now }) {
       return { course: { productId, title: product.title, sections }, ...ctx.meta(validUntil) };
     },
     async lesson(userId, productId, lessonId) {
+      // This exact lesson is free after the HTTP layer verifies sign-in and profile.
+      // It does not depend on a GetCourse purchase or an external availability check.
+      const free = (productId === 4302509 && lessonId === 347472707)
+        || (productId === 4309095 && lessonId === 347531402);
+      if (free) {
+        const lesson = catalog.lessons.get(lessonId);
+        const product = catalog.products.find(p => p.productId === productId);
+        if (!lesson || !product || !pathsToRoot(lesson.parent, product.trainingId).length) throw denied();
+        const record = lessonStatement.get(lessonId);
+        if (!record || digest(record.content_json) !== record.sha256 || record.sha256 !== lesson.contentHash) throw unavailable();
+        const blocks = publicBlocks(JSON.parse(record.content_json), lessonId, record.sha256, videoLinks);
+        const now = clock(), expires = new Date(now + 300_000).toISOString();
+        return { lesson: { lessonId, productId, title: lesson.title, blocks, contentCopyDisabled: lessonPolicies.get(lessonId).disableCopy
+            || streamPolicies.get(lesson.parent).disableCopyCurrent
+            || pathsToRoot(lesson.parent, product.trainingId).some(path => path.some(sid => streamPolicies.get(sid).disableCopy)),
+          videoAvailable: blocks.some(b => b.videos?.some(v => v.url !== null)),
+          hasAssignment: lessonPolicies.get(lessonId).hasMission, assignmentAvailable: false },
+          navigation: { productId, title: product.title, sections: [{ streamId: lesson.parent,
+            title: catalog.streams.get(lesson.parent).title, lessons: [{ lessonId, title: lesson.title,
+              hasVideo: lesson.hasVideo, hasText: lesson.hasText }] }] },
+          checkedAt: new Date(now).toISOString(), serverTime: new Date(now).toISOString(),
+          expiresAt: expires, validUntil: expires };
+      }
       const ctx = await context(userId), product = owned(productId, ctx);
       const lesson = catalog.lessons.get(lessonId), access = lesson && readable(lesson, product, ctx);
       if (!access) throw denied();

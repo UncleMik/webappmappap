@@ -8,7 +8,7 @@ if (params.has('courseLesson')) {
       link.removeAttribute('aria-current');
     });
   }
-  await import('./course-lesson.js?v=20261028-materials');
+  await import('./course-lesson.js?v=20261028-free-breathing');
   return;
 }
 function showArticleNotFound() {

@@ -395,3 +395,32 @@ test('video mapping refuses a reference attached to a non-video content block', 
     assert.equal(f.db.prepare("SELECT name FROM sqlite_master WHERE name='course_video_links'").get(), undefined);
   } finally { f.close(); }
 });
+
+
+test('approved breathing lessons work with no purchases and unavailable GetCourse; neighbours stay closed', async () => {
+  for (const [productId, lessonId] of [[4302509, 347472707], [4309095, 347531402]]) {
+    const f = fixture({ purchases: [], trainingIds: [] });
+    try {
+      f.db.prepare('UPDATE course_products SET product_id=? WHERE product_id=10').run(productId);
+      f.db.prepare('UPDATE course_lesson_drafts SET lesson_id=? WHERE lesson_id=1001').run(lessonId);
+      for (const [table, column] of [['course_program_drafts', 'inventory_json'], ['course_delivery_policy', 'body_json']]) {
+        const row = f.db.prepare(`SELECT ${column} AS body FROM ${table}`).get();
+        const body = row.body.replace(/"productId":10(?=[,}])/g, `"productId":${productId}`)
+          .replace(/"id":1001(?=[,}])/g, `"id":${lessonId}`)
+          .replace(/"lessonId":1001(?=[,}])/g, `"lessonId":${lessonId}`);
+        f.db.prepare(`UPDATE ${table} SET ${column}=?,sha256=?`).run(body, hash(body));
+      }
+      let checks = 0;
+      const materials = createCourseMaterials({ db: f.db, clock: () => NOW,
+        courseChecks: { requireCurrent: async () => { checks++; throw new Error('GetCourse offline'); } } });
+      const data = await materials.lesson('free-user', productId, lessonId);
+      assert.equal(data.lesson.lessonId, lessonId);
+      assert.equal(data.navigation.sections[0].lessons.length, 1);
+      assert.equal(data.lesson.assignmentAvailable, false);
+      assert.equal(checks, 0);
+      await assert.rejects(materials.lesson('free-user', productId, 1002), /GetCourse offline/);
+      await assert.rejects(materials.course('free-user', productId), /GetCourse offline/);
+      await assert.rejects(materials.lesson('free-user', 999, lessonId), /GetCourse offline/);
+    } finally { f.close(); }
+  }
+});

@@ -21,7 +21,7 @@
     document.querySelector('.video-back').href = `journey.html?week=${Number.isInteger(week) && week >= 1 && week <= 42 ? week : 27}#videos-title`;
   }
   if (!['contractions-lesson', 'back-relief-video', 'birth-breathing-video'].includes(id)) {
-    import('./school-video-routes.js?v=20261027-breathing-nav').then(module => {
+    import('./school-video-routes.js?v=20261028-free-breathing').then(module => {
       module.mountSchoolVideo(id);
     }).catch(() => {
       document.querySelector('.video-stage').hidden = true;

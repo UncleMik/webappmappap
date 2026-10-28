@@ -15,6 +15,7 @@ test('each matched topic opens the exact purchased lesson, with both course vers
     [347472434,4302509],[347529601,4309095,4307012],[347472363,4302509],
     [347529862,4309095],[348997994,4302509]];
   for (const [id, route] of Object.entries(schoolVideoRoutes)) {
+    if (id === 'breathing') continue;
     for (const lessonId of route.lessons) {
       const candidate = candidates.find(row => row[0] === lessonId);
       assert.ok(candidate);
@@ -29,29 +30,20 @@ test('each matched topic opens the exact purchased lesson, with both course vers
 });
 
 test('unpaid user gets no lesson or video URL', async () => {
-  for (const id of Object.keys(schoolVideoRoutes)) {
+  for (const id of Object.keys(schoolVideoRoutes).filter(id => id !== 'breathing')) {
     const result = await resolveSchoolVideo(id, async () => ({ courses: [] }));
     assert.ok(['locked', 'missing'].includes(result.state));
     assert.equal(result.href, undefined);
   }
 });
 
-test('a purchase without an opened lesson cannot resolve a destination', async () => {
-  assert.equal((await resolveSchoolVideo('breathing', async path => path === '/api/auth/courses'
-    ? { courses: [{ productId: 4302509 }] } : { course: { productId: 4302509, sections: [] } })).state, 'locked');
+test('breathing opens the free lesson without requesting purchased courses', async () => {
+  const result = await resolveSchoolVideo('breathing', () => { throw new Error('purchase check must not run'); });
+  assert.equal(result.href, 'article.html?courseLesson=347472707&course=4302509');
 });
 
-test('a denied full course can fall back to the purchased express version', async () => {
-  const result = await resolveSchoolVideo('breathing', async path => {
-    if (path === '/api/auth/courses') return { courses: [{ productId: 4302509 }, { productId: 4309095 }] };
-    if (path.endsWith('/4302509')) throw Object.assign(new Error('denied'), { status: 403 });
-    return course(4309095, 347531402);
-  });
-  assert.match(result.href, /courseLesson=347531402&course=4309095/);
-});
-
-test('failed access checks do not choose a lesson', async () => {
-  for (const status of [401, 503]) await assert.rejects(resolveSchoolVideo('breathing', async () => {
+test('paid topics keep failed access checks closed', async () => {
+  for (const status of [401, 503]) await assert.rejects(resolveSchoolVideo('back-practice', async () => {
     throw Object.assign(new Error('failed'), { status });
   }), { status });
 });

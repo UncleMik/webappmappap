@@ -34,6 +34,7 @@ const productsByLesson = {
 export async function resolveSchoolVideo(id, request = requestCourse) {
   const route = Object.hasOwn(schoolVideoRoutes, id) ? schoolVideoRoutes[id] : null;
   if (!route || !route.lessons.length) return { state: 'missing', route };
+  if (id === 'breathing') return { state: 'available', href: 'article.html?courseLesson=347472707&course=4302509' };
   const { courses } = await request('/api/auth/courses');
   if (!Array.isArray(courses)) throw new Error('invalid_response');
   const owned = new Set(courses.map(course => course.productId));
