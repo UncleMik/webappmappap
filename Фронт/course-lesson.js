@@ -257,7 +257,7 @@ function renderLesson(data) {
     tabItems.forEach(([key, , panel]) => {
       const button = document.getElementById(`course-tab-${key}`);
       button?.setAttribute('aria-selected', String(key === id));
-      if (button) button.tabIndex = key === id ? 0 : -1;
+      if (button) button.tabIndex = key === id && !button.disabled ? 0 : -1;
       panel.hidden = key !== id;
     });
     // Videos below the tabs must not keep playing in a hidden panel.
@@ -272,6 +272,8 @@ function renderLesson(data) {
     const button = node('button', 'course-tab', label);
     button.id = `course-tab-${key}`;
     button.type = 'button';
+    button.disabled = tabItems.length === 1;
+    if (button.disabled) button.style.cursor = 'default';
     button.setAttribute('role', 'tab');
     button.setAttribute('aria-controls', panel.id);
     panel.setAttribute('role', 'tabpanel');
