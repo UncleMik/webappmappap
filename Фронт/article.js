@@ -8,7 +8,7 @@ if (params.has('courseLesson')) {
       link.removeAttribute('aria-current');
     });
   }
-  await import('./course-lesson.js?v=20261027-external-video');
+  await import('./course-lesson.js?v=20261028-materials');
   return;
 }
 function showArticleNotFound() {

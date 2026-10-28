@@ -246,7 +246,10 @@ function renderLesson(data) {
   const tabs = node('div', 'course-tabs');
   tabs.setAttribute('role', 'tablist');
   tabs.setAttribute('aria-label', 'Содержание урока');
-  const tabItems = [['about', 'Об уроке', about], ['materials', 'Материалы', materials]];
+  const hasMaterials = lesson.blocks.some(block => block?.type === 'image' || block?.type === 'attachment');
+  const tabItems = [['about', 'Об уроке', about]];
+  if (hasMaterials) tabItems.push(['materials', 'Материалы', materials]);
+  if (!hasMaterials) selectedTab = 'about';
   function selectTab(id) {
     selectedTab = id;
     tabItems.forEach(([key, , panel]) => {
@@ -275,7 +278,8 @@ function renderLesson(data) {
     button.addEventListener('keydown', event => {
       if (!['ArrowLeft', 'ArrowRight', 'Home', 'End'].includes(event.key)) return;
       event.preventDefault();
-      const target = event.key === 'Home' ? 0 : event.key === 'End' ? 1 : 1 - index;
+      const target = event.key === 'Home' ? 0 : event.key === 'End' ? tabItems.length - 1
+        : (index + (event.key === 'ArrowRight' ? 1 : -1) + tabItems.length) % tabItems.length;
       selectTab(tabItems[target][0]);
       tabs.children[target].focus();
     });
@@ -382,10 +386,10 @@ function renderLesson(data) {
     about.append(section);
   }
   if (!about.childNodes.length) about.append(sectionWithMessage('Описание этого урока пока не добавлено.', 'Об уроке'));
-  if (!materials.childNodes.length) materials.append(sectionWithMessage('Отдельных материалов в этом уроке нет.', 'Материалы'));
   fragment.append(videoHero);
   if (videos.length > 1) fragment.append(topics);
-  fragment.append(tabs, about, materials);
+  fragment.append(tabs, about);
+  if (hasMaterials) fragment.append(materials);
   const navigation = node('section', 'reader-section course-lesson-navigation');
   if (next) {
     navigation.append(node('h2', '', 'Следующий урок'), node('p', '', next.title),
