@@ -13,6 +13,7 @@ let db, pool, now, store, service, chat, checks, students, rights;
 before(async () => {
   db = await testPool(); pool = db.pool;
   await pool.query(await readFile(new URL('../auth/club-chat-migration.sql', import.meta.url), 'utf8'));
+  await pool.query(await readFile(new URL('../auth/chat-reactions-migration.sql', import.meta.url), 'utf8'));
 });
 after(async () => { await db?.close(); });
 function snapshot(productId = 4302509, trainingId = 935386893) {
@@ -22,7 +23,7 @@ function snapshot(productId = 4302509, trainingId = 935386893) {
       finish_at: new Date(now + 86_400_000).toISOString() }], trainingIds: [trainingId] } };
 }
 beforeEach(async () => {
-  await pool.query('TRUNCATE club_messages,auth_sessions,auth_users,auth_rate_limits');
+  await pool.query('TRUNCATE club_message_reactions,club_messages,auth_sessions,auth_users,auth_rate_limits');
   now = Date.now();
   store = createStore(pool, { secret: 'club-test-secret-longer-than-32-bytes', clock: () => now });
   service = { session: token => store.session(token) };
@@ -151,5 +152,127 @@ test('HTTP enforces session, same-origin writes, identity, cursor bounds and exi
     assert.equal((await fetch(base + '/api/auth/club/messages/after/9999999999999999999', { headers })).status, 400);
     assert.equal((await fetch(base + '/api/auth/club/messages?userId=other', { headers })).status, 400);
     assert.equal((await fetch(base + '/api/auth/club/messages/before/abc', { headers })).status, 404);
+  } finally { await new Promise(resolve => server.close(resolve)); }
+});
+
+const react = (messageId, reaction, student = students[0], extra = {}) => chat.react(student.token, student.id, { messageId, reaction, ...extra });
+const reactions = (ids, student = students[0]) => chat.reactions(student.token, student.id, { messageIds: ids });
+
+test('reactions share real totals, preserve each account selection and survive reopening', async () => {
+  const { message } = await send('Сообщение с реакциями');
+  assert.deepEqual((await read()).reactions, [{ messageId: message.id, counts: { heart: 0, love: 0, like: 0 }, selected: null }]);
+  await react(message.id, 'heart');
+  await react(message.id, 'heart', students[1]);
+  const first = (await reactions([message.id])).reactions[0];
+  assert.equal(first.counts.heart, 2); assert.equal(first.selected, 'heart');
+  await react(message.id, 'love');
+  assert.deepEqual((await reactions([message.id])).reactions[0], {
+    messageId: message.id, counts: { heart: 1, love: 1, like: 0 }, selected: 'love',
+  });
+  assert.equal((await reactions([message.id], students[1])).reactions[0].selected, 'heart');
+  const reopened = createClubChat({ pool, service, courseChecks: checks, store, clock: () => now });
+  assert.equal((await reopened.messages(students[0].token, students[0].id)).reactions[0].selected, 'love');
+  // A new login replaces the cookie, but the reaction belongs to the stable account.
+  await pool.query('UPDATE auth_sessions SET revoked_at=$2 WHERE user_id=$1', [students[0].id, new Date(now)]);
+  students[0].token = randomToken();
+  await pool.query('INSERT INTO auth_sessions(token_hash,user_id,expires_at) VALUES($1,$2,$3)',
+    [hashToken(students[0].token), students[0].id, new Date(now + 86_400_000)]);
+  assert.equal((await read()).reactions[0].selected, 'love');
+  await react(message.id, null);
+  const removed = (await read()).reactions[0];
+  assert.deepEqual(removed.counts, { heart: 1, love: 0, like: 0 }); assert.equal(removed.selected, null);
+  assert.ok(!JSON.stringify(removed).includes(students[1].id));
+});
+
+test('repeated and concurrent requests cannot duplicate a reaction or remove another account selection', async () => {
+  const { message } = await send('Проверка повторов');
+  await Promise.all([react(message.id, 'like'), react(message.id, 'like'), react(message.id, 'like', students[1])]);
+  assert.equal((await reactions([message.id])).reactions[0].counts.like, 2);
+  await Promise.all([react(message.id, null), react(message.id, null)]);
+  assert.deepEqual((await reactions([message.id])).reactions[0].counts, { heart: 0, love: 0, like: 1 });
+  assert.equal((await reactions([message.id], students[1])).reactions[0].selected, 'like');
+  assert.equal((await pool.query('SELECT count(*)::int n FROM club_message_reactions')).rows[0].n, 1);
+});
+
+test('reaction input cannot forge an author, room, count or unknown message', async () => {
+  const { message } = await send('Валидация');
+  for (const extra of [{ reaction: 'fire' }, { reaction: '❤️' }, { reaction: undefined },
+    { userId: students[1].id }, { room: 'other' }, { counts: { heart: 50 } },
+    { messageId: '0' }, { messageId: '9999999999999999999' }, { messageId: Number(message.id) }]) {
+    await assert.rejects(react(message.id, 'heart', students[0], extra), error => error.code === 'invalid_chat_reaction');
+  }
+  await assert.rejects(react('9223372036854775807', 'heart'), error => error.code === 'reaction_message_not_found');
+  for (const ids of [[], [message.id, message.id], Array.from({ length: 101 }, (_, i) => String(i + 1)), ['0']]) {
+    await assert.rejects(reactions(ids), error => error.code === 'invalid_chat_reaction');
+  }
+  await assert.rejects(reactions(['9223372036854775807']), error => error.code === 'reaction_message_not_found');
+  assert.equal((await pool.query('SELECT count(*)::int n FROM club_message_reactions')).rows[0].n, 0);
+});
+
+test('reaction reads and writes enforce paid rights, account identity and session expiry', async () => {
+  const { message } = await send('Проверка доступа');
+  await assert.rejects(chat.react(students[0].token, students[1].id, { messageId: message.id, reaction: 'heart' }), error => error.code === 'account_changed');
+  for (const mode of ['unpaid', 'expired', 'upstream']) {
+    rights.set(students[0].id, mode === 'unpaid' ? snapshot(4307012, 935397517) : snapshot());
+    if (mode === 'expired') rights.get(students[0].id).snapshot.purchases[0].finish_at = new Date(now).toISOString();
+    if (mode === 'upstream') checks.requireCurrent = async () => { throw new AuthError(503, 'course_check_unavailable', 'Нет проверки'); };
+    for (const action of [() => react(message.id, 'heart'), () => reactions([message.id])]) {
+      await assert.rejects(action(), error => error.status === (mode === 'upstream' ? 503 : 403));
+    }
+  }
+  checks.requireCurrent = async id => rights.get(id); rights.set(students[0].id, snapshot());
+  await pool.query('UPDATE auth_sessions SET expires_at=$2 WHERE user_id=$1', [students[0].id, new Date(now - 1)]);
+  await assert.rejects(react(message.id, 'heart'), error => error.status === 401);
+  await assert.rejects(reactions([message.id]), error => error.status === 401);
+  assert.equal((await pool.query('SELECT count(*)::int n FROM club_message_reactions')).rows[0].n, 0);
+});
+
+test('revoking a session during the access check also prevents saving a reaction', async () => {
+  const { message } = await send('Отзыв сессии');
+  checks.requireCurrent = async id => {
+    await pool.query('UPDATE auth_sessions SET revoked_at=$2 WHERE user_id=$1', [id, new Date(now)]);
+    return rights.get(id);
+  };
+  await assert.rejects(react(message.id, 'heart'), error => error.status === 401);
+  assert.equal((await pool.query('SELECT count(*)::int n FROM club_message_reactions')).rows[0].n, 0);
+});
+
+test('older messages expose current reactions through history and dedicated refresh', async () => {
+  const { message } = await send('Старое сообщение');
+  for (let i = 0; i < 50; i++) await send('Новое ' + i);
+  await react(message.id, 'love', students[1]);
+  const latest = await read();
+  const older = await read(students[0], 'before', latest.messages[0].id);
+  assert.equal(older.reactions[0].messageId, message.id);
+  assert.deepEqual(older.reactions[0].counts, { heart: 0, love: 1, like: 0 });
+  await react(message.id, 'like', students[1]);
+  assert.deepEqual((await reactions([message.id])).reactions[0].counts, { heart: 0, love: 0, like: 1 });
+});
+
+test('reaction HTTP endpoints require the session, same origin, account header and bounded JSON', async () => {
+  const { message } = await send('Реакции через HTTP');
+  const origin = 'https://app.legkie-rody.ru';
+  const server = createAuthServer({ origin, enabled: true, store, service, clubChat: chat });
+  server.listen(0, '127.0.0.1'); await once(server, 'listening');
+  const base = `http://127.0.0.1:${server.address().port}/api/auth/club/reactions`;
+  const headers = { cookie: `__Host-school_session=${students[0].token}`,
+    'x-webpril-account': students[0].id, origin, 'content-type': 'application/json' };
+  const body = JSON.stringify({ messageId: message.id, reaction: 'heart' });
+  const post = (path = '', extra = {}) => fetch(base + path, { method: 'POST', headers, body, ...extra });
+  try {
+    assert.equal((await post('', { headers: { ...headers, cookie: '' } })).status, 401);
+    assert.equal((await post('', { headers: { ...headers, origin: 'https://elsewhere.invalid' } })).status, 403);
+    assert.equal((await post('', { headers: { ...headers, 'x-webpril-account': students[1].id } })).status, 409);
+    const noAccount = { ...headers }; delete noAccount['x-webpril-account'];
+    assert.equal((await post('', { headers: noAccount })).status, 409);
+    assert.equal((await post('', { body: JSON.stringify({ messageId: message.id, reaction: 'heart', userId: students[1].id }) })).status, 400);
+    const saved = await post(); assert.equal(saved.status, 200);
+    assert.equal(saved.headers.get('cache-control'), 'no-store');
+    assert.equal((await saved.json()).reactions[0].counts.heart, 1);
+    const refresh = await post('/read', { body: JSON.stringify({ messageIds: [message.id] }) });
+    assert.equal(refresh.status, 200); assert.equal((await refresh.json()).reactions[0].selected, 'heart');
+    assert.equal((await post('/read', { headers: { ...headers, cookie: '' }, body: JSON.stringify({ messageIds: [message.id] }) })).status, 401);
+    assert.equal((await post('', { body: JSON.stringify({ messageId: message.id, reaction: 'x'.repeat(5000) }) })).status, 413);
+    assert.equal((await post('?userId=other')).status, 400);
   } finally { await new Promise(resolve => server.close(resolve)); }
 });

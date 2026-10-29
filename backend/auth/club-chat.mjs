@@ -15,6 +15,20 @@ const signedOut = () => new AuthError(401, 'sign_in_required', 'Войдите �
 const changed = () => new AuthError(409, 'account_changed', 'Аккаунт изменился. Обновите страницу.');
 const denied = () => new AuthError(403, 'club_course_required', 'Чат доступен при действующем доступе к курсу «Лёгкие роды».');
 const unavailable = () => new AuthError(503, 'club_unavailable', 'Чат временно недоступен. Попробуйте ещё раз.');
+const badReaction = () => new AuthError(400, 'invalid_chat_reaction', 'Выберите одну из доступных реакций.');
+const reactionMissing = () => new AuthError(404, 'reaction_message_not_found', 'Сообщение для реакции не найдено.');
+async function reactionStates(client, userId, ids) {
+  if (!ids.length) return [];
+  const { rows } = await client.query(`SELECT m.id,
+    count(r.user_id) FILTER (WHERE r.reaction='heart')::integer AS heart,
+    count(r.user_id) FILTER (WHERE r.reaction='love')::integer AS love,
+    count(r.user_id) FILTER (WHERE r.reaction='like')::integer AS like,
+    max(r.reaction) FILTER (WHERE r.user_id=$2::uuid) AS selected
+    FROM club_messages m LEFT JOIN club_message_reactions r ON r.message_id=m.id
+    WHERE m.room=$1 AND m.id=ANY($3::bigint[]) GROUP BY m.id ORDER BY m.id`, [ROOM.id, userId, ids]);
+  return rows.map(row => ({ messageId: String(row.id),
+    counts: { heart: row.heart, love: row.love, like: row.like }, selected: row.selected }));
+}
 const columns = `m.id, m.body, m.created_at, m.author_id=$2::uuid AS own,
   COALESCE(NULLIF(btrim(u.profile->>'name'),''),'Участница') AS author_name,
   r.id AS reply_id, r.body AS reply_body,
@@ -76,7 +90,37 @@ export function createClubChat({ pool, service, courseChecks, store, clock = Dat
           ORDER BY m.id ${forward ? 'ASC' : 'DESC'} LIMIT 51`, params);
         const messages = rows.slice(0, 50).map(format);
         if (!forward) messages.reverse();
-        return { room: ROOM, messages, hasMore: rows.length > 50 };
+        return { room: ROOM, messages, hasMore: rows.length > 50,
+          reactions: await reactionStates(client, userId, messages.map(message => message.id)) };
+      });
+    },
+    async reactions(token, expectedAccountId, data) {
+      if (!uuid(expectedAccountId)) throw changed();
+      if (!data || Object.keys(data).some(key => key !== 'messageIds') || !Array.isArray(data.messageIds)
+        || data.messageIds.length < 1 || data.messageIds.length > 100 || !data.messageIds.every(messageId)
+        || new Set(data.messageIds).size !== data.messageIds.length) throw badReaction();
+      return access(token, expectedAccountId, true, async (client, userId) => {
+        const reactions = await reactionStates(client, userId, data.messageIds);
+        if (reactions.length !== data.messageIds.length) throw reactionMissing();
+        return { reactions };
+      });
+    },
+    async react(token, expectedAccountId, data) {
+      if (!uuid(expectedAccountId)) throw changed();
+      if (!data || Object.keys(data).some(key => !['messageId', 'reaction'].includes(key))
+        || !messageId(data.messageId) || ![null, 'heart', 'love', 'like'].includes(data.reaction)) throw badReaction();
+      return access(token, expectedAccountId, true, async (client, userId) => {
+        // Existing chat permissions allow reading messages; only reaction rows are modified.
+        const { rows } = await client.query('SELECT id FROM club_messages WHERE room=$1 AND id=$2::bigint', [ROOM.id, data.messageId]);
+        if (!rows.length) throw reactionMissing();
+        // Set the requested state instead of toggling: a lost acknowledgement can be retried safely.
+        if (data.reaction === null) {
+          await client.query('DELETE FROM club_message_reactions WHERE message_id=$1 AND user_id=$2', [data.messageId, userId]);
+        } else {
+          await client.query(`INSERT INTO club_message_reactions(message_id,user_id,reaction) VALUES($1,$2,$3)
+            ON CONFLICT(message_id,user_id) DO UPDATE SET reaction=excluded.reaction`, [data.messageId, userId, data.reaction]);
+        }
+        return { reactions: await reactionStates(client, userId, [data.messageId]) };
       });
     },
     async send(token, expectedAccountId, data) {
@@ -100,7 +144,8 @@ export function createClubChat({ pool, service, courseChecks, store, clock = Dat
         if (!saved || saved.body !== text || String(saved.reply_to_id ?? '') !== String(replyTo ?? '')) {
           throw new AuthError(409, 'chat_request_reused', 'Сообщение изменилось. Отправьте его ещё раз.');
         }
-        return { message: format(saved), duplicate: rows.length === 0 };
+        return { message: format(saved), duplicate: rows.length === 0,
+          reactions: await reactionStates(client, userId, [String(saved.id)]) };
       });
     },
   });

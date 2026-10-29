@@ -12,8 +12,9 @@
   <link rel="stylesheet" href="styles.css?v=20261008-close">
   <link rel="stylesheet" href="club.css?v=20261013-speakers-centered">
   <link rel="stylesheet" href="club-chat-live.css?v=20261029-chat">
+  <link rel="stylesheet" href="chat-reactions.css?v=20261029-reactions">
   <link rel="stylesheet" href="mobile-layout.css?v=20261007-darker-sides">
-  <script type="module" src="club-chat.js?v=20261029-chat"></script>
+  <script type="module" src="club-chat.js?v=20261029-reactions"></script>
 </head>
 <body class="club-page community-chat"><div class="app">
   <header class="discussion-header"><a href="club.html#pregnancy" aria-label="Назад в клуб">‹</a><div><h1>Лёгкие роды</h1><p>Чат участниц курса</p></div></header>
@@ -21,6 +22,7 @@
   <div class="chat-actions"><button class="club-access-action" id="chat-retry" type="button" hidden>Повторить подключение</button><a class="club-access-action" id="chat-courses" href="courses.html" hidden>Посмотреть курсы</a></div>
   <button class="chat-history" id="chat-history" type="button" hidden>Ранние сообщения</button>
   <main class="discussion-messages" id="chat-messages" role="log" aria-label="Сообщения участниц" aria-live="polite" aria-relevant="additions"></main>
+  <p class="reaction-status" id="reaction-status" role="status" aria-live="polite"></p>
   <div class="discussion-controls" id="chat-controls" hidden>
     <div class="chat-reply-preview" id="chat-reply" hidden><p></p><button type="button" aria-label="Отменить ответ">×</button></div>
     <form class="discussion-composer" id="chat-form">

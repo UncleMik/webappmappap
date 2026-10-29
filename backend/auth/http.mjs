@@ -125,6 +125,11 @@ export function createAuthServer({ service, store, courseChecks, courseMaterials
       const proxy = trustProxy && ['127.0.0.1', '::1', '::ffff:127.0.0.1'].includes(peer);
       const ip = proxy ? String(request.headers['x-real-ip'] || peer) : peer;
       await store.rateLimit('request_ip', ip, 600);
+      if (url.pathname === '/api/auth/club/reactions' || url.pathname === '/api/auth/club/reactions/read') {
+        if (!clubChat) throw new AuthError(503, 'club_unavailable', 'Чат временно недоступен.');
+        const action = url.pathname.endsWith('/read') ? 'reactions' : 'react';
+        send(200, await clubChat[action](readSessionCookie(request), request.headers['x-webpril-account'], data)); return;
+      }
       if (url.pathname === '/api/auth/club/messages') {
         if (!clubChat) throw new AuthError(503, 'club_unavailable', 'Чат временно недоступен.');
         send(200, await clubChat.send(readSessionCookie(request), request.headers['x-webpril-account'], data)); return;

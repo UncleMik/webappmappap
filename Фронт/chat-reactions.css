@@ -1,0 +1,80 @@
+.message-reactions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+  margin-top: 6px;
+}
+.message-reactions .reaction,
+.add-reaction {
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  gap: 5px;
+  min-width: 44px;
+  min-height: 44px;
+  padding: 6px 9px;
+  border: 1px solid transparent;
+  border-radius: 14px;
+  background: #f1eafb;
+  color: #55427b;
+  font-size: 13px;
+  line-height: 1;
+  touch-action: manipulation;
+  transition: background-color 150ms, border-color 150ms;
+}
+.message-reactions .reaction[aria-pressed="true"] {
+  background: #e3d1ff;
+  border-color: var(--purple);
+  outline: none;
+  font-weight: 700;
+}
+.message-reactions .reaction[aria-pressed="true"]::after {
+  content: "✓";
+  font-size: 12px;
+}
+.message-reactions button:focus-visible {
+  outline: 2px solid var(--purple);
+  outline-offset: 2px;
+}
+.reaction-emoji { font-size: 19px; }
+.reaction-count { font-variant-numeric: tabular-nums; }
+.add-reaction { background: transparent; border-color: #d5c7e6; }
+.add-reaction svg { width: 22px; height: 22px; fill: none; stroke: currentColor; stroke-width: 1.6; stroke-linecap: round; }
+.message-reactions button:disabled { opacity: .5; cursor: default; }
+.discussion-bubble footer { flex-wrap: wrap; }
+.discussion-bubble footer > time,
+.discussion-bubble footer > .discussion-message-meta { margin-left: auto; flex-shrink: 0; }
+.reaction-picker {
+  position: fixed;
+  inset: auto;
+  z-index: 110;
+  display: flex;
+  gap: 8px;
+  margin: 0;
+  padding: 8px;
+  border: 1px solid #d5c7e6;
+  border-radius: 20px;
+  background: #fff;
+  box-shadow: 0 6px 24px #55427b26;
+}
+.reaction-picker[hidden] { display: none; }
+.reaction-option {
+  display: grid;
+  place-items: center;
+  width: 48px;
+  min-height: 48px;
+  border: 1px solid transparent;
+  border-radius: 13px;
+  background: #f8f4fc;
+  font-size: 26px;
+  line-height: 1;
+  touch-action: manipulation;
+}
+.reaction-option[aria-pressed="true"] { border-color: var(--purple); background: #e3d1ff; }
+.reaction-status { flex: none; min-height: 1.4em; margin: 0 1.8rem 6px; color: #55427b; font-size: 12px; line-height: 1.4; }
+.reaction-status:empty { display: none; }
+@media (prefers-reduced-motion: reduce) {
+  .message-reactions .reaction, .add-reaction { transition: none; }
+}
