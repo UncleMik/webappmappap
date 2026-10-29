@@ -1,0 +1,23 @@
+.club-access-action { display:inline-flex; align-items:center; min-height:44px; color:#794aff; font-size:1.4rem; background:transparent; text-decoration:underline; text-underline-offset:3px; }
+.club-access-action:focus-visible, .chat-reply-button:focus-visible { outline:2px solid #794aff; outline-offset:2px; }
+.community-chat .app { height:var(--club-viewport-height,100dvh); }
+.chat-status { padding:.8rem 1.8rem; font-size:1.4rem; line-height:1.5; color:#60546f; }
+.chat-status:empty { display:none; }
+.chat-actions { display:flex; flex-wrap:wrap; gap:1rem; padding:0 1.8rem; flex:none; }
+.chat-actions:has(> [hidden]):not(:has(> :not([hidden]))) { display:none; }
+.chat-history { display:block; margin:0 auto; min-height:44px; padding:.6rem 1.4rem; color:#794aff; background:#f7f2ff; border-radius:1.3rem; font-size:1.35rem; flex:none; }
+.discussion-message { scroll-margin-block:1rem; }
+.discussion-bubble { min-width:0; overflow-wrap:anywhere; }
+.discussion-bubble p { white-space:pre-wrap; }
+.discussion-bubble blockquote { margin:.3rem 0 .7rem; padding:.6rem .8rem; border-left:2px solid #b18be8; background:#eee7f7; font-size:1.2rem; line-height:1.45; color:#51446f; white-space:pre-wrap; overflow-wrap:anywhere; }
+.discussion-bubble blockquote strong { display:block; }
+.chat-reply-button { background:transparent; min-height:44px; padding:.4rem .3rem; color:#794aff; font-size:1.2rem; }
+.member-avatar { background-image:none; background-color:#eee2fa; color:#6e4095; font-size:1.3rem; }
+.chat-reply-preview { display:flex; align-items:center; gap:1rem; margin-bottom:.8rem; padding:.7rem 1rem; border-radius:1rem; background:#f3edfc; color:#51446f; font-size:1.3rem; }
+.chat-reply-preview p { flex:1; min-width:0; overflow-wrap:anywhere; }
+.chat-reply-preview button { min-width:44px; min-height:44px; background:transparent; color:#794aff; font-size:2.4rem; }
+.composer-field textarea { resize:none; max-height:12rem; width:100%; min-height:44px; min-width:0; border:0; background:transparent; padding:1.1rem 1.2rem; font:inherit; font-size:16px; line-height:1.4; color:#171333; outline:0; }
+.discussion-composer .discussion-send { width:44px; height:44px; }
+.discussion-composer .discussion-send:disabled { opacity:.45; }
+.discussion-send svg { width:40px; height:40px; }
+.discussion-messages { overflow-anchor:none; }

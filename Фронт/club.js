@@ -88,5 +88,6 @@
  });
  window.addEventListener('hashchange', () => select(location.hash.slice(1)));
  window.addEventListener('popstate', () => select(location.hash.slice(1)));
+ document.addEventListener('club:entries-changed', filter);
  select(location.hash.slice(1));
 })();

@@ -12,7 +12,9 @@
   <link rel="preload" href="assets/fonts/Intro-Bold.woff" as="font" type="font/woff" crossorigin>
   <link rel="stylesheet" href="styles.css?v=20261008-close">
   <link rel="stylesheet" href="club.css?v=20261013-speakers-centered">
-  <script src="club.js?v=20261029-cleanup" defer></script>
+  <script src="club.js?v=20261029-chat" defer></script>
+  <link rel="stylesheet" href="club-chat-live.css?v=20261029-chat">
+  <script type="module" src="club-access.js?v=20261029-chat"></script>
   <link rel="stylesheet" href="app-navigation.css?v=20261006-gotham">
   <link rel="stylesheet" href="mobile-layout.css?v=20261007-darker-sides">
 </head>
@@ -55,6 +57,9 @@
 <div class="community-tabs" role="tablist" aria-label="Разделы клуба"><button role="tab" id="pregnancy-tab" data-tab="pregnancy" aria-selected="true" aria-controls="community-content" tabindex="0">Беременность</button><button role="tab" id="motherhood-tab" data-tab="motherhood" aria-selected="false" aria-controls="community-content" tabindex="-1">Я мама</button><button role="tab" id="events-tab" data-tab="events" aria-selected="false" aria-controls="community-content" tabindex="-1">События</button></div>
 <div id="community-content" role="tabpanel" aria-labelledby="pregnancy-tab">
 <div data-category="pregnancy">
+<section class="community-section"><div class="community-heading"><h2>Лёгкие роды</h2></div>
+<div class="community-row club-entry"><span class="community-icon people"><svg aria-hidden="true"><use href="#people"/></svg></span><div class="community-copy"><strong>Чат участниц курса</strong><span id="club-access-status" role="status">Проверяем доступ к чату…</span><a class="club-access-action" id="club-access-link" hidden>Открыть чат</a><button class="club-access-action" id="club-access-retry" type="button" hidden>Повторить проверку</button></div></div>
+</section>
 <section class="community-section"><div class="community-heading"><h2>Материалы школы</h2></div><a class="community-row club-entry" href="journey.html"><span class="community-icon calendar"><svg aria-hidden="true"><use href="#calendar"/></svg></span><span class="community-copy"><strong>Статьи и практики</strong><span>Материалы для вас</span></span><span class="community-meta">›</span></a>
 </section>
 </div>
