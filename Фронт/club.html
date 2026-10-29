@@ -12,7 +12,7 @@
   <link rel="preload" href="assets/fonts/Intro-Bold.woff" as="font" type="font/woff" crossorigin>
   <link rel="stylesheet" href="styles.css?v=20261008-close">
   <link rel="stylesheet" href="club.css?v=20261013-speakers-centered">
-  <script src="club.js?v=20261013-speakers-no-pause" defer></script>
+  <script src="club.js?v=20261029-cleanup" defer></script>
   <link rel="stylesheet" href="app-navigation.css?v=20261006-gotham">
   <link rel="stylesheet" href="mobile-layout.css?v=20261007-darker-sides">
 </head>
@@ -29,7 +29,7 @@
     <symbol id="people" viewBox="0 0 30 30"><circle cx="15" cy="9" r="4"/><path d="M8 25v-3a7 7 0 0 1 14 0v3Z" fill="currentColor" stroke="none"/><path d="M7 7a4 4 0 0 0 0 8M23 7a4 4 0 0 1 0 8M7 18a5 5 0 0 0-5 5v2h3M23 18a5 5 0 0 1 5 5v2h-3"/></symbol>
   <symbol id="bell" viewBox="0 0 24 24"><path d="M5 17h14l-2-3V9a5 5 0 0 0-10 0v5Zm5 4h4"/></symbol><symbol id="video" viewBox="0 0 24 24"><rect x="3" y="5" width="12" height="14" rx="3"/><path d="m15 9 6-3v12l-6-3"/></symbol><symbol id="baby" viewBox="0 0 24 24"><circle cx="12" cy="13" r="8"/><path d="M12 5c4-5-3-6-2-1M8 12h.1M16 12h.1M9 16q3 3 6 0"/></symbol></defs></svg>
   <div class="app">
-    <header class="page-header club-header"><div><h1>Клуб</h1><p>Поддержка по сроку, этапу и теме</p></div><div class="header-actions"><button class="club-tool" id="search-toggle" type="button" aria-label="Поиск в клубе" aria-expanded="false" aria-controls="club-search"><svg aria-hidden="true"><use href="#search"/></svg></button><button class="club-tool" type="button" data-notice="Уведомления клуба пока не подключены." aria-label="Уведомления"><svg aria-hidden="true"><use href="#bell"/></svg></button></div></header>
+    <header class="page-header club-header"><div><h1>Клуб</h1><p>Поддержка по сроку, этапу и теме</p></div><div class="header-actions"><button class="club-tool" id="search-toggle" type="button" aria-label="Поиск в клубе" aria-expanded="false" aria-controls="club-search"><svg aria-hidden="true"><use href="#search"/></svg></button></div></header>
 <main class="club-main">
 <section class="speaker-carousel" aria-label="Спикеры школы" aria-roledescription="карусель">
  <div class="speaker-slides">
@@ -55,40 +55,14 @@
 <div class="community-tabs" role="tablist" aria-label="Разделы клуба"><button role="tab" id="pregnancy-tab" data-tab="pregnancy" aria-selected="true" aria-controls="community-content" tabindex="0">Беременность</button><button role="tab" id="motherhood-tab" data-tab="motherhood" aria-selected="false" aria-controls="community-content" tabindex="-1">Я мама</button><button role="tab" id="events-tab" data-tab="events" aria-selected="false" aria-controls="community-content" tabindex="-1">События</button></div>
 <div id="community-content" role="tabpanel" aria-labelledby="pregnancy-tab">
 <div data-category="pregnancy">
-<section class="community-section"><div class="community-heading"><h2>Чаты по триместрам</h2></div><a class="community-row club-entry" href="club-chat.html?room=trimester-1"><span class="community-icon baby"><svg aria-hidden="true"><use href="#baby"/></svg></span><span class="community-copy"><strong>1 триместр </strong><span>Общение и поддержка на вашем этапе</span></span><span class="community-meta">›</span></a>
-<a class="community-row club-entry" href="club-chat.html?room=trimester-2"><span class="community-icon baby"><svg aria-hidden="true"><use href="#baby"/></svg></span><span class="community-copy"><strong>2 триместр </strong><span>Общение и поддержка на вашем этапе</span></span><span class="community-meta">›</span></a>
-<a class="community-row club-entry" href="club-chat.html?room=trimester-3"><span class="community-icon baby"><svg aria-hidden="true"><use href="#baby"/></svg></span><span class="community-copy"><strong>3 триместр </strong><span>Общение и поддержка на вашем этапе</span></span><span class="community-meta">›</span></a>
-</section>
-<section class="community-section"><div class="community-heading"><h2>Закрытые чаты</h2></div><a class="community-row club-entry" href="club-chat.html?room=pregnancy-students"><span class="community-icon people"><svg aria-hidden="true"><use href="#people"/></svg></span><span class="community-copy"><strong>Ученицы курса <svg class="inline-lock" aria-label="Закрытый чат"><use href="#lock"/></svg></strong><span>Закрытый чат · демонстрация</span></span><span class="community-meta">›</span></a>
-<a class="community-row club-entry" href="club-chat.html?room=pregnancy-experts"><span class="community-icon bubble"><svg aria-hidden="true"><use href="#bubble"/></svg></span><span class="community-copy"><strong>Чат с экспертами <svg class="inline-lock" aria-label="Закрытый чат"><use href="#lock"/></svg></strong><span>Закрытый чат · демонстрация</span></span><span class="community-meta">›</span></a>
-</section>
 <section class="community-section"><div class="community-heading"><h2>Материалы школы</h2></div><a class="community-row club-entry" href="journey.html"><span class="community-icon calendar"><svg aria-hidden="true"><use href="#calendar"/></svg></span><span class="community-copy"><strong>Статьи и практики</strong><span>Материалы для вас</span></span><span class="community-meta">›</span></a>
 </section>
 </div>
-<div data-category="motherhood" hidden>
-<section class="community-section"><div class="community-heading"><h2>Чаты по возрасту малыша</h2></div><a class="community-row club-entry" href="club-chat.html?room=baby-0-6"><span class="community-icon baby"><svg aria-hidden="true"><use href="#baby"/></svg></span><span class="community-copy"><strong>0–6 месяцев </strong><span>Общение мам с малышами до 6 месяцев</span></span><span class="community-meta">›</span></a>
-<a class="community-row club-entry" href="club-chat.html?room=baby-6-plus"><span class="community-icon baby"><svg aria-hidden="true"><use href="#baby"/></svg></span><span class="community-copy"><strong>От 6 месяцев </strong><span>Общение мам с малышами от 6 месяцев</span></span><span class="community-meta">›</span></a>
-</section>
-<section class="community-section"><div class="community-heading"><h2>Закрытые чаты</h2></div><a class="community-row club-entry" href="club-chat.html?room=motherhood-students"><span class="community-icon people"><svg aria-hidden="true"><use href="#people"/></svg></span><span class="community-copy"><strong>Ученицы курса <svg class="inline-lock" aria-label="Закрытый чат"><use href="#lock"/></svg></strong><span>Закрытый чат · демонстрация</span></span><span class="community-meta">›</span></a>
-<a class="community-row club-entry" href="club-chat.html?room=motherhood-experts"><span class="community-icon bubble"><svg aria-hidden="true"><use href="#bubble"/></svg></span><span class="community-copy"><strong>Чат с экспертами <svg class="inline-lock" aria-label="Закрытый чат"><use href="#lock"/></svg></strong><span>Закрытый чат · демонстрация</span></span><span class="community-meta">›</span></a>
-</section>
-
-
+<div data-category="motherhood" hidden></div>
+<div data-category="events" hidden></div>
 </div>
-<div id="events-panel" data-category="events" hidden>
-<section class="club-section" aria-labelledby="public-events"><div class="club-section-heading"><span class="section-icon"><svg aria-hidden="true"><use href="#calendar"/></svg></span><div><h2 id="public-events">Эфиры по этапам</h2><p>Примеры тем. Расписание и спикеры будут добавлены позже.</p></div></div><div class="event-list">
-<button class="event-card club-entry" type="button" data-preview="Это пример эфира «Дыхание в родах: практика и вопросы». Дата, спикер и ссылка на встречу будут добавлены после согласования."><span class="event-photo breathing-photo" role="img" aria-label="Иллюстрация темы эфира"></span><span class="event-copy"><span class="event-badge">Беременность</span><strong>Дыхание в родах: практика и вопросы</strong><span class="event-date">Дата уточняется</span><span class="event-expert">Акушер-гинеколог<br>Спикер уточняется</span></span><svg class="row-arrow" aria-hidden="true"><use href="#arrow"/></svg></button>
-<button class="event-card club-entry" type="button" data-preview="Это пример эфира «Первые месяцы с малышом: вопросы родителей». Дата, спикер и ссылка на встречу будут добавлены после согласования."><span class="event-photo sleep-photo" role="img" aria-label="Иллюстрация темы эфира"></span><span class="event-copy"><span class="event-badge">0–6 месяцев</span><strong>Первые месяцы с малышом: вопросы родителей</strong><span class="event-date">Дата уточняется</span><span class="event-expert">Педиатр<br>Спикер уточняется</span></span><svg class="row-arrow" aria-hidden="true"><use href="#arrow"/></svg></button>
-<button class="event-card club-entry" type="button" data-preview="Это пример эфира «Новые привычки семьи после полугода». Дата, спикер и ссылка на встречу будут добавлены после согласования."><span class="event-photo feeding-photo" role="img" aria-label="Иллюстрация темы эфира"></span><span class="event-copy"><span class="event-badge">От 6 месяцев</span><strong>Новые привычки семьи после полугода</strong><span class="event-date">Дата уточняется</span><span class="event-expert">Специалист по развитию ребёнка<br>Спикер уточняется</span></span><svg class="row-arrow" aria-hidden="true"><use href="#arrow"/></svg></button>
-</div></section>
-<section class="club-section" aria-labelledby="paid-events"><div class="club-section-heading"><span class="section-icon"><svg aria-hidden="true"><use href="#people"/></svg></span><div><h2 id="paid-events">Встречи со спикерами</h2><p>Примеры встреч. Условия участия уточняются.</p></div></div><div class="event-list">
-<button class="event-card club-entry" type="button" data-preview="Это пример эфира «Подготовка к родам: разговор со специалистом». Дата, спикер и ссылка на встречу будут добавлены после согласования."><span class="event-photo birth-photo" role="img" aria-label="Иллюстрация темы эфира"></span><span class="event-copy"><span class="event-badge">Беременность</span><strong>Подготовка к родам: разговор со специалистом</strong><span class="event-date">Дата уточняется</span><span class="event-expert">Акушер-гинеколог<br>Спикер уточняется</span></span><svg class="row-arrow" aria-hidden="true"><use href="#arrow"/></svg></button>
-<button class="event-card club-entry" type="button" data-preview="Это пример эфира «Восстановление после родов и поддержка мамы». Дата, спикер и ссылка на встречу будут добавлены после согласования."><span class="event-photo breathing-photo" role="img" aria-label="Иллюстрация темы эфира"></span><span class="event-copy"><span class="event-badge">0–6 месяцев</span><strong>Восстановление после родов и поддержка мамы</strong><span class="event-date">Дата уточняется</span><span class="event-expert">Специалист по послеродовому восстановлению<br>Спикер уточняется</span></span><svg class="row-arrow" aria-hidden="true"><use href="#arrow"/></svg></button>
-<button class="event-card club-entry" type="button" data-preview="Это пример эфира «Сон малыша и отдых всей семьи». Дата, спикер и ссылка на встречу будут добавлены после согласования."><span class="event-photo sleep-photo" role="img" aria-label="Иллюстрация темы эфира"></span><span class="event-copy"><span class="event-badge">От 6 месяцев</span><strong>Сон малыша и отдых всей семьи</strong><span class="event-date">Дата уточняется</span><span class="event-expert">Специалист по детскому сну<br>Спикер уточняется</span></span><svg class="row-arrow" aria-hidden="true"><use href="#arrow"/></svg></button>
-</div></section></div>
-
-</div><p class="club-empty" role="status" hidden>По этому запросу пока ничего нет. Попробуйте другой раздел.</p><p class="club-demo">Демонстрация интерфейса · чаты и события пока не подключены</p>
-<div class="club-notice" role="status" hidden><p></p><button type="button" aria-label="Закрыть сообщение" class="close-button"><svg class="close-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="m6 6 12 12M18 6 6 18"/></svg></button></div></main>
+<p class="club-empty" role="status" hidden></p>
+</main>
     <nav class="bottom-navigation" aria-label="Основная навигация">
       <div class="navigation-items">
         <a class="nav-item" href="index.html"><svg class="nav-icon home-icon" viewBox="0 0 30 30" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 13 15 4l10 9v13h-7v-8h-6v8H5Z"/></svg><span>Сегодня</span></a>

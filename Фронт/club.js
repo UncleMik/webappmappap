@@ -28,7 +28,7 @@
  }
  const tabs = [...document.querySelectorAll('[data-tab]')];
  const query = document.querySelector('#club-query');
- const notice = document.querySelector('.club-notice');
+ const empty = document.querySelector('.club-empty');
  let active = 'pregnancy';
  function filter() {
   const text = query.value.trim().toLocaleLowerCase('ru');
@@ -46,7 +46,9 @@
     count += visible;
    });
   });
-  document.querySelector('.club-empty').hidden = count > 0;
+  empty.hidden = count > 0;
+  empty.textContent = text ? 'По этому запросу пока ничего нет. Попробуйте другой раздел.'
+   : active === 'events' ? 'Событий пока нет.' : 'Чаты пока не подключены.';
  }
  function select(name) {
   active = tabs.some(tab => tab.dataset.tab === name) ? name : 'pregnancy';
@@ -79,14 +81,8 @@
   else { query.value = ''; filter(); }
  });
  query.addEventListener('input', filter);
- document.querySelectorAll('[data-notice], [data-preview]').forEach(button => button.addEventListener('click', () => {
-  notice.querySelector('p').textContent = button.dataset.notice || button.dataset.preview;
-  notice.hidden = false;
- }));
- notice.querySelector('button').addEventListener('click', () => { notice.hidden = true; });
  document.addEventListener('keydown', event => {
   if (event.key === 'Escape') {
-   notice.hidden = true;
    if (search.getAttribute('aria-expanded') === 'true') { search.click(); search.focus(); }
   }
  });
