@@ -3,6 +3,7 @@ import fcntl
 import hashlib
 import json
 import os
+import pwd
 from pathlib import Path
 import re
 import shlex
@@ -93,7 +94,9 @@ def connection():
 
 
 def postgres_check(archive, payload, stage):
-    work = stage / 'qa' / 'backend'
+    suffix = uuid.uuid4().hex
+    scratch = Path('/var/lib/postgresql') / ('wep-pril-club-qa-' + suffix)
+    work = scratch / 'backend'
     work.mkdir(parents=True)
     shutil.copytree(ROOT / 'backend/auth', work / 'auth')
     shutil.copyfile(ROOT / 'backend/course-entitlements.mjs', work / 'course-entitlements.mjs')
@@ -109,18 +112,25 @@ def postgres_check(archive, payload, stage):
             raise RuntimeError('QA_FILE_TOO_LARGE')
         (work / 'test' / name).write_bytes(data)
     parts, role = connection()
-    suffix = uuid.uuid4().hex
     database = 'wep_pril_club_' + suffix + '_test'
     marker = 'webpril-club-check-' + suffix
     admin = ['runuser', '-u', 'postgres', '--', 'psql', '-XqAt', '-v', 'ON_ERROR_STOP=1', '-d', 'postgres', '-c']
     run(admin + [f'CREATE DATABASE {database} OWNER {role}'])
     try:
         run(admin + [f"COMMENT ON DATABASE {database} IS '{marker}'"])
-        env = dict(os.environ, AUTH_TEST_DATABASE_URL=urllib.parse.urlunsplit(parts._replace(path='/' + database)))
-        result = run(['node', '--test', 'test/club-chat.test.mjs'], cwd=work, env=env, timeout=180)
+        # Existing OS peer authentication, without widening pg_hba.conf for a test DB.
+        postgres = pwd.getpwnam('postgres')
+        for path in [scratch, *scratch.rglob('*')]:
+            if not path.is_symlink():
+                os.chown(path, postgres.pw_uid, postgres.pw_gid)
+        env = dict(os.environ, AUTH_TEST_DATABASE_URL='postgresql://postgres@localhost/' + database + '?host=%2Fvar%2Frun%2Fpostgresql')
+        result = subprocess.run(['runuser', '-u', 'postgres', '--', 'node', '--test', 'test/club-chat.test.mjs'], cwd=work, env=env,
+                                capture_output=True, timeout=180)
         (stage / 'postgres-check.log').write_bytes(result.stdout + result.stderr)
+        if result.returncode:
+            raise RuntimeError('CLUB_POSTGRES_CHECK_FAILED:' + str(stage))
     finally:
-        found = run(admin + [f"SELECT obj_description(oid,'pg_database') FROM pg_database WHERE datname='{database}'"]).stdout.decode().strip()
+        found = run(admin + [f"SELECT shobj_description(oid,'pg_database') FROM pg_database WHERE datname='{database}'"]).stdout.decode().strip()
         if found != marker or not re.fullmatch('wep_pril_club_[a-f0-9]{32}_test', database):
             raise RuntimeError('TEMPORARY_DATABASE_MARKER_MISMATCH')
         run(admin + [f'DROP DATABASE {database}'])
