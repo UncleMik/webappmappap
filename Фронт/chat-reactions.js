@@ -2,6 +2,8 @@ const choices = [
   { id: 'heart', emoji: '❤️', label: 'Сердце' },
   { id: 'love', emoji: '🥰', label: 'Улыбка с сердечками' },
   { id: 'like', emoji: '👍', label: 'Палец вверх' },
+  { id: 'hug', emoji: '🤗', label: 'Объятия' },
+  { id: 'laugh', emoji: '😂', label: 'Смех' },
 ];
 
 export function createReactionControls({ root, onSelect }) {
@@ -65,7 +67,8 @@ export function createReactionControls({ root, onSelect }) {
       const emoji = document.createElement('span'), total = document.createElement('span');
       emoji.className = 'reaction-emoji'; emoji.textContent = choice.emoji; emoji.setAttribute('aria-hidden', 'true');
       total.className = 'reaction-count'; total.textContent = String(count); total.setAttribute('aria-hidden', 'true');
-      button.append(emoji, total); button.addEventListener('click', () => select(entry, choice.id)); entry.bar.append(button);
+      const pill = document.createElement('span'); pill.className = 'reaction-pill'; pill.append(emoji, total);
+      button.append(pill); button.addEventListener('click', () => select(entry, choice.id)); entry.bar.append(button);
     }
     const add = document.createElement('button');
     add.type = 'button'; add.className = 'add-reaction'; add.disabled = busy; add.dataset.reaction = 'add';
@@ -106,7 +109,7 @@ export function createReactionControls({ root, onSelect }) {
       if (previous && focusReturn === previous) focusReturn = null;
       const bar = document.createElement('div'); bar.className = 'message-reactions';
       bar.setAttribute('role', 'group'); bar.setAttribute('aria-label', 'Реакции на сообщение');
-      const entry = { message, bar, state: previous?.state || { counts: { heart: 0, love: 0, like: 0 }, selected: null } };
+      const entry = { message, bar, state: previous?.state || { counts: { heart: 0, love: 0, like: 0, hug: 0, laugh: 0 }, selected: null } };
       entries.set(message.id, entry); bubble.append(bar); draw(entry);
     },
     update(states) {

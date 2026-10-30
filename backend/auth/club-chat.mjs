@@ -24,11 +24,13 @@ async function reactionStates(client, userId, ids) {
     count(r.user_id) FILTER (WHERE r.reaction='heart')::integer AS heart,
     count(r.user_id) FILTER (WHERE r.reaction='love')::integer AS love,
     count(r.user_id) FILTER (WHERE r.reaction='like')::integer AS like,
+    count(r.user_id) FILTER (WHERE r.reaction='hug')::integer AS hug,
+    count(r.user_id) FILTER (WHERE r.reaction='laugh')::integer AS laugh,
     max(r.reaction) FILTER (WHERE r.user_id=$2::uuid) AS selected
     FROM club_messages m LEFT JOIN club_message_reactions r ON r.message_id=m.id
     WHERE m.room=$1 AND m.id=ANY($3::bigint[]) GROUP BY m.id ORDER BY m.id`, [ROOM.id, userId, ids]);
   return rows.map(row => ({ messageId: String(row.id),
-    counts: { heart: row.heart, love: row.love, like: row.like }, selected: row.selected }));
+    counts: { heart: row.heart, love: row.love, like: row.like, hug: row.hug, laugh: row.laugh }, selected: row.selected }));
 }
 const columns = `m.id, m.body, m.created_at,m.deleted_at,m.revision, m.author_id=$2::uuid AS own,
   COALESCE(NULLIF(btrim(u.profile->>'name'),''),'Участница') AS author_name,
@@ -133,7 +135,7 @@ export function createClubChat({ pool, service, courseChecks, store, ownerUserId
     async react(token, expectedAccountId, data) {
       if (!uuid(expectedAccountId)) throw changed();
       if (!data || Object.keys(data).some(key => !['messageId', 'reaction'].includes(key))
-        || !messageId(data.messageId) || ![null, 'heart', 'love', 'like'].includes(data.reaction)) throw badReaction();
+        || !messageId(data.messageId) || ![null, 'heart', 'love', 'like', 'hug', 'laugh'].includes(data.reaction)) throw badReaction();
       return access(token, expectedAccountId, true, async (client, userId) => {
         // Serialize with deletion, preserving paid posting/reaction permissions.
         await state(client, true);

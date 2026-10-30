@@ -14,6 +14,7 @@ before(async () => {
   db = await testPool(); pool = db.pool;
   await pool.query(await readFile(new URL('../auth/club-chat-migration.sql', import.meta.url), 'utf8'));
   await pool.query(await readFile(new URL('../auth/chat-reactions-migration.sql', import.meta.url), 'utf8'));
+  await pool.query(await readFile(new URL('../auth/chat-reactions-extra-migration.sql', import.meta.url), 'utf8'));
   await pool.query(await readFile(new URL('../auth/club-delete-migration.sql', import.meta.url), 'utf8'));
 });
 after(async () => { await db?.close(); });
@@ -207,7 +208,7 @@ test('deletion also removes reaction state and wins safely against a simultaneou
   await react(original.message.id,'like',students[1]);
   await chat.deleteMessage(students[0].token,students[0].id,original.message.id);
   const state=(await reactions([original.message.id],students[1])).reactions[0];
-  assert.deepEqual(state.counts,{heart:0,love:0,like:0});assert.equal(state.selected,null);
+  assert.deepEqual(state.counts,{heart:0,love:0,like:0,hug:0,laugh:0});assert.equal(state.selected,null);
   await assert.rejects(react(original.message.id,'love'),e=>e.code==='reaction_message_not_found');
   const other=await send('Гонка реакции с удалением');
   await Promise.allSettled([react(other.message.id,'heart',students[1]),chat.deleteMessage(students[0].token,students[0].id,other.message.id)]);
@@ -276,14 +277,14 @@ const reactions = (ids, student = students[0]) => chat.reactions(student.token, 
 
 test('reactions share real totals, preserve each account selection and survive reopening', async () => {
   const { message } = await send('Сообщение с реакциями');
-  assert.deepEqual((await read()).reactions, [{ messageId: message.id, counts: { heart: 0, love: 0, like: 0 }, selected: null }]);
+  assert.deepEqual((await read()).reactions, [{ messageId: message.id, counts: { heart: 0, love: 0, like: 0, hug: 0, laugh: 0 }, selected: null }]);
   await react(message.id, 'heart');
   await react(message.id, 'heart', students[1]);
   const first = (await reactions([message.id])).reactions[0];
   assert.equal(first.counts.heart, 2); assert.equal(first.selected, 'heart');
   await react(message.id, 'love');
   assert.deepEqual((await reactions([message.id])).reactions[0], {
-    messageId: message.id, counts: { heart: 1, love: 1, like: 0 }, selected: 'love',
+    messageId: message.id, counts: { heart: 1, love: 1, like: 0, hug: 0, laugh: 0 }, selected: 'love',
   });
   assert.equal((await reactions([message.id], students[1])).reactions[0].selected, 'heart');
   const reopened = createClubChat({ pool, service, courseChecks: checks, store, clock: () => now });
@@ -296,7 +297,7 @@ test('reactions share real totals, preserve each account selection and survive r
   assert.equal((await read()).reactions[0].selected, 'love');
   await react(message.id, null);
   const removed = (await read()).reactions[0];
-  assert.deepEqual(removed.counts, { heart: 1, love: 0, like: 0 }); assert.equal(removed.selected, null);
+  assert.deepEqual(removed.counts, { heart: 1, love: 0, like: 0, hug: 0, laugh: 0 }); assert.equal(removed.selected, null);
   assert.ok(!JSON.stringify(removed).includes(students[1].id));
 });
 
@@ -305,7 +306,7 @@ test('repeated and concurrent requests cannot duplicate a reaction or remove ano
   await Promise.all([react(message.id, 'like'), react(message.id, 'like'), react(message.id, 'like', students[1])]);
   assert.equal((await reactions([message.id])).reactions[0].counts.like, 2);
   await Promise.all([react(message.id, null), react(message.id, null)]);
-  assert.deepEqual((await reactions([message.id])).reactions[0].counts, { heart: 0, love: 0, like: 1 });
+  assert.deepEqual((await reactions([message.id])).reactions[0].counts, { heart: 0, love: 0, like: 1, hug: 0, laugh: 0 });
   assert.equal((await reactions([message.id], students[1])).reactions[0].selected, 'like');
   assert.equal((await pool.query('SELECT count(*)::int n FROM club_message_reactions')).rows[0].n, 1);
 });
@@ -360,9 +361,9 @@ test('older messages expose current reactions through history and dedicated refr
   const latest = await read();
   const older = await read(students[0], 'before', latest.messages[0].id);
   assert.equal(older.reactions[0].messageId, message.id);
-  assert.deepEqual(older.reactions[0].counts, { heart: 0, love: 1, like: 0 });
+  assert.deepEqual(older.reactions[0].counts, { heart: 0, love: 1, like: 0, hug: 0, laugh: 0 });
   await react(message.id, 'like', students[1]);
-  assert.deepEqual((await reactions([message.id])).reactions[0].counts, { heart: 0, love: 0, like: 1 });
+  assert.deepEqual((await reactions([message.id])).reactions[0].counts, { heart: 0, love: 0, like: 1, hug: 0, laugh: 0 });
 });
 
 test('reaction HTTP endpoints require the session, same origin, account header and bounded JSON', async () => {
@@ -387,8 +388,51 @@ test('reaction HTTP endpoints require the session, same origin, account header a
     assert.equal((await saved.json()).reactions[0].counts.heart, 1);
     const refresh = await post('/read', { body: JSON.stringify({ messageIds: [message.id] }) });
     assert.equal(refresh.status, 200); assert.equal((await refresh.json()).reactions[0].selected, 'heart');
+    for (const reaction of ['hug', 'laugh']) {
+      const extra = await post('', { body: JSON.stringify({ messageId: message.id, reaction }) });
+      assert.equal(extra.status, 200);
+      const state = (await extra.json()).reactions[0];
+      assert.equal(state.selected, reaction); assert.equal(state.counts[reaction], 1);
+      assert.equal(Object.values(state.counts).reduce((sum, count) => sum + count, 0), 1);
+    }
     assert.equal((await post('/read', { headers: { ...headers, cookie: '' }, body: JSON.stringify({ messageIds: [message.id] }) })).status, 401);
     assert.equal((await post('', { body: JSON.stringify({ messageId: message.id, reaction: 'x'.repeat(5000) }) })).status, 413);
     assert.equal((await post('?userId=other')).status, 400);
   } finally { await new Promise(resolve => server.close(resolve)); }
+});
+
+test('hugs and laughter share counts, replace old choices and survive a fresh session', async () => {
+  const { message } = await send('Новые реакции');
+  await react(message.id, 'hug'); await react(message.id, 'laugh', students[1]);
+  assert.deepEqual((await reactions([message.id])).reactions[0], {
+    messageId: message.id, counts: { heart: 0, love: 0, like: 0, hug: 1, laugh: 1 }, selected: 'hug',
+  });
+  await react(message.id, 'laugh'); await react(message.id, 'laugh');
+  assert.deepEqual((await read()).reactions[0].counts, { heart: 0, love: 0, like: 0, hug: 0, laugh: 2 });
+  await pool.query('UPDATE auth_sessions SET revoked_at=$2 WHERE user_id=$1', [students[0].id, new Date(now)]);
+  students[0].token = randomToken();
+  await pool.query('INSERT INTO auth_sessions(token_hash,user_id,expires_at) VALUES($1,$2,$3)',
+    [hashToken(students[0].token), students[0].id, new Date(now + 86_400_000)]);
+  assert.equal((await read()).reactions[0].selected, 'laugh');
+  await react(message.id, null);
+  assert.equal((await reactions([message.id], students[1])).reactions[0].counts.laugh, 1);
+  await chat.deleteMessage(students[0].token, students[0].id, message.id);
+  assert.equal((await reactions([message.id])).reactions[0].counts.laugh, 0);
+});
+
+test('expanding the old three-reaction constraint preserves existing votes and is repeatable', async () => {
+  await pool.query(`ALTER TABLE club_message_reactions DROP CONSTRAINT club_message_reactions_reaction_check;
+    ALTER TABLE club_message_reactions ADD CONSTRAINT club_message_reactions_reaction_check CHECK (reaction IN ('heart','love','like'));`);
+  const ids = [];
+  for (const choice of ['heart', 'love', 'like']) {
+    const { message } = await send('Старая реакция ' + choice); ids.push(message.id); await react(message.id, choice);
+  }
+  const before = (await reactions(ids)).reactions;
+  const migration = await readFile(new URL('../auth/chat-reactions-extra-migration.sql', import.meta.url), 'utf8');
+  await pool.query(migration); await pool.query(migration);
+  assert.deepEqual((await reactions(ids)).reactions, before);
+  assert.equal((await pool.query('SELECT count(*)::int n FROM club_message_reactions')).rows[0].n, 3);
+  await react(ids[0], 'hug'); await react(ids[1], 'laugh');
+  assert.equal((await reactions(ids)).reactions[0].selected, 'hug');
+  assert.equal((await reactions(ids)).reactions[1].selected, 'laugh');
 });

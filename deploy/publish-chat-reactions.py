@@ -23,7 +23,7 @@ import uuid
 import zipfile
 
 ROOT = Path('/opt/wep_pril')
-BACKEND = {'club-chat.mjs', 'http.mjs', 'main.mjs', 'migrate.mjs', 'chat-reactions-migration.sql'}
+BACKEND = {'club-chat.mjs', 'http.mjs', 'main.mjs', 'migrate.mjs', 'chat-reactions-migration.sql', 'chat-reactions-extra-migration.sql'}
 FRONTEND = {'club-chat.html', 'club-chat.js', 'chat-reactions.js', 'chat-reactions.css'}
 QA = {'auth-pool.mjs', 'club-chat.test.mjs'}
 
@@ -174,6 +174,7 @@ def main():
         role = runtime_role()
         sql = ("BEGIN; SET LOCAL lock_timeout='3s'; SET LOCAL statement_timeout='30s'; SET ROLE wep_pril_auth_owner;\n"
                + payload['backend/auth/chat-reactions-migration.sql'].decode()
+               + '\n' + payload['backend/auth/chat-reactions-extra-migration.sql'].decode()
                + f'\nGRANT SELECT,INSERT,UPDATE,DELETE ON club_message_reactions TO {role};\nCOMMIT;')
         run(['runuser', '-u', 'postgres', '--', 'psql', '-XqAt', '-v', 'ON_ERROR_STOP=1', '-d', 'wep_pril_auth'], input=sql.encode())
         # Prove the existing application role can use every operation, without

@@ -1,4 +1,4 @@
-import { createReactionControls } from './chat-reactions.js?v=20261030-delete';
+import { createReactionControls } from './chat-reactions.js?v=20261031-chips';
 import { createMessageActions } from './club-message-actions.js?v=20261030-delete';
 import { clubRequest, chatLease } from './club-api.js?v=20261030-delete';
 
@@ -21,7 +21,7 @@ if (room !== 'pregnancy-students') {
   const current = value => value === revision && !document.hidden && !ended;
   function clear() {
     revision++; controller?.abort(); clearTimeout(timer); clearTimeout(leaseTimer);
-    reactionEpoch++; reacting = false; reactionControls.clear(); reactionStatus.textContent = '';
+    reactionEpoch++; reacting = false; reactionControls.clear(); reactionStatus.textContent = ''; reactionStatus.classList.remove('reaction-status-error');
     actions.reset(); deletedIds.clear(); messages.clear(); log.replaceChildren(); cursor = oldest = null; reply = null;
     replyPreview.hidden = true; controls.hidden = true; history.hidden = true; busy = false; ready = false;
     retry.hidden = true; courses.hidden = true;
@@ -74,13 +74,15 @@ if (room !== 'pregnancy-students') {
         if (!message.reply.deleted) quote.append(name); quote.append(text); bubble.append(quote);
       }
       const text = document.createElement('p'); text.textContent = message.text; bubble.append(text);
-      reactionControls.add(message, bubble);
       const footer = document.createElement('footer'), replyButton = document.createElement('button'), time = document.createElement('time');
+      reactionControls.add(message, footer);
       replyButton.type = 'button'; replyButton.className = 'chat-reply-button'; replyButton.textContent = 'Ответить';
       replyButton.setAttribute('aria-label', 'Ответить на сообщение: ' + message.text.slice(0, 60));
       replyButton.disabled = !canSend; replyButton.addEventListener('click', () => chooseReply(messages.get(message.id) || message));
       time.dateTime = message.createdAt;
-      time.textContent = new Intl.DateTimeFormat('ru', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' }).format(new Date(message.createdAt));
+      time.textContent = new Intl.DateTimeFormat('ru', { hour: '2-digit', minute: '2-digit' }).format(new Date(message.createdAt));
+      time.title = new Intl.DateTimeFormat('ru', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' }).format(new Date(message.createdAt));
+      time.setAttribute('aria-label', time.title);
       const metadata = document.createElement('span'); metadata.className = 'discussion-message-meta'; metadata.append(time);
       footer.append(replyButton, metadata); bubble.append(footer); article.append(bubble); actions.attach(article, message);
       const next = [...log.children].find(child => BigInt(child.dataset.id) > BigInt(message.id));
@@ -131,6 +133,7 @@ if (room !== 'pregnancy-students') {
     if (reacting || !canSend || ended) return;
     const value = revision;
     reacting = true; reactionEpoch++; reactionControls.setBusy(true);
+    reactionStatus.classList.remove('reaction-status-error');
     reactionStatus.textContent = 'Сохраняем реакцию…';
     try {
       const data = await clubRequest('club/reactions', options({ messageId, reaction }));
@@ -140,7 +143,7 @@ if (room !== 'pregnancy-students') {
     } catch (error) {
       if (!current(value)) return;
       if (error.code === 'reaction_message_not_found') { removeMessage(messageId); reactionStatus.textContent = 'Сообщение удалено.'; }
-      else if (error.status === 400 || error.status === 429) reactionStatus.textContent = error.message;
+      else if (error.status === 400 || error.status === 429) { reactionStatus.textContent = error.message; reactionStatus.classList.add('reaction-status-error'); }
       else failure(error);
     } finally {
       if (current(value)) { reacting = false; reactionControls.setBusy(!canSend); }
