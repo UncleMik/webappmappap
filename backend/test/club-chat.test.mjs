@@ -14,6 +14,7 @@ before(async () => {
   db = await testPool(); pool = db.pool;
   await pool.query(await readFile(new URL('../auth/club-chat-migration.sql', import.meta.url), 'utf8'));
   await pool.query(await readFile(new URL('../auth/chat-reactions-migration.sql', import.meta.url), 'utf8'));
+  await pool.query(await readFile(new URL('../auth/club-delete-migration.sql', import.meta.url), 'utf8'));
 });
 after(async () => { await db?.close(); });
 function snapshot(productId = 4302509, trainingId = 935386893) {
@@ -28,7 +29,7 @@ beforeEach(async () => {
   store = createStore(pool, { secret: 'club-test-secret-longer-than-32-bytes', clock: () => now });
   service = { session: token => store.session(token) };
   students = [];
-  for (const [i, name] of ['Первая ученица', 'Вторая ученица'].entries()) {
+  for (const [i, name] of ['Первая ученица', 'Вторая ученица', 'Владелец'].entries()) {
     const user = { id: randomUUID(), token: randomToken(), name };
     await pool.query('INSERT INTO auth_users(id,email,getcourse_id,profile) VALUES($1,$2,$3,$4)',
       [user.id, `club-${i}@example.invalid`, 11 + i, JSON.stringify({ name, stage: 'pregnancy', completedAt: new Date(now).toISOString() })]);
@@ -137,7 +138,7 @@ test('HTTP enforces session, same-origin writes, identity, cursor bounds and exi
   server.listen(0, '127.0.0.1'); await once(server, 'listening');
   const base = `http://127.0.0.1:${server.address().port}`;
   const headers = { cookie: `__Host-school_session=${students[0].token}`,
-    'x-webpril-account': students[0].id, origin, 'content-type': 'application/json' };
+    'x-webpril-account': students[0].id, 'x-webpril-chat-version':'2', origin, 'content-type': 'application/json' };
   try {
     assert.equal((await fetch(base + '/api/auth/club')).status, 401);
     assert.equal((await fetch(base + '/api/auth/club', { headers })).status, 200);
@@ -153,6 +154,106 @@ test('HTTP enforces session, same-origin writes, identity, cursor bounds and exi
     assert.equal((await fetch(base + '/api/auth/club/messages?userId=other', { headers })).status, 400);
     assert.equal((await fetch(base + '/api/auth/club/messages/before/abc', { headers })).status, 404);
   } finally { await new Promise(resolve => server.close(resolve)); }
+});
+
+test('author deletion erases text, updates existing reply quotes and reaches old-message change cursors', async () => {
+  const original = await send('Текст, который удаляем');
+  const answer = await send('Ответ остаётся',students[1],{replyTo:original.message.id});
+  const before = await read(students[1]);
+  const removed = await chat.deleteMessage(students[0].token,students[0].id,original.message.id);
+  assert.equal(removed.duplicate,false);
+  const changes = await chat.changes(students[1].token,students[1].id,before.changeCursor);
+  assert.equal(changes.messages.length,1);
+  assert.equal(changes.messages[0].id,original.message.id);
+  assert.equal(changes.messages[0].deleted,true);
+  assert.equal(changes.messages[0].text,null);
+  const remaining = await read(students[1]);
+  assert.deepEqual(remaining.messages.map(m=>m.id),[answer.message.id]);
+  assert.equal(remaining.messages[0].reply.deleted,true);
+  assert.equal(remaining.messages[0].reply.text,null);
+  const {rows:[stored]}=await pool.query('SELECT body,deleted_at FROM club_messages WHERE id=$1',[original.message.id]);
+  assert.equal(stored.body,''); assert.ok(stored.deleted_at);
+  await assert.rejects(send('Поздний ответ',students[1],{replyTo:original.message.id}),e=>e.code==='reply_not_found');
+});
+test('another participant cannot delete or forge owner rights in profile or request payload', async () => {
+  const original = await send('Чужое сообщение');
+  await pool.query("UPDATE auth_users SET profile=profile || '{\"role\":\"owner\"}'::jsonb WHERE id=$1",[students[1].id]);
+  assert.equal((await chat.info(students[1].token)).canModerate,false);
+  assert.equal((await read(students[1])).messages[0].canDelete,false);
+  await assert.rejects(chat.deleteMessage(students[1].token,students[1].id,original.message.id),e=>e.code==='chat_delete_forbidden');
+  await assert.rejects(chat.deleteMessage(students[1].token,students[1].id,original.message.id,{owner:true}),e=>e.code==='invalid_chat_message');
+  assert.equal((await read()).messages[0].text,'Чужое сообщение');
+});
+test('only the privately configured owner can moderate without a purchase; this does not grant posting', async () => {
+  const owner=students[2]; rights.set(owner.id,{...snapshot(),snapshot:{purchases:[],trainingIds:[]}});
+  const moderator=createClubChat({pool,service,courseChecks:checks,store,ownerUserId:owner.id,clock:()=>now});
+  const original=await send('Для модерации');
+  const info=await moderator.info(owner.token);
+  assert.equal(info.access,'available');assert.equal(info.canModerate,true);assert.equal(info.canSend,false);
+  assert.equal((await moderator.messages(owner.token,owner.id)).messages[0].canDelete,true);
+  await assert.rejects(moderator.send(owner.token,owner.id,{requestId:randomUUID(),text:'Без покупки'}),e=>e.code==='club_course_required');
+  await moderator.deleteMessage(owner.token,owner.id,original.message.id);
+  assert.equal((await read()).messages.length,0);
+  checks.requireCurrent=async()=>{throw new AuthError(503,'course_check_unavailable','Нет проверки');};
+  assert.equal((await moderator.info(owner.token)).access,'available');
+  assert.equal((await moderator.messages(owner.token,owner.id)).messages.length,0);
+  await assert.rejects(chat.info(students[0].token),e=>e.status===503);
+});
+test('delete retry and original-send retry do not restore a deleted message or create extra revisions', async () => {
+  const requestId=randomUUID(), original=await send('Не восстановить',students[0],{requestId});
+  await chat.deleteMessage(students[0].token,students[0].id,original.message.id);
+  const revision=(await read()).changeCursor;
+  assert.equal((await chat.deleteMessage(students[0].token,students[0].id,original.message.id)).duplicate,true);
+  const retried=await send('Не восстановить',students[0],{requestId});
+  assert.equal(retried.duplicate,true);assert.equal(retried.message.deleted,true);assert.equal(retried.message.text,null);
+  await assert.rejects(send('Изменённый текст',students[0],{requestId}),e=>e.code==='chat_request_reused');
+  assert.equal((await read()).changeCursor,revision);
+  assert.equal((await read()).messages.length,0);
+});
+test('change pagination retains deletions of old history and serializes simultaneous mutations', async () => {
+  const original=await send('Старая запись');
+  const baseline=(await read()).changeCursor;
+  for(let i=0;i<52;i++)await send('Новая '+i,students[i%2]);
+  await Promise.all([chat.deleteMessage(students[0].token,students[0].id,original.message.id),send('Параллельная запись',students[1])]);
+  const first=await chat.changes(students[1].token,students[1].id,baseline);
+  assert.equal(first.messages.length,50);assert.equal(first.hasMore,true);
+  const second=await chat.changes(students[1].token,students[1].id,first.changeCursor);
+  assert.equal(second.hasMore,false);
+  const all=[...first.messages,...second.messages];
+  assert.equal(all.length,54);assert.equal(new Set(all.map(m=>m.id)).size,54);
+  assert.ok(all.some(m=>m.id===original.message.id&&m.deleted));
+  assert.ok(all.some(m=>m.text==='Параллельная запись'));
+  await assert.rejects(chat.changes(students[0].token,students[0].id,'9223372036854775807'),e=>e.code==='chat_resync_required');
+});
+test('reapplying the migration keeps deletion and revision history intact', async () => {
+  const original=await send('Удалено до миграции');
+  await chat.deleteMessage(students[0].token,students[0].id,original.message.id);
+  const revision=(await read()).changeCursor;
+  await pool.query(await readFile(new URL('../auth/club-delete-migration.sql',import.meta.url),'utf8'));
+  assert.equal((await read()).changeCursor,revision);
+  assert.equal((await read()).messages.length,0);
+});
+test('HTTP deletion requires updated client, same origin, active session and correct account', async () => {
+  const original=await send('Удаление через HTTP');
+  const origin='https://app.legkie-rody.ru';
+  const server=createAuthServer({origin,enabled:true,store,service,clubChat:chat});
+  server.listen(0,'127.0.0.1');await once(server,'listening');
+  const base=`http://127.0.0.1:${server.address().port}`;
+  const headers={cookie:`__Host-school_session=${students[0].token}`,'x-webpril-account':students[0].id,
+    'x-webpril-chat-version':'2',origin,'content-type':'application/json'};
+  const path='/api/auth/club/messages/'+original.message.id+'/delete';
+  try {
+    const post=extra=>fetch(base+path,{method:'POST',headers:{...headers,...extra},body:'{}'});
+    assert.equal((await post({origin:'https://elsewhere.invalid'})).status,403);
+    assert.equal((await post({'x-webpril-account':students[1].id})).status,409);
+    assert.equal((await post({'x-webpril-chat-version':'1'})).status,409);
+    assert.equal((await fetch(base+'/api/auth/club/messages',{headers:{cookie:headers.cookie,'x-webpril-account':students[0].id}})).status,409);
+    assert.equal((await post()).status,200);
+    assert.equal((await post()).status,200);
+    assert.equal((await fetch(base+'/api/auth/club/changes/after/0',{headers})).status,200);
+    await pool.query('UPDATE auth_sessions SET revoked_at=$2 WHERE user_id=$1',[students[0].id,new Date(now)]);
+    assert.equal((await post()).status,401);
+  } finally {await new Promise(resolve=>server.close(resolve));}
 });
 
 const react = (messageId, reaction, student = students[0], extra = {}) => chat.react(student.token, student.id, { messageId, reaction, ...extra });

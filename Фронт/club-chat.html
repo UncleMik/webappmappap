@@ -11,10 +11,10 @@
   <link rel="preload" href="assets/fonts/Intro-Bold.woff" as="font" type="font/woff" crossorigin>
   <link rel="stylesheet" href="styles.css?v=20261008-close">
   <link rel="stylesheet" href="club.css?v=20261013-speakers-centered">
-  <link rel="stylesheet" href="club-chat-live.css?v=20261029-chat">
+  <link rel="stylesheet" href="club-chat-live.css?v=20261030-delete">
   <link rel="stylesheet" href="chat-reactions.css?v=20261029-reactions">
   <link rel="stylesheet" href="mobile-layout.css?v=20261007-darker-sides">
-  <script type="module" src="club-chat.js?v=20261029-reactions"></script>
+  <script type="module" src="club-chat.js?v=20261030-delete"></script>
 </head>
 <body class="club-page community-chat"><div class="app">
   <header class="discussion-header"><a href="club.html#pregnancy" aria-label="Назад в клуб">‹</a><div><h1>Лёгкие роды</h1><p>Чат участниц курса</p></div></header>
@@ -23,6 +23,8 @@
   <button class="chat-history" id="chat-history" type="button" hidden>Ранние сообщения</button>
   <main class="discussion-messages" id="chat-messages" role="log" aria-label="Сообщения участниц" aria-live="polite" aria-relevant="additions"></main>
   <p class="reaction-status" id="reaction-status" role="status" aria-live="polite"></p>
+  <div class="chat-message-menu" id="chat-message-menu" role="menu" aria-label="Действия с сообщением" hidden><button type="button" role="menuitem" data-chat-action="reply">Ответить</button><button type="button" role="menuitem" data-chat-action="delete" hidden>Удалить</button></div>
+  <dialog class="chat-delete-dialog" id="chat-delete-dialog" aria-labelledby="chat-delete-title" aria-describedby="chat-delete-description"><h2 id="chat-delete-title">Удаление сообщения</h2><p id="chat-delete-description">Удалить сообщение у всех участниц?</p><p class="chat-delete-error" id="chat-delete-error" role="alert"></p><div class="chat-delete-buttons"><button type="button" id="chat-delete-cancel">Отмена</button><button type="button" class="chat-delete-confirm" id="chat-delete-confirm">Удалить</button></div></dialog>
   <div class="discussion-controls" id="chat-controls" hidden>
     <div class="chat-reply-preview" id="chat-reply" hidden><p></p><button type="button" aria-label="Отменить ответ">×</button></div>
     <form class="discussion-composer" id="chat-form">

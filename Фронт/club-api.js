@@ -4,7 +4,7 @@ export async function clubRequest(path, { accountId, body, signal } = {}) {
   try {
     response = await fetch('/api/auth/' + path, { method: body === undefined ? 'GET' : 'POST',
       credentials: 'same-origin', cache: 'no-store',
-      headers: { ...(accountId ? { 'X-Webpril-Account': accountId } : {}),
+      headers: { 'X-Webpril-Chat-Version': '2', ...(accountId ? { 'X-Webpril-Account': accountId } : {}),
         ...(body === undefined ? {} : { 'Content-Type': 'application/json' }) },
       ...(body === undefined ? {} : { body: JSON.stringify(body) }),
       signal: signal ? AbortSignal.any([signal, AbortSignal.timeout(15_000)]) : AbortSignal.timeout(15_000) });

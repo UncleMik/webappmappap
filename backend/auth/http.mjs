@@ -55,12 +55,18 @@ export function createAuthServer({ service, store, courseChecks, courseMaterials
       if (request.method === 'GET' && url.pathname === '/api/auth/session') {
         send(200, await service.sessionState(readSessionCookie(request))); return;
       }
-      if (request.method === 'GET' && (url.pathname === '/api/auth/club' || url.pathname.startsWith('/api/auth/club/messages'))) {
+      if (request.method === 'GET' && (url.pathname === '/api/auth/club' || url.pathname.startsWith('/api/auth/club/messages') || url.pathname.startsWith('/api/auth/club/changes'))) {
         if (!clubChat) throw new AuthError(503, 'club_unavailable', 'Чат временно недоступен.');
         const expected = request.headers['x-webpril-account'];
         if (url.pathname === '/api/auth/club') {
           send(200, await clubChat.info(readSessionCookie(request), expected)); return;
         }
+        if (request.headers['x-webpril-chat-version'] !== '2') {
+          if (!await service.session(readSessionCookie(request))) throw new AuthError(401,'sign_in_required','Войдите в аккаунт.');
+          throw new AuthError(409, 'chat_update_required', 'Чат обновлён. Обновите страницу.');
+        }
+        const changes = url.pathname.match(/^\/api\/auth\/club\/changes\/after\/(0|[1-9]\d{0,18})$/);
+        if (changes) { send(200, await clubChat.changes(readSessionCookie(request), expected, changes[1])); return; }
         const cursor = url.pathname.match(/^\/api\/auth\/club\/messages\/(before|after)\/(0|[1-9]\d{0,18})$/);
         if (url.pathname !== '/api/auth/club/messages' && !cursor) { send(404, { error: 'not_found' }); return; }
         send(200, await clubChat.messages(readSessionCookie(request), expected, cursor?.[1], cursor?.[2])); return;
@@ -130,8 +136,16 @@ export function createAuthServer({ service, store, courseChecks, courseMaterials
         const action = url.pathname.endsWith('/read') ? 'reactions' : 'react';
         send(200, await clubChat[action](readSessionCookie(request), request.headers['x-webpril-account'], data)); return;
       }
-      if (url.pathname === '/api/auth/club/messages') {
+      const deleteMessage = url.pathname.match(/^\/api\/auth\/club\/messages\/([1-9]\d{0,18})\/delete$/);
+      if (url.pathname === '/api/auth/club/messages' || deleteMessage) {
         if (!clubChat) throw new AuthError(503, 'club_unavailable', 'Чат временно недоступен.');
+        if (request.headers['x-webpril-chat-version'] !== '2') {
+          if (!await service.session(readSessionCookie(request))) throw new AuthError(401,'sign_in_required','Войдите в аккаунт.');
+          throw new AuthError(409, 'chat_update_required', 'Чат обновлён. Обновите страницу.');
+        }
+        if (deleteMessage) {
+          send(200, await clubChat.deleteMessage(readSessionCookie(request), request.headers['x-webpril-account'], deleteMessage[1], data)); return;
+        }
         send(200, await clubChat.send(readSessionCookie(request), request.headers['x-webpril-account'], data)); return;
       }
       if (url.pathname === '/api/auth/personal') {

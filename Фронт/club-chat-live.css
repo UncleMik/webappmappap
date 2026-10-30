@@ -21,3 +21,23 @@
 .discussion-composer .discussion-send:disabled { opacity:.45; }
 .discussion-send svg { width:40px; height:40px; }
 .discussion-messages { overflow-anchor:none; }
+.discussion-bubble { -webkit-touch-callout:none; }
+.chat-message-more { flex:none; display:grid; place-items:center; min-width:44px; height:44px; font-size:2.4rem; line-height:1; color:#794aff; background:transparent; border-radius:1rem; }
+.chat-message-more:focus-visible { outline:2px solid #794aff; outline-offset:-2px; }
+.chat-message-menu { position:fixed; z-index:30; width:190px; max-width:calc(100vw - 24px); padding:.5rem; border:1px solid #e8dcff; border-radius:1.5rem; background:#fff; box-shadow:0 .6rem 3rem #33215e30; }
+.chat-message-menu button { display:block; width:100%; min-height:44px; padding:.8rem 1.2rem; border-radius:1rem; text-align:left; background:transparent; color:#171333; font-size:15px; }
+.chat-message-menu button:focus-visible,.chat-message-menu button:hover { outline:none; background:#f4efff; }
+.chat-message-menu button:disabled { opacity:.45; }
+.chat-message-menu [data-chat-action=delete] { color:#b72e48; }
+.chat-delete-dialog { width:min(360px,calc(100vw - 32px)); padding:22px; margin:auto; border:1px solid #e8dcff; border-radius:20px; color:#171333; background:#fff; box-shadow:0 8px 40px #33215e30; font-family:inherit; }
+.chat-delete-dialog:not([open]) { display:none; }
+.chat-delete-dialog::backdrop { background:#25183866; }
+.chat-delete-dialog h2 { font-size:18px; margin:0 0 12px; }
+.chat-delete-dialog p { font-size:15px; line-height:1.5; }
+.chat-delete-error { color:#a52a43; margin-top:12px; }
+.chat-delete-error:empty { display:none; }
+.chat-delete-buttons { display:flex; justify-content:flex-end; flex-wrap:wrap; gap:10px; margin-top:20px; }
+.chat-delete-buttons button { min-height:44px; padding:10px 16px; font-size:15px; border-radius:12px; color:#794aff; background:#f4efff; }
+.chat-delete-buttons .chat-delete-confirm { color:#fff; background:#b72e48; }
+.chat-delete-buttons button:disabled { opacity:.55; }
+.chat-delete-buttons button:focus-visible { outline:2px solid #794aff; outline-offset:3px; }

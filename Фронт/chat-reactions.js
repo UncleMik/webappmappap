@@ -101,9 +101,12 @@ export function createReactionControls({ root, onSelect }) {
   window.addEventListener('resize', () => close());
   return {
     add(message, bubble) {
+      const previous = entries.get(message.id);
+      if (previous && target === previous) close();
+      if (previous && focusReturn === previous) focusReturn = null;
       const bar = document.createElement('div'); bar.className = 'message-reactions';
       bar.setAttribute('role', 'group'); bar.setAttribute('aria-label', 'Реакции на сообщение');
-      const entry = { message, bar, state: { counts: { heart: 0, love: 0, like: 0 }, selected: null } };
+      const entry = { message, bar, state: previous?.state || { counts: { heart: 0, love: 0, like: 0 }, selected: null } };
       entries.set(message.id, entry); bubble.append(bar); draw(entry);
     },
     update(states) {
@@ -126,12 +129,19 @@ export function createReactionControls({ root, onSelect }) {
       }).slice(0, 100).map(entry => entry.message.id);
     },
     setBusy(value) {
+      if (value && target) close();
       busy = value;
       root.querySelectorAll('.message-reactions button').forEach(button => { button.disabled = value; });
       if (!value && focusReturn && document.activeElement === document.body) {
         focusReturn.bar.querySelector('.add-reaction')?.focus({ preventScroll: true });
       }
       if (!value) focusReturn = null;
+    },
+    remove(id) {
+      const entry = entries.get(id); if (!entry) return;
+      if (target === entry) close();
+      if (focusReturn === entry) focusReturn = null;
+      entry.bar.remove(); entries.delete(id);
     },
     clear() { close(); picker.remove(); entries.clear(); busy = false; focusReturn = null; },
   };

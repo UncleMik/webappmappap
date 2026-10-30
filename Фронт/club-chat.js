@@ -1,5 +1,6 @@
-import { clubRequest, chatLease } from './club-api.js?v=20261029-chat';
-import { createReactionControls } from './chat-reactions.js?v=20261029-reactions';
+import { createReactionControls } from './chat-reactions.js?v=20261030-delete';
+import { createMessageActions } from './club-message-actions.js?v=20261030-delete';
+import { clubRequest, chatLease } from './club-api.js?v=20261030-delete';
 
 const room = new URLSearchParams(location.search).get('room');
 if (room !== 'pregnancy-students') {
@@ -11,21 +12,32 @@ if (room !== 'pregnancy-students') {
   const history = document.querySelector('#chat-history'), retry = document.querySelector('#chat-retry');
   const courses = document.querySelector('#chat-courses'), replyPreview = document.querySelector('#chat-reply');
   const reactionStatus = document.querySelector('#reaction-status');
-  const messages = new Map();
   const reactionControls = createReactionControls({ root: log, onSelect: setReaction });
   let reactionEpoch = 0, reacting = false;
+  const messages = new Map(), deletedIds = new Set();
+  let canSend = false, canModerate = false, ready = false;
+  const actions = createMessageActions({ log, getMessage: id => messages.get(id), canReply: () => canSend, onReply: chooseReply, onDelete: deleteForAll });
   let revision = 0, controller, timer, leaseTimer, accountId, cursor, oldest, reply, pending, busy = false, ended = false;
   const current = value => value === revision && !document.hidden && !ended;
   function clear() {
     revision++; controller?.abort(); clearTimeout(timer); clearTimeout(leaseTimer);
     reactionEpoch++; reacting = false; reactionControls.clear(); reactionStatus.textContent = '';
-    messages.clear(); log.replaceChildren(); cursor = oldest = null; reply = null;
-    replyPreview.hidden = true; controls.hidden = true; history.hidden = true; busy = false;
+    actions.reset(); deletedIds.clear(); messages.clear(); log.replaceChildren(); cursor = oldest = null; reply = null;
+    replyPreview.hidden = true; controls.hidden = true; history.hidden = true; busy = false; ready = false;
     retry.hidden = true; courses.hidden = true;
   }
   function meta(data) {
     const remaining = chatLease(data, accountId); accountId = data.accountId;
     clearTimeout(leaseTimer); leaseTimer = setTimeout(start, remaining);
+    const changedPermissions = canModerate !== data.canModerate || canSend !== data.canSend;
+    canSend = data.canSend === true; canModerate = data.canModerate === true;
+    controls.hidden = !canSend || !ready;
+    reactionControls.setBusy(reacting || !canSend);
+    if (changedPermissions) {
+      for (const message of messages.values()) message.canDelete = message.own || canModerate;
+      log.querySelectorAll('.chat-reply-button').forEach(button => { button.disabled = !canSend; });
+      actions.permissionsChanged();
+    }
   }
   function failure(error) {
     clear(); status.textContent = error.message;
@@ -35,6 +47,7 @@ if (room !== 'pregnancy-students') {
     else retry.hidden = false;
   }
   function chooseReply(message) {
+    if (!canSend || deletedIds.has(message.id)) return;
     reply = message;
     replyPreview.querySelector('p').textContent = message.author.name + ': ' + message.text.slice(0, 160);
     replyPreview.hidden = false; input.focus();
@@ -43,7 +56,9 @@ if (room !== 'pregnancy-students') {
     const height = log.scrollHeight, top = log.scrollTop;
     const bottom = log.scrollHeight - log.scrollTop - log.clientHeight < 80;
     for (const message of list) {
-      if (messages.has(message.id)) continue;
+      if (message.deleted) { removeMessage(message.id); continue; }
+      if (deletedIds.has(message.id)) continue;
+      if (message.reply && deletedIds.has(message.reply.id)) message.reply = { ...message.reply, text: null, deleted: true };
       if (!/^[1-9]\d{0,18}$/.test(message.id) || typeof message.text !== 'string' || typeof message.author?.name !== 'string') throw new Error('Не удалось прочитать сообщение.');
       const article = document.createElement('article'); article.className = 'discussion-message' + (message.own ? ' own-message' : '');
       article.dataset.id = message.id;
@@ -55,22 +70,50 @@ if (room !== 'pregnancy-students') {
       const author = document.createElement('h2'); author.textContent = message.own ? 'Вы' : message.author.name; bubble.append(author);
       if (message.reply) {
         const quote = document.createElement('blockquote'), name = document.createElement('strong'), text = document.createElement('span');
-        name.textContent = message.reply.authorName; text.textContent = message.reply.text.slice(0, 200); quote.append(name, text); bubble.append(quote);
+        name.textContent = message.reply.authorName; text.textContent = message.reply.deleted ? 'Сообщение удалено' : message.reply.text.slice(0, 200);
+        if (!message.reply.deleted) quote.append(name); quote.append(text); bubble.append(quote);
       }
       const text = document.createElement('p'); text.textContent = message.text; bubble.append(text);
       reactionControls.add(message, bubble);
       const footer = document.createElement('footer'), replyButton = document.createElement('button'), time = document.createElement('time');
       replyButton.type = 'button'; replyButton.className = 'chat-reply-button'; replyButton.textContent = 'Ответить';
       replyButton.setAttribute('aria-label', 'Ответить на сообщение: ' + message.text.slice(0, 60));
-      replyButton.addEventListener('click', () => chooseReply(message));
+      replyButton.disabled = !canSend; replyButton.addEventListener('click', () => chooseReply(messages.get(message.id) || message));
       time.dateTime = message.createdAt;
       time.textContent = new Intl.DateTimeFormat('ru', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' }).format(new Date(message.createdAt));
-      footer.append(replyButton, time); bubble.append(footer); article.append(bubble);
+      const metadata = document.createElement('span'); metadata.className = 'discussion-message-meta'; metadata.append(time);
+      footer.append(replyButton, metadata); bubble.append(footer); article.append(bubble); actions.attach(article, message);
       const next = [...log.children].find(child => BigInt(child.dataset.id) > BigInt(message.id));
-      log.insertBefore(article, next || null); messages.set(message.id, message);
+      const existing = [...log.children].find(child => child.dataset.id === message.id);
+      if (existing) existing.replaceWith(article); else log.insertBefore(article, next || null); messages.set(message.id, message);
     }
     if (prepend) log.scrollTop = top + log.scrollHeight - height;
     else if (bottom || ownSend) log.scrollTop = log.scrollHeight;
+  }
+  function removeMessage(id) {
+    deletedIds.add(id); messages.delete(id); actions.removed(id); reactionControls.remove(id);
+    [...log.children].find(article => article.dataset.id === id)?.remove();
+    if (reply?.id === id) { reply = null; replyPreview.hidden = true; }
+    for (const message of [...messages.values()]) {
+      if (message.reply?.id === id && !message.reply.deleted) render([{ ...message, reply: { ...message.reply, text: null, deleted: true } }]);
+    }
+  }
+  async function deleteForAll(id) {
+    const value = revision;
+    try {
+      const data = await clubRequest('club/messages/' + id + '/delete', options({}));
+      if (!current(value)) return false;
+      meta(data); removeMessage(id); updateStatus(); return true;
+    } catch (error) {
+      if (!current(value)) return false;
+      if (deletedIds.has(id)) return true;
+      if (error.status === 401 || error.code === 'account_changed') { failure(error); return false; }
+      throw error;
+    }
+  }
+  function updateStatus() {
+    status.textContent = !canSend ? 'Режим модерации: можно удалять сообщения участниц.'
+      : messages.size ? '' : 'Сообщений пока нет. Можно написать первой.';
   }
   function options(body) { return { accountId, signal: controller.signal, ...(body ? { body } : {}) }; }
   function applyReactions(data, epoch) {
@@ -85,7 +128,7 @@ if (room !== 'pregnancy-students') {
     meta(data); applyReactions(data, epoch);
   }
   async function setReaction(messageId, reaction) {
-    if (reacting || controls.hidden || ended) return;
+    if (reacting || !canSend || ended) return;
     const value = revision;
     reacting = true; reactionEpoch++; reactionControls.setBusy(true);
     reactionStatus.textContent = 'Сохраняем реакцию…';
@@ -96,23 +139,23 @@ if (room !== 'pregnancy-students') {
       reactionStatus.textContent = reaction === null ? 'Реакция убрана.' : 'Реакция сохранена.';
     } catch (error) {
       if (!current(value)) return;
-      if (error.status === 400 || error.status === 429) reactionStatus.textContent = error.message;
+      if (error.code === 'reaction_message_not_found') { removeMessage(messageId); reactionStatus.textContent = 'Сообщение удалено.'; }
+      else if (error.status === 400 || error.status === 429) reactionStatus.textContent = error.message;
       else failure(error);
     } finally {
-      if (current(value)) { reacting = false; reactionControls.setBusy(false); }
+      if (current(value)) { reacting = false; reactionControls.setBusy(!canSend); }
     }
   }
   async function poll(value) {
     if (!current(value)) return;
     try {
       const epoch = reactionEpoch;
-      const data = await clubRequest('club/messages' + (cursor ? '/after/' + cursor : ''), options());
+      const data = await clubRequest('club/changes/after/' + (cursor || '0'), options());
       if (!current(value)) return;
       meta(data); render(data.messages); applyReactions(data, epoch);
       if (!oldest) oldest = data.messages[0]?.id;
-      if (data.messages.length) cursor = data.messages.at(-1).id;
-      status.textContent = messages.size ? '' : 'Сообщений пока нет. Можно написать первой.';
-      await syncReactions(value);
+      cursor = data.changeCursor;
+      updateStatus(); await syncReactions(value);
       if (!current(value)) return;
       timer = setTimeout(() => poll(value), data.hasMore ? 0 : 3000);
     } catch (error) { if (current(value)) failure(error); }
@@ -126,12 +169,12 @@ if (room !== 'pregnancy-students') {
       if (!current(value)) return;
       meta(info);
       if (info.access !== 'available') throw Object.assign(new Error('Чат доступен при действующем доступе к курсу «Лёгкие роды».'), { code: 'club_course_required' });
+      const epoch = reactionEpoch;
       const data = await clubRequest('club/messages', options());
       if (!current(value)) return;
-      meta(data); render(data.messages); applyReactions(data, reactionEpoch);
-      cursor = data.messages.at(-1)?.id || '0'; oldest = data.messages[0]?.id;
-      history.hidden = !data.hasMore; controls.hidden = false; sendButton.disabled = false;
-      status.textContent = messages.size ? '' : 'Сообщений пока нет. Можно написать первой.';
+      meta(data); render(data.messages); applyReactions(data, epoch); cursor = data.changeCursor; oldest = data.messages[0]?.id;
+      ready = true; history.hidden = !data.hasMore; controls.hidden = !canSend; sendButton.disabled = false;
+      updateStatus();
       timer = setTimeout(() => poll(value), 3000);
     } catch (error) { if (current(value)) failure(error); }
   }
@@ -142,8 +185,7 @@ if (room !== 'pregnancy-students') {
       const epoch = reactionEpoch;
       const data = await clubRequest('club/messages/before/' + oldest, options());
       if (!current(value)) return;
-      meta(data); render(data.messages, { prepend: true }); applyReactions(data, epoch);
-      oldest = data.messages[0]?.id || oldest; history.hidden = !data.hasMore;
+      meta(data); render(data.messages, { prepend: true }); applyReactions(data, epoch); oldest = data.messages[0]?.id || oldest; history.hidden = !data.hasMore;
     } catch (error) { if (current(value)) failure(error); }
     finally { history.disabled = false; }
   });
@@ -159,8 +201,9 @@ if (room !== 'pregnancy-students') {
       const data = await clubRequest('club/messages', options(attempt.body));
       if (!current(value)) return;
       meta(data); render([data.message], { ownSend: true }); applyReactions(data, epoch); status.textContent = '';
-      // Only history reads advance cursor: own sends may arrive ahead of another author's message.
-      if (JSON.stringify({ text: input.value.trim(), replyTo: reply?.id || null }) === attempt.signature) {
+      // Only the change feed advances its cursor; send/delete responses can arrive ahead of other changes.
+      if (JSON.stringify({ text: input.value.trim(), replyTo: reply?.id || null }) === attempt.signature
+        || (input.value.trim() === attempt.body.text && deletedIds.has(attempt.body.replyTo) && !reply)) {
         input.value = ''; reply = null; replyPreview.hidden = true; pending = null;
       }
     } catch (error) {
@@ -172,7 +215,7 @@ if (room !== 'pregnancy-students') {
   });
   replyPreview.querySelector('button').addEventListener('click', () => { reply = null; replyPreview.hidden = true; input.focus(); });
   retry.addEventListener('click', start);
-  window.addEventListener('focus', () => { if (controls.hidden && !busy) start(); });
+  window.addEventListener('focus', () => { if (!ready && !busy) start(); });
   document.addEventListener('visibilitychange', start);
   window.addEventListener('pagehide', clear);
   window.addEventListener('pageshow', event => { if (event.persisted) start(); });

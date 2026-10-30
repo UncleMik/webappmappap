@@ -23,6 +23,9 @@ test('course database path defaults to project data and accepts a server overrid
   const env = { AUTH_DATABASE_URL: 'postgres://test@localhost/auth', AUTH_HMAC_SECRET: 'x'.repeat(32),
     UNISENDER_API_KEY: 'test', UNISENDER_TEMPLATE_ID: '11111111-1111-4111-8111-111111111111', GETCOURSE_IMPORT_KEY: 'test' };
   assert.equal(readConfig(env).courseDatabasePath, resolve(import.meta.dirname, '../../data/articles.sqlite'));
+  assert.equal(readConfig(env).clubOwnerUserId, null);
+  assert.equal(readConfig({ ...env, CLUB_OWNER_USER_ID: user.id }).clubOwnerUserId, user.id);
+  assert.throws(() => readConfig({ ...env, CLUB_OWNER_USER_ID: 'an-email-is-not-an-account-id' }));
   assert.equal(readConfig({ ...env, COURSE_DATABASE_PATH: '/opt/wep_pril/data/articles.sqlite' }).courseDatabasePath,
     resolve('/opt/wep_pril/data/articles.sqlite'));
 });

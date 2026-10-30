@@ -13,6 +13,10 @@ export function readConfig(env = process.env) {
     throw new Error('Use PostgreSQL on localhost; remote database transport requires separate configuration');
   }
   if (!/^[a-f0-9-]{36}$/i.test(env.UNISENDER_TEMPLATE_ID)) throw new Error('Invalid UNISENDER_TEMPLATE_ID');
+  const clubOwnerUserId = env.CLUB_OWNER_USER_ID || null;
+  if (clubOwnerUserId && !/^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(clubOwnerUserId)) {
+    throw new Error('Invalid CLUB_OWNER_USER_ID');
+  }
   const positive = (name, fallback, maximum) => {
     const value = Number(env[name] || fallback);
     if (!Number.isInteger(value) || value < 1 || value > maximum) throw new Error(`Invalid ${name}`);
@@ -25,6 +29,7 @@ export function readConfig(env = process.env) {
     poolSize: positive('AUTH_DB_POOL_SIZE', 10, 30),
     port: positive('AUTH_PORT', 3001, 65535),
     databaseUrl: env.AUTH_DATABASE_URL,
+    clubOwnerUserId: clubOwnerUserId?.toLowerCase() || null,
     courseDatabasePath: resolve(env.COURSE_DATABASE_PATH || resolve(import.meta.dirname, '../../data/articles.sqlite')),
     mail: { key: env.UNISENDER_API_KEY, templateId: env.UNISENDER_TEMPLATE_ID,
       sender: 'auth@legkierody.ru', replyTo: env.AUTH_REPLY_TO || undefined,
