@@ -132,6 +132,9 @@ def owner_environment(manifest):
     before = path.read_bytes()
     owner = manifest.get('ownerUserId')
     if owner is None:
+        if any(line.startswith('CLUB_OWNER_USER_ID=') and line.split('=',1)[1].strip().strip(chr(34)+chr(39))
+               for line in before.decode().splitlines()):
+            raise RuntimeError('CONFIRMED_OWNER_BINDING_REQUIRED')
         return before, before
     if not isinstance(owner, str) or not re.fullmatch('[a-f0-9]{8}-[a-f0-9]{4}-[1-8][a-f0-9]{3}-[89ab][a-f0-9]{3}-[a-f0-9]{12}', owner):
         raise RuntimeError('INVALID_OWNER_ID')

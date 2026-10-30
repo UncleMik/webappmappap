@@ -191,6 +191,7 @@ test('only the privately configured owner can moderate without a purchase; this 
   const info=await moderator.info(owner.token);
   assert.equal(info.access,'available');assert.equal(info.canModerate,true);assert.equal(info.canSend,false);
   assert.equal((await moderator.messages(owner.token,owner.id)).messages[0].canDelete,true);
+  await assert.rejects(moderator.react(owner.token,owner.id,{messageId:original.message.id,reaction:'heart'}),e=>e.code==='club_course_required');
   await assert.rejects(moderator.send(owner.token,owner.id,{requestId:randomUUID(),text:'Без покупки'}),e=>e.code==='club_course_required');
   await moderator.deleteMessage(owner.token,owner.id,original.message.id);
   assert.equal((await read()).messages.length,0);
@@ -198,6 +199,20 @@ test('only the privately configured owner can moderate without a purchase; this 
   assert.equal((await moderator.info(owner.token)).access,'available');
   assert.equal((await moderator.messages(owner.token,owner.id)).messages.length,0);
   await assert.rejects(chat.info(students[0].token),e=>e.status===503);
+});
+
+test('deletion also removes reaction state and wins safely against a simultaneous reaction', async () => {
+  const original=await send('С реакциями');
+  await react(original.message.id,'heart');
+  await react(original.message.id,'like',students[1]);
+  await chat.deleteMessage(students[0].token,students[0].id,original.message.id);
+  const state=(await reactions([original.message.id],students[1])).reactions[0];
+  assert.deepEqual(state.counts,{heart:0,love:0,like:0});assert.equal(state.selected,null);
+  await assert.rejects(react(original.message.id,'love'),e=>e.code==='reaction_message_not_found');
+  const other=await send('Гонка реакции с удалением');
+  await Promise.allSettled([react(other.message.id,'heart',students[1]),chat.deleteMessage(students[0].token,students[0].id,other.message.id)]);
+  assert.equal((await pool.query('SELECT count(*)::int n FROM club_message_reactions')).rows[0].n,0);
+  assert.equal((await read()).messages.length,0);
 });
 test('delete retry and original-send retry do not restore a deleted message or create extra revisions', async () => {
   const requestId=randomUUID(), original=await send('Не восстановить',students[0],{requestId});
