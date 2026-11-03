@@ -67,6 +67,8 @@ export function createAuthServer({ service, store, courseChecks, courseMaterials
         }
         const changes = url.pathname.match(/^\/api\/auth\/club\/changes\/after\/(0|[1-9]\d{0,18})$/);
         if (changes) { send(200, await clubChat.changes(readSessionCookie(request), expected, changes[1])); return; }
+        const around = url.pathname.match(/^\/api\/auth\/club\/messages\/around\/([1-9]\d{0,18})$/);
+        if (around) { send(200, await clubChat.around(readSessionCookie(request), expected, around[1])); return; }
         const cursor = url.pathname.match(/^\/api\/auth\/club\/messages\/(before|after)\/(0|[1-9]\d{0,18})$/);
         if (url.pathname !== '/api/auth/club/messages' && !cursor) { send(404, { error: 'not_found' }); return; }
         send(200, await clubChat.messages(readSessionCookie(request), expected, cursor?.[1], cursor?.[2])); return;
@@ -131,6 +133,15 @@ export function createAuthServer({ service, store, courseChecks, courseMaterials
       const proxy = trustProxy && ['127.0.0.1', '::1', '::ffff:127.0.0.1'].includes(peer);
       const ip = proxy ? String(request.headers['x-real-ip'] || peer) : peer;
       await store.rateLimit('request_ip', ip, 600);
+      if (url.pathname === '/api/auth/club/read' || url.pathname === '/api/auth/club/search') {
+        if (!clubChat) throw new AuthError(503, 'club_unavailable', 'Чат временно недоступен.');
+        if (request.headers['x-webpril-chat-version'] !== '2') {
+          if (!await service.session(readSessionCookie(request))) throw new AuthError(401,'sign_in_required','Войдите в аккаунт.');
+          throw new AuthError(409, 'chat_update_required', 'Чат обновлён. Обновите страницу.');
+        }
+        const action = url.pathname.endsWith('/read') ? 'markRead' : 'search';
+        send(200, await clubChat[action](readSessionCookie(request), request.headers['x-webpril-account'], data)); return;
+      }
       if (url.pathname === '/api/auth/club/reactions' || url.pathname === '/api/auth/club/reactions/read') {
         if (!clubChat) throw new AuthError(503, 'club_unavailable', 'Чат временно недоступен.');
         const action = url.pathname.endsWith('/read') ? 'reactions' : 'react';

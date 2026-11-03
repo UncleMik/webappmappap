@@ -1,7 +1,20 @@
-export function createMessageActions({ log, getMessage, canReply, onReply, onDelete }) {
+export function createMessageActions({ log, getMessage, canReply, onReply, onDelete, onCopy }) {
   const menu = document.querySelector('#chat-message-menu');
   const replyButton = menu.querySelector('[data-chat-action="reply"]');
   const deleteButton = menu.querySelector('[data-chat-action="delete"]');
+  let copyButton = menu.querySelector('[data-chat-action="copy"]');
+  if (!copyButton && onCopy) {
+    copyButton = document.createElement('button'); copyButton.type = 'button';
+    copyButton.dataset.chatAction = 'copy'; copyButton.setAttribute('role', 'menuitem');
+    copyButton.textContent = 'Копировать'; menu.insertBefore(copyButton, deleteButton);
+  }
+  if (copyButton) {
+    copyButton.hidden = !onCopy;
+    copyButton.addEventListener('click', () => {
+      const message = getMessage(menuId); closeMenu(true);
+      if (message && !message.deleted) onCopy?.(message);
+    });
+  }
   const dialog = document.querySelector('#chat-delete-dialog');
   const confirm = document.querySelector('#chat-delete-confirm');
   const cancel = document.querySelector('#chat-delete-cancel');

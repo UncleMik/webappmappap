@@ -16,6 +16,7 @@ before(async () => {
   await pool.query(await readFile(new URL('../auth/chat-reactions-migration.sql', import.meta.url), 'utf8'));
   await pool.query(await readFile(new URL('../auth/chat-reactions-extra-migration.sql', import.meta.url), 'utf8'));
   await pool.query(await readFile(new URL('../auth/club-delete-migration.sql', import.meta.url), 'utf8'));
+  await pool.query(await readFile(new URL('../auth/club-reading-migration.sql', import.meta.url), 'utf8'));
 });
 after(async () => { await db?.close(); });
 function snapshot(productId = 4302509, trainingId = 935386893) {
@@ -25,7 +26,7 @@ function snapshot(productId = 4302509, trainingId = 935386893) {
       finish_at: new Date(now + 86_400_000).toISOString() }], trainingIds: [trainingId] } };
 }
 beforeEach(async () => {
-  await pool.query('TRUNCATE club_message_reactions,club_messages,auth_sessions,auth_users,auth_rate_limits');
+  await pool.query('TRUNCATE club_reading,club_message_reactions,club_messages,auth_sessions,auth_users,auth_rate_limits');
   now = Date.now();
   store = createStore(pool, { secret: 'club-test-secret-longer-than-32-bytes', clock: () => now });
   service = { session: token => store.session(token) };
@@ -435,4 +436,158 @@ test('expanding the old three-reaction constraint preserves existing votes and i
   await react(ids[0], 'hug'); await react(ids[1], 'laugh');
   assert.equal((await reactions(ids)).reactions[0].selected, 'hug');
   assert.equal((await reactions(ids)).reactions[1].selected, 'laugh');
+});
+
+const markRead = (messageId, student = students[0]) => chat.markRead(student.token, student.id, { messageId });
+const search = (query, before, student = students[0]) => chat.search(student.token, student.id,
+  { query, ...(before === undefined ? {} : { before }) });
+
+test('reading starts at latest without historical unread, then counts only live messages from other accounts', async () => {
+  const first = await send('Существующая история', students[1]);
+  const initial = { initialized: false, lastReadId: '0', unreadCount: 0, firstUnreadId: null };
+  assert.deepEqual((await chat.info(students[0].token)).readState, initial);
+  assert.deepEqual((await read()).readState, initial);
+  await markRead(first.message.id);
+  await send('Собственное сообщение');
+  const erased = await send('Будет удалено', students[1]);
+  const unread = await send('Первое непрочитанное', students[1]);
+  await chat.deleteMessage(students[1].token, students[1].id, erased.message.id);
+  const expected = { initialized: true, lastReadId: first.message.id, unreadCount: 1, firstUnreadId: unread.message.id };
+  assert.deepEqual((await read()).readState, expected);
+  assert.deepEqual((await chat.changes(students[0].token, students[0].id, '0')).readState, expected);
+  assert.deepEqual((await chat.info(students[1].token)).readState, initial);
+  // A deleted message can safely advance a position, but cannot count as unread.
+  assert.equal((await markRead(erased.message.id)).readState.unreadCount, 1);
+  assert.equal((await markRead(unread.message.id)).readState.unreadCount, 0);
+});
+
+test('reading positions never rewind, survive new sessions and migration, and initialize empty rooms', async () => {
+  assert.deepEqual((await markRead('0')).readState, { initialized: true, lastReadId: '0', unreadCount: 0, firstUnreadId: null });
+  const first = await send('Начало', students[1]), second = await send('Продолжение', students[1]);
+  await Promise.all([markRead(second.message.id), markRead(first.message.id)]);
+  assert.equal((await markRead(first.message.id)).readState.lastReadId, second.message.id);
+  const saved = (await read()).readState;
+  await pool.query('UPDATE auth_sessions SET revoked_at=$2 WHERE user_id=$1', [students[0].id, new Date(now)]);
+  students[0].token = randomToken();
+  await pool.query('INSERT INTO auth_sessions(token_hash,user_id,expires_at) VALUES($1,$2,$3)',
+    [hashToken(students[0].token), students[0].id, new Date(now + 86_400_000)]);
+  const migration = await readFile(new URL('../auth/club-reading-migration.sql', import.meta.url), 'utf8');
+  await pool.query(migration); await pool.query(migration);
+  assert.deepEqual((await read()).readState, saved);
+  assert.equal((await read(students[1])).readState.initialized, false);
+  assert.equal((await read()).messages.length, 2);
+  await assert.rejects(markRead('0'), e => e.code === 'chat_message_not_found');
+  await assert.rejects(markRead('9223372036854775807'), e => e.code === 'chat_message_not_found');
+  for (const data of [{ messageId: first.message.id, userId: students[1].id }, { messageId: first.message.id, room: 'other' },
+    { messageId: Number(first.message.id) }, { messageId: '-1' }, {}, []]) {
+    await assert.rejects(chat.markRead(students[0].token, students[0].id, data), e => e.code === 'invalid_chat_message');
+  }
+});
+
+test('around navigates older history with both edges, reactions and deleted targets excluded', async () => {
+  const ids = [];
+  for (let i = 0; i < 90; i++) ids.push((await send('История ' + i, students[i % 2])).message.id);
+  await react(ids[30], 'hug', students[1]);
+  const result = await chat.around(students[0].token, students[0].id, ids[30]);
+  assert.deepEqual(result.messages.map(m => m.id), ids.slice(5, 55));
+  assert.equal(result.hasBefore, true); assert.equal(result.hasAfter, true); assert.equal(result.hasMore, true);
+  assert.equal(result.reactions.find(r => r.messageId === ids[30]).counts.hug, 1);
+  assert.equal(result.readState.initialized, false);
+  const start = await chat.around(students[0].token, students[0].id, ids[0]);
+  assert.equal(start.hasBefore, false); assert.equal(start.hasAfter, true);
+  const end = await chat.around(students[0].token, students[0].id, ids.at(-1));
+  assert.equal(end.hasAfter, false); assert.equal(end.hasBefore, true);
+  const latest = await read();
+  assert.equal(latest.hasBefore, true); assert.equal(latest.hasAfter, false);
+  const older = await read(students[0], 'before', ids[5]);
+  assert.equal(older.hasBefore, false); assert.equal(older.hasAfter, true);
+  const forward = await read(students[0], 'after', ids[0]);
+  assert.equal(forward.hasBefore, true); assert.equal(forward.hasAfter, true); assert.equal(forward.hasMore, true);
+  const empty = await read(students[0], 'after', ids.at(-1));
+  assert.equal(empty.hasBefore, true); assert.equal(empty.hasAfter, false);
+  await chat.deleteMessage(students[0].token, students[0].id, ids[30]);
+  await assert.rejects(chat.around(students[0].token, students[0].id, ids[30]), e => e.code === 'chat_message_not_found');
+  await assert.rejects(chat.around(students[0].token, students[0].id, '9223372036854775807'), e => e.code === 'chat_message_not_found');
+});
+
+test('search covers all historical text, paginates once per result and returns current quotes and reactions', async () => {
+  const ids = [];
+  for (let i = 0; i < 65; i++) ids.push((await send('Archive NEEDLE ' + i, students[i % 2])).message.id);
+  for (let i = 0; i < 51; i++) await send('Новая лента ' + i, students[1]);
+  await react(ids[60], 'laugh', students[1]);
+  await chat.deleteMessage(students[0].token, students[0].id, ids[0]);
+  assert.ok(!(await read()).messages.some(m => m.text.includes('NEEDLE')));
+  const first = await search('needle'), second = await search('needle', first.nextBefore), third = await search('needle', second.nextBefore);
+  assert.equal(first.messages.length, 30); assert.equal(first.hasMore, true);
+  assert.equal(second.messages.length, 30); assert.equal(second.hasMore, true);
+  assert.equal(third.messages.length, 4); assert.equal(third.hasMore, false); assert.equal(third.nextBefore, null);
+  assert.deepEqual([...first.messages, ...second.messages, ...third.messages].map(m => m.id), ids.slice(1).reverse());
+  assert.equal(first.reactions.find(r => r.messageId === ids[60]).counts.laugh, 1);
+  assert.equal(first.readState.initialized, false);
+  assert.equal(typeof first.changeCursor, 'string');
+});
+
+test('search treats wildcard syntax and SQL text literally and validates unicode length and extra fields', async () => {
+  for (const text of ['Есть 50% и а_б и C:\\temp', 'Есть 500 и аХб и C:temp', "SQL ' OR 1=1 --"]) await send(text);
+  for (const query of ['50%', 'а_б', 'C:\\temp', "' OR 1=1 --"]) assert.equal((await search(query)).messages.length, 1);
+  assert.equal((await search('不存在')).messages.length, 0);
+  assert.equal((await search('😀'.repeat(100))).messages.length, 0);
+  for (const data of [{ query: '' }, { query: 'a' }, { query: ' '.repeat(2) }, { query: '😀'.repeat(101) },
+    { query: 'ok\u0000' }, { query: 'ok', before: '0' }, { query: 'ok', before: 1 },
+    { query: 'ok', userId: students[1].id }, { query: 'ok', room: 'other' }, null, []]) {
+    await assert.rejects(chat.search(students[0].token, students[0].id, data), e => e.code === 'invalid_chat_search');
+  }
+});
+
+test('reading, around and search enforce rights, account, profile and session on every call', async () => {
+  const { message } = await send('Доступ');
+  const actions = account => [() => chat.markRead(students[0].token, account, { messageId: message.id }),
+    () => chat.around(students[0].token, account, message.id), () => chat.search(students[0].token, account, { query: 'Доступ' })];
+  for (const action of actions(students[1].id)) await assert.rejects(action(), e => e.code === 'account_changed');
+  rights.set(students[0].id, snapshot(4307012, 935397517));
+  for (const action of actions(students[0].id)) await assert.rejects(action(), e => e.code === 'club_course_required');
+  rights.set(students[0].id, snapshot());
+  await pool.query("UPDATE auth_users SET profile='{}'::jsonb WHERE id=$1", [students[0].id]);
+  for (const action of actions(students[0].id)) await assert.rejects(action(), e => e.code === 'onboarding_required');
+  await pool.query('UPDATE auth_users SET profile=$2 WHERE id=$1', [students[0].id, { completedAt: new Date(now).toISOString() }]);
+  checks.requireCurrent = async id => {
+    await pool.query('UPDATE auth_sessions SET revoked_at=$2 WHERE user_id=$1', [id, new Date(now)]);
+    return rights.get(id);
+  };
+  for (const action of actions(students[0].id)) await assert.rejects(action(), e => e.code === 'sign_in_required');
+  assert.equal((await pool.query('SELECT count(*)::int n FROM club_reading')).rows[0].n, 0);
+});
+
+test('new HTTP navigation and read routes reject stale clients, cross origin, forged accounts and invalid bodies', async () => {
+  const { message } = await send('Поиск HTTP');
+  const origin = 'https://app.legkie-rody.ru';
+  const server = createAuthServer({ origin, enabled: true, store, service, clubChat: chat });
+  server.listen(0, '127.0.0.1'); await once(server, 'listening');
+  const base = `http://127.0.0.1:${server.address().port}/api/auth/club`;
+  const headers = { cookie: `__Host-school_session=${students[0].token}`, 'x-webpril-account': students[0].id,
+    'x-webpril-chat-version': '2', origin, 'content-type': 'application/json' };
+  try {
+    for (const [path, body] of [['/read', { messageId: message.id }], ['/search', { query: 'HTTP' }]]) {
+      const post = (extra = {}, data = body) => fetch(base + path, { method: 'POST', headers: { ...headers, ...extra }, body: JSON.stringify(data) });
+      assert.equal((await post({ cookie: '' })).status, 401);
+      assert.equal((await post({ origin: 'https://elsewhere.invalid' })).status, 403);
+      assert.equal((await post({ 'sec-fetch-site': 'same-site' })).status, 403);
+      assert.equal((await post({ 'x-webpril-chat-version': '1' })).status, 409);
+      assert.equal((await post({ 'x-webpril-account': '' })).status, 409);
+      assert.equal((await post({ 'x-webpril-account': students[1].id })).status, 409);
+      assert.equal((await post({}, { ...body, room: 'other' })).status, 400);
+      const response = await post(); assert.equal(response.status, 200); assert.equal(response.headers.get('cache-control'), 'no-store');
+      assert.equal((await response.json()).readState.initialized, true);
+    }
+    const path = '/messages/around/' + message.id;
+    assert.equal((await fetch(base + path, { headers: { ...headers, cookie: '' } })).status, 401);
+    assert.equal((await fetch(base + path, { headers: { ...headers, 'x-webpril-chat-version': '1' } })).status, 409);
+    assert.equal((await fetch(base + path, { headers: { ...headers, 'x-webpril-account': students[1].id } })).status, 409);
+    assert.equal((await fetch(base + path + '?room=other', { headers })).status, 400);
+    const response = await fetch(base + path, { headers }); assert.equal(response.status, 200);
+    assert.equal(response.headers.get('cache-control'), 'no-store');
+    assert.equal((await response.json()).messages[0].id, message.id);
+    rights.set(students[0].id, snapshot(4307012, 935397517));
+    assert.equal((await fetch(base + path, { headers })).status, 403);
+  } finally { await new Promise(resolve => server.close(resolve)); }
 });

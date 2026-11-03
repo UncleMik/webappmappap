@@ -18,6 +18,8 @@ const denied = () => new AuthError(403, 'club_course_required', 'Чат дост
 const unavailable = () => new AuthError(503, 'club_unavailable', 'Чат временно недоступен. Попробуйте ещё раз.');
 const badReaction = () => new AuthError(400, 'invalid_chat_reaction', 'Выберите одну из доступных реакций.');
 const reactionMissing = () => new AuthError(404, 'reaction_message_not_found', 'Сообщение для реакции не найдено.');
+const missing = () => new AuthError(404, 'chat_message_not_found', 'Сообщение не найдено.');
+const badSearch = () => new AuthError(400, 'invalid_chat_search', 'Введите от 2 до 100 символов для поиска.');
 async function reactionStates(client, userId, ids) {
   if (!ids.length) return [];
   const { rows } = await client.query(`SELECT m.id,
@@ -98,10 +100,33 @@ export function createClubChat({ pool, service, courseChecks, store, ownerUserId
     const { rows: [row] } = await client.query('UPDATE club_state SET revision=revision+1 WHERE room=$1 RETURNING revision', [ROOM.id]);
     return String(row.revision);
   }
+  // Call only while holding the room state lock: the cursor and message snapshot agree.
+  async function readState(client, userId) {
+    const { rows: [position] } = await client.query('SELECT last_read_id FROM club_reading WHERE user_id=$1 AND room=$2', [userId, ROOM.id]);
+    if (!position) return { initialized: false, lastReadId: '0', unreadCount: 0, firstUnreadId: null };
+    const { rows: [unread] } = await client.query(`SELECT count(*)::integer AS count,min(id) AS first
+      FROM club_messages WHERE room=$1 AND id>$2::bigint AND author_id<>$3 AND deleted_at IS NULL`,
+    [ROOM.id, position.last_read_id, userId]);
+    return { initialized: true, lastReadId: String(position.last_read_id), unreadCount: unread.count,
+      firstUnreadId: unread.first == null ? null : String(unread.first) };
+  }
+  async function page(client, userId, messages, changeCursor) {
+    const first = messages[0]?.id, last = messages.at(-1)?.id;
+    const { rows: [edges] } = await client.query(`SELECT
+      EXISTS(SELECT 1 FROM club_messages WHERE room=$1 AND deleted_at IS NULL AND id<$2::bigint) AS before,
+      EXISTS(SELECT 1 FROM club_messages WHERE room=$1 AND deleted_at IS NULL AND id>$3::bigint) AS after`,
+    [ROOM.id, first ?? '0', last ?? '9223372036854775807']);
+    return { room: ROOM, messages, hasBefore: edges.before, hasAfter: edges.after, changeCursor,
+      readState: await readState(client, userId), reactions: await reactionStates(client, userId, messages.map(m => m.id)) };
+  }
   return Object.freeze({
     info(token, expectedAccountId) {
-      return access(token, expectedAccountId, false, async (_, __, allowed) => ({ room: ROOM,
-        access: allowed ? 'available' : 'purchase_required' }));
+      return access(token, expectedAccountId, false, async (client, userId, allowed) => {
+        if (allowed) await state(client);
+        return { room: ROOM, access: allowed ? 'available' : 'purchase_required',
+          readState: allowed ? await readState(client, userId)
+            : { initialized: false, lastReadId: '0', unreadCount: 0, firstUnreadId: null } };
+      });
     },
     async messages(token, expectedAccountId, direction = 'latest', cursor) {
       if (!uuid(expectedAccountId)) throw changed();
@@ -116,8 +141,67 @@ export function createClubChat({ pool, service, courseChecks, store, ownerUserId
           ORDER BY m.id ${forward ? 'ASC' : 'DESC'} LIMIT 51`, params);
         const messages = rows.slice(0, 50).map(row => format(row, owner));
         if (!forward) messages.reverse();
-        return { room: ROOM, messages, hasMore: rows.length > 50, changeCursor,
-          reactions: await reactionStates(client,userId,messages.map(m=>m.id)) };
+        const result = await page(client, userId, messages, changeCursor);
+        // An exhausted directional page still describes the opposite side of its boundary.
+        if (!messages.length && direction !== 'latest') {
+          const { rows: [edge] } = await client.query(`SELECT EXISTS(SELECT 1 FROM club_messages
+            WHERE room=$1 AND deleted_at IS NULL AND id${forward ? '<=' : '>='}$2::bigint) AS present`, [ROOM.id, cursor]);
+          if (forward) result.hasBefore = edge.present; else result.hasAfter = edge.present;
+        }
+        return { ...result, hasMore: rows.length > 50 };
+      });
+    },
+    async markRead(token, expectedAccountId, data) {
+      if (!uuid(expectedAccountId)) throw changed();
+      if (!data || typeof data !== 'object' || Array.isArray(data)
+        || Object.keys(data).some(key => key !== 'messageId') || !cursorId(data.messageId)) throw bad();
+      return access(token, expectedAccountId, true, async (client, userId) => {
+        await state(client, true);
+        // A deleted message remains a valid historical position. Zero initializes an empty room only.
+        const { rows: [valid] } = await client.query(data.messageId === '0'
+          ? 'SELECT NOT EXISTS(SELECT 1 FROM club_messages WHERE room=$1 AND deleted_at IS NULL) AS ok'
+          : 'SELECT EXISTS(SELECT 1 FROM club_messages WHERE room=$1 AND id=$2::bigint) AS ok',
+        data.messageId === '0' ? [ROOM.id] : [ROOM.id, data.messageId]);
+        if (!valid.ok) throw missing();
+        await client.query(`INSERT INTO club_reading(user_id,room,last_read_id) VALUES($1,$2,$3)
+          ON CONFLICT(user_id,room) DO UPDATE SET last_read_id=GREATEST(club_reading.last_read_id,excluded.last_read_id)`,
+        [userId, ROOM.id, data.messageId]);
+        return { room: ROOM, readState: await readState(client, userId) };
+      });
+    },
+    async around(token, expectedAccountId, id) {
+      if (!uuid(expectedAccountId)) throw changed();
+      if (!messageId(id)) throw bad();
+      return access(token, expectedAccountId, true, async (client, userId, _, owner) => {
+        const changeCursor = await state(client);
+        const { rows: target } = await client.query(`SELECT ${columns} ${joins}
+          WHERE m.room=$1 AND m.id=$3::bigint AND m.deleted_at IS NULL`, [ROOM.id, userId, id]);
+        if (!target.length) throw missing();
+        const { rows: older } = await client.query(`SELECT ${columns} ${joins}
+          WHERE m.room=$1 AND m.id<$3::bigint AND m.deleted_at IS NULL ORDER BY m.id DESC LIMIT 25`, [ROOM.id, userId, id]);
+        const { rows: newer } = await client.query(`SELECT ${columns} ${joins}
+          WHERE m.room=$1 AND m.id>$3::bigint AND m.deleted_at IS NULL ORDER BY m.id ASC LIMIT 24`, [ROOM.id, userId, id]);
+        const result = await page(client, userId, [...older.reverse(), ...target, ...newer].map(row => format(row, owner)), changeCursor);
+        return { ...result, hasMore: result.hasBefore };
+      });
+    },
+    async search(token, expectedAccountId, data) {
+      if (!uuid(expectedAccountId)) throw changed();
+      if (!data || typeof data !== 'object' || Array.isArray(data)
+        || Object.keys(data).some(key => !['query', 'before'].includes(key))
+        || typeof data.query !== 'string' || [...data.query.trim()].length < 2 || [...data.query.trim()].length > 100
+        || /[\u0000-\u001f\u007f]/u.test(data.query)
+        || (data.before !== undefined && !messageId(data.before))) throw badSearch();
+      const pattern = '%' + data.query.trim().replace(/[\\%_]/g, value => '\\' + value) + '%';
+      return access(token, expectedAccountId, true, async (client, userId, _, owner) => {
+        const changeCursor = await state(client);
+        const { rows } = await client.query(`SELECT ${columns} ${joins}
+          WHERE m.room=$1 AND m.deleted_at IS NULL AND m.body ILIKE $3 ESCAPE E'\\\\'
+          ${data.before === undefined ? '' : 'AND m.id<$4::bigint'} ORDER BY m.id DESC LIMIT 31`,
+        [ROOM.id, userId, pattern, ...(data.before === undefined ? [] : [data.before])]);
+        const messages = rows.slice(0, 30).map(row => format(row, owner)), hasMore = rows.length > 30;
+        return { room: ROOM, messages, hasMore, nextBefore: hasMore ? messages.at(-1).id : null, changeCursor,
+          readState: await readState(client, userId), reactions: await reactionStates(client, userId, messages.map(m => m.id)) };
       });
     },
     async reactions(token, expectedAccountId, data) {
@@ -196,6 +280,7 @@ export function createClubChat({ pool, service, courseChecks, store, ownerUserId
         const messages = rows.slice(0,50).map(row => format(row, owner));
         return { room: ROOM, messages, hasMore: rows.length > 50,
           changeCursor: rows.length > 50 ? messages.at(-1).revision : latest,
+          readState: await readState(client, userId),
           reactions: await reactionStates(client,userId,messages.filter(m=>!m.deleted).map(m=>m.id)) };
       });
     },
