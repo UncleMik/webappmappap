@@ -41,6 +41,8 @@ export function createChatTimeline({ log, messages, deletedIds, reactions, actio
     }
   }
   function render(list, { replace = false, prepend = false, follow = false } = {}) {
+    // An idle poll must not reannounce unchanged date separators in the live log.
+    if (!replace && !list.length) return;
     const place = snapshot(), atBottom = log.scrollHeight - log.scrollTop - log.clientHeight < 80;
     if (replace) { reactions.clear(); actions.reset(); messages.clear(); log.replaceChildren(); }
     for (const original of list) {
