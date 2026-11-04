@@ -2,6 +2,7 @@ import { createHash, createHmac } from 'node:crypto';
 import { readFileSync } from 'node:fs';
 import { AuthError, hashToken } from './security.mjs';
 import { transaction } from './store.mjs';
+import { validateAiAttachment, MAX_AI_BODY_BYTES } from './ai-attachment.mjs';
 
 const uuid = value => typeof value === 'string' && /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(value);
 const sha = value => createHash('sha256').update(value).digest('hex');
@@ -84,6 +85,7 @@ async function signedSession(pool, token, userId, clock) {
 }
 
 export function createAiChat({ pool, service, courseMaterials, sourceMapPath, url, secret, clock = Date.now, fetchImpl = fetch }) {
+  let fileInFlight = false;
   if (!pool || !service || !courseMaterials || !sourceMapPath || !url || !secret) throw new Error('AI chat configuration incomplete');
   const endpoint = new URL(url);
   if (endpoint.origin !== 'https://admin.legkie-rody.ru' || endpoint.username || endpoint.password
@@ -148,12 +150,34 @@ export function createAiChat({ pool, service, courseMaterials, sourceMapPath, ur
     return { accountId: a.user.id, messages: page.reverse().flatMap(messages), hasMore: rows.length > 30,
       nextBefore: rows.length > 30 ? String(rows[29].id) : null, quota: await quota(a.user.id) };
   }
+  async function status(token, expected, data) {
+    if (!uuid(data?.requestId)) throw new AuthError(400, 'invalid_ai_message', 'Обновите страницу.');
+    const a = await access(token, expected), requestId = data.requestId.toLowerCase();
+    await failStale(a.user.id);
+    const { rows: [row] } = await pool.query(`SELECT * FROM ai_chat_requests WHERE user_id=$1 AND request_id=$2
+      AND accepted_at>=$3`, [a.user.id, requestId, new Date(clock() - RETENTION_MS)]);
+    if (!row) throw new AuthError(404, 'ai_request_not_found', 'Вопрос не был принят. Можно отправить его снова.');
+    const current = await access(token, expected);
+    if (current.rightsHash !== row.rights_hash) throw new AuthError(409, 'ai_access_changed', 'Доступ к материалам изменился. Обновите страницу.');
+    return { accountId: a.user.id, requestId, status: row.status, messages: messages(row), quota: await quota(a.user.id) };
+  }
   async function send(token, expected, data) {
+    const a = await access(token, expected);
+    // Reserve before decoding, database acceptance and quota. Always release on failure.
+    const hasFile = data?.attachment !== undefined;
+    if (hasFile && fileInFlight) throw new AuthError(503, 'ai_upload_busy', 'Лара обрабатывает другой файл. Попробуйте немного позже.');
+    if (hasFile) fileInFlight = true;
+    try { return await sendAccepted(token, expected, data, a); }
+    finally { if (hasFile) fileInFlight = false; }
+  }
+  async function sendAccepted(token, expected, data, a) {
     if (!uuid(data?.requestId) || typeof data.text !== 'string' || !data.text.trim()
       || [...data.text].length > MAX_QUESTION || /[\p{Cc}\p{Cf}]/u.test(data.text.replace(/[\n\r\t]/g, '')))
       throw new AuthError(400, 'invalid_ai_message', 'Введите вопрос до 4000 символов.');
-    const text = data.text.trim(), requestId = data.requestId.toLowerCase(), questionHash = sha(text);
-    const a = await access(token, expected);
+    const file = validateAiAttachment(data.attachment);
+    const text = data.text.trim(), requestId = data.requestId.toLowerCase();
+    const question = file ? `${text}\n\nФайл анализа: ${file.attachment.name}` : text;
+    const questionHash = file ? sha(JSON.stringify([question, file.attachment.mimeType, file.digest])) : sha(text);
     const today = day(clock());
     const existing = await transaction(pool, async client => {
       // Serialize request IDs and quota updates for this account, including concurrent retries.
@@ -173,7 +197,7 @@ export function createAiChat({ pool, service, courseMaterials, sourceMapPath, ur
         WHERE ai_chat_daily_usage.used<$3 RETURNING used`, [a.user.id, today, DAILY_LIMIT]);
       if (!usage) throw new AuthError(429, 'ai_daily_limit', 'Сегодня доступные вопросы закончились. Возвращайтесь завтра.');
       const { rows: [saved] } = await client.query(`INSERT INTO ai_chat_requests(user_id,request_id,question,question_hash,rights_hash,status,accepted_at)
-        VALUES($1,$2,$3,$4,$5,'pending',$6) RETURNING *`, [a.user.id, requestId, text, questionHash, a.rightsHash, new Date(clock())]);
+        VALUES($1,$2,$3,$4,$5,'pending',$6) RETURNING *`, [a.user.id, requestId, question, questionHash, a.rightsHash, new Date(clock())]);
       return { ...saved, newlyAccepted: true };
     });
     if (existing.question_hash !== questionHash) throw new AuthError(409, 'request_id_conflict', 'Обновите страницу и повторите вопрос.');
@@ -193,17 +217,16 @@ export function createAiChat({ pool, service, courseMaterials, sourceMapPath, ur
     }
     const historyForModel = latestPairs.reverse().flat();
     const sources = relevantSources(text, a.ctx.lessons);
-    const body = Buffer.from(JSON.stringify({ requestId, question: text, profile: profileFor(a.user, clock()),
+    const body = Buffer.from(JSON.stringify({ requestId, question: text, ...(file ? { attachment: file.attachment } : {}), profile: profileFor(a.user, clock()),
       history: historyForModel, allowedKnowledgeSources: a.allowedKnowledgeSources,
       allowedLessons: a.allowedLessons, sources }));
-    if (body.length > 500_000) throw unavailable();
+    if (body.length > (file ? MAX_AI_BODY_BYTES : 500_000)) throw unavailable();
     const timestamp = String(Math.floor(clock() / 1000));
     const signature = createHmac('sha256', secret).update(timestamp).update('\n').update(body).digest('hex');
-    let reply;
+    let reply, failureMessage;
     try {
       const response = await fetchImpl(endpoint, { method: 'POST', body, signal: AbortSignal.timeout(65_000),
         headers: { 'Content-Type': 'application/json', 'X-Lara-Timestamp': timestamp, 'X-Lara-Signature': signature } });
-      if (!response.ok) throw unavailable();
       if (response.body?.getReader) {
         const reader = response.body.getReader(), chunks = [];
         let bytes = 0;
@@ -218,6 +241,16 @@ export function createAiChat({ pool, service, courseMaterials, sourceMapPath, ur
         } finally { reader.releaseLock(); }
         reply = JSON.parse(Buffer.concat(chunks).toString('utf8'));
       } else reply = await response.json(); // Test adapters without a Response stream.
+      if (!response.ok) {
+        // Only fixed messages cross the public boundary; never return or persist provider details.
+        if (response.status === 422 && reply?.error === 'invalid_attachment')
+          failureMessage = 'Не удалось прочитать файл. Поддерживаются PDF до 10 страниц и фотографии JPG/PNG до 16 Мп, размером до 10 МБ.';
+        else if (response.status === 422 && reply?.error === 'attachment_unreadable')
+          failureMessage = 'Не удалось уверенно прочитать показатели. Прикрепите более чёткий файл или фото.';
+        else if (response.status === 503 && reply?.error === 'busy')
+          failureMessage = 'Лара сейчас обрабатывает другой файл. Попробуйте позже.';
+        throw unavailable();
+      }
       if (reply?.requestId !== requestId || typeof reply.answer !== 'string' || !reply.answer.trim()
         || reply.answer.length > 20_000 || !Array.isArray(reply.sources) || reply.sources.length > 20) throw unavailable();
     } catch {
@@ -226,7 +259,8 @@ export function createAiChat({ pool, service, courseMaterials, sourceMapPath, ur
       const current = await access(token, expected);
       if (current.rightsHash !== a.rightsHash) throw new AuthError(409, 'ai_access_changed', 'Доступ к материалам изменился. Обновите страницу.');
       if (!failed) throw unavailable();
-      return { accountId: a.user.id, requestId, status: 'failed', messages: messages(failed), quota: await quota(a.user.id) };
+      return { accountId: a.user.id, requestId, status: 'failed', messages: messages(failed), quota: await quota(a.user.id),
+        ...(failureMessage ? { failureMessage } : {}) };
     }
     const current = await access(token, expected);
     if (current.rightsHash !== a.rightsHash) throw new AuthError(409, 'ai_access_changed', 'Доступ к материалам изменился. Обновите страницу.');
@@ -255,5 +289,5 @@ export function createAiChat({ pool, service, courseMaterials, sourceMapPath, ur
     await pool.query('DELETE FROM ai_chat_requests WHERE accepted_at<$1', [new Date(clock() - RETENTION_MS)]);
     await pool.query('DELETE FROM ai_chat_daily_usage WHERE day_moscow<$1', [day(clock() - RETENTION_MS)]);
   }
-  return Object.freeze({ history, send, cleanup });
+  return Object.freeze({ history, send, status, authorize: access, cleanup });
 }

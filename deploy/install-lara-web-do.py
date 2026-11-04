@@ -16,6 +16,9 @@ import urllib.request
 import zipfile
 
 APP_PATH = 'backend/lara-web/lara_web.py'
+REQUIREMENTS_PATH = 'backend/lara-web/requirements-web.txt'
+PINNED_REQUIREMENTS = b'Pillow==13.0.0\npypdfium2==5.14.0\n'
+VENDORS = Path('/opt/legkie-rody/web/vendors')
 NGINX = Path('/etc/nginx/sites-available/lr-admin')
 ENABLED = Path('/etc/nginx/sites-enabled/lr-admin')
 ENV = Path('/etc/legkie-rody-web.env')
@@ -24,7 +27,7 @@ MARKER = Path('/opt/legkie-rody/web/.lara-web-managed')
 BACKUP_ROOT = Path('/root')
 BEGIN = '    # BEGIN LARA WEB MANAGED\n'
 END = '    # END LARA WEB MANAGED\n'
-BLOCK = BEGIN + '''    location ^~ /internal/lara-web/ {
+LEGACY_BLOCK = BEGIN + '''    location ^~ /internal/lara-web/ {
         allow 129.101.119.250;
         allow 127.0.0.1;
         deny all;
@@ -33,6 +36,8 @@ BLOCK = BEGIN + '''    location ^~ /internal/lara-web/ {
         proxy_pass http://127.0.0.1:8100/;
     }
 ''' + END
+BLOCK = LEGACY_BLOCK.replace('client_max_body_size 512k;', 'client_max_body_size 15m;\n        client_body_timeout 90s;').replace(
+    'proxy_read_timeout 65s;', 'proxy_http_version 1.1;\n        proxy_request_buffering off;\n        proxy_read_timeout 90s;')
 
 
 class InstallError(Exception):
@@ -65,19 +70,23 @@ def package(path):
     try:
         with zipfile.ZipFile(path) as z:
             names = z.namelist()
-            expected = {'manifest.json', 'payload/' + APP_PATH}
+            paths = {APP_PATH, REQUIREMENTS_PATH}
+            expected = {'manifest.json'} | {'payload/' + name for name in paths}
             if len(names) != len(expected) or set(names) != expected or any(x.file_size > 1024 * 1024 for x in z.infolist()):
                 raise InstallError('Invalid package contents')
             manifest = json.loads(z.read('manifest.json'))
             if not isinstance(manifest, dict) or not re.fullmatch(r'[0-9a-f]{40}', manifest.get('revision', '')):
                 raise InstallError('Invalid manifest revision')
             files = manifest.get('files')
-            if not isinstance(files, dict) or set(files) != {APP_PATH} or not re.fullmatch(r'[0-9a-f]{64}', files[APP_PATH]):
+            if (not isinstance(files, dict) or set(files) != paths
+                    or any(not isinstance(value, str) or not re.fullmatch(r'[0-9a-f]{64}', value) for value in files.values())):
                 raise InstallError('Invalid manifest files')
-            code = z.read('payload/' + APP_PATH)
-            if hashlib.sha256(code).hexdigest() != files[APP_PATH]:
+            contents = {name: z.read('payload/' + name) for name in paths}
+            if any(hashlib.sha256(value).hexdigest() != files[name] for name, value in contents.items()):
                 raise InstallError('Package checksum mismatch')
-            return manifest['revision'], code
+            if contents[REQUIREMENTS_PATH] != PINNED_REQUIREMENTS:
+                raise InstallError('Unexpected web dependency pins')
+            return manifest['revision'], contents[APP_PATH], contents[REQUIREMENTS_PATH]
     except (OSError, zipfile.BadZipFile, KeyError, ValueError, TypeError):
         raise InstallError('Invalid package') from None
 
@@ -87,9 +96,9 @@ def patch_nginx(text):
         raise InstallError('Ambiguous managed nginx block')
     if BEGIN in text:
         begin, end = text.index(BEGIN), text.index(END) + len(END)
-        if text[begin:end] != BLOCK:
+        if text[begin:end] not in (BLOCK, LEGACY_BLOCK):
             raise InstallError('Managed nginx block differs from expected')
-        return text
+        return text[:begin] + BLOCK + text[end:]
     # This deliberately accepts only the known, simple nginx server layout.
     lines = text.splitlines(keepends=True)
     depth = 0
@@ -179,6 +188,26 @@ def snapshot(path):
     return path.read_bytes() if path.exists() else None
 
 
+def vendor_bundle(requirements, image):
+    """Use only a separately prepared immutable bundle; never install dependencies."""
+    digest = hashlib.sha256(requirements).hexdigest()
+    folder = VENDORS / digest
+    if any(path.is_symlink() for path in (folder, *folder.parents)) or not folder.is_dir():
+        raise InstallError('Web dependency bundle is missing or has a symlink')
+    if any(path.is_symlink() for path in folder.rglob('*')):
+        raise InstallError('Web dependency bundle contains a symlink')
+    marker = folder / '.bundle.json'
+    try:
+        if not marker.is_file() or marker.stat().st_size > 4096:
+            raise ValueError()
+        value = json.loads(marker.read_bytes())
+    except (OSError, ValueError, TypeError):
+        raise InstallError('Invalid web dependency bundle marker') from None
+    if value != {'requirementsSha256': digest, 'baseImage': image}:
+        raise InstallError('Web dependency bundle does not match requirements and base image')
+    return folder
+
+
 def restore(path, original, mode):
     if original is None:
         path.unlink(missing_ok=True)
@@ -203,12 +232,13 @@ def deployment_lock():
 
 def preflight(archive):
     metadata()
-    revision, code = package(archive)
+    revision, code, requirements = package(archive)
     if not ENABLED.is_symlink() or NGINX.is_symlink() or ENABLED.resolve() != NGINX or not NGINX.is_file():
         raise InstallError('Unexpected nginx site path')
     original_nginx = NGINX.read_bytes()
     patched = patch_nginx(original_nginx.decode('utf-8')).encode()
     app, pg, web = inspect('lr_app'), inspect('lr_postgres'), inspect('lr_web', False)
+    vendor = vendor_bundle(requirements, app['Image'])
     for container in (app, pg):
         if not container['State']['Running'] or 'legkie-rody_default' not in container['NetworkSettings']['Networks']:
             raise InstallError('Existing application or database is not running as expected')
@@ -230,11 +260,13 @@ def preflight(archive):
     if not exists and (MARKER.exists() or ENV.exists() or CODE.exists() or web):
         raise InstallError('Incomplete previous installation requires inspection')
     originals = (snapshot(CODE), snapshot(ENV), snapshot(MARKER))
-    return revision, code, original_nginx, patched, app, pg, web, env, exists, originals
+    return revision, code, original_nginx, patched, app, pg, web, env, exists, originals, requirements, vendor
 
 
 def install(pre, secret):
-    revision, code, original_nginx, patched, app, pg, web, old_env, exists, originals = pre
+    revision, code, original_nginx, patched, app, pg, web, old_env, exists, originals, requirements, vendor = pre
+    if vendor_bundle(requirements, app['Image']) != vendor:
+        raise InstallError('Web dependency bundle changed during preflight')
     started = [app['State']['StartedAt'], pg['State']['StartedAt']]
     old_code, old_config, old_marker = originals
     original_hash = hashlib.sha256(original_nginx).digest()
@@ -285,7 +317,7 @@ def install(pre, secret):
         values.update({'POSTGRES_HOST': old_env['POSTGRES_HOST'], 'POSTGRES_PORT': old_env.get('POSTGRES_PORT', '5432'),
                        'POSTGRES_DB': dbname, 'POSTGRES_USER': 'lara_web_reader', 'POSTGRES_PASSWORD': dbpassword,
                        'LARA_WEB_HMAC_SECRET': secret, 'BOT_ENABLED': 'false', 'MAX_ENABLED': 'false', 'GETCOURSE_MODE': 'off',
-                       'PYTHONPATH': '/web:/code', 'PYTHONDONTWRITEBYTECODE': '1'})
+                       'PYTHONPATH': '/web/vendor:/web:/code', 'PYTHONDONTWRITEBYTECODE': '1'})
         if any('\n' in v or '\r' in v or '\0' in v for v in values.values()):
             raise InstallError('Unsupported runtime configuration')
         if (snapshot(CODE), snapshot(ENV), snapshot(MARKER)) != originals:
@@ -299,13 +331,14 @@ def install(pre, secret):
         atomic_write(MARKER, marker_bytes, 0o600)
         written[MARKER] = (marker_bytes, old_marker, 0o600)
         if web:
-            run(['docker', 'stop', 'lr_web'])
+            run(['docker', 'stop', '--time', '70', 'lr_web'])
             old_stopped = True
             run(['docker', 'rename', 'lr_web', old_name])
             old_renamed = True
         created = run(['docker', 'create', '--name', 'lr_web', '--label', 'com.legkie-rody.lara-web=managed', '--restart', 'unless-stopped',
              '--network', 'legkie-rody_default', '--memory', '384m', '--cpus', '0.75', '--read-only', '--tmpfs', '/tmp:rw,noexec,nosuid,size=32m',
              '-p', '127.0.0.1:8100:8100', '--env-file', str(ENV), '-v', str(CODE) + ':/web/lara_web.py:ro',
+             '-v', str(vendor) + ':/web/vendor:ro',
              app['Image'], 'uvicorn', 'lara_web:app', '--host', '0.0.0.0', '--port', '8100', '--workers', '1', '--no-access-log'])
         new_container = created.stdout.strip()
         if not re.fullmatch(r'[a-f0-9]{64}', new_container):

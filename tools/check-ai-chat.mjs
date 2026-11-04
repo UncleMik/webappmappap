@@ -166,5 +166,124 @@ async (page) => {
   });
   if (ended.messages || !ended.disabled) throw new Error('Session end left private chat visible');
   await assertWaiting(false, 'session end');
-  return { post, firstId, secondId, sources: links.length, sourceToggle: true, keyboard: true, persistOnMerge: true, collapsedOnReload: true, mobileWidths: [320, 390], compactHeight: 500, guards: true, immediateSend: true, rejectedTextRestored: true, waitingAssistantBubble: true, waitingReplacedOnSuccess: true, waitingExcludedFromHistory: true, pendingHistoryRestored: true };
+  // Upload UI uses real browser File objects and fully intercepted API traffic.
+  historyMode = 'completed';
+  await page.goto(base + '/ai.html');
+  await page.waitForFunction(() => !document.querySelector('#chat-input').disabled);
+  const picker = page.locator('#analysis-file');
+  const chip = page.locator('#selected-attachment');
+  const pdf = { name: 'Анализ <без HTML>.pdf', mimeType: 'application/pdf', buffer: Buffer.from('%PDF-1.4\nsynthetic lab results') };
+  const choose = async file => { await picker.setInputFiles(file); };
+  const assertChip = async name => {
+    if (await chip.isVisible() !== !!name || name && await page.locator('#attachment-name').innerText() !== name) throw new Error('Selected attachment mismatch');
+  };
+  await picker.evaluate(element => { element.click = () => { element.dataset.opened = String(Number(element.dataset.opened || 0) + 1); }; });
+  for (const trigger of ['#attachment', '#analysis-attachment']) {
+    await page.locator(trigger).click(); await choose(pdf); await assertChip(pdf.name);
+  }
+  if (await picker.getAttribute('data-opened') !== '2') throw new Error('Upload buttons did not open picker');
+  await picker.setInputFiles([]); await assertChip(pdf.name); // Cancellation keeps previous selection.
+  await choose({ name: 'bad.txt', mimeType: 'text/plain', buffer: Buffer.from('not a lab') });
+  await page.getByText('Выберите один PDF, JPG или PNG до 10 МБ.', { exact: true }).waitFor();
+  await assertChip(pdf.name);
+  await choose({ name: 'large.pdf', mimeType: 'application/pdf', buffer: Buffer.alloc(10485761, 32) });
+  await assertChip(pdf.name);
+  for (const [name, mimeType] of [['scan.jpg', 'image/jpeg'], ['scan.png', 'image/png']]) {
+    await choose({ name, mimeType, buffer: Buffer.from([1, 2, 3]) }); await assertChip(name);
+  }
+  await choose({ ...pdf, mimeType: '' }); await assertChip(pdf.name);
+  if (await chip.locator('img,script').count()) throw new Error('Filename interpreted as HTML');
+  await page.locator('#attachment-remove').click(); await assertChip(null);
+  if (!(await page.locator('.send-button').isDisabled())) throw new Error('Empty question without file can send');
+  await choose({ ...pdf, mimeType: '' });
+  for (const width of [320, 390, 500]) {
+    await page.setViewportSize({ width, height: 500 }); await page.waitForTimeout(100);
+    const uploadLayout = await page.evaluate(() => {
+      const row = document.querySelector('.suggestions').getBoundingClientRect();
+      return { overflow: document.documentElement.scrollWidth > innerWidth,
+        composerOverlaps: document.querySelector('#chat-input').getBoundingClientRect().bottom > document.querySelector('.bottom-navigation').getBoundingClientRect().top,
+        clipped: [...document.querySelectorAll('.suggestions button')].some(button => {
+          const box = button.getBoundingClientRect();
+          if (box.left < row.left - 1 || box.right > row.right + 1) return true;
+          return [...button.childNodes].filter(node => node.nodeType === Node.TEXT_NODE).some(node => {
+            const range = document.createRange(); range.selectNodeContents(node);
+            return [...range.getClientRects()].some(rect => rect.left < box.left - 1 || rect.right > box.right + 1 || rect.top < box.top - 1 || rect.bottom > box.bottom + 1);
+          });
+        }) };
+    });
+    if (uploadLayout.overflow || uploadLayout.composerOverlaps || uploadLayout.clipped) throw new Error('Upload composer overflow at ' + width + ': ' + JSON.stringify(uploadLayout));
+  }
+  let uploadPosts = 0, uploadStatus = 0, originalUpload, releaseUpload, uploadStarted;
+  const uploadWaiting = new Promise(resolve => { uploadStarted = resolve; });
+  await page.unroute(base + '/api/auth/ai/messages');
+  await page.route(base + '/api/auth/ai/messages', async route => {
+    const body = JSON.parse(route.request().postData()); uploadPosts++;
+    if (uploadPosts === 1) {
+      originalUpload = body; uploadStarted(); await new Promise(resolve => { releaseUpload = resolve; });
+      return route.fulfill({ status: 502, json: { error: 'ai_unavailable' } });
+    }
+    if (uploadPosts === 2) {
+      if (JSON.stringify(body) !== JSON.stringify(originalUpload)) throw new Error('Unknown upload retry changed UUID, text or bytes');
+      return route.fulfill({ status: 503, json: { error: 'ai_upload_busy' } });
+    }
+    if (uploadPosts === 6) {
+      if (body.attachment.mimeType !== 'image/jpeg' || body.attachment.data !== Buffer.from([255, 216, 255, 217]).toString('base64')) throw new Error('Octet-stream JPEG inference changed MIME or bytes');
+      return route.fulfill({ status: 413, json: { error: 'invalid_ai_attachment' } });
+    }
+    if (uploadPosts === 5) return route.fulfill({ json: { accountId, requestId: body.requestId, status: 'failed', failureMessage: 'Не удалось прочитать анализ <без HTML>.', quota: quota(5), messages: [
+      { id: 'failed:upload', role: 'user', status: 'failed', requestId: body.requestId, content: body.text + '\n\nФайл анализа: ' + body.attachment.name }
+    ] } });
+    return route.fulfill({ status: uploadPosts === 3 ? 503 : 413, json: { error: uploadPosts === 3 ? 'ai_upload_busy' : 'invalid_ai_attachment' } });
+  });
+  await page.route(base + '/api/auth/ai/messages/status', async route => {
+    const body = JSON.parse(route.request().postData()); uploadStatus++;
+    if (Object.keys(body).join() !== 'requestId' || body.requestId !== originalUpload.requestId) throw new Error('Status lookup resent private file');
+    if (uploadStatus === 1) return route.fulfill({ status: 404, json: { error: 'ai_request_not_found' } });
+    return route.fulfill({ json: { accountId, requestId: body.requestId, status: 'completed', quota: quota(4), messages: [
+      { id: 'upload:question', role: 'user', status: 'completed', requestId: body.requestId, content: originalUpload.text + '\n\nФайл анализа: ' + originalUpload.attachment.name },
+      { id: 'upload:answer', role: 'assistant', requestId: body.requestId, content: 'Разбор готов', sources: [] }
+    ] } });
+  });
+  await page.locator('.send-button').click(); await uploadWaiting;
+  await assertChip(null); await assertWaiting(true, 'attachment-only send');
+  if (originalUpload.text !== 'Помоги разобраться с результатами анализов.' || originalUpload.attachment.data !== pdf.buffer.toString('base64') || originalUpload.attachment.mimeType !== pdf.mimeType) throw new Error('Attachment transport mismatch');
+  if (await page.locator('#chat-input').inputValue()) throw new Error('Upload left text in composer');
+  releaseUpload(); await page.locator('#chat-retry').waitFor({ state: 'visible' });
+  await page.locator('#chat-retry').click();
+  await page.getByText('Обработка файлов сейчас занята.', { exact: false }).waitFor();
+  if (uploadPosts !== 2 || uploadStatus !== 1) throw new Error('404 recovery did not resend once');
+  if (!(await page.locator('#chat-input').isDisabled()) || await chip.isVisible() || await page.locator('.user-message').filter({ hasText: 'Файл анализа:' }).count() !== 1) throw new Error('Busy uncertain retry discarded UUID or restored a new composer');
+  await page.locator('#chat-retry').click(); await page.getByText('Разбор готов', { exact: true }).waitFor();
+  await page.waitForFunction(() => !document.querySelector('#chat-input').disabled);
+  if (uploadPosts !== 2 || uploadStatus !== 2 || await page.locator('.user-message').filter({ hasText: 'Файл анализа:' }).count() !== 1) throw new Error('Upload result duplicate or extra send');
+  await assertChip(null); await assertWaiting(false, 'upload result');
+  if ((await page.locator('#chat-quota').innerText()) !== 'Осталось вопросов сегодня: 26 из 30') throw new Error('Upload quota changed on lookup');
+  await page.locator('#chat-input').fill('Мой вопрос'); await choose(pdf);
+  await page.locator('.send-button').click();
+  await page.getByText('Обработка файлов сейчас занята.', { exact: false }).waitFor(); await assertChip(pdf.name);
+  if (await page.locator('#chat-input').inputValue() !== 'Мой вопрос') throw new Error('Busy upload lost text');
+  await page.locator('.send-button').click();
+  await page.getByText('Не удалось отправить файл.', { exact: false }).waitFor(); await assertChip(pdf.name);
+  await page.locator('.send-button').click();
+  await page.getByText('Не удалось прочитать анализ <без HTML>. Вопрос учтён в дневном лимите; можно задать новый.', { exact: true }).waitFor();
+  await page.waitForFunction(() => !document.querySelector('#chat-input').disabled);
+  await assertChip(null);
+  if (await page.locator('#chat-input').inputValue() || await page.locator('#chat-status img').count()) throw new Error('Accepted failure restored file/text or rendered markup');
+  await choose({ name: 'scan.jpeg', mimeType: 'application/octet-stream', buffer: Buffer.from([255, 216, 255, 217]) });
+  await page.locator('.send-button').click();
+  await page.getByText('Не удалось отправить файл.', { exact: false }).waitFor(); await assertChip('scan.jpeg');
+  await page.evaluate(() => window.dispatchEvent(new Event('webpril:session-ended')));
+  await assertChip(null);
+  if (await page.locator('#conversation .message').count() || !(await page.locator('#attachment').isDisabled())) throw new Error('Session end retained upload state');
+  historyMode = 'pending'; await page.goto(base + '/ai.html');
+  await page.locator('#chat-retry').waitFor({ state: 'visible' });
+  await page.unroute(base + '/api/auth/ai/messages/status');
+  await page.route(base + '/api/auth/ai/messages/status', route => route.fulfill({ json: { accountId, requestId: 'aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa', status: 'failed', messages: [{ id: '1', role: 'user', status: 'failed', requestId: 'aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa', content: 'Старый вопрос' }], quota: quota(4) } }));
+  await page.locator('#chat-retry').click();
+  await page.waitForFunction(() => !document.querySelector('#chat-input').disabled);
+  if (uploadPosts !== 6) throw new Error('Restored history resent an upload');
+  await choose(pdf);
+  await page.evaluate(() => window.dispatchEvent(new CustomEvent('account:change', { detail: { user: { id: '22222222-2222-4222-8222-222222222222' } } })));
+  await assertChip(null);
+  return { uploads: { selectRemove: true, typeSize: true, cancelledSelectionPreserved: true, pdfJpgPng: true, inferredMimePreservesBytes: true, attachmentOnly: true, sameBytesUuidRetry: true, uncertainBusyKeepsRequest: true, statusLookup: true, restoredHistoryStatusOnly: true, rejectionRestoresFile: true, acceptedFailureMessageAndDeletion: true, allSuggestionTextVisible: true, sessionAccountWipe: true, mobileWidths: [320, 390, 500] }, post, firstId, secondId, sources: links.length, sourceToggle: true, keyboard: true, persistOnMerge: true, collapsedOnReload: true, mobileWidths: [320, 390], compactHeight: 500, guards: true, immediateSend: true, rejectedTextRestored: true, waitingAssistantBubble: true, waitingReplacedOnSuccess: true, waitingExcludedFromHistory: true, pendingHistoryRestored: true };
 }

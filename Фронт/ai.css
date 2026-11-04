@@ -41,12 +41,12 @@
 .chat-controls { padding: 12px 0 8px; }
 .help-label { color: #7968ac; font-size: 12px; margin-bottom: 3px; }
 .suggestions { display: flex; gap: 4px; }
-.suggestions button { display: flex; align-items: center; justify-content: center; gap: 5px; flex: 1; min-height: 44px; background: none; border-radius: 22px; font-size: 10px; white-space: nowrap; position: relative; isolation: isolate; }
+.suggestions button { display: flex; align-items: center; justify-content: center; gap: 5px; flex: 1; min-height: 44px; background: none; border-radius: 22px; font-size: 10px; white-space: normal; min-width: 0; position: relative; isolation: isolate; }
 .suggestions button::before { content: ''; position: absolute; inset: 6px 0; border-radius: inherit; background: var(--chip); z-index: -1; }
 .suggestions svg { width: 17px; height: 17px; }
 .symptoms { --chip: #fff0fc; }.symptoms svg { color: #b452a7; }
 .materials { --chip: #ecf9f5; }.materials svg { color: #409e98; }
-.reminders { --chip: #fff7e9; }.reminders svg { color: #ed9b30; }
+.analyses { --chip: #fff7e9; }.analyses svg { color: #ed9b30; }
 .doctor { --chip: #f5efff; }.doctor svg { color: #8a4dff; }
 .composer { display: flex; gap: 8px; margin-top: 7px; }
 .attachment-button { width: 44px; height: 44px; display: grid; place-items: center; background: white; border: 1px solid #ece3fc; border-radius: 50%; color: #8073a8; flex-shrink: 0; }
@@ -74,4 +74,11 @@
 #history-list button { width: 100%; padding: 10px 0; text-align: left; color: #393456; background: none; overflow-wrap: anywhere; }
 @media (max-width: 374px) { .ai-header { padding-left: 14px; padding-right: 14px; }.ai-header h1 { font-size: 17px; }.history-button { font-size: 11px; gap: 3px; }.ai-main { padding: 0 12px; }.assistant-card { gap: 8px; padding: 4px 7px; }.assistant-card h2 { font-size: 12px; }.bubble { font-size: 13px; }.message { gap: 8px; }.suggestions { flex-wrap: wrap; }.suggestions button { flex-basis: 45%; } }
 
-@media (max-height: 500px) { .assistant-art { width: 48px; height: 48px; border-radius: 10px; }.assistant-card { min-height: 0; }.assistant-card p { display: none; }.suggestions { flex-wrap: nowrap; overflow-x: auto; }.suggestions button { flex: 1 0 auto; padding: 0 8px; }.ai-header { padding-top: env(safe-area-inset-top, 0px); }.chat-controls { padding-top: 4px; } }
+@media (max-height: 500px) { .assistant-art { width: 48px; height: 48px; border-radius: 10px; }.assistant-card { min-height: 0; }.assistant-card p { display: none; }.suggestions { flex-wrap: nowrap; }.suggestions button { flex: 1; min-width: 0; gap: 3px; padding: 0 1px; }.suggestions svg { width: 14px; height: 14px; }.ai-header { padding-top: env(safe-area-inset-top, 0px); }.chat-controls { padding-top: 4px; } }
+
+.selected-attachment { display: flex; align-items: center; gap: 8px; margin-top: 4px; padding: 0 4px 0 12px; border-radius: 14px; background: #f6f0ff; color: #685882; font-size: 12px; min-width: 0; }
+.selected-attachment[hidden] { display: none; }
+#attachment-name { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+#attachment-remove { flex-shrink: 0; width: 44px; height: 44px; background: none; color: #7542c6; display: grid; place-items: center; }
+.attachment-hint { margin: 4px 4px 0; font-size: 10px; line-height: 13px; color: #8273b2; }
+.attachment-button:disabled, .analyses:disabled { opacity: .45; }

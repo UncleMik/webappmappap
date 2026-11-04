@@ -1,8 +1,9 @@
 import { createServer } from 'node:http';
 import { AuthError, normalizeEmail, readSessionCookie, sessionCookie } from './security.mjs';
 import { weeklyVideoSource } from './weekly-videos.mjs';
+import { MAX_AI_BODY_BYTES } from './ai-attachment.mjs';
 
-async function readJson(request, maxSize = 4096) {
+async function readJson(request, maxSize = 4096, aiAttachment = false) {
   if ((request.headers['content-type'] || '').split(';')[0].trim() !== 'application/json') {
     throw new AuthError(415, 'json_required', 'Нужен запрос JSON.');
   }
@@ -16,8 +17,13 @@ async function readJson(request, maxSize = 4096) {
   try {
     const value = JSON.parse(Buffer.concat(chunks).toString('utf8'));
     if (!value || Array.isArray(value) || typeof value !== 'object') throw new Error();
+    if (aiAttachment && value.attachment === undefined && size > 16_000)
+      throw new AuthError(413, 'body_too_large', 'Слишком большой запрос.');
     return value;
-  } catch { throw new AuthError(400, 'invalid_json', 'Проверьте введённые данные.'); }
+  } catch (error) {
+    if (error instanceof AuthError) throw error;
+    throw new AuthError(400, 'invalid_json', 'Проверьте введённые данные.');
+  }
 }
 function challenge(value) {
   if (typeof value !== 'string' || !/^[A-Za-z0-9_-]{43}$/.test(value)) {
@@ -30,13 +36,23 @@ const materialsUnavailable = () => new AuthError(503, 'course_materials_unavaila
   'Материалы курсов временно недоступны. Попробуйте ещё раз.');
 
 export function createAuthServer({ service, store, courseChecks, courseMaterials, personalData, profilePhoto, clubChat, aiChat, origin, enabled = false, trustProxy = false, mailPerMinute = 120 }) {
-  return createServer({ requestTimeout: 15_000, headersTimeout: 10_000, maxHeaderSize: 8192 }, async (request, response) => {
+  let largeAiInFlight = false;
+  return createServer({ requestTimeout: 90_000, headersTimeout: 10_000, maxHeaderSize: 8192 }, async (request, response) => {
+    let ownsLargeSlot = false;
+    const isAiSend = request.method === 'POST' && request.url === '/api/auth/ai/messages';
+    // Bound receive time separately from the subsequent 65-second model call.
+    const receiveTimer = setTimeout(() => request.destroy(), isAiSend ? 90_000 : 15_000);
+    receiveTimer.unref();
+    const clearReceiveTimer = () => clearTimeout(receiveTimer);
+    request.once('end', clearReceiveTimer);
+    request.once('close', clearReceiveTimer);
     const send = (status, body, headers = {}) => {
       if (response.destroyed) return;
       response.writeHead(status, {
         'Content-Type': 'application/json; charset=utf-8', 'Cache-Control': 'no-store',
         'X-Content-Type-Options': 'nosniff', 'Referrer-Policy': 'no-referrer',
-        'Content-Security-Policy': "default-src 'none'; frame-ancestors 'none'", ...headers,
+          'Content-Security-Policy': "default-src 'none'; frame-ancestors 'none'",
+          ...(!request.complete ? { Connection: 'close' } : {}), ...headers,
       });
       response.end(JSON.stringify(body));
     };
@@ -131,18 +147,29 @@ export function createAuthServer({ service, store, courseChecks, courseMaterials
       if (request.headers.origin !== origin || ['cross-site', 'same-site'].includes(request.headers['sec-fetch-site'])) {
         throw new AuthError(403, 'origin_rejected', 'Откройте вход на сайте приложения.');
       }
-      const data = await readJson(request, url.pathname === '/api/auth/personal' ? 1_000_000
+      if (isAiSend) {
+        if (!aiChat) throw new AuthError(503, 'ai_unavailable', 'Лара временно недоступна.');
+        const length = request.headers['content-length'];
+        if (length === undefined || Number(length) > 16_000) {
+          if (largeAiInFlight) throw new AuthError(503, 'ai_upload_busy', 'Лара обрабатывает другой файл. Попробуйте немного позже.');
+          largeAiInFlight = true; ownsLargeSlot = true;
+          await aiChat.authorize(readSessionCookie(request), request.headers['x-webpril-account']);
+          if (Number(length) > MAX_AI_BODY_BYTES) throw new AuthError(413, 'body_too_large', 'Слишком большой запрос.');
+        }
+      }
+      const data = await readJson(request, isAiSend ? MAX_AI_BODY_BYTES : url.pathname === '/api/auth/personal' ? 1_000_000
         : url.pathname === '/api/auth/profile-photo' ? 512_000
-          : ['/api/auth/club/messages', '/api/auth/ai/messages'].includes(url.pathname) ? 16_000 : 4096);
+          : url.pathname === '/api/auth/club/messages' ? 16_000 : 4096, isAiSend);
       const peer = request.socket.remoteAddress;
       const proxy = trustProxy && ['127.0.0.1', '::1', '::ffff:127.0.0.1'].includes(peer);
       const ip = proxy ? String(request.headers['x-real-ip'] || peer) : peer;
       await store.rateLimit('request_ip', ip, 600);
-      if (url.pathname === '/api/auth/ai/history/read' || url.pathname === '/api/auth/ai/messages') {
+      if (url.pathname === '/api/auth/ai/history/read' || url.pathname === '/api/auth/ai/messages' || url.pathname === '/api/auth/ai/messages/status') {
         if (!aiChat) throw new AuthError(503, 'ai_unavailable', 'Лара временно недоступна.');
         const token = readSessionCookie(request), expected = request.headers['x-webpril-account'];
         send(200, url.pathname.endsWith('/read') ? await aiChat.history(token, expected, data.before)
-          : await aiChat.send(token, expected, data)); return;
+          : url.pathname.endsWith('/status') ? await aiChat.status(token, expected, data)
+            : await aiChat.send(token, expected, data)); return;
       }
       if (url.pathname === '/api/auth/club/read' || url.pathname === '/api/auth/club/search') {
         if (!clubChat) throw new AuthError(503, 'club_unavailable', 'Чат временно недоступен.');
@@ -219,6 +246,9 @@ export function createAuthServer({ service, store, courseChecks, courseMaterials
         console.error('auth_request_failed');
         send(503, { error: 'auth_unavailable', message: 'Вход временно недоступен. Попробуйте позже.' });
       }
+    } finally {
+      if (ownsLargeSlot) largeAiInFlight = false;
+      clearReceiveTimer();
     }
   });
 }

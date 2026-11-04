@@ -10,7 +10,26 @@ const historyMore = document.querySelector('#history-more');
 const retry = document.querySelector('#chat-retry');
 let accountId, revision = 0, controller, ended = false, ready = false;
 let messages = [], hasMore = false, nextBefore = null, busy = false, pending = null;
-let remaining = null, replyWaiting = false;
+let remaining = null, replyWaiting = false, selectedAttachment = null;
+const fileInput = document.querySelector('#analysis-file');
+const attachmentChip = document.querySelector('#selected-attachment');
+const attachmentName = document.querySelector('#attachment-name');
+const attachmentButton = document.querySelector('#attachment');
+const analysesButton = document.querySelector('#analysis-attachment');
+const removeAttachment = document.querySelector('#attachment-remove');
+function selectAttachment(file) {
+  selectedAttachment = file; fileInput.value = '';
+  attachmentName.textContent = file?.name || ''; attachmentChip.hidden = !file;
+  updateControls();
+}
+function fileData(file) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => resolve(String(reader.result).split(',')[1]);
+    reader.onerror = () => reject(Object.assign(new Error('Не удалось прочитать файл.'), { code: 'invalid_ai_attachment' }));
+    reader.readAsDataURL(file);
+  });
+}
 const expandedSources = new Set();
 const timeFormat = new Intl.DateTimeFormat('ru-RU', { timeZone: 'Europe/Moscow', hour: '2-digit', minute: '2-digit' });
 const sendingId = requestId => `sending:${requestId}`;
@@ -22,7 +41,8 @@ resizeChat();
 function notice(message) { status.textContent = message; status.hidden = !message; }
 function updateControls() {
   input.disabled = !ready || busy || !!pending || remaining === 0;
-  send.disabled = input.disabled || !input.value.trim();
+  send.disabled = input.disabled || (!input.value.trim() && !selectedAttachment);
+  attachmentButton.disabled = analysesButton.disabled = removeAttachment.disabled = input.disabled;
   retry.hidden = busy || (!pending && ready);
   retry.textContent = pending ? 'Проверить результат' : 'Повторить загрузку';
 }
@@ -30,7 +50,7 @@ function clearPrivate() {
   revision++; controller?.abort(); controller = null;
   accountId = null; ready = false; busy = false; pending = null;
   messages = []; hasMore = false; nextBefore = null; remaining = null;
-  replyWaiting = false;
+  replyWaiting = false; selectAttachment(null);
   expandedSources.clear();
   input.value = ''; conversation.replaceChildren(); historyList.replaceChildren();
   historyMore.hidden = true; quotaLabel.textContent = '';
@@ -49,9 +69,9 @@ window.addEventListener('account:change', event => {
   if (id && summary) summary.textContent = event.detail?.week ? `${event.detail.week}-я неделя беременности` : event.detail?.profile?.stage === 'mother' ? 'Материалы для мамы' : 'Личные данные пока не заполнены';
 });
 
-async function request(path, body, signal) {
+async function request(path, body, signal, timeoutMs) {
   const abort = new AbortController();
-  const timer = setTimeout(() => abort.abort(), body?.text ? 75_000 : 20_000);
+  const timer = setTimeout(() => abort.abort(), timeoutMs ?? (body?.text ? 75_000 : 20_000));
   const onAbort = () => abort.abort();
   signal?.addEventListener('abort', onAbort, { once: true });
   try {
@@ -70,6 +90,8 @@ function errorMessage(error, sending = false) {
   if (error.code === 'ai_purchase_required') return 'AI врач доступен после покупки курса. Посмотрите доступные курсы.';
   if (error.code === 'ai_daily_limit') return 'На сегодня использованы все 30 вопросов. Новые вопросы будут доступны завтра.';
   if (error.code === 'ai_unavailable') return 'AI врач временно недоступен. Попробуйте позже.';
+  if (error.code === 'invalid_ai_attachment') return 'Не удалось отправить файл. Проверьте, что это PDF, JPG или PNG до 10 МБ, и попробуйте снова.';
+  if (error.code === 'ai_upload_busy') return 'Обработка файлов сейчас занята. Файл и вопрос сохранены здесь — попробуйте ещё раз чуть позже.';
   if (error.code === 'invalid_ai_message') return 'Проверьте текст вопроса и отправьте снова.';
   if (error.code === 'ai_access_changed') return 'Доступ к AI врачу изменился. Обновите страницу.';
   return sending ? 'Ответ пока не подтверждён. Проверьте результат этой отправки; повторного вопроса не будет.' : 'Не удалось загрузить переписку. Проверьте интернет и повторите попытку.';
@@ -162,7 +184,7 @@ function restorePending() {
   if (pending) return;
   const unmatched = [...messages].reverse().find(item => item.role === 'user' && item.status === 'pending' && item.requestId);
   if (unmatched) {
-    pending = { requestId: unmatched.requestId, text: unmatched.content };
+    pending = { requestId: unmatched.requestId, text: unmatched.content, statusOnly: true };
     replyWaiting = true; render(); conversation.scrollTop = conversation.scrollHeight;
     notice('Нажмите «Проверить результат».');
   } else if ([...messages].reverse().find(item => item.role === 'user')?.status === 'failed') {
@@ -182,7 +204,7 @@ async function loadHistory(older = false) {
     if (!older) restorePending();
   } catch (error) {
     if (current !== revision || validateIdentity(error)) return;
-    if (error.code === 'ai_purchase_required') { ready = false; messages = []; pending = null; replyWaiting = false; render(); }
+    if (error.code === 'ai_purchase_required') { ready = false; messages = []; pending = null; selectAttachment(null); replyWaiting = false; render(); }
     notice(errorMessage(error));
   } finally { if (current === revision) { busy = false; controller = null; updateControls(); } }
 }
@@ -195,35 +217,60 @@ async function waitForSession() {
 }
 async function submit() {
   if (busy || !ready || ended || !accountId || !pending && remaining === 0) return;
-  const text = pending?.text || input.value.trim(); if (!text) return;
+  const wasRetry = !!pending;
+  const text = pending?.text || input.value.trim() || (selectedAttachment ? 'Помоги разобраться с результатами анализов.' : ''); if (!text) return;
   replyWaiting = true;
   if (!pending) {
-    pending = { requestId: crypto.randomUUID(), text };
-    input.value = '';
-    merge([{ id: sendingId(pending.requestId), role: 'user', content: text,
+    pending = { requestId: crypto.randomUUID(), text, attachment: selectedAttachment };
+    input.value = ''; selectAttachment(null);
+    const content = pending.attachment ? `${text}\n\nФайл анализа: ${pending.attachment.name}` : text;
+    merge([{ id: sendingId(pending.requestId), role: 'user', content,
       requestId: pending.requestId, status: 'sending', createdAt: new Date().toISOString() }]);
   } else render();
   conversation.scrollTop = conversation.scrollHeight;
   const attempt = pending; busy = true; updateControls(); notice('');
   const current = revision; controller = new AbortController();
   try {
-    const data = await request('messages', attempt, controller.signal);
+    let data;
+    if (attempt.statusOnly || attempt.attachment && attempt.checkStatus) {
+      try { data = await request('messages/status', { requestId: attempt.requestId }, controller.signal, attempt.attachment ? 180_000 : 75_000); }
+      catch (error) {
+        if (error.code !== 'ai_request_not_found') throw error;
+        if (attempt.statusOnly) {
+          notice('Этот запрос не найден. Обновите страницу, чтобы проверить переписку.');
+          replyWaiting = false; render(); return;
+        }
+      }
+    }
+    if (!data) {
+      const body = { requestId: attempt.requestId, text: attempt.text };
+      if (attempt.attachment) {
+        body.attachment = { name: attempt.attachment.name, mimeType: attempt.attachment.type,
+          data: await fileData(attempt.attachment) };
+        if (current !== revision) return;
+      }
+      attempt.checkStatus = true;
+      data = await request('messages', body, controller.signal, attempt.attachment ? 180_000 : 75_000);
+    }
     if (current !== revision) return;
     replyWaiting = data.status === 'pending';
     quota(data.quota); merge(data.messages);
     if (data.status === 'completed') { pending = null; input.value = ''; notice(''); }
     else if (data.status === 'failed') {
       pending = null; input.value = '';
-      notice('Ответ не получен. Вопрос учтён в дневном лимите; можно задать новый.');
+      const failure = typeof data.failureMessage === 'string' && data.failureMessage.trim() && data.failureMessage.length <= 500 ? data.failureMessage.trim() : 'Ответ не получен.';
+      notice(`${failure} Вопрос учтён в дневном лимите; можно задать новый.`);
     } else notice('Нажмите «Проверить результат» через несколько секунд.');
   } catch (error) {
     if (current !== revision || validateIdentity(error)) return;
     replyWaiting = false; render();
     if (error.code === 'ai_purchase_required') { clearPrivate(); notice(errorMessage(error)); return; }
     if (error.code === 'ai_daily_limit') { remaining = 0; quotaLabel.textContent = 'Осталось вопросов сегодня: 0 из 30'; }
-    if (['ai_busy', 'ai_daily_limit', 'request_id_conflict', 'invalid_ai_message'].includes(error.code)) {
+    // A busy resend does not disprove acceptance of the original, uncertain upload.
+    const uncertainBusy = wasRetry && (attempt.attachment || attempt.statusOnly) && ['ai_busy', 'ai_upload_busy'].includes(error.code);
+    if (!uncertainBusy && ['ai_busy', 'ai_upload_busy', 'ai_daily_limit', 'request_id_conflict', 'invalid_ai_message', 'invalid_ai_attachment'].includes(error.code)) {
       messages = messages.filter(item => item.id !== sendingId(attempt.requestId)); render();
-      input.value = attempt.text; pending = null;
+      input.value = attempt.text; pending = null; selectAttachment(attempt.attachment || null);
     }
     if (error.code === 'ai_busy') notice('Предыдущий вопрос ещё обрабатывается. Проверьте историю через несколько секунд.');
     if (error.code !== 'ai_busy') notice(errorMessage(error, !!pending));
@@ -233,7 +280,23 @@ input.addEventListener('input', updateControls);
 form.addEventListener('submit', event => { event.preventDefault(); submit(); });
 retry.addEventListener('click', () => pending ? submit() : loadHistory());
 document.querySelectorAll('[data-prompt]').forEach(button => button.addEventListener('click', () => { if (input.disabled) return; input.value = button.dataset.prompt; updateControls(); input.focus(); }));
-document.querySelector('#attachment').addEventListener('click', () => notice('Вложения пока недоступны. Напишите вопрос текстом.'));
+function openFilePicker() { if (!input.disabled) fileInput.click(); }
+attachmentButton.addEventListener('click', openFilePicker);
+analysesButton.addEventListener('click', openFilePicker);
+removeAttachment.addEventListener('click', () => { if (!input.disabled) { selectAttachment(null); notice(''); } });
+fileInput.addEventListener('change', () => {
+  let file = fileInput.files?.[0];
+  if (!file || input.disabled) { fileInput.value = ''; return; }
+  if (!file.type || file.type === 'application/octet-stream') {
+    const extension = file.name.split('.').pop().toLowerCase();
+    const inferred = { pdf: 'application/pdf', jpg: 'image/jpeg', jpeg: 'image/jpeg', png: 'image/png' }[extension];
+    if (inferred) file = new File([file], file.name, { type: inferred, lastModified: file.lastModified });
+  }
+  if (!['application/pdf', 'image/jpeg', 'image/png'].includes(file.type) || !/\.(pdf|jpe?g|png)$/i.test(file.name) || !file.size || file.size > 10 * 1024 * 1024) {
+    fileInput.value = ''; notice('Выберите один PDF, JPG или PNG до 10 МБ.'); return;
+  }
+  selectAttachment(file); notice('');
+});
 document.querySelector('#history-open').addEventListener('click', () => historyDialog.showModal());
 historyMore.addEventListener('click', () => loadHistory(true));
 document.querySelector('#history-close').addEventListener('click', () => historyDialog.close());

@@ -10,6 +10,8 @@ import { createStore } from '../auth/store.mjs';
 import { hashToken, randomToken } from '../auth/security.mjs';
 import { createAuthServer } from '../auth/http.mjs';
 import { once } from 'node:events';
+import { request as httpRequest } from 'node:http';
+import { validateAiAttachment, MAX_AI_FILE_BYTES } from '../auth/ai-attachment.mjs';
 
 let db, pool, folder, sourceMapPath, now, user, token, service, context, calls, chat, respond;
 before(async () => {
@@ -40,6 +42,145 @@ async function setup() {
 }
 let currentId;
 const ask = (text = 'Вопрос', id = currentId) => chat.send(token, user, { requestId: id, text });
+const pdf = (suffix = 'synthetic test fixture') => ({ name: 'Анализы.pdf', mimeType: 'application/pdf',
+  data: Buffer.from(`%PDF-1.7\n${suffix}`).toString('base64') });
+
+test('file validation bounds bytes, canonical base64, filename and matching magic', () => {
+  assert.ok(validateAiAttachment(pdf()));
+  for (const attachment of [null, [], { ...pdf(), name: '../file.pdf' }, { ...pdf(), name: 'C:\\file.pdf' },
+    { ...pdf(), name: 'a\u202efile.pdf' }, { ...pdf(), name: 'a'.repeat(151) },
+    { ...pdf(), data: 'JVBERi0=\n' }, { ...pdf(), data: 'JVBERi1=' },
+    { ...pdf(), mimeType: 'image/png' }, { ...pdf(), mimeType: 'text/plain' },
+    { ...pdf(), data: Buffer.alloc(MAX_AI_FILE_BYTES + 1).toString('base64') }]) {
+    assert.throws(() => validateAiAttachment(attachment), e => e.code === 'invalid_ai_attachment');
+  }
+  const bytes = Buffer.alloc(MAX_AI_FILE_BYTES); bytes.write('%PDF-1.7');
+  assert.ok(validateAiAttachment({ ...pdf(), data: bytes.toString('base64') }));
+  assert.ok(validateAiAttachment({ name: 'a.png', mimeType: 'image/png', data: Buffer.from([137,80,78,71,13,10,26,10]).toString('base64') }));
+  assert.ok(validateAiAttachment({ name: 'a.jpg', mimeType: 'image/jpeg', data: Buffer.from([255,216,255,1]).toString('base64') }));
+});
+
+test('file goes only to signed Germany payload; history stores filename and retries bind exact bytes', async () => {
+  await setup(); currentId = randomUUID();
+  let sent;
+  const original = respond;
+  respond = async (...args) => { sent = JSON.parse(args[1].body.toString()); return original(...args); };
+  const data = { requestId: currentId, text: 'Результаты', attachment: pdf() };
+  const first = await chat.send(token, user, data);
+  assert.deepEqual(sent.attachment, data.attachment);
+  assert.equal(sent.question, 'Результаты');
+  assert.equal(first.messages[0].content, 'Результаты\n\nФайл анализа: Анализы.pdf');
+  const { rows: [row] } = await pool.query('SELECT * FROM ai_chat_requests WHERE request_id=$1', [currentId]);
+  assert.ok(!JSON.stringify(row).includes(data.attachment.data));
+  assert.deepEqual((await chat.send(token, user, data)).messages, first.messages);
+  await assert.rejects(chat.send(token, user, { ...data, attachment: pdf('changed') }), e => e.code === 'request_id_conflict');
+  await assert.rejects(chat.send(token, user, { ...data, attachment: { ...pdf(), name: 'other.pdf' } }), e => e.code === 'request_id_conflict');
+  assert.equal(calls, 1); assert.equal(first.quota.used, 1);
+});
+
+test('invalid file cannot reserve quota and file semaphore is released after rejection', async () => {
+  await setup(); currentId = randomUUID();
+  await assert.rejects(chat.send(token, user, { requestId: currentId, text: 'Вопрос', attachment: { ...pdf(), data: 'bad' } }),
+    e => e.code === 'invalid_ai_attachment');
+  assert.equal((await chat.history(token, user)).quota.used, 0); assert.equal(calls, 0);
+  assert.equal((await chat.send(token, user, { requestId: currentId, text: 'Вопрос', attachment: pdf() })).status, 'completed');
+});
+
+test('accepted DO file failures return only fixed public messages, charge once and never retry generation', async () => {
+  await setup();
+  const expected = [
+    [422, 'invalid_attachment', 'Не удалось прочитать файл. Поддерживаются PDF до 10 страниц и фотографии JPG/PNG до 16 Мп, размером до 10 МБ.'],
+    [422, 'attachment_unreadable', 'Не удалось уверенно прочитать показатели. Прикрепите более чёткий файл или фото.'],
+    [503, 'busy', 'Лара сейчас обрабатывает другой файл. Попробуйте позже.'],
+    [422, 'private_provider_error', undefined],
+    [502, 'invalid_attachment', undefined],
+  ];
+  for (const [status, error, publicMessage] of expected) {
+    currentId = randomUUID();
+    respond = async () => new Response(JSON.stringify({ error, details: 'PRIVATE_PROVIDER_DETAILS' }), { status });
+    const data = { requestId: currentId, text: 'Вопрос', attachment: pdf() };
+    const result = await chat.send(token, user, data);
+    assert.equal(result.status, 'failed'); assert.equal(result.failureMessage, publicMessage);
+    assert.ok(!JSON.stringify(result).includes('PRIVATE_PROVIDER_DETAILS'));
+    const stored = (await pool.query('SELECT * FROM ai_chat_requests WHERE request_id=$1', [currentId])).rows[0];
+    assert.equal(stored.answer, null); assert.ok(!JSON.stringify(stored).includes('PRIVATE_PROVIDER_DETAILS'));
+    const used = result.quota.used, callsBeforeRetry = calls;
+    assert.equal((await chat.status(token, user, data)).quota.used, used);
+    assert.equal((await chat.send(token, user, data)).status, 'failed');
+    assert.equal(calls, callsBeforeRetry);
+  }
+  assert.equal(calls, expected.length); assert.equal((await chat.history(token, user)).quota.used, expected.length);
+  currentId = randomUUID();
+  respond = async () => new Response(JSON.stringify({ error: 'invalid_attachment', details: 'A'.repeat(128 * 1024) }), { status: 422 });
+  const oversized = await chat.send(token, user, { requestId: currentId, text: 'Вопрос', attachment: pdf() });
+  assert.equal(oversized.status, 'failed'); assert.equal(oversized.failureMessage, undefined);
+});
+
+test('status polls pending/completed/stale without model, quota or original; checks account and rights', async () => {
+  await setup(); currentId = randomUUID();
+  await assert.rejects(chat.status(token, user, { requestId: currentId }), e => e.code === 'ai_request_not_found');
+  assert.equal(calls, 0); assert.equal((await chat.history(token, user)).quota.used, 0);
+  await chat.send(token, user, { requestId: currentId, text: 'Вопрос', attachment: pdf() });
+  assert.equal((await chat.status(token, user, { requestId: currentId })).status, 'completed');
+  await pool.query("UPDATE ai_chat_requests SET status='pending',answer=NULL WHERE request_id=$1", [currentId]);
+  assert.equal((await chat.status(token, user, { requestId: currentId })).status, 'pending');
+  now += 70_000;
+  assert.equal((await chat.status(token, user, { requestId: currentId })).status, 'failed');
+  await assert.rejects(chat.status(token, randomUUID(), { requestId: currentId }), e => e.code === 'account_changed');
+  context.lessons = [];
+  await assert.rejects(chat.status(token, user, { requestId: currentId }), e => e.code === 'ai_access_changed');
+  context.courses = [];
+  await assert.rejects(chat.status(token, user, { requestId: currentId }), e => e.code === 'ai_purchase_required');
+  assert.equal(calls, 1);
+});
+
+test('single file processor rejects parallel file before quota and releases after provider failure', async () => {
+  await setup(); currentId = randomUUID();
+  let release, entered;
+  const hold = new Promise(resolve => { release = resolve; });
+  const ready = new Promise(resolve => { entered = resolve; });
+  respond = async () => { entered(); await hold; throw new Error('fixture failure'); };
+  const data = { requestId: currentId, text: 'Вопрос', attachment: pdf() };
+  const first = chat.send(token, user, data); await ready;
+  await assert.rejects(chat.send(token, user, { ...data, requestId: randomUUID() }), e => e.code === 'ai_upload_busy');
+  assert.equal((await chat.status(token, user, data)).quota.used, 1);
+  release(); assert.equal((await first).status, 'failed');
+  assert.equal((await chat.send(token, user, data)).status, 'failed');
+  assert.equal(calls, 1);
+});
+
+test('HTTP large upload authorizes before receiving bytes, bounds one slot and offers body-free status', async () => {
+  await setup(); currentId = randomUUID();
+  const store = createStore(pool, { secret: 'test-secret-longer-than-thirty-two-bytes', clock: () => now });
+  const server = createAuthServer({ service, store, aiChat: chat, enabled: true, origin: 'https://app.legkie-rody.ru' });
+  server.listen(0, '127.0.0.1'); await once(server, 'listening');
+  const base = `http://127.0.0.1:${server.address().port}`;
+  const headers = { Cookie: `__Host-school_session=${token}`, 'X-Webpril-Account': user,
+    Origin: 'https://app.legkie-rody.ru', 'Content-Type': 'application/json' };
+  const post = (path, data, h = headers) => fetch(base + path, { method: 'POST', headers: h, body: JSON.stringify(data) });
+  try {
+    const early = await new Promise((resolve, reject) => {
+      const req = httpRequest(`${base}/api/auth/ai/messages`, { method: 'POST', headers: {
+        ...headers, Cookie: '', 'Content-Length': '20000' } }, res => { res.resume(); res.on('end', () => resolve(res.statusCode)); });
+      req.on('error', reject); req.flushHeaders();
+    });
+    assert.equal(early, 401); assert.equal(calls, 0);
+    let release, entered;
+    const hold = new Promise(resolve => { release = resolve; });
+    const ready = new Promise(resolve => { entered = resolve; });
+    respond = async () => { entered(); await hold; return { ok: true, json: async () => ({ requestId: currentId, answer: 'Ответ', sources: [] }) }; };
+    const data = { requestId: currentId, text: 'Вопрос', attachment: pdf('fixture'.repeat(3000)) };
+    const first = post('/api/auth/ai/messages', data); await ready;
+    const busy = await post('/api/auth/ai/messages', { ...data, requestId: randomUUID() });
+    assert.equal(busy.status, 503); assert.equal((await busy.json()).error, 'ai_upload_busy');
+    const status = await post('/api/auth/ai/messages/status', { requestId: currentId });
+    assert.equal(status.status, 200); assert.equal((await status.json()).status, 'pending');
+    release(); assert.equal((await first).status, 200);
+    const normalOversized = await post('/api/auth/ai/messages', { requestId: randomUUID(), text: ' '.repeat(17000) });
+    assert.equal(normalOversized.status, 413);
+    assert.equal(calls, 1); assert.equal((await chat.history(token, user)).quota.used, 1);
+  } finally { server.closeAllConnections(); await new Promise(resolve => server.close(resolve)); }
+});
 
 test('purchase, account and session gate close both history and send', async () => {
   await setup(); currentId = randomUUID(); context = { courses: [], lessons: [] };
