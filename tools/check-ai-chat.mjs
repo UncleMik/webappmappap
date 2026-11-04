@@ -117,7 +117,7 @@ async (page) => {
   if (await page.locator('#conversation .assistant-message').count() !== 2 || await page.locator('#conversation .assistant-message .bubble').allTextContents().then(texts => texts.join('|')) !== 'Ответ|Ответ без ссылок') throw new Error('Success duplicated or lost assistant answers');
   const links = await page.locator('.message-sources a').evaluateAll(elements => elements.map(element => element.href));
   if (links.length !== 3 || links.some(link => ![base + '/article.html?courseLesson=347472707&course=4302509&section=123', base + '/my-courses.html?course=4302509'].includes(link))) throw new Error('Source allowlist incorrect: ' + links.join(', '));
-  const toggle = page.getByRole('button', { name: 'Ссылка на материалы', exact: true });
+  const toggle = page.getByRole('button', { name: 'Ссылки на материалы', exact: true });
   if (await toggle.count() !== 1) throw new Error('Expected one exact-label button only for answer with valid sources');
   const sourceLinks = page.locator('.message-sources a');
   if (await sourceLinks.count() !== 3 || await sourceLinks.filter({ visible: true }).count() !== 0 || await toggle.getAttribute('aria-expanded') !== 'false') throw new Error('Sources are not initially collapsed');

@@ -152,7 +152,7 @@ function messageNode(message) {
       const key = String(message.id);
       sources.id = `ai-materials-${key}`; sources.hidden = !expandedSources.has(key);
       const toggle = document.createElement('button'); toggle.type = 'button'; toggle.className = 'materials-toggle';
-      toggle.textContent = 'Ссылка на материалы';
+      toggle.textContent = 'Ссылки на материалы';
       toggle.setAttribute('aria-controls', sources.id); toggle.setAttribute('aria-expanded', String(!sources.hidden));
       toggle.addEventListener('click', () => {
         sources.hidden = !sources.hidden; toggle.setAttribute('aria-expanded', String(!sources.hidden));
