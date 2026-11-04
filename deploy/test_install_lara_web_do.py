@@ -164,6 +164,7 @@ class InstallerTests(unittest.TestCase):
                 commands.append(argv)
                 if argv[:2] == ['docker', 'create']:
                     self.assertIn(str(folder / 'vendor') + ':/web/vendor:ro', argv)
+                    self.assertEqual(argv[argv.index('--loop') + 1], 'asyncio')
                     self.assertIn('PYTHONPATH=/web/vendor:/web:/code', env.read_text())
                     raise installer.InstallError('simulated failure')
                 if argv[:2] in (['docker', 'stop'], ['docker', 'rename'], ['docker', 'start']):

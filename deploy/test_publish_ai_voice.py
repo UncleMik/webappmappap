@@ -18,9 +18,10 @@ class VoiceReleaseTests(unittest.TestCase):
         before = ('server {\n' + messages + release.AUTH_ROUTE + '        client_max_body_size 4k;\n    }\n}\n').encode()
         after = release.patch_nginx(before)
         self.assertEqual(after.replace((release.VOICE_ROUTE + '\n').encode(), b''), before)
+        self.assertEqual(release.patch_nginx(after), after)
         for directive in ('client_max_body_size 8m;', 'proxy_request_buffering off;', 'proxy_http_version 1.1;', 'proxy_read_timeout 160s;'):
             self.assertIn(directive, release.VOICE_ROUTE)
-        for invalid in (after, before + before, b'server {}'):
+        for invalid in (after.replace(b'client_max_body_size 8m;', b'client_max_body_size 16m;'), before + before, b'server {}'):
             with self.assertRaises(RuntimeError):
                 release.patch_nginx(invalid)
 

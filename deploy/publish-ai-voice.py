@@ -47,8 +47,12 @@ def target(name):
 
 def patch_nginx(data):
     text = data.decode()
-    if text.count(AUTH_ROUTE) != 1 or '/api/auth/ai/voice' in text:
+    if text.count(AUTH_ROUTE) != 1:
         raise RuntimeError('AI_ROUTE_CHANGED_REVIEW_REQUIRED')
+    if '/api/auth/ai/voice' in text:
+        if text.count(VOICE_ROUTE) != 1 or text.count('/api/auth/ai/voice') != 1:
+            raise RuntimeError('AI_ROUTE_CHANGED_REVIEW_REQUIRED')
+        return data
     return text.replace(AUTH_ROUTE, VOICE_ROUTE + '\n' + AUTH_ROUTE).encode()
 
 def run(args, **kwargs):

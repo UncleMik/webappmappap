@@ -372,7 +372,7 @@ async function transcribeVoice(attempt) {
   } catch (error) {
     if (!currentVoice(attempt) || validateIdentity(error)) return;
     if (error.code === 'ai_purchase_required') { clearPrivate(); notice(errorMessage(error)); return; }
-    const definitive = ['invalid_ai_voice', 'invalid_ai_audio', 'audio_too_long', 'ai_audio_too_long', 'audio_unrecognized', 'ai_audio_unrecognized', 'voice_rate_limited', 'voice_daily_limit', 'daily_limit', 'rate_limited', 'ai_daily_limit', 'request_id_conflict'].includes(error.code);
+    const definitive = ['ai_voice_unavailable', 'invalid_ai_voice', 'invalid_ai_audio', 'audio_too_long', 'ai_audio_too_long', 'audio_unrecognized', 'ai_audio_unrecognized', 'voice_rate_limited', 'voice_daily_limit', 'daily_limit', 'rate_limited', 'ai_daily_limit', 'request_id_conflict'].includes(error.code);
     if (definitive) cancelVoice(voiceError(error));
     else { attempt.stage = 'retry'; voiceStatus.textContent = 'Речь пока не распознана'; notice(voiceError(error)); updateControls(); }
   }

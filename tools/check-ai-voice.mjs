@@ -40,12 +40,13 @@ async page => {
     assert(Object.keys(body).sort().join() === 'audio,requestId', 'Voice leaked chat fields');
     assert(body.audio.mimeType === 'audio/webm', 'Codec MIME not normalized');
     assert(route.request().headers()['x-webpril-account'] === accountId, 'Missing voice identity header');
-    if (voiceMode === 'retry' && !firstVoice) { firstVoice = body; return route.fulfill({ status: 502, json: { error: 'ai_voice_unavailable' } }); }
+    if (voiceMode === 'retry' && !firstVoice) { firstVoice = body; return route.abort('failed'); }
     if (voiceMode === 'retry') assert(JSON.stringify(firstVoice) === JSON.stringify(body), 'Voice retry changed UUID or bytes');
     if (voiceMode === 'hold') {
       heldStarted();
       return new Promise(resolve => { releaseHeldVoice = async () => { await route.fulfill({ json: { accountId, requestId: body.requestId, text: 'Поздний текст' } }).catch(() => {}); resolve(); }; });
     }
+    if (voiceMode === 'unavailable') return route.fulfill({ status: 503, json: { error: 'ai_voice_unavailable' } });
     if (voiceMode === 'unrecognized') return route.fulfill({ status: 422, json: { error: 'ai_audio_unrecognized' } });
     if (voiceMode === 'overlong') return route.fulfill({ status: 422, json: { error: 'ai_audio_too_long' } });
     if (voiceMode === 'rate') return route.fulfill({ status: 429, json: { error: 'rate_limited' } });
@@ -100,10 +101,14 @@ async page => {
   await page.getByText('Запись слишком длинная.', { exact: false }).waitFor();
   assert(voicePosts === beforeCancel, 'Oversize audio uploaded');
   await page.evaluate(() => { voiceMock.size = 20; });
-  for (const mode of ['unrecognized', 'overlong', 'rate', 'invalid', 'malformed']) {
+  for (const mode of ['unavailable', 'unrecognized', 'overlong', 'rate', 'invalid', 'malformed']) {
     voiceMode = mode; await recording(); await stop();
     await page.waitForFunction(() => document.querySelector('#voice-controls').hidden);
     assert(!(await page.locator('#chat-input').isDisabled()) && await page.locator('#chat-input').inputValue() === '', 'Definitive voice failure blocked typing or inserted invalid text: ' + mode);
+    if (mode === 'unavailable') {
+      const callsAfterFailure = voicePosts; await page.waitForTimeout(60);
+      assert(await page.locator('#voice-retry').isHidden() && await page.getByRole('button', { name: 'Записать голосом', exact: true }).isEnabled() && voicePosts === callsAfterFailure, 'Known 503 retained retry or automatically called STT');
+    }
   }
   voiceMode = 'hold'; await recording(); await stop(); await heldWaiting;
   await page.locator('#voice-cancel').click(); await releaseHeldVoice(); await page.waitForTimeout(50);
@@ -155,5 +160,5 @@ async page => {
   await page.waitForFunction(() => document.querySelector('#chat-input').value === 'Распознанный текст');
   await page.clock.resume();
   assert(chatPosts === chatsBeforeVoice, 'Automatic stop submitted Lara question');
-  return { mockedMicrophoneOnly: true, noRealSTT: true, emptyMicTextSend: true, explicitPermission: true, sameUuidBytesRetry: true, transcriptReviewNoSend: true, stopTracks: true, cancelAndLatePermission: true, cancelledTranscriptionIgnoresLateResponse: true, deniedUnsupported: true, oversizeAndServerErrors: true, hiddenSessionAccountWipe: true, initialAndIframeHiddenPanelStops: true, hiddenIframeIgnoresLateTranscript: true, max119SecondsAutoStop: true, widths: [320, 390, 500], chatPosts, voicePosts };
+  return { mockedMicrophoneOnly: true, noRealSTT: true, emptyMicTextSend: true, explicitPermission: true, sameUuidBytesRetry: true, transcriptReviewNoSend: true, stopTracks: true, cancelAndLatePermission: true, cancelledTranscriptionIgnoresLateResponse: true, deniedUnsupported: true, oversizeAndServerErrors: true, known503ResetsWithoutRetry: true, hiddenSessionAccountWipe: true, initialAndIframeHiddenPanelStops: true, hiddenIframeIgnoresLateTranscript: true, max119SecondsAutoStop: true, widths: [320, 390, 500], chatPosts, voicePosts };
 }

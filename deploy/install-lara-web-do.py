@@ -339,7 +339,8 @@ def install(pre, secret):
              '--network', 'legkie-rody_default', '--memory', '384m', '--cpus', '0.75', '--read-only', '--tmpfs', '/tmp:rw,noexec,nosuid,size=32m',
              '-p', '127.0.0.1:8100:8100', '--env-file', str(ENV), '-v', str(CODE) + ':/web/lara_web.py:ro',
              '-v', str(vendor) + ':/web/vendor:ro',
-             app['Image'], 'uvicorn', 'lara_web:app', '--host', '0.0.0.0', '--port', '8100', '--workers', '1', '--no-access-log'])
+             app['Image'], 'uvicorn', 'lara_web:app', '--host', '0.0.0.0', '--port', '8100', '--workers', '1',
+             '--loop', 'asyncio', '--no-access-log'])
         new_container = created.stdout.strip()
         if not re.fullmatch(r'[a-f0-9]{64}', new_container):
             raise InstallError('Invalid new container identifier')

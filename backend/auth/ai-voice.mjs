@@ -96,7 +96,13 @@ export function createAiVoice({ authorize, acquire, secret, clock, fetchImpl }) 
       } finally { data = null; release(); }
     })();
     remember(key, entry);
-    const text = await entry.promise;
+    let text;
+    try { text = await entry.promise; }
+    catch (error) {
+      // DO explicitly refused this UUID before accepting audio. A retry may proceed.
+      if (error instanceof AuthError && error.code === 'ai_voice_busy' && cache.get(key) === entry) cache.delete(key);
+      throw error;
+    }
     entry.promise = null;
     const current = await authorize(token, expected);
     if (current.rightsHash !== a.rightsHash) throw new AuthError(409, 'ai_access_changed', 'Доступ изменился. Обновите страницу.');

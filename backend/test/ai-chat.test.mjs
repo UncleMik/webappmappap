@@ -107,7 +107,7 @@ test('recognized speech becomes a charged history question only after the normal
 test('voice failures are bounded and private, release shared file slot and cached retries do not call again', async () => {
   await setup();
   for (const [status,body,code] of [[422,{error:'audio_too_long',details:'PRIVATE_AUDIO_PROVIDER'},'ai_audio_too_long'],
-    [422,{error:'audio_unrecognized'},'ai_audio_unrecognized'],[503,{error:'busy'},'ai_voice_busy'],
+    [422,{error:'audio_unrecognized'},'ai_audio_unrecognized'],[502,{error:'upstream_failed'},'ai_voice_unavailable'],
     [200,{text:'A'.repeat(33000)},'ai_voice_unavailable']]) {
     currentId=randomUUID(); respond=async()=>new Response(JSON.stringify(body),{status});
     await assert.rejects(transcribe(),e=>e.code===code&&!e.message.includes('PRIVATE_AUDIO_PROVIDER'));
@@ -116,6 +116,18 @@ test('voice failures are bounded and private, release shared file slot and cache
   currentId=randomUUID(); respond=async()=>new Response(JSON.stringify({requestId:currentId,text:'Вопрос'}));
   assert.equal((await transcribe()).text,'Вопрос');
   assert.equal((await chat.history(token,user)).quota.used,0);
+});
+
+test('DO busy does not accept audio UUID: same-ID retry can succeed without spending question quota', async () => {
+  await setup();currentId=randomUUID();
+  respond=async()=>new Response(JSON.stringify({error:'busy'}),{status:503});
+  await assert.rejects(transcribe(),e=>e.code==='ai_voice_busy');assert.equal(calls,1);
+  respond=async()=>new Response(JSON.stringify({requestId:currentId,text:'Распознанный вопрос'}));
+  assert.equal((await transcribe()).text,'Распознанный вопрос');assert.equal(calls,2);
+  assert.equal((await transcribe()).text,'Распознанный вопрос');assert.equal(calls,2);
+  assert.equal((await chat.history(token,user)).quota.used,0);
+  assert.equal((await pool.query('SELECT * FROM ai_chat_requests')).rows.length,0);
+  assert.equal((await pool.query('SELECT * FROM ai_chat_daily_usage')).rows.length,0);
 });
 
 test('voice late session revocation is denied and voice jobs share the attachment processing slot', async () => {
