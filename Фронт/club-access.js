@@ -6,7 +6,7 @@ const retry = document.querySelector('#club-access-retry');
 const unread = document.querySelector('#club-unread');
 let revision = 0, controller, timer, accountId, ended = false;
 function clear() {
-  revision++; controller?.abort(); clearTimeout(timer); link.hidden = true; link.removeAttribute('href');
+  revision++; controller?.abort(); clearTimeout(timer); link.removeAttribute('href');
   unread.hidden = true; unread.textContent = '';
 }
 async function refresh() {
@@ -20,12 +20,11 @@ async function refresh() {
     const remaining = chatLease(data, accountId); accountId = data.accountId;
     if (!['available', 'purchase_required'].includes(data.access)) throw new Error('Не удалось проверить доступ.');
     status.textContent = data.access === 'available' ? 'Общение с участницами курса' : 'Доступен ученицам курса «Лёгкие роды»';
-    link.textContent = data.access === 'available' ? 'Открыть чат' : 'Посмотреть курсы';
     link.href = data.access === 'available' ? 'club-chat.html?room=pregnancy-students' : 'courses.html';
     const count = data.access === 'available' && Number.isSafeInteger(data.readState?.unreadCount) ? data.readState.unreadCount : 0;
     unread.textContent = count > 99 ? '99+' : String(count);
     unread.setAttribute('aria-label', 'Непрочитанных сообщений: ' + count); unread.hidden = count <= 0;
-    link.hidden = false; timer = setTimeout(refresh, Math.min(remaining, 15_000));
+    timer = setTimeout(refresh, Math.min(remaining, 15_000));
   } catch (error) {
     if (current !== revision) return;
     status.textContent = error.message; retry.hidden = false;

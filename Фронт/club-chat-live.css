@@ -41,3 +41,6 @@
 .chat-delete-buttons .chat-delete-confirm { color:#fff; background:#b72e48; }
 .chat-delete-buttons button:disabled { opacity:.55; }
 .chat-delete-buttons button:focus-visible { outline:2px solid #794aff; outline-offset:3px; }
+
+#club-access-link:not([href]) { cursor:default; }
+#club-access-link:focus-visible { outline:2px solid #794aff; outline-offset:2px; }
