@@ -29,7 +29,7 @@ const positiveId = value => /^[1-9]\d*$/.test(value) && Number.isSafeInteger(Num
 const materialsUnavailable = () => new AuthError(503, 'course_materials_unavailable',
   'Материалы курсов временно недоступны. Попробуйте ещё раз.');
 
-export function createAuthServer({ service, store, courseChecks, courseMaterials, personalData, profilePhoto, clubChat, origin, enabled = false, trustProxy = false, mailPerMinute = 120 }) {
+export function createAuthServer({ service, store, courseChecks, courseMaterials, personalData, profilePhoto, clubChat, aiChat, origin, enabled = false, trustProxy = false, mailPerMinute = 120 }) {
   return createServer({ requestTimeout: 15_000, headersTimeout: 10_000, maxHeaderSize: 8192 }, async (request, response) => {
     const send = (status, body, headers = {}) => {
       if (response.destroyed) return;
@@ -54,6 +54,10 @@ export function createAuthServer({ service, store, courseChecks, courseMaterials
       }
       if (request.method === 'GET' && url.pathname === '/api/auth/session') {
         send(200, await service.sessionState(readSessionCookie(request))); return;
+      }
+      if (request.method === 'GET' && url.pathname === '/api/auth/ai/history') {
+        if (!aiChat) throw new AuthError(503, 'ai_unavailable', 'Лара временно недоступна.');
+        send(200, await aiChat.history(readSessionCookie(request), request.headers['x-webpril-account'])); return;
       }
       if (request.method === 'GET' && (url.pathname === '/api/auth/club' || url.pathname.startsWith('/api/auth/club/messages') || url.pathname.startsWith('/api/auth/club/changes'))) {
         if (!clubChat) throw new AuthError(503, 'club_unavailable', 'Чат временно недоступен.');
@@ -128,11 +132,18 @@ export function createAuthServer({ service, store, courseChecks, courseMaterials
         throw new AuthError(403, 'origin_rejected', 'Откройте вход на сайте приложения.');
       }
       const data = await readJson(request, url.pathname === '/api/auth/personal' ? 1_000_000
-        : url.pathname === '/api/auth/profile-photo' ? 512_000 : url.pathname === '/api/auth/club/messages' ? 16_000 : 4096);
+        : url.pathname === '/api/auth/profile-photo' ? 512_000
+          : ['/api/auth/club/messages', '/api/auth/ai/messages'].includes(url.pathname) ? 16_000 : 4096);
       const peer = request.socket.remoteAddress;
       const proxy = trustProxy && ['127.0.0.1', '::1', '::ffff:127.0.0.1'].includes(peer);
       const ip = proxy ? String(request.headers['x-real-ip'] || peer) : peer;
       await store.rateLimit('request_ip', ip, 600);
+      if (url.pathname === '/api/auth/ai/history/read' || url.pathname === '/api/auth/ai/messages') {
+        if (!aiChat) throw new AuthError(503, 'ai_unavailable', 'Лара временно недоступна.');
+        const token = readSessionCookie(request), expected = request.headers['x-webpril-account'];
+        send(200, url.pathname.endsWith('/read') ? await aiChat.history(token, expected, data.before)
+          : await aiChat.send(token, expected, data)); return;
+      }
       if (url.pathname === '/api/auth/club/read' || url.pathname === '/api/auth/club/search') {
         if (!clubChat) throw new AuthError(503, 'club_unavailable', 'Чат временно недоступен.');
         if (request.headers['x-webpril-chat-version'] !== '2') {

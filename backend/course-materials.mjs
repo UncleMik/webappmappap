@@ -211,6 +211,32 @@ export function createCourseMaterials({ db, courseChecks, clock = Date.now }) {
     return [...catalog.lessons.values()].filter(l => readable(l, product, ctx));
   }
   return Object.freeze({
+    async aiContext(userId) {
+      const ctx = await context(userId);
+      const courses = catalog.products.filter(p => p.type === 'training' && ctx.grants.has(p.productId));
+      const lessons = [];
+      let validUntil = Date.parse(ctx.check.expiresAt);
+      for (const product of courses) {
+        validUntil = Math.min(validUntil, ctx.grants.get(product.productId));
+        for (const lesson of catalog.lessons.values()) {
+          const access = readable(lesson, product, ctx);
+          if (!access) continue;
+          validUntil = Math.min(validUntil, access.validUntil);
+          const record = lessonStatement.get(lesson.id);
+          if (!record || digest(record.content_json) !== record.sha256 || record.sha256 !== lesson.contentHash) throw unavailable();
+          const blocks = publicBlocks(JSON.parse(record.content_json), lesson.id, record.sha256, videoLinks);
+          const text = blocks.filter(b => ['text', 'list', 'table'].includes(b.type))
+            .map(b => b.text || b.html?.replace(/<[^>]+>/g, ' ') || '').join('\n')
+            .replace(/https?:\/\/[^\s"'<>]+(?:\.mp4|\/files\/|\/video\/)[^\s"'<>]*/gi, '[видео]')
+            .trim();
+          lessons.push({ productId: product.productId, course: product.title, lessonId: lesson.id,
+            sectionId: lesson.parent,
+            title: lesson.title, contentHash: record.sha256, text });
+        }
+      }
+      return { courses: courses.map(p => ({ productId: p.productId, title: p.title })), lessons,
+        ...ctx.meta(validUntil) };
+    },
     async list(userId) {
       const ctx = await context(userId);
       const courses = catalog.products.filter(p => p.type === 'training' && ctx.grants.has(p.productId)).map(p => ({ productId: p.productId,
