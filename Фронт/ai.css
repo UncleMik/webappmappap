@@ -22,7 +22,13 @@
 .bubble { background: #f6f0ff; border-radius: 17px; padding: 11px 14px; color: #393456; font-size: 14px; line-height: 1.28; overflow-wrap: anywhere; }
 .bubble { white-space: pre-wrap; }
 .message-sources { display: flex; flex-wrap: wrap; gap: 4px 8px; margin: 5px 3px 0; font-size: 11px; }
-.message-sources a { color: #7542c6; text-decoration: underline; }
+.message-sources[hidden] { display: none; }
+.message-sources a { color: #7542c6; text-decoration: underline; overflow-wrap: anywhere; }
+.message-materials { margin-top: 5px; }
+.materials-toggle { display: inline-flex; align-items: center; gap: 8px; max-width: 100%; min-height: 36px; padding: 7px 10px; border: 1px solid #eadff7; border-radius: 12px; background: #f6f0ff; color: #7542c6; font: inherit; font-size: 12px; line-height: 16px; text-align: left; }
+.materials-toggle::after { content: ''; width: 6px; height: 6px; flex-shrink: 0; border-right: 1.5px solid currentColor; border-bottom: 1.5px solid currentColor; transform: translateY(-2px) rotate(45deg); }
+.materials-toggle[aria-expanded="true"]::after { transform: translateY(2px) rotate(225deg); }
+.materials-toggle:focus-visible { outline: 2px solid #794aff; outline-offset: 2px; }
 .bubble p + p { margin-top: 9px; }
 .message time { display: block; margin: 4px 3px 0; color: #8273b2; font-size: 10px; line-height: 13px; }
 .message-failed { display: block; margin: 4px 3px 0; color: #a53f67; font-size: 11px; }

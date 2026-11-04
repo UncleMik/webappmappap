@@ -2,6 +2,14 @@ async (page) => {
   const accountId = '11111111-1111-4111-8111-111111111111';
   const base = 'https://app.legkie-rody.ru';
   const quota = used => ({ limit: 30, used, remaining: 30 - used, resetsAt: '2026-11-05T21:00:00Z' });
+  const source = url => ({ id: url, title: 'Урок', url });
+  const good = '/article.html?courseLesson=347472707&course=4302509&section=123';
+  const course = '/my-courses.html?course=4302509';
+  const sourceList = [source(good), source(base + good), source(course), source('/api/auth/logout'), source('//evil.example/x'), source('https://evil.example' + good), source(good + '#bad'), source(good + '&x=1'), source(course + '&next=logout'), source('/my-courses.html?course=0')];
+  const savedAnswers = () => [
+    { id: '3:answer', role: 'assistant', requestId: secondId, content: 'Ответ', createdAt: '2026-11-04T11:02:00Z', sources: sourceList },
+    { id: '4:answer', role: 'assistant', requestId: 'bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb', content: 'Ответ без ссылок', createdAt: '2026-11-04T11:03:00Z', sources: [source('/api/auth/logout')] },
+  ];
   let post = 0, firstId, secondId, historyMode = 'failed', releaseFirst, releaseSuccess;
   let firstStarted, successStarted;
   const firstWaiting = new Promise(resolve => { firstStarted = resolve; });
@@ -13,7 +21,7 @@ async (page) => {
   });
   await page.route(base + '/api/auth/session', route => route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify({ authenticated: true, user: { id: accountId, email: 'test@example.invalid', profile: { completedAt: '2026-11-01T00:00:00Z', stage: 'pregnancy', dueDate: '2027-02-01', name: 'Тест' } } }) }));
   await page.route(base + '/api/auth/ai/history', route => route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify({
-    accountId, messages: [{ id: '1', role: 'user', status: historyMode, requestId: 'aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa', content: 'Старый вопрос', createdAt: '2026-11-04T11:00:00Z' }],
+    accountId, messages: historyMode === 'completed' ? savedAnswers() : [{ id: '1', role: 'user', status: historyMode, requestId: 'aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa', content: 'Старый вопрос', createdAt: '2026-11-04T11:00:00Z' }],
     hasMore: false, nextBefore: null, quota: quota(1)
   }) }));
   await page.route(base + '/api/auth/ai/messages', async route => {
@@ -41,13 +49,10 @@ async (page) => {
     if (secondId === firstId) throw new Error('New question reused failed requestId');
     successStarted();
     await new Promise(resolve => { releaseSuccess = resolve; });
-    const source = url => ({ id: url, title: 'Урок', url });
-    const good = '/article.html?courseLesson=347472707&course=4302509&section=123';
-    const course = '/my-courses.html?course=4302509';
     await route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify({
       accountId, requestId: secondId, status: 'completed', messages: [
         { id: '3', role: 'user', status: 'completed', requestId: secondId, content: body.text, createdAt: '2026-11-04T11:02:00Z' },
-        { id: '3:answer', role: 'assistant', requestId: secondId, content: 'Ответ', createdAt: '2026-11-04T11:02:00Z', sources: [source(good), source(base + good), source(course), source('/api/auth/logout'), source('//evil.example/x'), source('https://evil.example' + good), source(good + '#bad'), source(good + '&x=1'), source(course + '&next=logout'), source('/my-courses.html?course=0')] }
+        ...savedAnswers()
       ], quota: quota(3)
     }) });
   });
@@ -92,6 +97,20 @@ async (page) => {
   await page.waitForFunction(() => !document.querySelector('#chat-input').disabled);
   const links = await page.locator('.message-sources a').evaluateAll(elements => elements.map(element => element.href));
   if (links.length !== 3 || links.some(link => ![base + '/article.html?courseLesson=347472707&course=4302509&section=123', base + '/my-courses.html?course=4302509'].includes(link))) throw new Error('Source allowlist incorrect: ' + links.join(', '));
+  const toggle = page.getByRole('button', { name: 'Ссылка на материалы', exact: true });
+  if (await toggle.count() !== 1) throw new Error('Expected one exact-label button only for answer with valid sources');
+  const sourceLinks = page.locator('.message-sources a');
+  if (await sourceLinks.count() !== 3 || await sourceLinks.filter({ visible: true }).count() !== 0 || await toggle.getAttribute('aria-expanded') !== 'false') throw new Error('Sources are not initially collapsed');
+  await toggle.click();
+  if (await sourceLinks.filter({ visible: true }).count() !== 3 || await toggle.getAttribute('aria-expanded') !== 'true') throw new Error('Click did not open sources');
+  await toggle.click();
+  if (await sourceLinks.filter({ visible: true }).count() !== 0 || await toggle.getAttribute('aria-expanded') !== 'false') throw new Error('Click did not close sources');
+  await toggle.focus();
+  await page.keyboard.press('Enter');
+  if (await toggle.getAttribute('aria-expanded') !== 'true' || await sourceLinks.filter({ visible: true }).count() !== 3) throw new Error('Enter did not open sources');
+  await page.keyboard.press('Space');
+  if (await toggle.getAttribute('aria-expanded') !== 'false' || await sourceLinks.filter({ visible: true }).count() !== 0) throw new Error('Space did not close sources');
+  await toggle.click();
   if (await page.locator('#chat-input').isDisabled()) throw new Error('Completed response blocked composer');
   if (await page.getByText('Вопрос три', { exact: true }).count() !== 1) throw new Error('Success response duplicated pending question');
   await page.locator('#chat-input').fill('Отклонённый вопрос');
@@ -99,6 +118,11 @@ async (page) => {
   await page.getByText('Проверьте текст вопроса и отправьте снова.', { exact: true }).waitFor();
   if (await page.locator('#chat-input').inputValue() !== 'Отклонённый вопрос') throw new Error('Rejected question was not restored to composer');
   if (await page.getByText('Отклонённый вопрос', { exact: true }).count() !== 0) throw new Error('Rejected question remained in conversation');
+  if (await toggle.getAttribute('aria-expanded') !== 'true' || await sourceLinks.filter({ visible: true }).count() !== 3) throw new Error('Open sources were lost after a new question and merge');
+  historyMode = 'completed';
+  await page.reload();
+  await page.getByText('Ответ без ссылок', { exact: true }).waitFor();
+  if (await toggle.count() !== 1 || await toggle.getAttribute('aria-expanded') !== 'false' || await sourceLinks.filter({ visible: true }).count() !== 0) throw new Error('Reload did not restore collapsed state');
   historyMode = 'pending';
   await page.reload();
   await page.locator('#chat-retry').waitFor({ state: 'visible' });
@@ -116,5 +140,5 @@ async (page) => {
     return { messages: document.querySelectorAll('.message').length, disabled: document.querySelector('#chat-input').disabled };
   });
   if (ended.messages || !ended.disabled) throw new Error('Session end left private chat visible');
-  return { post, firstId, secondId, sources: links.length, mobileWidths: [320, 390], compactHeight: 500, guards: true, immediateSend: true, rejectedTextRestored: true };
+  return { post, firstId, secondId, sources: links.length, sourceToggle: true, keyboard: true, persistOnMerge: true, collapsedOnReload: true, mobileWidths: [320, 390], compactHeight: 500, guards: true, immediateSend: true, rejectedTextRestored: true };
 }

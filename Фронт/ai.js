@@ -11,6 +11,7 @@ const retry = document.querySelector('#chat-retry');
 let accountId, revision = 0, controller, ended = false, ready = false;
 let messages = [], hasMore = false, nextBefore = null, busy = false, pending = null;
 let remaining = null;
+const expandedSources = new Set();
 const timeFormat = new Intl.DateTimeFormat('ru-RU', { timeZone: 'Europe/Moscow', hour: '2-digit', minute: '2-digit' });
 const sendingId = requestId => `sending:${requestId}`;
 
@@ -29,6 +30,7 @@ function clearPrivate() {
   revision++; controller?.abort(); controller = null;
   accountId = null; ready = false; busy = false; pending = null;
   messages = []; hasMore = false; nextBefore = null; remaining = null;
+  expandedSources.clear();
   input.value = ''; conversation.replaceChildren(); historyList.replaceChildren();
   historyMore.hidden = true; quotaLabel.textContent = '';
   if (historyDialog.open) historyDialog.close();
@@ -108,7 +110,19 @@ function messageNode(message) {
   if (message.role === 'assistant' && Array.isArray(message.sources)) {
     const sources = document.createElement('div'); sources.className = 'message-sources';
     for (const source of message.sources) { const link = sourceLink(source); if (link) sources.append(link); }
-    if (sources.childElementCount) content.append(sources);
+    if (sources.childElementCount) {
+      const key = String(message.id);
+      sources.id = `ai-materials-${key}`; sources.hidden = !expandedSources.has(key);
+      const toggle = document.createElement('button'); toggle.type = 'button'; toggle.className = 'materials-toggle';
+      toggle.textContent = 'Ссылка на материалы';
+      toggle.setAttribute('aria-controls', sources.id); toggle.setAttribute('aria-expanded', String(!sources.hidden));
+      toggle.addEventListener('click', () => {
+        sources.hidden = !sources.hidden; toggle.setAttribute('aria-expanded', String(!sources.hidden));
+        if (sources.hidden) expandedSources.delete(key); else expandedSources.add(key);
+      });
+      const materials = document.createElement('div'); materials.className = 'message-materials';
+      materials.append(toggle, sources); content.append(materials);
+    }
   }
   article.append(content); return article;
 }
