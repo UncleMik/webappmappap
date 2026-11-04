@@ -2,6 +2,7 @@ import { createServer } from 'node:http';
 import { AuthError, normalizeEmail, readSessionCookie, sessionCookie } from './security.mjs';
 import { weeklyVideoSource } from './weekly-videos.mjs';
 import { MAX_AI_BODY_BYTES } from './ai-attachment.mjs';
+import { MAX_AI_VOICE_BODY_BYTES } from './ai-voice.mjs';
 
 async function readJson(request, maxSize = 4096, aiAttachment = false) {
   if ((request.headers['content-type'] || '').split(';')[0].trim() !== 'application/json') {
@@ -40,8 +41,9 @@ export function createAuthServer({ service, store, courseChecks, courseMaterials
   return createServer({ requestTimeout: 90_000, headersTimeout: 10_000, maxHeaderSize: 8192 }, async (request, response) => {
     let ownsLargeSlot = false;
     const isAiSend = request.method === 'POST' && request.url === '/api/auth/ai/messages';
+    const isAiVoice = request.method === 'POST' && request.url === '/api/auth/ai/voice';
     // Bound receive time separately from the subsequent 65-second model call.
-    const receiveTimer = setTimeout(() => request.destroy(), isAiSend ? 90_000 : 15_000);
+    const receiveTimer = setTimeout(() => request.destroy(), isAiSend || isAiVoice ? 90_000 : 15_000);
     receiveTimer.unref();
     const clearReceiveTimer = () => clearTimeout(receiveTimer);
     request.once('end', clearReceiveTimer);
@@ -147,23 +149,28 @@ export function createAuthServer({ service, store, courseChecks, courseMaterials
       if (request.headers.origin !== origin || ['cross-site', 'same-site'].includes(request.headers['sec-fetch-site'])) {
         throw new AuthError(403, 'origin_rejected', 'Откройте вход на сайте приложения.');
       }
-      if (isAiSend) {
+      if (isAiSend || isAiVoice) {
         if (!aiChat) throw new AuthError(503, 'ai_unavailable', 'Лара временно недоступна.');
         const length = request.headers['content-length'];
+        if (isAiVoice) await aiChat.authorizeVoice(readSessionCookie(request), request.headers['x-webpril-account']);
         if (length === undefined || Number(length) > 16_000) {
           if (largeAiInFlight) throw new AuthError(503, 'ai_upload_busy', 'Лара обрабатывает другой файл. Попробуйте немного позже.');
           largeAiInFlight = true; ownsLargeSlot = true;
-          await aiChat.authorize(readSessionCookie(request), request.headers['x-webpril-account']);
-          if (Number(length) > MAX_AI_BODY_BYTES) throw new AuthError(413, 'body_too_large', 'Слишком большой запрос.');
+          if (!isAiVoice) await aiChat.authorize(readSessionCookie(request), request.headers['x-webpril-account']);
+          if (Number(length) > (isAiVoice ? MAX_AI_VOICE_BODY_BYTES : MAX_AI_BODY_BYTES)) throw new AuthError(413, 'body_too_large', 'Слишком большой запрос.');
         }
       }
-      const data = await readJson(request, isAiSend ? MAX_AI_BODY_BYTES : url.pathname === '/api/auth/personal' ? 1_000_000
+      const data = await readJson(request, isAiVoice ? MAX_AI_VOICE_BODY_BYTES : isAiSend ? MAX_AI_BODY_BYTES : url.pathname === '/api/auth/personal' ? 1_000_000
         : url.pathname === '/api/auth/profile-photo' ? 512_000
           : url.pathname === '/api/auth/club/messages' ? 16_000 : 4096, isAiSend);
       const peer = request.socket.remoteAddress;
       const proxy = trustProxy && ['127.0.0.1', '::1', '::ffff:127.0.0.1'].includes(peer);
       const ip = proxy ? String(request.headers['x-real-ip'] || peer) : peer;
       await store.rateLimit('request_ip', ip, 600);
+      if (isAiVoice) {
+        send(200, await aiChat.transcribe(readSessionCookie(request), request.headers['x-webpril-account'], data,
+          userId => store.rateLimit('ai_voice_user', userId, 6))); return;
+      }
       if (url.pathname === '/api/auth/ai/history/read' || url.pathname === '/api/auth/ai/messages' || url.pathname === '/api/auth/ai/messages/status') {
         if (!aiChat) throw new AuthError(503, 'ai_unavailable', 'Лара временно недоступна.');
         const token = readSessionCookie(request), expected = request.headers['x-webpril-account'];

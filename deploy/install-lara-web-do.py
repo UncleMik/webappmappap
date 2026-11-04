@@ -17,7 +17,7 @@ import zipfile
 
 APP_PATH = 'backend/lara-web/lara_web.py'
 REQUIREMENTS_PATH = 'backend/lara-web/requirements-web.txt'
-PINNED_REQUIREMENTS = b'Pillow==13.0.0\npypdfium2==5.14.0\n'
+PINNED_REQUIREMENTS = b'Pillow==13.0.0\npypdfium2==5.14.0\nav==19.0.2\n'
 VENDORS = Path('/opt/legkie-rody/web/vendors')
 NGINX = Path('/etc/nginx/sites-available/lr-admin')
 ENABLED = Path('/etc/nginx/sites-enabled/lr-admin')

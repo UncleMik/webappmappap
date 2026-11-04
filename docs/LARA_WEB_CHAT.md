@@ -5,6 +5,10 @@
 отделена от Telegram/MAX. Исследование исходной системы сохранено в
 [LARA_WEB_CHAT_INTEGRATION.md](LARA_WEB_CHAT_INTEGRATION.md).
 
+Голосовой ввод описан в [LARA_VOICE.md](LARA_VOICE.md), файлы анализов —
+в [LARA_ANALYSES.md](LARA_ANALYSES.md). Они используют тот же защищённый
+маршрут обмена между Timeweb и немецким DO.
+
 ## Поведение
 
 - Вход и заполненный профиль обязательны. Чат и история доступны только при

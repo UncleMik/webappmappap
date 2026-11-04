@@ -3,6 +3,9 @@ import base64
 import hashlib
 import hmac
 import io
+import array
+import math
+import wave
 import json
 import time
 import uuid
@@ -49,6 +52,45 @@ def image_attachment(mime='image/png'):
     stream = io.BytesIO()
     Image.new('RGB', (32, 32), 'white').save(stream, format='PNG' if mime == 'image/png' else 'JPEG')
     return {'name': 'analysis.png', 'mimeType': mime, 'data': base64.b64encode(stream.getvalue()).decode()}
+
+
+def wav_fixture(seconds=1, silent=False):
+    output = io.BytesIO()
+    samples = array.array('h', [0 if silent else int(4000 * math.sin(i * math.tau * 440 / 16000)) for i in range(16000)])
+    raw = samples.tobytes() * int(seconds)
+    raw += samples.tobytes()[:round((seconds % 1) * 32000)]
+    with wave.open(output, 'wb') as wav:
+        wav.setnchannels(1)
+        wav.setsampwidth(2)
+        wav.setframerate(16000)
+        wav.writeframes(raw)
+    return output.getvalue()
+
+
+def audio_payload(raw=None, mime='audio/wav'):
+    return {'requestId': str(uuid.uuid4()), 'audio': {'mimeType': mime, 'data': base64.b64encode(raw or wav_fixture()).decode()}}
+
+
+def encoded_audio_fixture(mime):
+    import av
+    formats = {'audio/webm': ('webm', 'libopus', 's16'), 'audio/ogg': ('ogg', 'libopus', 's16'),
+               'audio/mp4': ('mp4', 'aac', 'fltp')}
+    format, codec, sample_format = formats[mime]
+    output = io.BytesIO()
+    with av.open(io.BytesIO(wav_fixture()), 'r') as source, av.open(output, 'w', format=format) as dest:
+        stream = dest.add_stream(codec, rate=48000)
+        stream.layout = 'mono'
+        resampler = av.AudioResampler(format=sample_format, layout='mono', rate=48000, threads=1)
+        for frame in source.decode(audio=0):
+            for converted in resampler.resample(frame):
+                for packet in stream.encode(converted):
+                    dest.mux(packet)
+        for converted in resampler.resample(None):
+            for packet in stream.encode(converted):
+                dest.mux(packet)
+        for packet in stream.encode(None):
+            dest.mux(packet)
+    return output.getvalue()
 
 
 class AttachmentValidationTests(unittest.TestCase):
@@ -104,6 +146,46 @@ class AttachmentValidationTests(unittest.TestCase):
 
 
 class DocumentReaderTests(unittest.IsolatedAsyncioTestCase):
+    async def test_actual_child_output_backpressure_cancel_is_reaped(self):
+        real_spawn = asyncio.create_subprocess_exec
+        spawned, ready = [], asyncio.Event()
+        async def spawn(*args, **kwargs):
+            process = await real_spawn(*args, **kwargs)
+            spawned.append(process)
+            ready.set()
+            return process
+        script = "import sys,time; sys.stdout.buffer.write(b'x' * (4*1024*1024)); sys.stdout.buffer.flush(); time.sleep(60)"
+        with patch.object(web, 'VALIDATOR_SCRIPT', script), patch.object(web.asyncio, 'create_subprocess_exec', side_effect=spawn):
+            task = asyncio.create_task(web.validated_file(b'x', 'audio/wav'))
+            await ready.wait()
+            await asyncio.sleep(.05)
+            task.cancel()
+            with self.assertRaises(asyncio.CancelledError):
+                await asyncio.wait_for(task, 5)
+            self.assertIsNotNone(spawned[0].returncode)
+
+    async def test_actual_audio_decoder_all_browser_formats(self):
+        for mime in ('audio/wav', 'audio/webm', 'audio/ogg', 'audio/mp4'):
+            with self.subTest(mime=mime):
+                raw = wav_fixture() if mime == 'audio/wav' else encoded_audio_fixture(mime)
+                data = audio_payload(raw, mime)
+                web.validate_voice(data)
+                normalized = await web.validated_file(web.audio_bytes(data['audio']), mime)
+                with wave.open(io.BytesIO(normalized), 'rb') as wav:
+                    self.assertEqual((wav.getnchannels(), wav.getsampwidth(), wav.getframerate()), (1, 2, 16000))
+                    self.assertLessEqual(wav.getnframes(), 16000 * 2)
+
+    async def test_audio_duration_silence_malformed_and_magic(self):
+        for raw, expected in ((wav_fixture(silent=True), 'audio_unrecognized'),
+                              (wav_fixture(120.1), 'audio_too_long'), (b'RIFFinvalidWAVE', 'invalid_audio')):
+            with self.subTest(expected=expected), self.assertRaises(web.AttachmentError) as raised:
+                web.decode_audio(raw, 'audio/wav')
+            self.assertEqual(str(raised.exception), expected)
+        for audio in ({'mimeType': 'audio/mp4', 'data': base64.b64encode(wav_fixture()).decode()},
+                      {'mimeType': 'audio/wav', 'data': 'AB=='}, {'mimeType': 'audio/wav', 'data': 'data:audio/wav;base64,AAA='}):
+            with self.assertRaises(web.AttachmentError):
+                web.audio_bytes(audio)
+
     async def test_validation_child_timeout_kills_waits_and_has_no_provider_env(self):
         process = types.SimpleNamespace(returncode=None, communicate=AsyncMock(), kill=lambda: None, wait=AsyncMock())
         process.kill = unittest.mock.Mock()
@@ -125,7 +207,9 @@ class DocumentReaderTests(unittest.IsolatedAsyncioTestCase):
 
     async def test_validation_child_cancellation_kills_and_waits(self):
         entered = asyncio.Event()
-        async def communicate(_):
+        async def communicate(raw):
+            if raw is None:
+                return b'', b''
             entered.set()
             await asyncio.Event().wait()
         process = types.SimpleNamespace(returncode=None, communicate=communicate,
@@ -207,11 +291,70 @@ class AdapterTests(unittest.IsolatedAsyncioTestCase):
     async def asyncTearDown(self):
         await self.client.aclose()
 
-    async def post(self, obj=None, raw=None, timestamp=None, sign_key=KEY):
+    async def post(self, obj=None, raw=None, timestamp=None, sign_key=KEY, route='/reply'):
         body = raw if raw is not None else json.dumps(obj, ensure_ascii=False).encode()
         stamp = str(int(time.time()) if timestamp is None else timestamp)
         signature = hmac.new(sign_key, stamp.encode() + b'\n' + body, hashlib.sha256).hexdigest()
-        return await self.client.post('/reply', content=body, headers={'X-Lara-Timestamp': stamp, 'X-Lara-Signature': signature})
+        return await self.client.post(route, content=body, headers={'X-Lara-Timestamp': stamp, 'X-Lara-Signature': signature})
+
+    async def voice_app(self, transcriber):
+        await self.client.aclose()
+        self.app = web.create_app(KEY, FakeRepo(), self.model, transcriber=transcriber)
+        self.client = httpx.AsyncClient(transport=httpx.ASGITransport(app=self.app), base_url='http://test')
+
+    async def test_voice_transcript_no_generation_and_route_scoped_replay(self):
+        transcriber = AsyncMock(return_value=' Как подготовиться к родам?\nСпасибо ')
+        await self.voice_app(transcriber)
+        p = audio_payload()
+        with patch.object(web, 'validated_file', new=AsyncMock(return_value=wav_fixture())):
+            result = await self.post(p, route='/transcribe')
+        self.assertEqual(result.status_code, 200)
+        self.assertEqual(result.json(), {'requestId': p['requestId'], 'text': 'Как подготовиться к родам?\nСпасибо'})
+        self.assertEqual(transcriber.call_args.args[1], 'voice.wav')
+        self.assertEqual(self.model.calls, [])
+        self.assertEqual((await self.post(p, route='/transcribe')).status_code, 409)
+        question = {**payload(), 'requestId': p['requestId']}
+        self.assertEqual((await self.post(question)).status_code, 200)
+
+    async def test_voice_auth_bounds_and_unrecognized_text(self):
+        transcriber = AsyncMock(return_value='text\u202e')
+        await self.voice_app(transcriber)
+        p = audio_payload()
+        self.assertEqual((await self.post(p, route='/transcribe', sign_key=b'wrong')).status_code, 401)
+        with patch.object(web, 'MAX_VOICE_BODY', 20):
+            self.assertEqual((await self.post(p, route='/transcribe')).status_code, 413)
+        with patch.object(web, 'validated_file', new=AsyncMock(return_value=wav_fixture())):
+            result = await self.post(p, route='/transcribe')
+        self.assertEqual(result.json(), {'error': 'audio_unrecognized'})
+        for invalid in ({}, {**audio_payload(), 'profile': {}}, {'requestId': 'bad', 'audio': {}}):
+            self.assertEqual((await self.post(invalid, route='/transcribe')).json(), {'error': 'invalid_audio'})
+
+    async def test_voice_timeout_releases_slot_and_transcript_length_limit(self):
+        await self.voice_app(AsyncMock(side_effect=asyncio.TimeoutError()))
+        with patch.object(web, 'validated_file', new=AsyncMock(return_value=wav_fixture())):
+            self.assertEqual((await self.post(audio_payload(), route='/transcribe')).status_code, 504)
+            self.assertEqual((await self.post(audio_payload(), route='/transcribe')).status_code, 504)
+        await self.voice_app(AsyncMock(return_value='x' * 4001))
+        with patch.object(web, 'validated_file', new=AsyncMock(return_value=wav_fixture())):
+            self.assertEqual((await self.post(audio_payload(), route='/transcribe')).json(), {'error': 'audio_unrecognized'})
+
+    async def test_voice_shares_file_slot_and_cancel_releases(self):
+        entered = asyncio.Event()
+        async def transcriber(*_):
+            entered.set()
+            await asyncio.Event().wait()
+        await self.voice_app(transcriber)
+        with patch.object(web, 'validated_file', new=AsyncMock(return_value=wav_fixture())):
+            task = asyncio.create_task(self.post(audio_payload(), route='/transcribe'))
+            await entered.wait()
+            self.assertEqual((await self.post(audio_payload(), route='/transcribe')).status_code, 503)
+            self.assertEqual((await self.post({**payload(), 'attachment': image_attachment()})).status_code, 503)
+            self.assertEqual((await self.post(payload())).status_code, 200)
+            task.cancel()
+            with self.assertRaises(asyncio.CancelledError):
+                await task
+            with patch.object(web, 'transcribe_reply', new=AsyncMock(return_value={'text': 'ok'})):
+                self.assertEqual((await self.post(audio_payload(), route='/transcribe')).status_code, 200)
 
     async def test_auth_expiry_invalid_and_size(self):
         self.assertEqual((await self.post(payload(), sign_key=b'wrong')).status_code, 401)

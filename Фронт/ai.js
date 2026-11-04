@@ -30,6 +30,11 @@ function fileData(file) {
     reader.readAsDataURL(file);
   });
 }
+let voice = null;
+const voiceControls = document.querySelector('#voice-controls');
+const voiceStatus = document.querySelector('#voice-status');
+const voiceCancel = document.querySelector('#voice-cancel');
+const voiceRetry = document.querySelector('#voice-retry');
 const expandedSources = new Set();
 const timeFormat = new Intl.DateTimeFormat('ru-RU', { timeZone: 'Europe/Moscow', hour: '2-digit', minute: '2-digit' });
 const sendingId = requestId => `sending:${requestId}`;
@@ -40,14 +45,23 @@ window.addEventListener('resize', resizeChat);
 resizeChat();
 function notice(message) { status.textContent = message; status.hidden = !message; }
 function updateControls() {
-  input.disabled = !ready || busy || !!pending || remaining === 0;
-  send.disabled = input.disabled || (!input.value.trim() && !selectedAttachment);
+  const locked = !ready || busy || !!pending || remaining === 0;
+  input.disabled = locked || !!voice;
+  const recording = voice?.stage === 'recording';
+  const microphone = !input.value.trim() && !selectedAttachment;
+  send.disabled = voice ? !recording : locked;
+  send.setAttribute('aria-label', recording ? 'Остановить запись' : microphone ? 'Записать голосом' : 'Отправить сообщение');
+  send.classList.toggle('voice-action', recording || microphone);
+  send.classList.toggle('voice-stop', recording);
+  send.querySelector('use').setAttribute('href', recording ? '#stop' : microphone ? '#mic' : '#send');
+  voiceControls.hidden = !voice;
+  voiceRetry.hidden = voice?.stage !== 'retry';
   attachmentButton.disabled = analysesButton.disabled = removeAttachment.disabled = input.disabled;
   retry.hidden = busy || (!pending && ready);
   retry.textContent = pending ? 'Проверить результат' : 'Повторить загрузку';
 }
 function clearPrivate() {
-  revision++; controller?.abort(); controller = null;
+  revision++; cancelVoice(); controller?.abort(); controller = null;
   accountId = null; ready = false; busy = false; pending = null;
   messages = []; hasMore = false; nextBefore = null; remaining = null;
   replyWaiting = false; selectAttachment(null);
@@ -276,8 +290,108 @@ async function submit() {
     if (error.code !== 'ai_busy') notice(errorMessage(error, !!pending));
   } finally { if (current === revision) { busy = false; controller = null; updateControls(); } }
 }
+function currentVoice(attempt) { return voice === attempt && !attempt.cancelled && !ended && attempt.revision === revision; }
+function stopTracks(attempt) { attempt.stream?.getTracks().forEach(track => track.stop()); attempt.stream = null; }
+function cancelVoice(message = '') {
+  const attempt = voice; voice = null;
+  if (attempt) {
+    attempt.cancelled = true; attempt.abort?.abort();
+    clearInterval(attempt.tick); clearTimeout(attempt.limit);
+    if (attempt.recorder?.state === 'recording') { try { attempt.recorder.stop(); } catch {} }
+    stopTracks(attempt); attempt.chunks = []; attempt.audio = null;
+  }
+  voiceStatus.textContent = ''; updateControls();
+  if (message) notice(message);
+}
+function voiceError(error) {
+  if (error.name === 'NotAllowedError' || error.name === 'SecurityError') return 'Разрешите доступ к микрофону в настройках браузера или напишите вопрос текстом.';
+  if (error.name === 'NotFoundError' || error.name === 'NotReadableError') return 'Микрофон недоступен. Проверьте подключение или напишите вопрос текстом.';
+  if (['audio_too_long', 'ai_audio_too_long'].includes(error.code)) return 'Запись слишком длинная. Запишите до двух минут и не более 5 МБ.';
+  if (['audio_unrecognized', 'ai_audio_unrecognized'].includes(error.code)) return 'Не удалось разобрать речь. Попробуйте записать ещё раз или напишите вопрос текстом.';
+  if (['voice_rate_limited', 'voice_daily_limit', 'daily_limit', 'rate_limited', 'ai_daily_limit'].includes(error.code)) return 'Лимит голосового ввода временно исчерпан. Напишите вопрос текстом или попробуйте позже.';
+  if (error.code === 'ai_voice_busy') return 'Распознавание сейчас занято. Попробуйте ещё раз чуть позже.';
+  if (['invalid_ai_voice', 'invalid_ai_audio'].includes(error.code)) return 'Не удалось прочитать запись. Попробуйте записать ещё раз или напишите вопрос текстом.';
+  return 'Голосовой ввод сейчас недоступен. Попробуйте позже или напишите вопрос текстом.';
+}
+async function startVoice() {
+  if (voice || input.disabled || input.value.trim() || selectedAttachment) return;
+  if (!navigator.mediaDevices?.getUserMedia || typeof MediaRecorder === 'undefined') {
+    notice('Этот браузер не поддерживает запись голоса. Напишите вопрос текстом.'); return;
+  }
+  const attempt = { requestId: crypto.randomUUID(), revision, stage: 'permission', chunks: [], size: 0 };
+  voice = attempt; voiceStatus.textContent = 'Разрешите доступ к микрофону…'; notice(''); updateControls();
+  try {
+    const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+    if (!currentVoice(attempt)) { stream.getTracks().forEach(track => track.stop()); return; }
+    attempt.stream = stream;
+    const mimeType = ['audio/webm;codecs=opus', 'audio/ogg;codecs=opus', 'audio/mp4'].find(type => MediaRecorder.isTypeSupported(type));
+    if (!mimeType) throw new Error('unsupported_voice_format');
+    const recorder = new MediaRecorder(stream, { mimeType }); attempt.recorder = recorder;
+    recorder.ondataavailable = event => {
+      if (!currentVoice(attempt) || !event.data?.size) return;
+      attempt.chunks.push(event.data); attempt.size += event.data.size;
+      if (attempt.size > 5 * 1024 * 1024) cancelVoice(voiceError({ code: 'audio_too_long' }));
+    };
+    recorder.onerror = () => { if (currentVoice(attempt)) cancelVoice(voiceError({})); };
+    recorder.onstop = () => {
+      stopTracks(attempt); clearInterval(attempt.tick); clearTimeout(attempt.limit);
+      if (!currentVoice(attempt)) return;
+      const audio = new Blob(attempt.chunks, { type: recorder.mimeType || mimeType }); attempt.chunks = [];
+      if (!audio.size || audio.size > 5 * 1024 * 1024) { cancelVoice(voiceError({ code: audio.size ? 'audio_too_long' : 'audio_unrecognized' })); return; }
+      attempt.audio = audio; transcribeVoice(attempt);
+    };
+    recorder.start(250); attempt.stage = 'recording'; attempt.started = Date.now();
+    const timer = () => { if (currentVoice(attempt)) {
+      const seconds = Math.min(120, Math.floor((Date.now() - attempt.started) / 1000));
+      voiceStatus.textContent = `Запись ${Math.floor(seconds / 60)}:${String(seconds % 60).padStart(2, '0')} / 2:00`;
+    } };
+    timer(); attempt.tick = setInterval(timer, 1000); attempt.limit = setTimeout(stopVoice, 119_000); updateControls();
+  } catch (error) { if (currentVoice(attempt)) cancelVoice(voiceError(error)); }
+}
+function stopVoice() {
+  const attempt = voice; if (attempt?.stage !== 'recording') return;
+  attempt.stage = 'stopping'; clearInterval(attempt.tick); clearTimeout(attempt.limit);
+  voiceStatus.textContent = 'Подготавливаем запись…'; updateControls();
+  try { attempt.recorder.stop(); stopTracks(attempt); }
+  catch (error) { if (currentVoice(attempt)) cancelVoice(voiceError(error)); }
+}
+async function transcribeVoice(attempt) {
+  if (!currentVoice(attempt) || !attempt.audio) return;
+  if (attempt.sentAt && Date.now() - attempt.sentAt > 110_000) { cancelVoice('Не удалось подтвердить распознавание. Запишите вопрос ещё раз или напишите текстом.'); return; }
+  attempt.stage = 'transcribing'; attempt.abort = new AbortController();
+  voiceStatus.textContent = 'Распознаём речь…'; notice(''); updateControls();
+  try {
+    const data = await fileData(attempt.audio);
+    if (!currentVoice(attempt)) return;
+    attempt.sentAt ||= Date.now();
+    const result = await request('voice', { requestId: attempt.requestId, audio: { mimeType: attempt.audio.type.split(';')[0], data } }, attempt.abort.signal, 180_000);
+    if (!currentVoice(attempt)) return;
+    if (result.requestId !== attempt.requestId || typeof result.text !== 'string' || !result.text.trim() || result.text.length > 4000) throw Object.assign(new Error('invalid transcript'), { code: 'invalid_ai_voice' });
+    const text = result.text.trim(); cancelVoice(); input.value = text; updateControls(); input.focus();
+    notice('Проверьте текст и нажмите «Отправить».');
+  } catch (error) {
+    if (!currentVoice(attempt) || validateIdentity(error)) return;
+    if (error.code === 'ai_purchase_required') { clearPrivate(); notice(errorMessage(error)); return; }
+    const definitive = ['invalid_ai_voice', 'invalid_ai_audio', 'audio_too_long', 'ai_audio_too_long', 'audio_unrecognized', 'ai_audio_unrecognized', 'voice_rate_limited', 'voice_daily_limit', 'daily_limit', 'rate_limited', 'ai_daily_limit', 'request_id_conflict'].includes(error.code);
+    if (definitive) cancelVoice(voiceError(error));
+    else { attempt.stage = 'retry'; voiceStatus.textContent = 'Речь пока не распознана'; notice(voiceError(error)); updateControls(); }
+  }
+}
+voiceCancel.addEventListener('click', () => cancelVoice('Запись отменена.'));
+voiceRetry.addEventListener('click', () => { if (voice?.stage === 'retry') transcribeVoice(voice); });
+document.addEventListener('visibilitychange', () => { if (document.hidden && voice) cancelVoice(); });
+// Preserved application panels can be hidden without a document visibility event.
+const voicePanel = window.frameElement || document.querySelector('.app');
+if (voicePanel) new MutationObserver(() => {
+  if (voicePanel.hidden && voice) cancelVoice();
+}).observe(voicePanel, { attributes: true, attributeFilter: ['hidden'] });
 input.addEventListener('input', updateControls);
-form.addEventListener('submit', event => { event.preventDefault(); submit(); });
+form.addEventListener('submit', event => {
+  event.preventDefault();
+  if (voice?.stage === 'recording') stopVoice();
+  else if (!voice && !input.value.trim() && !selectedAttachment) startVoice();
+  else if (!voice) submit();
+});
 retry.addEventListener('click', () => pending ? submit() : loadHistory());
 document.querySelectorAll('[data-prompt]').forEach(button => button.addEventListener('click', () => { if (input.disabled) return; input.value = button.dataset.prompt; updateControls(); input.focus(); }));
 function openFilePicker() { if (!input.disabled) fileInput.click(); }

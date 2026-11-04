@@ -82,3 +82,11 @@
 #attachment-remove { flex-shrink: 0; width: 44px; height: 44px; background: none; color: #7542c6; display: grid; place-items: center; }
 .attachment-hint { margin: 4px 4px 0; font-size: 10px; line-height: 13px; color: #8273b2; }
 .attachment-button:disabled, .analyses:disabled { opacity: .45; }
+
+.send-button.voice-action svg { width: 23px; height: 23px; fill: none; stroke: currentColor; }
+.send-button.voice-stop svg { fill: currentColor; stroke: none; }
+.voice-controls { display: flex; align-items: center; gap: 6px; min-height: 44px; color: #685882; font-size: 12px; }
+.voice-controls[hidden] { display: none; }
+#voice-status { flex: 1; min-width: 0; }
+#voice-cancel { width: 44px; height: 44px; flex-shrink: 0; display: grid; place-items: center; color: #7542c6; background: #f6f0ff; border-radius: 50%; }
+#voice-retry { max-width: 45%; min-height: 44px; padding: 4px 8px; border-radius: 14px; font-size: 11px; color: #7542c6; background: #f6f0ff; }

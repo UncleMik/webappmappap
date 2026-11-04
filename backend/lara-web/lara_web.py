@@ -24,6 +24,9 @@ from fastapi import FastAPI, Request
 from fastapi.responses import JSONResponse
 
 MAX_BODY = 15 * 1024 * 1024
+MAX_VOICE_BODY = 8 * 1024 * 1024
+MAX_AUDIO_BYTES = 5 * 1024 * 1024
+MAX_AUDIO_SECONDS = 120
 MAX_ATTACHMENT_BYTES = 10 * 1024 * 1024
 MAX_IMAGE_PIXELS = 16_000_000
 MAX_PDF_PAGES = 10
@@ -52,12 +55,16 @@ try:
     if not 1 <= len(raw) <= module.MAX_ATTACHMENT_BYTES:
         raise ValueError()
     mime = sys.argv[2]
+    if mime.startswith('audio/'):
+        sys.stdout.buffer.write(module.decode_audio(raw, mime))
+        sys.exit(0)
     pages = module.validate_pdf(raw) if mime == 'application/pdf' else 1
     if mime != 'application/pdf':
         module.validate_image(raw, mime)
     print(json.dumps({'pages': pages}))
-except Exception:
-    print('{"error":"invalid_attachment"}')
+except Exception as exc:
+    code = str(exc) if type(exc).__name__ == 'AttachmentError' and str(exc) in ('invalid_audio','audio_too_long','audio_unrecognized') else 'invalid_attachment'
+    print(json.dumps({'error': code}))
     sys.exit(1)
 '''
 MAX_REQUESTS = 20000
@@ -258,6 +265,91 @@ def decode_attachment(attachment):
     return raw
 
 
+def validate_voice(data):
+    if not isinstance(data, dict) or set(data) != {'requestId', 'audio'}:
+        raise AttachmentError('invalid_audio')
+    rid = data.get('requestId')
+    if not isinstance(rid, str) or str(uuid.UUID(rid)) != rid:
+        raise AttachmentError('invalid_audio')
+    audio = data.get('audio')
+    if (not isinstance(audio, dict) or set(audio) != {'mimeType', 'data'}
+            or audio.get('mimeType') not in ('audio/webm', 'audio/ogg', 'audio/mp4', 'audio/wav')):
+        raise AttachmentError('invalid_audio')
+    encoded = audio.get('data')
+    if (not isinstance(encoded, str) or not encoded or not encoded.isascii()
+            or len(encoded) > 4 * ((MAX_AUDIO_BYTES + 2) // 3) or len(encoded) % 4
+            or not re.fullmatch(r'[A-Za-z0-9+/]*={0,2}', encoded)):
+        raise AttachmentError('invalid_audio')
+    return data
+
+
+def audio_bytes(audio):
+    try:
+        raw = base64.b64decode(audio['data'], validate=True)
+        mime = audio['mimeType']
+        valid = (raw.startswith(b'\x1aE\xdf\xa3') if mime == 'audio/webm' else
+                 raw.startswith(b'OggS') if mime == 'audio/ogg' else
+                 len(raw) >= 12 and raw[4:8] == b'ftyp' if mime == 'audio/mp4' else
+                 len(raw) >= 12 and raw[:4] == b'RIFF' and raw[8:12] == b'WAVE')
+        if not valid or not 1 <= len(raw) <= MAX_AUDIO_BYTES or base64.b64encode(raw).decode('ascii') != audio['data']:
+            raise ValueError()
+        return raw
+    except (ValueError, TypeError, binascii.Error):
+        raise AttachmentError('invalid_audio') from None
+
+
+def decode_audio(raw, mime):
+    """Only called inside the limited decoder process. No filenames or URLs."""
+    import array
+    import av
+    import wave
+    av.logging.set_level(av.logging.PANIC)
+    formats = {'audio/webm': 'matroska', 'audio/ogg': 'ogg', 'audio/mp4': 'mov', 'audio/wav': 'wav'}
+    pcm = bytearray()
+    energy = 0
+    try:
+        if not 1 <= len(raw) <= MAX_AUDIO_BYTES:
+            raise AttachmentError('invalid_audio')
+        with av.open(io.BytesIO(raw), mode='r', format=formats[mime], options={'protocol_whitelist': 'pipe'}) as container:
+            if len(container.streams) != 1 or len(container.streams.audio) != 1:
+                raise AttachmentError('invalid_audio')
+            stream = container.streams.audio[0]
+            stream.codec_context.thread_count = 1
+            if stream.duration is not None and stream.time_base is not None and float(stream.duration * stream.time_base) > MAX_AUDIO_SECONDS + .05:
+                raise AttachmentError('audio_too_long')
+            resampler = av.AudioResampler(format='s16', layout='mono', rate=16000, threads=1)
+            def append(frame):
+                nonlocal energy
+                chunk = bytes(frame.planes[0])[:frame.samples * 2]
+                if len(pcm) + len(chunk) > MAX_AUDIO_SECONDS * 16000 * 2:
+                    raise AttachmentError('audio_too_long')
+                pcm.extend(chunk)
+                samples = array.array('h', chunk)
+                if sys.byteorder != 'little':
+                    samples.byteswap()
+                energy += sum(value * value for value in samples)
+            for frame in container.decode(stream):
+                if frame.sample_rate <= 0 or frame.samples <= 0:
+                    raise AttachmentError('invalid_audio')
+                for converted in resampler.resample(frame):
+                    append(converted)
+            for converted in resampler.resample(None):
+                append(converted)
+        if len(pcm) < 3200 or energy / (len(pcm) // 2) < 32 * 32:
+            raise AttachmentError('audio_unrecognized')
+        output = io.BytesIO()
+        with wave.open(output, 'wb') as wav:
+            wav.setnchannels(1)
+            wav.setsampwidth(2)
+            wav.setframerate(16000)
+            wav.writeframes(pcm)
+        return output.getvalue()
+    except AttachmentError:
+        raise
+    except Exception:
+        raise AttachmentError('invalid_audio') from None
+
+
 def validate_image(raw, mime):
     from PIL import Image
     try:
@@ -303,26 +395,43 @@ async def validated_file(raw, mime):
         import site
         # Local QA dependencies may live in the per-user Python site directory.
         env['PYTHONPATH'] = os.pathsep.join(filter(None, (env.get('PYTHONPATH'), site.getusersitepackages())))
+    identity = {'user': 65534, 'group': 65534, 'extra_groups': []} if sys.platform != 'win32' and os.geteuid() == 0 else {}
     process = await asyncio.create_subprocess_exec(
         sys.executable, '-c', VALIDATOR_SCRIPT, os.path.abspath(__file__), mime,
         stdin=asyncio.subprocess.PIPE, stdout=asyncio.subprocess.PIPE,
-        stderr=asyncio.subprocess.DEVNULL, env=env, limit=4096)
+        stderr=asyncio.subprocess.DEVNULL, env=env, limit=4096, **identity)
+    communicated = False
     try:
         try:
             output, _ = await asyncio.wait_for(process.communicate(raw), 8)
+            communicated = True
+            if mime.startswith('audio/'):
+                if process.returncode == 0 and output.startswith(b'RIFF') and 44 < len(output) <= MAX_AUDIO_SECONDS * 32000 + 44:
+                    return output
+                try:
+                    error = json.loads(output).get('error')
+                except (ValueError, TypeError, AttributeError):
+                    error = None
+                raise AttachmentError(error if error in ('invalid_audio', 'audio_too_long', 'audio_unrecognized') else 'invalid_audio')
             value = json.loads(output)
             pages = value.get('pages') if isinstance(value, dict) else None
             if process.returncode != 0 or type(pages) is not int or not 1 <= pages <= MAX_PDF_PAGES:
                 raise ValueError()
             return pages
+        except AttachmentError:
+            raise
         except (ValueError, TypeError, asyncio.TimeoutError):
-            raise AttachmentError('invalid_attachment') from None
+            raise AttachmentError('invalid_audio' if mime.startswith('audio/') else 'invalid_attachment') from None
     finally:
         if process.returncode is None:
             try:
                 process.kill()
             except ProcessLookupError:
                 pass
+        if not communicated:
+            # wait() alone can deadlock after cancellation when a killed child's
+            # stdout pipe still holds bytes. Drain the remaining pipe first.
+            await process.communicate(None)
         await process.wait()
 
 
@@ -453,6 +562,29 @@ class Model:
         return await polish(answer)
 
 
+async def speech_to_text(wav, filename):
+    from agent.stt import transcribe
+    return await transcribe(wav, filename)
+
+
+async def transcribe_reply(data, transcriber):
+    audio = data.pop('audio')
+    raw = audio_bytes(audio)
+    audio.pop('data', None)
+    try:
+        wav = await validated_file(raw, audio['mimeType'])
+    finally:
+        del raw
+    try:
+        text = await asyncio.wait_for(transcriber(wav, 'voice.wav'), 35)
+    finally:
+        del wav
+    if (not isinstance(text, str) or not 1 <= len(text.strip()) <= 4000
+            or any(unicodedata.category(c) in ('Cc', 'Cf') and c != '\n' for c in text)):
+        raise AttachmentError('audio_unrecognized')
+    return {'requestId': data['requestId'], 'text': text.strip()}
+
+
 def profile_fact(profile):
     stage = profile.get('stage')
     if stage == 'pregnant':
@@ -506,7 +638,7 @@ async def reply(data, repository, model, document_reader=None):
     return {'requestId': data['requestId'], 'answer': answer, 'sources': sources, 'sourcePolicy': 'used_v1'}
 
 
-def create_app(secret=None, repository=None, model=None, document_reader=None):
+def create_app(secret=None, repository=None, model=None, document_reader=None, transcriber=None):
     app = FastAPI(docs_url=None, redoc_url=None, openapi_url=None)
     repo, generator = repository or Repository(), model or Model()
     key = secret if secret is not None else os.environ.get('LARA_WEB_HMAC_SECRET', '')
@@ -526,10 +658,12 @@ def create_app(secret=None, repository=None, model=None, document_reader=None):
         return {'status': 'ok'}
 
     @app.post('/reply')
+    @app.post('/transcribe')
     async def handle(request: Request):
         nonlocal active, active_files, receiving
         if not key or len(key) < 32:
             return JSONResponse({'error': 'unavailable'}, 503)
+        voice = request.url.path == '/transcribe'
         stamp, signature = request.headers.get('x-lara-timestamp', ''), request.headers.get('x-lara-signature', '')
         if not stamp.isascii() or not stamp.isdigit() or len(stamp) > 12 or abs(time.time() - int(stamp)) > 60:
             return JSONResponse({'error': 'unauthorized'}, 401)
@@ -542,7 +676,7 @@ def create_app(secret=None, repository=None, model=None, document_reader=None):
         try:
             async for chunk in request.stream():
                 size += len(chunk)
-                if size > MAX_BODY:
+                if size > (MAX_VOICE_BODY if voice else MAX_BODY):
                     return JSONResponse({'error': 'too_large'}, 413)
                 chunks.append(chunk)
             body = b''.join(chunks)
@@ -553,30 +687,32 @@ def create_app(secret=None, repository=None, model=None, document_reader=None):
         if not re.fullmatch(r'[0-9a-f]{64}', signature) or not hmac.compare_digest(signature, expected):
             return JSONResponse({'error': 'unauthorized'}, 401)
         try:
-            data = validate(json.loads(body, parse_constant=lambda _: (_ for _ in ()).throw(ValueError('nonfinite'))))
+            decoded = json.loads(body, parse_constant=lambda _: (_ for _ in ()).throw(ValueError('nonfinite')))
+            data = validate_voice(decoded) if voice else validate(decoded)
         except AttachmentError:
-            return JSONResponse({'error': 'invalid_attachment'}, 422)
+            return JSONResponse({'error': 'invalid_audio' if voice else 'invalid_attachment'}, 422)
         except (ValueError, TypeError, UnicodeDecodeError):
-            return JSONResponse({'error': 'invalid_request'}, 400)
+            return JSONResponse({'error': 'invalid_audio' if voice else 'invalid_request'}, 422 if voice else 400)
         del body
         now = time.monotonic()
         for k, expiry in list(seen.items()):
             if expiry <= now:
                 del seen[k]
-        rid = data['requestId']
+        rid = ('voice:' if voice else 'reply:') + data['requestId']
         if rid in seen:
             return JSONResponse({'error': 'duplicate_request'}, 409)
-        has_file = data.get('attachment') is not None
+        has_file = voice or data.get('attachment') is not None
         if active >= MAX_CONCURRENT or (has_file and active_files >= 1) or len(seen) >= MAX_REQUESTS:
             return JSONResponse({'error': 'busy'}, 503)
         seen[rid] = now + REPLAY_SECONDS
         active += 1
         active_files += int(has_file)
         try:
-            result = await asyncio.wait_for(reply(data, repo, generator, document_reader), OPERATION_SECONDS)
+            operation = transcribe_reply(data, transcriber or speech_to_text) if voice else reply(data, repo, generator, document_reader)
+            result = await asyncio.wait_for(operation, 45 if voice else OPERATION_SECONDS)
             return JSONResponse(result)
         except AttachmentError as error:
-            code = 'invalid_attachment' if str(error) == 'invalid_attachment' else 'attachment_unreadable'
+            code = (str(error) if str(error) in ('invalid_audio', 'audio_too_long', 'audio_unrecognized') else 'invalid_audio') if voice else ('invalid_attachment' if str(error) == 'invalid_attachment' else 'attachment_unreadable')
             return JSONResponse({'error': code}, 422)
         except asyncio.TimeoutError:
             return JSONResponse({'error': 'timeout'}, 504)

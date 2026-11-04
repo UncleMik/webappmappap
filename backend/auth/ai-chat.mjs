@@ -3,6 +3,7 @@ import { readFileSync } from 'node:fs';
 import { AuthError, hashToken } from './security.mjs';
 import { transaction } from './store.mjs';
 import { validateAiAttachment, MAX_AI_BODY_BYTES } from './ai-attachment.mjs';
+import { createAiVoice } from './ai-voice.mjs';
 
 const uuid = value => typeof value === 'string' && /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(value);
 const sha = value => createHash('sha256').update(value).digest('hex');
@@ -132,6 +133,18 @@ export function createAiChat({ pool, service, courseMaterials, sourceMapPath, ur
     const used = row?.used || 0;
     return { limit: DAILY_LIMIT, used, remaining: DAILY_LIMIT - used, resetsAt: reset(today) };
   }
+  async function authorizeVoice(token, expected) {
+    const a = await access(token, expected);
+    if ((await quota(a.user.id)).remaining <= 0)
+      throw new AuthError(429, 'ai_daily_limit', 'Сегодня доступные вопросы закончились. Возвращайтесь завтра.');
+    return a;
+  }
+  const transcribe = createAiVoice({ authorize: authorizeVoice, secret, clock, fetchImpl,
+    acquire() {
+      if (fileInFlight) throw new AuthError(503, 'ai_voice_busy', 'Лара сейчас обрабатывает другой файл. Попробуйте позже.');
+      fileInFlight = true;
+      return () => { fileInFlight = false; };
+    } });
   async function failStale(userId, client = pool) {
     await client.query(`UPDATE ai_chat_requests SET status='failed' WHERE user_id=$1
       AND status='pending' AND accepted_at<=$2`, [userId, new Date(clock() - IN_FLIGHT_MS)]);
@@ -289,5 +302,5 @@ export function createAiChat({ pool, service, courseMaterials, sourceMapPath, ur
     await pool.query('DELETE FROM ai_chat_requests WHERE accepted_at<$1', [new Date(clock() - RETENTION_MS)]);
     await pool.query('DELETE FROM ai_chat_daily_usage WHERE day_moscow<$1', [day(clock() - RETENTION_MS)]);
   }
-  return Object.freeze({ history, send, status, authorize: access, cleanup });
+  return Object.freeze({ history, send, status, authorize: access, authorizeVoice, transcribe, cleanup });
 }

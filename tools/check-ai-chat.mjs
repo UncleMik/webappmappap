@@ -194,7 +194,7 @@ async (page) => {
   await choose({ ...pdf, mimeType: '' }); await assertChip(pdf.name);
   if (await chip.locator('img,script').count()) throw new Error('Filename interpreted as HTML');
   await page.locator('#attachment-remove').click(); await assertChip(null);
-  if (!(await page.locator('.send-button').isDisabled())) throw new Error('Empty question without file can send');
+  if (await page.locator('.send-button').getAttribute('aria-label') !== 'Записать голосом') throw new Error('Empty composer did not return to microphone');
   await choose({ ...pdf, mimeType: '' });
   for (const width of [320, 390, 500]) {
     await page.setViewportSize({ width, height: 500 }); await page.waitForTimeout(100);

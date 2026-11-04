@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import { readFile, mkdtemp, writeFile, rm } from 'node:fs/promises';
 import { join } from 'node:path';
 import { tmpdir } from 'node:os';
-import { randomUUID } from 'node:crypto';
+import { randomUUID, createHmac } from 'node:crypto';
 import { testPool } from './auth-pool.mjs';
 import { createAiChat } from '../auth/ai-chat.mjs';
 import { createStore } from '../auth/store.mjs';
@@ -12,6 +12,7 @@ import { createAuthServer } from '../auth/http.mjs';
 import { once } from 'node:events';
 import { request as httpRequest } from 'node:http';
 import { validateAiAttachment, MAX_AI_FILE_BYTES } from '../auth/ai-attachment.mjs';
+import { validateAiAudio, MAX_AI_AUDIO_BYTES } from '../auth/ai-voice.mjs';
 
 let db, pool, folder, sourceMapPath, now, user, token, service, context, calls, chat, respond;
 before(async () => {
@@ -44,6 +45,113 @@ let currentId;
 const ask = (text = 'Вопрос', id = currentId) => chat.send(token, user, { requestId: id, text });
 const pdf = (suffix = 'synthetic test fixture') => ({ name: 'Анализы.pdf', mimeType: 'application/pdf',
   data: Buffer.from(`%PDF-1.7\n${suffix}`).toString('base64') });
+const audio = (suffix = 'synthetic-audio-fixture') => ({ mimeType: 'audio/ogg', data: Buffer.from(`OggS${suffix}`).toString('base64') });
+const transcribe = (id = currentId, recorded = audio(), limiter = async () => {}) =>
+  chat.transcribe(token, user, { requestId: id, audio: recorded }, limiter);
+
+test('voice validator accepts allowed container magic and rejects noncanonical, oversized and mismatched audio', () => {
+  for (const [mimeType, bytes] of [['audio/ogg', Buffer.from('OggSfixture')], ['audio/webm', Buffer.from([26,69,223,163,0])],
+    ['audio/mp4', Buffer.from([0,0,0,12,102,116,121,112])], ['audio/wav', Buffer.from('RIFF1234WAVE')]])
+    assert.equal(typeof validateAiAudio({mimeType,data:bytes.toString('base64')}), 'string');
+  for (const recorded of [null, {...audio(),mimeType:'audio/ogg;codecs=opus'}, {...audio(),mimeType:'audio/wav'},
+    {...audio(),data:audio().data+'\n'}, {...audio(),data:''}, {...audio(),extra:'forbidden'},
+    {...audio(),data:Buffer.alloc(MAX_AI_AUDIO_BYTES+1).toString('base64')}])
+    assert.throws(()=>validateAiAudio(recorded), e=>e.code==='invalid_ai_audio');
+});
+
+test('voice is authorized and quota gated; invalid inputs never call DO or reserve a question', async () => {
+  await setup(); currentId=randomUUID();
+  await assert.rejects(transcribe(currentId,{...audio(),data:'bad'}),e=>e.code==='invalid_ai_audio');
+  context.courses=[]; await assert.rejects(transcribe(),e=>e.code==='ai_purchase_required');
+  context.courses=[{productId:1}];
+  await assert.rejects(chat.transcribe(token,randomUUID(),{requestId:currentId,audio:audio()},async()=>{}),e=>e.code==='account_changed');
+  await assert.rejects(chat.transcribe('',user,{requestId:currentId,audio:audio()},async()=>{}),e=>e.code==='sign_in_required');
+  await pool.query('INSERT INTO ai_chat_daily_usage(user_id,day_moscow,used) VALUES($1,$2,30)',[user,'2026-11-04']);
+  await assert.rejects(transcribe(),e=>e.code==='ai_daily_limit');
+  assert.equal(calls,0); assert.equal((await pool.query('SELECT * FROM ai_chat_requests')).rows.length,0);
+});
+
+test('voice retries bind audio bytes, share one call and cache text without saving transcript or spending question quota', async () => {
+  await setup(); currentId=randomUUID(); let release,entered,rateHits=0;
+  const held=new Promise(resolve=>{release=resolve;}); const ready=new Promise(resolve=>{entered=resolve;});
+  respond=async (url,options)=>{assert.equal(String(url),'https://admin.legkie-rody.ru/internal/lara-web/transcribe');
+    const payload=JSON.parse(options.body.toString()); assert.deepEqual(payload.audio,audio());
+    assert.equal(options.headers['X-Lara-Signature'],createHmac('sha256','test-lara-secret-longer-than-32-bytes')
+      .update(options.headers['X-Lara-Timestamp']).update('\n').update(options.body).digest('hex')); entered(); await held;
+    return new Response(JSON.stringify({requestId:currentId,text:'  Распознанный вопрос  '}));};
+  const limit=async()=>{rateHits++;}; const first=transcribe(currentId,audio(),limit); await ready;
+  const second=transcribe(currentId,audio(),limit); release();
+  const [one,two]=await Promise.all([first,second]); assert.deepEqual(one,two); assert.equal(one.text,'Распознанный вопрос');
+  assert.equal((await transcribe(currentId,audio(),limit)).text,one.text); assert.equal(rateHits,1); assert.equal(calls,1);
+  await assert.rejects(transcribe(currentId,audio('changed')),e=>e.code==='request_id_conflict');
+  assert.equal((await pool.query('SELECT * FROM ai_chat_requests')).rows.length,0);
+  assert.equal((await pool.query('SELECT * FROM ai_chat_daily_usage')).rows.length,0);
+  context.lessons=[]; await assert.rejects(transcribe(),e=>e.code==='ai_access_changed');
+  context.courses=[]; await assert.rejects(transcribe(),e=>e.code==='ai_purchase_required');
+  assert.equal(calls,1);
+});
+
+test('recognized speech becomes a charged history question only after the normal text send', async () => {
+  await setup();currentId=randomUUID();
+  respond=async()=>new Response(JSON.stringify({requestId:currentId,text:'Распознанный вопрос'}));
+  const recognized=await transcribe();
+  assert.equal((await chat.history(token,user)).quota.used,0);
+  currentId=randomUUID();
+  respond=async()=>new Response(JSON.stringify({requestId:currentId,answer:'Ответ',sources:[]}));
+  const result=await ask(recognized.text);
+  assert.equal(result.status,'completed');assert.equal(result.quota.used,1);
+  assert.equal(result.messages[0].content,recognized.text);assert.equal(calls,2);
+  assert.equal((await pool.query('SELECT * FROM ai_chat_requests')).rows.length,1);
+});
+
+test('voice failures are bounded and private, release shared file slot and cached retries do not call again', async () => {
+  await setup();
+  for (const [status,body,code] of [[422,{error:'audio_too_long',details:'PRIVATE_AUDIO_PROVIDER'},'ai_audio_too_long'],
+    [422,{error:'audio_unrecognized'},'ai_audio_unrecognized'],[503,{error:'busy'},'ai_voice_busy'],
+    [200,{text:'A'.repeat(33000)},'ai_voice_unavailable']]) {
+    currentId=randomUUID(); respond=async()=>new Response(JSON.stringify(body),{status});
+    await assert.rejects(transcribe(),e=>e.code===code&&!e.message.includes('PRIVATE_AUDIO_PROVIDER'));
+    const prior=calls; await assert.rejects(transcribe(),e=>e.code===code); assert.equal(calls,prior);
+  }
+  currentId=randomUUID(); respond=async()=>new Response(JSON.stringify({requestId:currentId,text:'Вопрос'}));
+  assert.equal((await transcribe()).text,'Вопрос');
+  assert.equal((await chat.history(token,user)).quota.used,0);
+});
+
+test('voice late session revocation is denied and voice jobs share the attachment processing slot', async () => {
+  await setup(); currentId=randomUUID(); let release,entered;
+  const held=new Promise(resolve=>{release=resolve;}); const ready=new Promise(resolve=>{entered=resolve;});
+  respond=async()=>{entered();await held;return new Response(JSON.stringify({requestId:currentId,text:'Вопрос'}));};
+  const first=transcribe();await ready;
+  await assert.rejects(chat.send(token,user,{requestId:randomUUID(),text:'Файл',attachment:pdf()}),e=>e.code==='ai_upload_busy');
+  await assert.rejects(transcribe(randomUUID()),e=>e.code==='ai_voice_busy');
+  await pool.query('UPDATE auth_sessions SET revoked_at=$1 WHERE token_hash=$2',[new Date(now),hashToken(token)]);
+  release(); await assert.rejects(first,e=>e.code==='sign_in_required');
+  assert.equal((await pool.query('SELECT * FROM ai_chat_requests')).rows.length,0); assert.equal(calls,1);
+});
+
+test('voice HTTP requires authorization before body, limits STT six per minute and never charges cached retry', async () => {
+  await setup(); currentId=randomUUID();
+  const store=createStore(pool,{secret:'test-secret-longer-than-thirty-two-bytes',clock:()=>now});
+  const server=createAuthServer({service,store,aiChat:chat,enabled:true,origin:'https://app.legkie-rody.ru'});
+  server.listen(0,'127.0.0.1');await once(server,'listening'); const base=`http://127.0.0.1:${server.address().port}`;
+  const headers={Cookie:`__Host-school_session=${token}`,'X-Webpril-Account':user,Origin:'https://app.legkie-rody.ru','Content-Type':'application/json'};
+  const post=(data,h=headers)=>fetch(`${base}/api/auth/ai/voice`,{method:'POST',headers:h,body:JSON.stringify(data)});
+  respond=async (_url,options)=>new Response(JSON.stringify({requestId:JSON.parse(options.body.toString()).requestId,text:'Вопрос'}));
+  try {
+    const early=await new Promise((resolve,reject)=>{const req=httpRequest(`${base}/api/auth/ai/voice`,{method:'POST',headers:{...headers,Cookie:'','Content-Length':'7000000'}},res=>{res.resume();res.on('end',()=>resolve(res.statusCode));});req.on('error',reject);req.flushHeaders();});
+    assert.equal(early,401);
+    assert.equal((await post({requestId:currentId,audio:audio()},{...headers,Origin:'https://evil.invalid'})).status,403);
+    const data={requestId:currentId,audio:audio()}; assert.equal((await post(data)).status,200);
+    assert.equal((await post(data)).status,200); assert.equal(calls,1);
+    for(let i=0;i<5;i++)assert.equal((await post({...data,requestId:randomUUID()})).status,200);
+    const limited=await post({...data,requestId:randomUUID()});assert.equal(limited.status,429);assert.equal(calls,6);
+    assert.equal((await pool.query('SELECT * FROM ai_chat_requests')).rows.length,0);
+    assert.equal((await pool.query('SELECT * FROM ai_chat_daily_usage')).rows.length,0);
+    const rows=(await pool.query('SELECT * FROM auth_rate_limits')).rows;
+    assert.ok(!JSON.stringify(rows).includes(audio().data)); assert.ok(!JSON.stringify(rows).includes('Вопрос'));
+  } finally {server.closeAllConnections();await new Promise(resolve=>server.close(resolve));}
+});
 
 test('file validation bounds bytes, canonical base64, filename and matching magic', () => {
   assert.ok(validateAiAttachment(pdf()));
