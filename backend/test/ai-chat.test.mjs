@@ -49,6 +49,69 @@ const audio = (suffix = 'synthetic-audio-fixture') => ({ mimeType: 'audio/ogg', 
 const transcribe = (id = currentId, recorded = audio(), limiter = async () => {}) =>
   chat.transcribe(token, user, { requestId: id, audio: recorded }, limiter);
 
+test('personal identity question has no retrieval or links in send/history/status/retry; old stored links stay intact', async () => {
+  await setup();
+  await writeFile(sourceMapPath,JSON.stringify({version:1,sources:[{course:'Курс',source:'lesson.md',lessonIds:[2]}]}));
+  currentId=randomUUID();await ask('Меня зовут Михаил.');
+  const profileBefore=(await pool.query('SELECT profile FROM auth_users WHERE id=$1',[user])).rows[0].profile;
+  let payload;
+  currentId=randomUUID();
+  respond=async(_url,options)=>{payload=JSON.parse(options.body.toString());return new Response(JSON.stringify({requestId:currentId,
+    answer:'Тебя зовут Михаил.',sourcePolicy:'used_v1',sources:[{id:'2'},{id:'Курс:lesson.md'}]}));};
+  const sent=await ask('Как меня зовут?');
+  assert.deepEqual(payload.allowedLessons,[]);assert.deepEqual(payload.allowedKnowledgeSources,[]);assert.deepEqual(payload.sources,[]);
+  assert.equal(payload.question,'Как меня зовут?');assert.equal(payload.profile.stage,'pregnant');
+  assert.equal(payload.history[0].content,'Меня зовут Михаил.');assert.equal(payload.history[1].content,'Ответ');
+  assert.deepEqual(sent.messages[1].sources,[]);assert.equal(sent.messages[1].content,'Тебя зовут Михаил.');
+  const initiallyStored=(await pool.query('SELECT sources FROM ai_chat_requests WHERE request_id=$1',[currentId])).rows[0].sources;
+  assert.deepEqual(initiallyStored,[]);
+  const old=Array.from({length:15},(_,i)=>({id:String(i+1),title:`Старый материал ${i+1}`,url:`/my-courses.html?course=${i+1}`,selection:'answer'}));
+  await pool.query('UPDATE ai_chat_requests SET sources=$1::jsonb WHERE request_id=$2',[JSON.stringify(old),currentId]);
+  const history=await chat.history(token,user),status=await chat.status(token,user,{requestId:currentId}),retry=await ask('Как меня зовут?');
+  for(const response of [status,retry]){assert.deepEqual(response.messages[1].sources,[]);assert.equal(response.messages[1].content,'Тебя зовут Михаил.');}
+  assert.deepEqual(history.messages.find(m=>m.requestId===currentId&&m.role==='assistant').sources,[]);
+  const stored=(await pool.query('SELECT question,answer,sources FROM ai_chat_requests WHERE request_id=$1',[currentId])).rows[0];
+  assert.deepEqual(stored.sources,old);assert.equal(stored.question,'Как меня зовут?');assert.equal(stored.answer,'Тебя зовут Михаил.');
+  assert.deepEqual((await pool.query('SELECT profile FROM auth_users WHERE id=$1',[user])).rows[0].profile,profileBefore);
+  assert.equal(calls,2);assert.equal(retry.quota.used,2);
+});
+
+test('whole-message personal and courtesy variants remove all material candidates and response references', async () => {
+  await setup();
+  const variants=['как меня зовут','помнишь как меня зовут?','Ты помнишь, как меня зовут?','кто я?','Сколько мне лет?',
+    'Что обо мне помнишь?','Что ты обо мне знаешь?','Что знаешь обо мне?','Лара, привет! Как меня зовут?',
+    'Здравствуйте, помнишь, как меня зовут, Лара?','Добрый день! Кто я?','Привет!','Спасибо за помощь!','Лара, как дела?',
+    'Как меня зовут?🙂','Ты знаешь как меня зовут？','Ты помнишь моё имя?','Напомни моё имя','Какое у меня имя?',
+    'Ты меня помнишь?','Ты помнишь меня?','Лара — привет! Как меня зовут?'];
+  for(const text of variants){
+    currentId=randomUUID();let payload;
+    respond=async(_url,options)=>{payload=JSON.parse(options.body.toString());return new Response(JSON.stringify({requestId:currentId,
+      answer:'Ответ',sourcePolicy:'used_v1',sources:[{id:'2'}]}));};
+    const result=await ask(text);
+    assert.deepEqual(payload.allowedLessons,[],text);assert.deepEqual(payload.allowedKnowledgeSources,[],text);assert.deepEqual(payload.sources,[],text);
+    assert.deepEqual(result.messages[1].sources,[],text);
+  }
+  assert.equal(calls,variants.length);
+});
+
+test('greeting plus medical or mixed personal/medical question and attachments retain normal readable materials', async () => {
+  await setup();
+  await writeFile(sourceMapPath,JSON.stringify({version:1,sources:[{course:'Курс',source:'lesson.md',lessonIds:[2]}]}));
+  context.lessons[0].text='Дыхание в родах и что делать при давлении во время беременности';
+  for(const [text,attachment] of [['Привет, что делать при давлении?',undefined],['Как меня зовут? Подскажи дыхание в родах.',undefined],
+    ['Лара, привет! Сколько мне лет и что делать при давлении?',undefined],['Как меня зовут?🙂 Что делать при давлении?',undefined],
+    ['Ты помнишь моё имя? Дыхание в родах',undefined],['Как меня зовут?',pdf()],['Привет!',pdf()]]){
+    currentId=randomUUID();let payload;
+    respond=async(_url,options)=>{payload=JSON.parse(options.body.toString());return new Response(JSON.stringify({requestId:currentId,
+      answer:'Ответ',sourcePolicy:'used_v1',sources:[{id:'2'}]}));};
+    const result=await chat.send(token,user,{requestId:currentId,text,...(attachment?{attachment}:{})});
+    assert.equal(payload.allowedLessons.length,1,text);assert.equal(payload.allowedKnowledgeSources.length,1,text);
+    if(!attachment)assert.ok(payload.sources.length>0,text);else assert.deepEqual(payload.attachment,attachment);
+    assert.deepEqual(result.messages[1].sources.map(s=>s.id),['2'],text);
+    assert.deepEqual((await chat.status(token,user,{requestId:currentId})).messages[1].sources.map(s=>s.id),['2']);
+  }
+});
+
 test('voice validator accepts allowed container magic and rejects noncanonical, oversized and mismatched audio', () => {
   for (const [mimeType, bytes] of [['audio/ogg', Buffer.from('OggSfixture')], ['audio/webm', Buffer.from([26,69,223,163,0])],
     ['audio/mp4', Buffer.from([0,0,0,12,102,116,121,112])], ['audio/wav', Buffer.from('RIFF1234WAVE')]])

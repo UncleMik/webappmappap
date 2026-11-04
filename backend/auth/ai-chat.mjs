@@ -17,6 +17,22 @@ const RETENTION_MS = 90 * 86_400_000;
 const IN_FLIGHT_MS = 70_000;
 const MODEL_HISTORY_CHARS = 20_000;
 const MAX_REPLY_BYTES = 128 * 1024;
+const conversationPhrase = new RegExp('^(?:(?:'
+  + '(?:доктор )?лара|привет(?:ик)?|здравствуй(?:те)?|доброе утро|добрый (?:день|вечер)|'
+  + 'доброго (?:дня|вечера|времени суток)|спасибо(?: (?:большое|огромное|за (?:ответ|помощь)))?|'
+  + 'благодарю|до свидания|пока|хорошего (?:дня|вечера)|как (?:дела|ты)|понятно|хорошо|ок(?:ей)?|hi|hello|thanks|thank you|'
+  + '(?:(?:ты )?(?:помнишь|знаешь) )?как меня зовут|кто я|сколько мне лет|'
+  + '(?:ты )?помнишь мое имя|напомни мое имя|какое у меня имя|(?:ты )?(?:меня помнишь|помнишь меня)|'
+  + 'что (?:ты )?обо мне (?:помнишь|знаешь)|что (?:ты )?(?:помнишь|знаешь) обо мне'
+  + ')(?: |$))+$', 'u');
+function conversationOnly(question) {
+  if (typeof question !== 'string' || question.length > 4500) return false;
+  // Match the entire message: any additional substantive clause keeps retrieval enabled.
+  // Stored attachments include "Файл анализа: ...", so they cannot match this grammar.
+  const normalized = question.toLocaleLowerCase('ru').replace(/ё/g, 'е')
+    .replace(/[^\p{L}\p{N}\s]+/gu, ' ').replace(/\s+/g, ' ').trim();
+  return conversationPhrase.test(normalized);
+}
 
 function day(now) { return new Date(now + 3 * 3_600_000).toISOString().slice(0, 10); }
 function reset(dayValue) { return new Date(Date.parse(`${dayValue}T00:00:00Z`) + 21 * 3_600_000).toISOString(); }
@@ -69,7 +85,7 @@ function messages(row) {
   const result = [format(row)];
   if (row.status === 'completed') result.push({ id: `${row.id}:answer`, role: 'assistant', content: row.answer,
     createdAt: new Date(row.accepted_at).toISOString(), requestId: row.request_id,
-    sources: (Array.isArray(row.sources) ? row.sources : []).filter(source => source?.selection === 'answer')
+    sources: (!conversationOnly(row.question) && Array.isArray(row.sources) ? row.sources : []).filter(source => source?.selection === 'answer')
       .slice(0, 3).map(({ id, title, url }) => ({ id, title, url })) });
   return result;
 }
@@ -229,10 +245,11 @@ export function createAiChat({ pool, service, courseMaterials, sourceMapPath, ur
       historyChars += question.length + answer.length;
     }
     const historyForModel = latestPairs.reverse().flat();
-    const sources = relevantSources(text, a.ctx.lessons);
+    const skipMaterials = !file && conversationOnly(text);
+    const sources = skipMaterials ? [] : relevantSources(text, a.ctx.lessons);
     const body = Buffer.from(JSON.stringify({ requestId, question: text, ...(file ? { attachment: file.attachment } : {}), profile: profileFor(a.user, clock()),
-      history: historyForModel, allowedKnowledgeSources: a.allowedKnowledgeSources,
-      allowedLessons: a.allowedLessons, sources }));
+      history: historyForModel, allowedKnowledgeSources: skipMaterials ? [] : a.allowedKnowledgeSources,
+      allowedLessons: skipMaterials ? [] : a.allowedLessons, sources }));
     if (body.length > (file ? MAX_AI_BODY_BYTES : 500_000)) throw unavailable();
     const timestamp = String(Math.floor(clock() / 1000));
     const signature = createHmac('sha256', secret).update(timestamp).update('\n').update(body).digest('hex');
@@ -282,7 +299,7 @@ export function createAiChat({ pool, service, courseMaterials, sourceMapPath, ur
       ...a.allowedKnowledgeSources.map(s => [`${s.course}:${s.source}`,
         { id: `${s.course}:${s.source}`, title: s.title, url: s.url }]),
     ]);
-    const safeSources = reply.sourcePolicy === 'used_v1' ? [...new Map(reply.sources
+    const safeSources = !skipMaterials && reply.sourcePolicy === 'used_v1' ? [...new Map(reply.sources
       .map(ref => knownSources.get(String(ref?.id))).filter(Boolean).map(s => [s.url, s])).values()]
       .slice(0, 3).map(source => ({ ...source, selection: 'answer' })) : [];
     const saved = await transaction(pool, async client => {
