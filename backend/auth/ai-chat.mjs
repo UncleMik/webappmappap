@@ -66,7 +66,9 @@ const format = row => ({ id: String(row.id), role: 'user', content: row.question
 function messages(row) {
   const result = [format(row)];
   if (row.status === 'completed') result.push({ id: `${row.id}:answer`, role: 'assistant', content: row.answer,
-    createdAt: new Date(row.accepted_at).toISOString(), requestId: row.request_id, sources: row.sources || [] });
+    createdAt: new Date(row.accepted_at).toISOString(), requestId: row.request_id,
+    sources: (Array.isArray(row.sources) ? row.sources : []).filter(source => source?.selection === 'answer')
+      .slice(0, 3).map(({ id, title, url }) => ({ id, title, url })) });
   return result;
 }
 async function signedSession(pool, token, userId, clock) {
@@ -233,8 +235,9 @@ export function createAiChat({ pool, service, courseMaterials, sourceMapPath, ur
       ...a.allowedKnowledgeSources.map(s => [`${s.course}:${s.source}`,
         { id: `${s.course}:${s.source}`, title: s.title, url: s.url }]),
     ]);
-    const safeSources = [...new Map(reply.sources.slice(0, 20)
-      .map(ref => knownSources.get(String(ref?.id))).filter(Boolean).map(s => [s.url, s])).values()];
+    const safeSources = reply.sourcePolicy === 'used_v1' ? [...new Map(reply.sources
+      .map(ref => knownSources.get(String(ref?.id))).filter(Boolean).map(s => [s.url, s])).values()]
+      .slice(0, 3).map(source => ({ ...source, selection: 'answer' })) : [];
     const saved = await transaction(pool, async client => {
       const { rows: [session] } = await client.query(`SELECT s.user_id FROM auth_sessions s JOIN auth_users u ON u.id=s.user_id
         WHERE s.token_hash=$1 AND s.revoked_at IS NULL AND s.expires_at>$2 FOR SHARE OF s,u`,

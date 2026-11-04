@@ -32,7 +32,8 @@ async function setup() {
   context = { courses: [{ productId: 1, title: 'Курс' }],
     lessons: [{ productId: 1, course: 'Курс', lessonId: 2, sectionId: 3,
       title: 'Урок', contentHash: 'abc', text: 'Материал урока' }] };
-  respond = async () => ({ ok: true, json: async () => ({ requestId: currentId, answer: 'Ответ', sources: [{ id: '2', title: 'подмена', url: 'https://evil.invalid' }] }) });
+  respond = async () => ({ ok: true, json: async () => ({ requestId: currentId, answer: 'Ответ',
+    sourcePolicy: 'used_v1', sources: [{ id: '2', title: 'подмена', url: 'https://evil.invalid' }] }) });
   chat = createAiChat({ pool, service, courseMaterials: { aiContext: async () => context }, sourceMapPath,
     url: 'https://admin.legkie-rody.ru/internal/lara-web/reply', secret: 'test-lara-secret-longer-than-32-bytes',
     clock: () => now, fetchImpl: async (...args) => { calls++; return respond(...args); } });
@@ -61,6 +62,48 @@ test('one UUID gets one model call, a saved reply and safe source metadata', asy
   assert.equal(first.messages[1].sources[0].url, '/article.html?courseLesson=2&course=1&section=3');
   await assert.rejects(ask('Другой вопрос'), e => e.code === 'request_id_conflict');
   assert.equal((await chat.history(token, user)).messages.length, 2);
+});
+
+test('old mechanical sources stay stored but disappear from history and duplicate replies', async () => {
+  await setup(); currentId = randomUUID(); await ask();
+  const old = [{ id: '2', title: 'Старый список', url: '/article.html?courseLesson=2&course=1&section=3' }];
+  await pool.query('UPDATE ai_chat_requests SET sources=$1::jsonb WHERE request_id=$2', [JSON.stringify(old), currentId]);
+  const history = await chat.history(token, user);
+  const duplicate = await ask();
+  assert.deepEqual(history.messages[1].sources, []);
+  assert.deepEqual(duplicate.messages[1].sources, []);
+  assert.equal((await pool.query('SELECT sources FROM ai_chat_requests WHERE request_id=$1', [currentId])).rows[0].sources.length, 1);
+  assert.equal(calls, 1); assert.equal(duplicate.quota.used, 1);
+});
+
+test('only used_v1 can save up to three allowlisted unique sources; metadata is not exposed', async () => {
+  await setup(); currentId = randomUUID();
+  for (let lessonId = 4; lessonId <= 7; lessonId++) context.lessons.push({ productId: 1, course: 'Курс',
+    lessonId, sectionId: 3, title: `Урок ${lessonId}`, contentHash: String(lessonId), text: 'Материал' });
+  respond = async () => ({ ok: true, json: async () => ({ requestId: currentId, answer: 'Ответ',
+    sourcePolicy: 'used_v1', sources: [
+      { id: '2', title: 'Подмена', url: 'https://evil.invalid' }, { id: '2' }, { id: '999' },
+      { id: '4' }, { id: '5' }, { id: '6' }, { id: '7' }] }) });
+  const sent = await ask();
+  assert.deepEqual(sent.messages[1].sources.map(s => s.id), ['2', '4', '5']);
+  assert.ok(sent.messages[1].sources.every(s => !Object.hasOwn(s, 'selection') && s.url.startsWith('/article.html?')));
+  const { rows: [stored] } = await pool.query('SELECT sources FROM ai_chat_requests WHERE request_id=$1', [currentId]);
+  assert.equal(stored.sources.length, 3);
+  assert.ok(stored.sources.every(s => s.selection === 'answer'));
+  assert.deepEqual((await chat.history(token, user)).messages[1].sources, sent.messages[1].sources);
+});
+
+test('missing or wrong sourcePolicy leaves answer and quota but hides proposed references', async () => {
+  await setup();
+  for (const policy of [undefined, 'candidate_v1']) {
+    currentId = randomUUID();
+    respond = async () => ({ ok: true, json: async () => ({ requestId: currentId, answer: 'Ответ',
+      ...(policy ? { sourcePolicy: policy } : {}), sources: [{ id: '2' }] }) });
+    const sent = await ask(`Вопрос ${policy || 'missing'}`);
+    assert.equal(sent.status, 'completed'); assert.deepEqual(sent.messages[1].sources, []);
+    assert.deepEqual((await ask(`Вопрос ${policy || 'missing'}`)).messages[1].sources, []);
+  }
+  assert.equal(calls, 2); assert.equal((await chat.history(token, user)).quota.used, 2);
 });
 
 test('timeout becomes failed; retry never invokes the model or spends quota again', async () => {
@@ -152,7 +195,7 @@ test('server passes only readable mapped sources, GC URL keys and relevant short
   respond = async (_url, options) => {
     body = JSON.parse(options.body.toString());
     return { ok: true, json: async () => ({ requestId: currentId, answer: 'Ответ',
-      sources: [{ id: 'Курс:breath.md' }, { id: '999' }] }) };
+      sourcePolicy: 'used_v1', sources: [{ id: 'Курс:breath.md' }, { id: '999' }] }) };
   };
   const answer = await ask('Дыхание во время родов?\nПодскажите');
   assert.equal(body.allowedKnowledgeSources.length, 1);
