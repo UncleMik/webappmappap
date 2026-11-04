@@ -14,6 +14,18 @@ async (page) => {
   let firstStarted, successStarted;
   const firstWaiting = new Promise(resolve => { firstStarted = resolve; });
   const successWaiting = new Promise(resolve => { successStarted = resolve; });
+  const assertWaiting = async (expected, phase) => {
+    const waiting = page.locator('#conversation .waiting-message');
+    await waiting.waitFor({ state: expected ? 'visible' : 'detached' });
+    if (await waiting.count() !== (expected ? 1 : 0)) throw new Error('Wrong waiting bubble count: ' + phase);
+    if (expected) {
+      if (await page.locator('#conversation .assistant-message.waiting-message').count() !== 1) throw new Error('Waiting bubble has wrong speaker: ' + phase);
+      if (!(await waiting.isVisible()) || await waiting.locator('.bubble').innerText() !== 'Лара готовит ответ…') throw new Error('Waiting bubble is not an assistant answer: ' + phase);
+      if (await page.locator('#conversation > :last-child.waiting-message').count() !== 1) throw new Error('Waiting bubble is not after user question: ' + phase);
+    }
+    if ((await page.locator('#chat-status').innerText()).includes('Лара готовит ответ')) throw new Error('Waiting text remained in footer: ' + phase);
+    if ((await page.locator('#history-list').innerText()).includes('Лара готовит ответ')) throw new Error('Fake assistant answer leaked into history: ' + phase);
+  };
   await page.route(base + '/**', route => {
     const pathname = new URL(route.request().url()).pathname;
     if (['/app-navigation.js', '/resource-prefetch.js'].includes(pathname)) return route.fulfill({ status: 200, contentType: 'text/javascript', body: '' });
@@ -72,29 +84,37 @@ async (page) => {
   if (compact.input > compact.nav) throw new Error('Composer overlaps navigation in compact viewport');
   await page.getByText('Ответ не получен. Вопрос учтён', { exact: false }).waitFor();
   if (await page.locator('#chat-input').isDisabled()) throw new Error('Reloaded failed request blocked composer');
+  await assertWaiting(false, 'failed history');
   await page.locator('#chat-input').fill('Вопрос два');
   await page.locator('.send-button').click();
   await firstWaiting;
   if (await page.locator('#chat-input').inputValue() !== '') throw new Error('Question stayed in composer while sending');
   if (await page.getByText('Вопрос два', { exact: true }).count() !== 1) throw new Error('Pending question was not shown exactly once');
-  if (await page.locator('#chat-status').innerText() !== 'Лара готовит ответ…') throw new Error('Waiting status missing');
+  await assertWaiting(true, 'delayed request');
   releaseFirst();
   await page.locator('#chat-retry').waitFor({ state: 'visible' });
   if (!(await page.locator('#chat-input').isDisabled())) throw new Error('Unknown response allowed duplicate');
   if (await page.getByText('Вопрос два', { exact: true }).count() !== 1) throw new Error('Unknown result lost pending question');
+  await assertWaiting(false, 'unknown failure');
+  if (!(await page.locator('#chat-status').isVisible()) || !(await page.locator('#chat-status').innerText())) throw new Error('Unknown failure lost footer error');
   await page.locator('#chat-retry').click();
   await page.locator('.message-failed').last().waitFor();
   await page.waitForFunction(() => !document.querySelector('#chat-input').disabled);
   if (await page.locator('#chat-input').isDisabled()) throw new Error('Terminal failed request blocked composer');
   if (await page.getByText('Вопрос два', { exact: true }).count() !== 1) throw new Error('Failed response duplicated pending question');
+  await assertWaiting(false, 'terminal failure');
   await page.locator('#chat-input').fill('Вопрос три');
   await page.locator('.send-button').click();
   await successWaiting;
   if (await page.locator('#chat-input').inputValue() !== '') throw new Error('Question stayed in composer before success');
   if (await page.getByText('Вопрос три', { exact: true }).count() !== 1) throw new Error('Success request was not shown while waiting');
+  await assertWaiting(true, 'delayed success');
+  if (await page.locator('#conversation .assistant-message:not(.waiting-message)').count() !== 0) throw new Error('Unexpected assistant answer before success');
   releaseSuccess();
   await page.getByText('Ответ', { exact: true }).waitFor();
   await page.waitForFunction(() => !document.querySelector('#chat-input').disabled);
+  await assertWaiting(false, 'successful replacement');
+  if (await page.locator('#conversation .assistant-message').count() !== 2 || await page.locator('#conversation .assistant-message .bubble').allTextContents().then(texts => texts.join('|')) !== 'Ответ|Ответ без ссылок') throw new Error('Success duplicated or lost assistant answers');
   const links = await page.locator('.message-sources a').evaluateAll(elements => elements.map(element => element.href));
   if (links.length !== 3 || links.some(link => ![base + '/article.html?courseLesson=347472707&course=4302509&section=123', base + '/my-courses.html?course=4302509'].includes(link))) throw new Error('Source allowlist incorrect: ' + links.join(', '));
   const toggle = page.getByRole('button', { name: 'Ссылка на материалы', exact: true });
@@ -118,27 +138,33 @@ async (page) => {
   await page.getByText('Проверьте текст вопроса и отправьте снова.', { exact: true }).waitFor();
   if (await page.locator('#chat-input').inputValue() !== 'Отклонённый вопрос') throw new Error('Rejected question was not restored to composer');
   if (await page.getByText('Отклонённый вопрос', { exact: true }).count() !== 0) throw new Error('Rejected question remained in conversation');
+  await assertWaiting(false, 'rejected request');
   if (await toggle.getAttribute('aria-expanded') !== 'true' || await sourceLinks.filter({ visible: true }).count() !== 3) throw new Error('Open sources were lost after a new question and merge');
   historyMode = 'completed';
   await page.reload();
   await page.getByText('Ответ без ссылок', { exact: true }).waitFor();
+  await assertWaiting(false, 'completed history');
   if (await toggle.count() !== 1 || await toggle.getAttribute('aria-expanded') !== 'false' || await sourceLinks.filter({ visible: true }).count() !== 0) throw new Error('Reload did not restore collapsed state');
   historyMode = 'pending';
   await page.reload();
   await page.locator('#chat-retry').waitFor({ state: 'visible' });
   if (!(await page.locator('#chat-input').isDisabled())) throw new Error('Reloaded pending request allowed duplicate');
+  await assertWaiting(true, 'restored pending history');
   const changed = await page.evaluate(() => {
     window.dispatchEvent(new CustomEvent('account:change', { detail: { user: { id: '22222222-2222-4222-8222-222222222222' } } }));
     return { messages: document.querySelectorAll('.message').length, disabled: document.querySelector('#chat-input').disabled };
   });
   if (changed.messages || !changed.disabled) throw new Error('Account change left private chat visible');
-  historyMode = 'failed';
+  await assertWaiting(false, 'account clear');
+  historyMode = 'pending';
   await page.goto(base + '/ai.html');
-  await page.locator('.message-failed').waitFor();
+  await page.locator('#chat-retry').waitFor({ state: 'visible' });
+  await assertWaiting(true, 'pending before session end');
   const ended = await page.evaluate(() => {
     window.dispatchEvent(new Event('webpril:session-ended'));
     return { messages: document.querySelectorAll('.message').length, disabled: document.querySelector('#chat-input').disabled };
   });
   if (ended.messages || !ended.disabled) throw new Error('Session end left private chat visible');
-  return { post, firstId, secondId, sources: links.length, sourceToggle: true, keyboard: true, persistOnMerge: true, collapsedOnReload: true, mobileWidths: [320, 390], compactHeight: 500, guards: true, immediateSend: true, rejectedTextRestored: true };
+  await assertWaiting(false, 'session end');
+  return { post, firstId, secondId, sources: links.length, sourceToggle: true, keyboard: true, persistOnMerge: true, collapsedOnReload: true, mobileWidths: [320, 390], compactHeight: 500, guards: true, immediateSend: true, rejectedTextRestored: true, waitingAssistantBubble: true, waitingReplacedOnSuccess: true, waitingExcludedFromHistory: true, pendingHistoryRestored: true };
 }

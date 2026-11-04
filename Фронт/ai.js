@@ -10,7 +10,7 @@ const historyMore = document.querySelector('#history-more');
 const retry = document.querySelector('#chat-retry');
 let accountId, revision = 0, controller, ended = false, ready = false;
 let messages = [], hasMore = false, nextBefore = null, busy = false, pending = null;
-let remaining = null;
+let remaining = null, replyWaiting = false;
 const expandedSources = new Set();
 const timeFormat = new Intl.DateTimeFormat('ru-RU', { timeZone: 'Europe/Moscow', hour: '2-digit', minute: '2-digit' });
 const sendingId = requestId => `sending:${requestId}`;
@@ -30,6 +30,7 @@ function clearPrivate() {
   revision++; controller?.abort(); controller = null;
   accountId = null; ready = false; busy = false; pending = null;
   messages = []; hasMore = false; nextBefore = null; remaining = null;
+  replyWaiting = false;
   expandedSources.clear();
   input.value = ''; conversation.replaceChildren(); historyList.replaceChildren();
   historyMore.hidden = true; quotaLabel.textContent = '';
@@ -99,6 +100,7 @@ function sourceLink(source) {
 function messageNode(message) {
   if (!message || !['user', 'assistant'].includes(message.role) || typeof message.content !== 'string') return null;
   const article = document.createElement('article'); article.className = `message ${message.role}-message`; article.dataset.id = String(message.id || '');
+  if (message.waiting) article.classList.add('waiting-message');
   if (message.role === 'assistant') { const avatar = document.createElement('span'); avatar.className = 'bot-avatar'; avatar.setAttribute('aria-hidden', 'true'); article.append(avatar); }
   const content = document.createElement('div'); content.className = 'message-content';
   const bubble = document.createElement('div'); bubble.className = 'bubble'; bubble.textContent = message.content; content.append(bubble);
@@ -127,7 +129,12 @@ function messageNode(message) {
   article.append(content); return article;
 }
 function render() {
-  conversation.replaceChildren(...messages.map(messageNode).filter(Boolean));
+  const nodes = messages.map(messageNode).filter(Boolean);
+  if (replyWaiting && pending && !messages.some(message => message.role === 'assistant' && message.requestId === pending.requestId)) {
+    nodes.push(messageNode({ id: `waiting:${pending.requestId}`, role: 'assistant',
+      content: 'Лара готовит ответ…', waiting: true }));
+  }
+  conversation.replaceChildren(...nodes);
   historyList.replaceChildren(...messages.map(message => {
     const item = document.createElement('li'); const button = document.createElement('button'); button.type = 'button';
     button.textContent = `${message.role === 'user' ? 'Вы' : 'Лара'}: ${typeof message.content === 'string' ? message.content.slice(0, 90) : ''}`;
@@ -156,7 +163,8 @@ function restorePending() {
   const unmatched = [...messages].reverse().find(item => item.role === 'user' && item.status === 'pending' && item.requestId);
   if (unmatched) {
     pending = { requestId: unmatched.requestId, text: unmatched.content };
-    notice('Этот вопрос ещё обрабатывается. Нажмите «Проверить результат».');
+    replyWaiting = true; render(); conversation.scrollTop = conversation.scrollHeight;
+    notice('Нажмите «Проверить результат».');
   } else if ([...messages].reverse().find(item => item.role === 'user')?.status === 'failed') {
     notice('Ответ не получен. Вопрос учтён в дневном лимите; можно задать новый.');
   }
@@ -174,7 +182,7 @@ async function loadHistory(older = false) {
     if (!older) restorePending();
   } catch (error) {
     if (current !== revision || validateIdentity(error)) return;
-    if (error.code === 'ai_purchase_required') { ready = false; messages = []; render(); }
+    if (error.code === 'ai_purchase_required') { ready = false; messages = []; pending = null; replyWaiting = false; render(); }
     notice(errorMessage(error));
   } finally { if (current === revision) { busy = false; controller = null; updateControls(); } }
 }
@@ -188,25 +196,29 @@ async function waitForSession() {
 async function submit() {
   if (busy || !ready || ended || !accountId || !pending && remaining === 0) return;
   const text = pending?.text || input.value.trim(); if (!text) return;
+  replyWaiting = true;
   if (!pending) {
     pending = { requestId: crypto.randomUUID(), text };
     input.value = '';
     merge([{ id: sendingId(pending.requestId), role: 'user', content: text,
       requestId: pending.requestId, status: 'sending', createdAt: new Date().toISOString() }]);
-  }
-  const attempt = pending; busy = true; updateControls(); notice('Лара готовит ответ…');
+  } else render();
+  conversation.scrollTop = conversation.scrollHeight;
+  const attempt = pending; busy = true; updateControls(); notice('');
   const current = revision; controller = new AbortController();
   try {
     const data = await request('messages', attempt, controller.signal);
     if (current !== revision) return;
+    replyWaiting = data.status === 'pending';
     quota(data.quota); merge(data.messages);
     if (data.status === 'completed') { pending = null; input.value = ''; notice(''); }
     else if (data.status === 'failed') {
       pending = null; input.value = '';
       notice('Ответ не получен. Вопрос учтён в дневном лимите; можно задать новый.');
-    } else notice('Вопрос принят. Ответ ещё готовится. Нажмите «Проверить результат» через несколько секунд.');
+    } else notice('Нажмите «Проверить результат» через несколько секунд.');
   } catch (error) {
     if (current !== revision || validateIdentity(error)) return;
+    replyWaiting = false; render();
     if (error.code === 'ai_purchase_required') { clearPrivate(); notice(errorMessage(error)); return; }
     if (error.code === 'ai_daily_limit') { remaining = 0; quotaLabel.textContent = 'Осталось вопросов сегодня: 0 из 30'; }
     if (['ai_busy', 'ai_daily_limit', 'request_id_conflict', 'invalid_ai_message'].includes(error.code)) {
