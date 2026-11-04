@@ -12,6 +12,7 @@ let accountId, revision = 0, controller, ended = false, ready = false;
 let messages = [], hasMore = false, nextBefore = null, busy = false, pending = null;
 let remaining = null;
 const timeFormat = new Intl.DateTimeFormat('ru-RU', { timeZone: 'Europe/Moscow', hour: '2-digit', minute: '2-digit' });
+const sendingId = requestId => `sending:${requestId}`;
 
 function resizeChat() { document.documentElement.style.setProperty('--chat-viewport-height', `${window.visualViewport?.height ?? window.innerHeight}px`); }
 window.visualViewport?.addEventListener('resize', resizeChat);
@@ -122,9 +123,12 @@ function render() {
   historyMore.hidden = !hasMore; document.querySelector('#history-empty').hidden = messages.length > 0;
 }
 function merge(incoming, older = false) {
+  incoming = Array.isArray(incoming) ? incoming : [];
+  const confirmed = new Set(incoming.filter(item => item?.role === 'user' && item.id != null).map(item => item.requestId));
+  messages = messages.filter(item => item.id !== sendingId(item.requestId) || !confirmed.has(item.requestId));
   const known = new Map(messages.map((item, index) => [String(item.id), index]));
   const additions = [];
-  for (const item of Array.isArray(incoming) ? incoming : []) {
+  for (const item of incoming) {
     if (!item || item.id == null) continue;
     const index = known.get(String(item.id));
     if (index === undefined) additions.push(item);
@@ -170,7 +174,12 @@ async function waitForSession() {
 async function submit() {
   if (busy || !ready || ended || !accountId || !pending && remaining === 0) return;
   const text = pending?.text || input.value.trim(); if (!text) return;
-  if (!pending) pending = { requestId: crypto.randomUUID(), text };
+  if (!pending) {
+    pending = { requestId: crypto.randomUUID(), text };
+    input.value = '';
+    merge([{ id: sendingId(pending.requestId), role: 'user', content: text,
+      requestId: pending.requestId, status: 'sending', createdAt: new Date().toISOString() }]);
+  }
   const attempt = pending; busy = true; updateControls(); notice('Лара готовит ответ…');
   const current = revision; controller = new AbortController();
   try {
@@ -186,8 +195,11 @@ async function submit() {
     if (current !== revision || validateIdentity(error)) return;
     if (error.code === 'ai_purchase_required') { clearPrivate(); notice(errorMessage(error)); return; }
     if (error.code === 'ai_daily_limit') { remaining = 0; quotaLabel.textContent = 'Осталось вопросов сегодня: 0 из 30'; }
-    if (error.code === 'ai_busy') { pending = null; notice('Предыдущий вопрос ещё обрабатывается. Проверьте историю через несколько секунд.'); }
-    if (['ai_daily_limit', 'request_id_conflict', 'invalid_ai_message'].includes(error.code)) pending = null;
+    if (['ai_busy', 'ai_daily_limit', 'request_id_conflict', 'invalid_ai_message'].includes(error.code)) {
+      messages = messages.filter(item => item.id !== sendingId(attempt.requestId)); render();
+      input.value = attempt.text; pending = null;
+    }
+    if (error.code === 'ai_busy') notice('Предыдущий вопрос ещё обрабатывается. Проверьте историю через несколько секунд.');
     if (error.code !== 'ai_busy') notice(errorMessage(error, !!pending));
   } finally { if (current === revision) { busy = false; controller = null; updateControls(); } }
 }
