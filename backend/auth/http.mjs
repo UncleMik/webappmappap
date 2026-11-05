@@ -33,6 +33,13 @@ function challenge(value) {
   return value;
 }
 const positiveId = value => /^[1-9]\d*$/.test(value) && Number.isSafeInteger(Number(value));
+function limitQuota(error) {
+  const q = error.code === 'ai_daily_limit' && error.quota;
+  if (!q || ![5, 30].includes(q.limit) || !Number.isInteger(q.used) || q.used < 0 || q.used > 30
+    || q.remaining !== Math.max(0, q.limit - q.used)
+    || typeof q.resetsAt !== 'string' || !/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z$/.test(q.resetsAt)) return {};
+  return { quota: { limit: q.limit, used: q.used, remaining: q.remaining, resetsAt: q.resetsAt } };
+}
 const materialsUnavailable = () => new AuthError(503, 'course_materials_unavailable',
   'Материалы курсов временно недоступны. Попробуйте ещё раз.');
 
@@ -246,7 +253,7 @@ export function createAuthServer({ service, store, courseChecks, courseMaterials
       send(404, { error: 'not_found' });
     } catch (error) {
       if (error instanceof AuthError) {
-        send(error.status, { error: error.code, message: error.message, ...(error.retryAfter ? { retryAfter: error.retryAfter } : {}) },
+        send(error.status, { error: error.code, message: error.message, ...limitQuota(error), ...(error.retryAfter ? { retryAfter: error.retryAfter } : {}) },
           error.retryAfter ? { 'Retry-After': String(error.retryAfter) } : {});
       } else {
         // Do not log raw SQL/provider errors, submitted codes, cookies or email.

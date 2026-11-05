@@ -10,7 +10,7 @@ const historyMore = document.querySelector('#history-more');
 const retry = document.querySelector('#chat-retry');
 let accountId, revision = 0, controller, ended = false, ready = false;
 let messages = [], hasMore = false, nextBefore = null, busy = false, pending = null;
-let remaining = null, replyWaiting = false, selectedAttachment = null;
+let remaining = null, currentLimit = null, replyWaiting = false, selectedAttachment = null;
 const fileInput = document.querySelector('#analysis-file');
 const attachmentChip = document.querySelector('#selected-attachment');
 const attachmentName = document.querySelector('#attachment-name');
@@ -63,7 +63,7 @@ function updateControls() {
 function clearPrivate() {
   revision++; cancelVoice(); controller?.abort(); controller = null;
   accountId = null; ready = false; busy = false; pending = null;
-  messages = []; hasMore = false; nextBefore = null; remaining = null;
+  messages = []; hasMore = false; nextBefore = null; remaining = null; currentLimit = null;
   replyWaiting = false; selectAttachment(null);
   expandedSources.clear();
   input.value = ''; conversation.replaceChildren(); historyList.replaceChildren();
@@ -95,14 +95,14 @@ async function request(path, body, signal, timeoutMs) {
       ...(body === undefined ? {} : { body: JSON.stringify(body) }), signal: abort.signal
     });
     const data = await response.json().catch(() => null);
-    if (!response.ok) throw Object.assign(new Error(data?.message || 'Чат временно недоступен.'), { code: data?.error, status: response.status });
+    if (!response.ok) throw Object.assign(new Error(data?.message || 'Чат временно недоступен.'), { code: data?.error, status: response.status, ...(data?.error === 'ai_daily_limit' ? { quota: data.quota } : {}) });
     if (!data || data.accountId !== accountId) throw Object.assign(new Error('Аккаунт изменился.'), { code: 'account_changed' });
     return data;
   } finally { clearTimeout(timer); signal?.removeEventListener('abort', onAbort); }
 }
 function errorMessage(error, sending = false) {
   if (error.code === 'ai_purchase_required') return 'AI врач доступен после покупки курса. Посмотрите доступные курсы.';
-  if (error.code === 'ai_daily_limit') return 'На сегодня использованы все 30 вопросов. Новые вопросы будут доступны завтра.';
+  if (error.code === 'ai_daily_limit') return currentLimit === null ? 'На сегодня вопросы закончились. Новые вопросы будут доступны завтра.' : `На сегодня использованы все ${currentLimit} вопросов. Новые вопросы будут доступны завтра.`;
   if (error.code === 'ai_unavailable') return 'AI врач временно недоступен. Попробуйте позже.';
   if (error.code === 'invalid_ai_attachment') return 'Не удалось отправить файл. Проверьте, что это PDF, JPG или PNG до 10 МБ, и попробуйте снова.';
   if (error.code === 'ai_upload_busy') return 'Обработка файлов сейчас занята. Файл и вопрос сохранены здесь — попробуйте ещё раз чуть позже.';
@@ -116,10 +116,19 @@ function validateIdentity(error) {
   return false;
 }
 function quota(value) {
-  if (value && Number.isInteger(value.remaining) && Number.isInteger(value.limit)) {
-    remaining = value.remaining;
+  if (value && Number.isInteger(value.remaining) && Number.isInteger(value.limit) && value.limit > 0 && value.remaining >= 0 && value.remaining <= value.limit) {
+    remaining = value.remaining; currentLimit = value.limit;
     quotaLabel.textContent = `Осталось вопросов сегодня: ${value.remaining} из ${value.limit}`;
+    return true;
   }
+  return false;
+}
+function dailyLimitError(error) {
+  const fresh = quota(error.quota);
+  if (fresh && remaining > 0) return 'Лимит обновился. Попробуйте отправить вопрос ещё раз.';
+  remaining = 0;
+  quotaLabel.textContent = currentLimit === null ? 'На сегодня вопросы закончились.' : `Осталось вопросов сегодня: 0 из ${currentLimit}`;
+  return errorMessage(error);
 }
 function sourceLink(source) {
   if (typeof source?.url !== 'string' || typeof source?.title !== 'string') return null;
@@ -279,7 +288,7 @@ async function submit() {
     if (current !== revision || validateIdentity(error)) return;
     replyWaiting = false; render();
     if (error.code === 'ai_purchase_required') { clearPrivate(); notice(errorMessage(error)); return; }
-    if (error.code === 'ai_daily_limit') { remaining = 0; quotaLabel.textContent = 'Осталось вопросов сегодня: 0 из 30'; }
+    const dailyNotice = error.code === 'ai_daily_limit' ? dailyLimitError(error) : null;
     // A busy resend does not disprove acceptance of the original, uncertain upload.
     const uncertainBusy = wasRetry && (attempt.attachment || attempt.statusOnly) && ['ai_busy', 'ai_upload_busy'].includes(error.code);
     if (!uncertainBusy && ['ai_busy', 'ai_upload_busy', 'ai_daily_limit', 'request_id_conflict', 'invalid_ai_message', 'invalid_ai_attachment'].includes(error.code)) {
@@ -287,7 +296,7 @@ async function submit() {
       input.value = attempt.text; pending = null; selectAttachment(attempt.attachment || null);
     }
     if (error.code === 'ai_busy') notice('Предыдущий вопрос ещё обрабатывается. Проверьте историю через несколько секунд.');
-    if (error.code !== 'ai_busy') notice(errorMessage(error, !!pending));
+    if (error.code !== 'ai_busy') notice(dailyNotice || errorMessage(error, !!pending));
   } finally { if (current === revision) { busy = false; controller = null; updateControls(); } }
 }
 function currentVoice(attempt) { return voice === attempt && !attempt.cancelled && !ended && attempt.revision === revision; }
@@ -372,6 +381,7 @@ async function transcribeVoice(attempt) {
   } catch (error) {
     if (!currentVoice(attempt) || validateIdentity(error)) return;
     if (error.code === 'ai_purchase_required') { clearPrivate(); notice(errorMessage(error)); return; }
+    if (error.code === 'ai_daily_limit') { cancelVoice(dailyLimitError(error)); return; }
     const definitive = ['ai_voice_unavailable', 'invalid_ai_voice', 'invalid_ai_audio', 'audio_too_long', 'ai_audio_too_long', 'audio_unrecognized', 'ai_audio_unrecognized', 'voice_rate_limited', 'voice_daily_limit', 'daily_limit', 'rate_limited', 'ai_daily_limit', 'request_id_conflict'].includes(error.code);
     if (definitive) cancelVoice(voiceError(error));
     else { attempt.stage = 'retry'; voiceStatus.textContent = 'Речь пока не распознана'; notice(voiceError(error)); updateControls(); }

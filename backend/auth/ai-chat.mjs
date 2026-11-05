@@ -10,9 +10,11 @@ const sha = value => createHash('sha256').update(value).digest('hex');
 const unavailable = () => new AuthError(503, 'ai_unavailable', 'Лара временно недоступна. Попробуйте позже.');
 const changed = () => new AuthError(409, 'account_changed', 'Аккаунт изменился. Обновите страницу.');
 const signedOut = () => new AuthError(401, 'sign_in_required', 'Войдите в аккаунт.');
-const noPurchase = () => new AuthError(403, 'ai_purchase_required', 'Лара доступна при действующей покупке курса.');
 const MAX_QUESTION = 4000;
-const DAILY_LIMIT = 30;
+const PAID_DAILY_LIMIT = 30;
+const FREE_DAILY_LIMIT = 5;
+const dailyLimitError = quota => Object.assign(new AuthError(429, 'ai_daily_limit',
+  'Сегодня доступные вопросы закончились. Возвращайтесь завтра.'), { quota });
 const RETENTION_MS = 90 * 86_400_000;
 const IN_FLIGHT_MS = 70_000;
 const MODEL_HISTORY_CHARS = 20_000;
@@ -114,13 +116,14 @@ export function createAiChat({ pool, service, courseMaterials, sourceMapPath, ur
     if (!uuid(expected) || expected.toLowerCase() !== user.id.toLowerCase()) throw changed();
     if (!user.profile?.completedAt) throw new AuthError(403, 'onboarding_required', 'Заполните профиль.');
     const ctx = await courseMaterials.aiContext(user.id);
-    if (!ctx.courses.length) throw noPurchase();
+    const dailyLimit = ctx.courses.length ? PAID_DAILY_LIMIT : FREE_DAILY_LIMIT;
     const map = sourceMap(sourceMapPath);
     const available = new Set(ctx.lessons.map(l => l.lessonId));
     const lessonById = new Map(ctx.lessons.map(l => [l.lessonId, l]));
     const sourceKeys = new Set();
     const allowedKnowledgeSources = [];
-    for (const source of map.sources) {
+    // Free accounts use readable inline lessons only, never broad knowledge chunks.
+    for (const source of ctx.courses.length ? map.sources : []) {
       if (!source.lessonIds.every(id => available.has(id))) continue;
       const key = `${source.course}:${source.source}`;
       if (sourceKeys.has(key)) continue; // Alternative approved lesson sets are OR, not a combined AND.
@@ -141,18 +144,18 @@ export function createAiChat({ pool, service, courseMaterials, sourceMapPath, ur
       lessons: ctx.lessons.map(l => [l.lessonId, l.sectionId, l.productId, l.contentHash]).sort((a, b) => a[0] - b[0]),
       sources: allowedKnowledgeSources.sort((a, b) => a.source.localeCompare(b.source)), mapHash: sha(JSON.stringify(map)) }));
     await signedSession(pool, token, user.id, clock);
-    return { user, ctx, allowedKnowledgeSources, allowedLessons, rightsHash };
+    return { user, ctx, allowedKnowledgeSources, allowedLessons, rightsHash, dailyLimit };
   }
-  async function quota(userId) {
+  async function quota(userId, limit) {
     const today = day(clock());
     const { rows: [row] } = await pool.query('SELECT used FROM ai_chat_daily_usage WHERE user_id=$1 AND day_moscow=$2', [userId, today]);
     const used = row?.used || 0;
-    return { limit: DAILY_LIMIT, used, remaining: DAILY_LIMIT - used, resetsAt: reset(today) };
+    return { limit, used, remaining: Math.max(0, limit - used), resetsAt: reset(today) };
   }
   async function authorizeVoice(token, expected) {
     const a = await access(token, expected);
-    if ((await quota(a.user.id)).remaining <= 0)
-      throw new AuthError(429, 'ai_daily_limit', 'Сегодня доступные вопросы закончились. Возвращайтесь завтра.');
+    const currentQuota = await quota(a.user.id, a.dailyLimit);
+    if (currentQuota.remaining <= 0) throw dailyLimitError(currentQuota);
     return a;
   }
   const transcribe = createAiVoice({ authorize: authorizeVoice, secret, clock, fetchImpl,
@@ -174,10 +177,10 @@ export function createAiChat({ pool, service, courseMaterials, sourceMapPath, ur
     const { rows } = await pool.query(`SELECT id,request_id,question,answer,sources,status,accepted_at FROM ai_chat_requests
       WHERE user_id=$1 AND accepted_at>=$2 AND ($3::bigint IS NULL OR id<$3::bigint)
       ORDER BY id DESC LIMIT 31`, [a.user.id, cutoff, before || null]);
-    await access(token, expected);
+    const current = await access(token, expected);
     const page = rows.slice(0, 30);
     return { accountId: a.user.id, messages: page.reverse().flatMap(messages), hasMore: rows.length > 30,
-      nextBefore: rows.length > 30 ? String(rows[29].id) : null, quota: await quota(a.user.id) };
+      nextBefore: rows.length > 30 ? String(rows[29].id) : null, quota: await quota(a.user.id, current.dailyLimit) };
   }
   async function status(token, expected, data) {
     if (!uuid(data?.requestId)) throw new AuthError(400, 'invalid_ai_message', 'Обновите страницу.');
@@ -188,7 +191,7 @@ export function createAiChat({ pool, service, courseMaterials, sourceMapPath, ur
     if (!row) throw new AuthError(404, 'ai_request_not_found', 'Вопрос не был принят. Можно отправить его снова.');
     const current = await access(token, expected);
     if (current.rightsHash !== row.rights_hash) throw new AuthError(409, 'ai_access_changed', 'Доступ к материалам изменился. Обновите страницу.');
-    return { accountId: a.user.id, requestId, status: row.status, messages: messages(row), quota: await quota(a.user.id) };
+    return { accountId: a.user.id, requestId, status: row.status, messages: messages(row), quota: await quota(a.user.id, a.dailyLimit) };
   }
   async function send(token, expected, data) {
     const a = await access(token, expected);
@@ -207,7 +210,6 @@ export function createAiChat({ pool, service, courseMaterials, sourceMapPath, ur
     const text = data.text.trim(), requestId = data.requestId.toLowerCase();
     const question = file ? `${text}\n\nФайл анализа: ${file.attachment.name}` : text;
     const questionHash = file ? sha(JSON.stringify([question, file.attachment.mimeType, file.digest])) : sha(text);
-    const today = day(clock());
     const existing = await transaction(pool, async client => {
       // Serialize request IDs and quota updates for this account, including concurrent retries.
       const { rows: [account] } = await client.query('SELECT id FROM auth_users WHERE id=$1 FOR UPDATE', [a.user.id]);
@@ -221,18 +223,24 @@ export function createAiChat({ pool, service, courseMaterials, sourceMapPath, ur
       const { rows: [busy] } = await client.query(`SELECT id FROM ai_chat_requests WHERE user_id=$1
         AND status='pending' AND accepted_at>$2 LIMIT 1`, [a.user.id, new Date(clock() - IN_FLIGHT_MS)]);
       if (busy) throw new AuthError(409, 'ai_busy', 'Лара отвечает на предыдущий вопрос. Подождите немного.');
+      const acceptedNow = clock(), today = day(acceptedNow);
       const { rows: [usage] } = await client.query(`INSERT INTO ai_chat_daily_usage(user_id,day_moscow,used)
         VALUES($1,$2,1) ON CONFLICT(user_id,day_moscow) DO UPDATE SET used=ai_chat_daily_usage.used+1
-        WHERE ai_chat_daily_usage.used<$3 RETURNING used`, [a.user.id, today, DAILY_LIMIT]);
+        WHERE ai_chat_daily_usage.used<$3 RETURNING used`, [a.user.id, today, a.dailyLimit]);
       if (!usage) throw new AuthError(429, 'ai_daily_limit', 'Сегодня доступные вопросы закончились. Возвращайтесь завтра.');
       const { rows: [saved] } = await client.query(`INSERT INTO ai_chat_requests(user_id,request_id,question,question_hash,rights_hash,status,accepted_at)
-        VALUES($1,$2,$3,$4,$5,'pending',$6) RETURNING *`, [a.user.id, requestId, question, questionHash, a.rightsHash, new Date(clock())]);
+        VALUES($1,$2,$3,$4,$5,'pending',$6) RETURNING *`, [a.user.id, requestId, question, questionHash, a.rightsHash, new Date(acceptedNow)]);
       return { ...saved, newlyAccepted: true };
+    }).catch(async error => {
+      // transaction() has rolled back and released its client before this read.
+      if (error instanceof AuthError && error.code === 'ai_daily_limit')
+        throw dailyLimitError(await quota(a.user.id, a.dailyLimit));
+      throw error;
     });
     if (existing.question_hash !== questionHash) throw new AuthError(409, 'request_id_conflict', 'Обновите страницу и повторите вопрос.');
     if (existing.rights_hash !== a.rightsHash) throw new AuthError(409, 'ai_access_changed', 'Доступ к материалам изменился. Обновите страницу.');
     if (!existing.newlyAccepted) return { accountId: a.user.id, requestId, status: existing.status,
-      messages: messages(existing), quota: await quota(a.user.id) };
+      messages: messages(existing), quota: await quota(a.user.id, a.dailyLimit) };
     const { rows: prior } = await pool.query(`SELECT question,answer FROM ai_chat_requests WHERE user_id=$1 AND status='completed'
       AND rights_hash=$2 AND accepted_at>=$3 AND id<$4 ORDER BY id DESC LIMIT 10`,
     [a.user.id, a.rightsHash, new Date(clock() - RETENTION_MS), existing.id]);
@@ -289,7 +297,7 @@ export function createAiChat({ pool, service, courseMaterials, sourceMapPath, ur
       const current = await access(token, expected);
       if (current.rightsHash !== a.rightsHash) throw new AuthError(409, 'ai_access_changed', 'Доступ к материалам изменился. Обновите страницу.');
       if (!failed) throw unavailable();
-      return { accountId: a.user.id, requestId, status: 'failed', messages: messages(failed), quota: await quota(a.user.id),
+      return { accountId: a.user.id, requestId, status: 'failed', messages: messages(failed), quota: await quota(a.user.id, a.dailyLimit),
         ...(failureMessage ? { failureMessage } : {}) };
     }
     const current = await access(token, expected);
@@ -313,7 +321,7 @@ export function createAiChat({ pool, service, courseMaterials, sourceMapPath, ur
       return row;
     });
     if (!saved) throw unavailable();
-    return { accountId: a.user.id, requestId, status: 'completed', messages: messages(saved), quota: await quota(a.user.id) };
+    return { accountId: a.user.id, requestId, status: 'completed', messages: messages(saved), quota: await quota(a.user.id, a.dailyLimit) };
   }
   async function cleanup() {
     await pool.query('DELETE FROM ai_chat_requests WHERE accepted_at<$1', [new Date(clock() - RETENTION_MS)]);

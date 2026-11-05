@@ -7,6 +7,8 @@ const id = v => Number.isSafeInteger(v) && v > 0;
 const digest = s => createHash('sha256').update(s).digest('hex');
 const unavailable = () => new AuthError(503, 'course_materials_unavailable', 'Материалы курсов временно недоступны. Попробуйте ещё раз.');
 const denied = () => new AuthError(403, 'course_access_required', 'Нет подтверждённого доступа к этому материалу.');
+const freeLessons = [[4302509, 347472707], [4309095, 347531402]];
+const isFreeLesson = (productId, lessonId) => freeLessons.some(([product, lesson]) => productId === product && lessonId === lesson);
 const allowedTags = new Set('div span p h1 h2 h3 h4 h5 h6 ul ol li table thead tbody tfoot tr td th caption colgroup col br hr strong b em i u s del blockquote pre code details summary sup sub'.split(' '));
 
 function inventoryData(db) {
@@ -210,6 +212,17 @@ export function createCourseMaterials({ db, courseChecks, clock = Date.now }) {
   function summaries(product, ctx) {
     return [...catalog.lessons.values()].filter(l => readable(l, product, ctx));
   }
+  function aiLesson(lesson, product) {
+    const record = lessonStatement.get(lesson.id);
+    if (!record || digest(record.content_json) !== record.sha256 || record.sha256 !== lesson.contentHash) throw unavailable();
+    const blocks = publicBlocks(JSON.parse(record.content_json), lesson.id, record.sha256, videoLinks);
+    const text = blocks.filter(b => ['text', 'list', 'table'].includes(b.type))
+      .map(b => b.text || b.html?.replace(/<[^>]+>/g, ' ') || '').join('\n')
+      .replace(/https?:\/\/[^\s"'<>]+(?:\.mp4|\/files\/|\/video\/)[^\s"'<>]*/gi, '[видео]')
+      .trim();
+    return { productId: product.productId, course: product.title, lessonId: lesson.id,
+      sectionId: lesson.parent, title: lesson.title, contentHash: record.sha256, text };
+  }
   return Object.freeze({
     async aiContext(userId) {
       const ctx = await context(userId);
@@ -222,17 +235,16 @@ export function createCourseMaterials({ db, courseChecks, clock = Date.now }) {
           const access = readable(lesson, product, ctx);
           if (!access) continue;
           validUntil = Math.min(validUntil, access.validUntil);
-          const record = lessonStatement.get(lesson.id);
-          if (!record || digest(record.content_json) !== record.sha256 || record.sha256 !== lesson.contentHash) throw unavailable();
-          const blocks = publicBlocks(JSON.parse(record.content_json), lesson.id, record.sha256, videoLinks);
-          const text = blocks.filter(b => ['text', 'list', 'table'].includes(b.type))
-            .map(b => b.text || b.html?.replace(/<[^>]+>/g, ' ') || '').join('\n')
-            .replace(/https?:\/\/[^\s"'<>]+(?:\.mp4|\/files\/|\/video\/)[^\s"'<>]*/gi, '[видео]')
-            .trim();
-          lessons.push({ productId: product.productId, course: product.title, lessonId: lesson.id,
-            sectionId: lesson.parent,
-            title: lesson.title, contentHash: record.sha256, text });
+          lessons.push(aiLesson(lesson, product));
         }
+      }
+      // Keep paid context stable; free accounts receive only these already public lessons.
+      for (const [productId, lessonId] of courses.length ? [] : freeLessons) {
+        if (lessons.some(lesson => lesson.lessonId === lessonId)) continue;
+        const lesson = catalog.lessons.get(lessonId);
+        const product = catalog.products.find(p => p.productId === productId);
+        if (!lesson || !product || !pathsToRoot(lesson.parent, product.trainingId).length) continue;
+        lessons.push(aiLesson(lesson, product));
       }
       return { courses: courses.map(p => ({ productId: p.productId, title: p.title })), lessons,
         ...ctx.meta(validUntil) };
@@ -264,9 +276,7 @@ export function createCourseMaterials({ db, courseChecks, clock = Date.now }) {
     async lesson(userId, productId, lessonId) {
       // This exact lesson is free after the HTTP layer verifies sign-in and profile.
       // It does not depend on a GetCourse purchase or an external availability check.
-      const free = (productId === 4302509 && lessonId === 347472707)
-        || (productId === 4309095 && lessonId === 347531402);
-      if (free) {
+      if (isFreeLesson(productId, lessonId)) {
         const lesson = catalog.lessons.get(lessonId);
         const product = catalog.products.find(p => p.productId === productId);
         if (!lesson || !product || !pathsToRoot(lesson.parent, product.trainingId).length) throw denied();

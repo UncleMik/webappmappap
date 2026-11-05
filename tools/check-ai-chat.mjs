@@ -151,6 +151,8 @@ async (page) => {
   if (!(await page.locator('#chat-input').isDisabled())) throw new Error('Reloaded pending request allowed duplicate');
   await assertWaiting(true, 'restored pending history');
   const changed = await page.evaluate(() => {
+    // Keep this mocked page in place while asserting account-bound state cleanup.
+    window.webprilSessionGate.end = () => {};
     window.dispatchEvent(new CustomEvent('account:change', { detail: { user: { id: '22222222-2222-4222-8222-222222222222' } } }));
     return { messages: document.querySelectorAll('.message').length, disabled: document.querySelector('#chat-input').disabled };
   });

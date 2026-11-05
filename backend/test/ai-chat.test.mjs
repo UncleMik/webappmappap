@@ -49,6 +49,124 @@ const audio = (suffix = 'synthetic-audio-fixture') => ({ mimeType: 'audio/ogg', 
 const transcribe = (id = currentId, recorded = audio(), limiter = async () => {}) =>
   chat.transcribe(token, user, { requestId: id, audio: recorded }, limiter);
 
+test('free accounts get five shared daily questions, safe retry and a Moscow midnight reset', async () => {
+  await setup();context.courses=[];
+  for(let i=0;i<5;i++){
+    currentId=randomUUID();const sent=await ask(`Бесплатный вопрос ${i}`);
+    assert.equal(sent.quota.limit,5);assert.equal(sent.quota.used,i+1);assert.equal(sent.quota.remaining,4-i);
+    assert.equal((await ask(`Бесплатный вопрос ${i}`)).quota.used,i+1);
+    assert.equal((await chat.status(token,user,{requestId:currentId})).quota.limit,5);
+  }
+  assert.equal(calls,5);currentId=randomUUID();await assert.rejects(ask(),e=>e.code==='ai_daily_limit');
+  assert.equal((await chat.history(token,user)).quota.remaining,0);
+  now+=60_000;const next=await ask();assert.equal(next.quota.used,1);assert.equal(next.quota.limit,5);assert.equal(calls,6);
+});
+
+test('free concurrent retries and distinct UUIDs cannot exceed five accepted questions', async () => {
+  await setup();context.courses=[];
+  for(let i=0;i<4;i++){currentId=randomUUID();await ask(`Вопрос ${i}`);}
+  currentId=randomUUID();const acceptedId=currentId;let entered,release;
+  const ready=new Promise(resolve=>{entered=resolve;});const hold=new Promise(resolve=>{release=resolve;});
+  respond=async()=>{entered();await hold;return new Response(JSON.stringify({requestId:acceptedId,answer:'Ответ',sources:[]}));};
+  const first=ask('Пятый вопрос');await ready;
+  const retry=await ask('Пятый вопрос');assert.equal(retry.status,'pending');assert.equal(retry.quota.used,5);
+  await assert.rejects(ask('Другой вопрос',randomUUID()),e=>['ai_busy','ai_daily_limit'].includes(e.code));
+  release();assert.equal((await first).quota.used,5);
+  await assert.rejects(ask('Шестой вопрос',randomUUID()),e=>e.code==='ai_daily_limit');
+  assert.equal(calls,5);assert.equal((await pool.query('SELECT * FROM ai_chat_requests')).rows.length,5);
+});
+
+test('waiting for the account lock across Moscow midnight charges the new day using its accepted timestamp', async () => {
+  await setup();context.courses=[];currentId=randomUUID();now=Date.parse('2026-11-04T20:59:59.999Z');
+  await pool.query('INSERT INTO ai_chat_daily_usage(user_id,day_moscow,used) VALUES($1,$2,5)',[user,'2026-11-04']);
+  let entered,release;
+  const ready=new Promise(resolve=>{entered=resolve;});const hold=new Promise(resolve=>{release=resolve;});
+  const delayedPool={query:(...args)=>pool.query(...args),async connect(){const client=await pool.connect();return{
+    async query(sql,args){if(sql==='SELECT id FROM auth_users WHERE id=$1 FOR UPDATE'){entered();await hold;}return client.query(sql,args);},
+    release:()=>client.release()};}};
+  const delayed=createAiChat({pool:delayedPool,service,courseMaterials:{aiContext:async()=>context},sourceMapPath,
+    url:'https://admin.legkie-rody.ru/internal/lara-web/reply',secret:'test-lara-secret-longer-than-32-bytes',clock:()=>now,
+    fetchImpl:async()=>{calls++;return new Response(JSON.stringify({requestId:currentId,answer:'Ответ',sources:[]}));}});
+  const pending=delayed.send(token,user,{requestId:currentId,text:'Первый вопрос нового дня'});
+  await ready;now+=1;release();
+  const result=await pending;assert.equal(result.status,'completed');assert.equal(result.quota.limit,5);assert.equal(result.quota.used,1);
+  assert.equal(result.quota.remaining,4);assert.equal(result.messages[0].createdAt,new Date(now).toISOString());
+  const rows=(await pool.query('SELECT day_moscow::text,used FROM ai_chat_daily_usage ORDER BY day_moscow')).rows;
+  assert.deepEqual(rows,[{day_moscow:'2026-11-04',used:5},{day_moscow:'2026-11-05',used:1}]);assert.equal(calls,1);
+});
+
+test('free retrieval has readable inline lessons only and never broad knowledge or paid references', async () => {
+  await setup();currentId=randomUUID();context.courses=[];
+  context.lessons[0].text='Дыхание в родах';
+  context.lessons.push({...context.lessons[0],lessonId:4,title:'Второй бесплатный урок'});
+  await writeFile(sourceMapPath,JSON.stringify({version:1,sources:[
+    {course:'Курс',source:'free-match.md',lessonIds:[2]},{course:'Платный курс',source:'paid.md',lessonIds:[999]}]}));
+  let payload;
+  respond=async(_url,options)=>{payload=JSON.parse(options.body.toString());return new Response(JSON.stringify({requestId:currentId,answer:'Ответ',sourcePolicy:'used_v1',sources:[{id:'999'},{id:'Курс:free-match.md'},{id:'2'}]}));};
+  const result=await ask('Дыхание в родах');
+  assert.deepEqual(payload.allowedKnowledgeSources,[]);assert.deepEqual(payload.allowedLessons.map(l=>l.lessonId),[2,4]);
+  assert.ok(payload.sources.every(s=>['2','4'].includes(s.id)));assert.ok(payload.sources.length>0);
+  assert.deepEqual(result.messages[1].sources.map(s=>s.id),['2']);assert.equal(result.quota.limit,5);
+});
+
+test('upgrade and downgrade retain the shared counter, clamp free remaining and recheck cached rights', async () => {
+  await setup();context.courses=[];let freeId;
+  for(let i=0;i<5;i++){currentId=randomUUID();await ask(`Вопрос ${i}`);freeId=currentId;}
+  context.courses=[{productId:1}];
+  let q=(await chat.history(token,user)).quota;assert.equal(q.used,5);assert.equal(q.limit,30);assert.equal(q.remaining,25);
+  await assert.rejects(chat.status(token,user,{requestId:freeId}),e=>e.code==='ai_access_changed');
+  await assert.rejects(ask('Вопрос 4',freeId),e=>e.code==='ai_access_changed');
+  currentId=randomUUID();const paidId=currentId;const paid=await ask('Платный вопрос');assert.equal(paid.quota.used,6);assert.equal(paid.quota.remaining,24);
+  context.courses=[];
+  q=(await chat.history(token,user)).quota;assert.equal(q.used,6);assert.equal(q.limit,5);assert.equal(q.remaining,0);
+  assert.equal((await chat.status(token,user,{requestId:freeId})).quota.remaining,0);
+  await assert.rejects(chat.status(token,user,{requestId:paidId}),e=>e.code==='ai_access_changed');
+  await assert.rejects(chat.authorizeVoice(token,user),e=>e.code==='ai_daily_limit'&&e.quota.limit===5&&e.quota.used===6&&e.quota.remaining===0);
+  await assert.rejects(ask('Новый вопрос',randomUUID()),e=>e.code==='ai_daily_limit'&&e.quota.limit===5&&e.quota.used===6&&e.quota.remaining===0);
+  context.courses=[{productId:1}];assert.equal((await chat.status(token,user,{requestId:paidId})).quota.limit,30);
+  assert.equal(calls,6);
+});
+
+test('free voice uses five-question availability but does not persist or consume a question', async () => {
+  await setup();context.courses=[];currentId=randomUUID();
+  respond=async()=>new Response(JSON.stringify({requestId:currentId,text:'Бесплатный вопрос'}));
+  assert.equal((await transcribe()).text,'Бесплатный вопрос');assert.equal(calls,1);
+  assert.equal((await chat.history(token,user)).quota.used,0);assert.equal((await chat.history(token,user)).quota.limit,5);
+  await pool.query('INSERT INTO ai_chat_daily_usage(user_id,day_moscow,used) VALUES($1,$2,5)',[user,'2026-11-04']);
+  await assert.rejects(transcribe(),e=>e.code==='ai_daily_limit');assert.equal(calls,1);
+  assert.equal((await pool.query('SELECT * FROM ai_chat_requests')).rows.length,0);
+});
+
+test('free failed file consumes one question while inaccessible ACL context errors still fail closed', async () => {
+  await setup();context.courses=[];currentId=randomUUID();respond=async()=>new Response('{}',{status:502});
+  const data={requestId:currentId,text:'Помоги с анализом',attachment:pdf()};
+  const first=await chat.send(token,user,data),retry=await chat.send(token,user,data);
+  assert.equal(first.status,'failed');assert.equal(first.quota.limit,5);assert.equal(retry.quota.used,1);assert.equal(calls,1);
+  const closed=createAiChat({pool,service,courseMaterials:{aiContext:async()=>{throw new Error('upstream_context_unavailable');}},sourceMapPath,
+    url:'https://admin.legkie-rody.ru/internal/lara-web/reply',secret:'test-lara-secret-longer-than-32-bytes',clock:()=>now,fetchImpl:async()=>{throw new Error('must_not_call');}});
+  await assert.rejects(closed.history(token,user),/upstream_context_unavailable/);
+  await assert.rejects(closed.send(token,user,{requestId:randomUUID(),text:'Вопрос'}),/upstream_context_unavailable/);
+  assert.equal((await chat.history(token,user)).quota.used,1);
+});
+
+test('HTTP cap errors carry only current structured free-tier quota for send and early voice', async () => {
+  await setup();context.courses=[];currentId=randomUUID();
+  await pool.query('INSERT INTO ai_chat_daily_usage(user_id,day_moscow,used) VALUES($1,$2,8)',[user,'2026-11-04']);
+  const store=createStore(pool,{secret:'test-secret-longer-than-thirty-two-bytes',clock:()=>now});
+  const server=createAuthServer({service,store,aiChat:chat,enabled:true,origin:'https://app.legkie-rody.ru'});
+  server.listen(0,'127.0.0.1');await once(server,'listening');const base=`http://127.0.0.1:${server.address().port}`;
+  const headers={Cookie:`__Host-school_session=${token}`,'X-Webpril-Account':user,Origin:'https://app.legkie-rody.ru','Content-Type':'application/json'};
+  try{
+    for(const [path,data] of [['messages',{requestId:currentId,text:'Вопрос'}],['voice',{requestId:currentId,audio:audio()}]]){
+      const response=await fetch(`${base}/api/auth/ai/${path}`,{method:'POST',headers,body:JSON.stringify(data)}),body=await response.json();
+      assert.equal(response.status,429);assert.equal(body.error,'ai_daily_limit');
+      assert.deepEqual(body.quota,{limit:5,used:8,remaining:0,resetsAt:'2026-11-04T21:00:00.000Z'});
+      assert.deepEqual(Object.keys(body.quota).sort(),['limit','remaining','resetsAt','used']);
+    }
+    assert.equal(calls,0);assert.equal((await pool.query('SELECT * FROM ai_chat_requests')).rows.length,0);
+  }finally{server.closeAllConnections();await new Promise(resolve=>server.close(resolve));}
+});
+
 test('personal identity question has no retrieval or links in send/history/status/retry; old stored links stay intact', async () => {
   await setup();
   await writeFile(sourceMapPath,JSON.stringify({version:1,sources:[{course:'Курс',source:'lesson.md',lessonIds:[2]}]}));
@@ -125,7 +243,7 @@ test('voice validator accepts allowed container magic and rejects noncanonical, 
 test('voice is authorized and quota gated; invalid inputs never call DO or reserve a question', async () => {
   await setup(); currentId=randomUUID();
   await assert.rejects(transcribe(currentId,{...audio(),data:'bad'}),e=>e.code==='invalid_ai_audio');
-  context.courses=[]; await assert.rejects(transcribe(),e=>e.code==='ai_purchase_required');
+  context.courses=[]; assert.equal((await chat.authorizeVoice(token,user)).dailyLimit,5);
   context.courses=[{productId:1}];
   await assert.rejects(chat.transcribe(token,randomUUID(),{requestId:currentId,audio:audio()},async()=>{}),e=>e.code==='account_changed');
   await assert.rejects(chat.transcribe('',user,{requestId:currentId,audio:audio()},async()=>{}),e=>e.code==='sign_in_required');
@@ -150,7 +268,7 @@ test('voice retries bind audio bytes, share one call and cache text without savi
   assert.equal((await pool.query('SELECT * FROM ai_chat_requests')).rows.length,0);
   assert.equal((await pool.query('SELECT * FROM ai_chat_daily_usage')).rows.length,0);
   context.lessons=[]; await assert.rejects(transcribe(),e=>e.code==='ai_access_changed');
-  context.courses=[]; await assert.rejects(transcribe(),e=>e.code==='ai_purchase_required');
+  context.courses=[]; await assert.rejects(transcribe(),e=>e.code==='ai_access_changed');
   assert.equal(calls,1);
 });
 
@@ -313,7 +431,7 @@ test('status polls pending/completed/stale without model, quota or original; che
   context.lessons = [];
   await assert.rejects(chat.status(token, user, { requestId: currentId }), e => e.code === 'ai_access_changed');
   context.courses = [];
-  await assert.rejects(chat.status(token, user, { requestId: currentId }), e => e.code === 'ai_purchase_required');
+  await assert.rejects(chat.status(token, user, { requestId: currentId }), e => e.code === 'ai_access_changed');
   assert.equal(calls, 1);
 });
 
@@ -365,10 +483,10 @@ test('HTTP large upload authorizes before receiving bytes, bounds one slot and o
   } finally { server.closeAllConnections(); await new Promise(resolve => server.close(resolve)); }
 });
 
-test('purchase, account and session gate close both history and send', async () => {
+test('free history opens with five questions while account and session gates remain closed', async () => {
   await setup(); currentId = randomUUID(); context = { courses: [], lessons: [] };
-  await assert.rejects(chat.history(token, user), e => e.code === 'ai_purchase_required');
-  await assert.rejects(ask(), e => e.code === 'ai_purchase_required');
+  assert.equal((await chat.history(token,user)).quota.limit,5);
+  await assert.rejects(chat.send(token,randomUUID(),{requestId:currentId,text:'Вопрос'}),e=>e.code==='account_changed');
   context = { courses: [{ productId: 1 }], lessons: [] };
   await assert.rejects(chat.history(token, randomUUID()), e => e.code === 'account_changed');
   await pool.query('UPDATE auth_sessions SET revoked_at=$1 WHERE token_hash=$2', [new Date(now), hashToken(token)]);

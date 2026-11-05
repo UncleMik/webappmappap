@@ -424,3 +424,64 @@ test('approved breathing lessons work with no purchases and unavailable GetCours
     } finally { f.close(); }
   }
 });
+
+function freeAiFixture() {
+  const f = fixture({ purchases: [], trainingIds: [] });
+  for (const [oldId, newId] of [[10, 4302509], [20, 4309095]])
+    f.db.prepare('UPDATE course_products SET product_id=? WHERE product_id=?').run(newId, oldId);
+  for (const [oldId, newId] of [[1001, 347472707], [1021, 347531402]])
+    f.db.prepare('UPDATE course_lesson_drafts SET lesson_id=? WHERE lesson_id=?').run(newId, oldId);
+  for (const [table, column] of [['course_program_drafts', 'inventory_json'], ['course_delivery_policy', 'body_json']]) {
+    const row = f.db.prepare(`SELECT ${column} AS body FROM ${table}`).get();
+    let body = row.body;
+    for (const [field, oldId, newId] of [['productId', 10, 4302509], ['productId', 20, 4309095],
+      ['id', 1001, 347472707], ['lessonId', 1001, 347472707], ['id', 1021, 347531402], ['lessonId', 1021, 347531402]])
+      body = body.replace(new RegExp(`"${field}":${oldId}(?=[,}])`, 'g'), `"${field}":${newId}`);
+    f.db.prepare(`UPDATE ${table} SET ${column}=?,sha256=?`).run(body, hash(body));
+  }
+  return f;
+}
+
+test('free AI context exposes only the two already public lessons, without opening their courses or neighbours', async () => {
+  const f = freeAiFixture();
+  try {
+    const service = f.make(), data = await service.aiContext('free-user');
+    assert.deepEqual(data.courses, []);
+    assert.deepEqual(data.lessons.map(l => [l.productId, l.lessonId]), [[4302509, 347472707], [4309095, 347531402]]);
+    assert.equal(data.lessons[0].text, 'Exact school text https://school.example/info');
+    assert.doesNotMatch(JSON.stringify(data), /8765|signedUrl|secret|SafeId_2|Lesson 1002/);
+    await denied(service.lesson('free-user', 4302509, 1002));
+    await denied(service.course('free-user', 4302509));
+    await denied(service.course('free-user', 4309095));
+    assert.deepEqual((await service.list('free-user')).courses, []);
+  } finally { f.close(); }
+});
+
+test('paid AI context keeps its purchased lesson set unchanged and switches to public-only after purchase ends', async () => {
+  const f = freeAiFixture();
+  try {
+    f.check.snapshot.purchases = [purchase(4302509)];
+    f.check.snapshot.trainingIds = [100, 101, 102];
+    const service = f.make(), data = await service.aiContext('paid-user');
+    assert.deepEqual(data.courses.map(c => c.productId), [4302509]);
+    assert.deepEqual(data.lessons.map(l => l.lessonId), [347472707, 1002, 1003, 1004, 1005, 1006, 1011]);
+    await denied(service.course('paid-user', 4309095));
+    f.check.snapshot.purchases = [];
+    assert.deepEqual((await service.aiContext('paid-user')).lessons.map(l => l.lessonId), [347472707, 347531402]);
+  } finally { f.close(); }
+});
+
+test('AI tier verification fails closed on stale or unavailable checks and on corrupted public lesson text', async () => {
+  const f = freeAiFixture();
+  try {
+    const service = f.make();
+    f.advance(NOW + 299000);
+    await denied(service.aiContext('free-user'), 503);
+    f.advance(NOW);
+    const offline = createCourseMaterials({ db: f.db, clock: () => NOW,
+      courseChecks: { requireCurrent: async () => { throw new Error('GetCourse offline'); } } });
+    await assert.rejects(offline.aiContext('free-user'), /GetCourse offline/);
+    f.db.prepare('UPDATE course_lesson_drafts SET content_json=? WHERE lesson_id=?').run('{"blocks":[]}', 347472707);
+    await denied(service.aiContext('free-user'), 503);
+  } finally { f.close(); }
+});
