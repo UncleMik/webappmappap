@@ -38,7 +38,9 @@ function limitQuota(error) {
   if (!q || ![5, 30].includes(q.limit) || !Number.isInteger(q.used) || q.used < 0 || q.used > 30
     || q.remaining !== Math.max(0, q.limit - q.used)
     || typeof q.resetsAt !== 'string' || !/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z$/.test(q.resetsAt)) return {};
-  return { quota: { limit: q.limit, used: q.used, remaining: q.remaining, resetsAt: q.resetsAt } };
+  const serverTime = typeof q.serverTime === 'string' && /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z$/.test(q.serverTime)
+    && Number.isFinite(Date.parse(q.serverTime)) ? { serverTime: q.serverTime } : {};
+  return { quota: { limit: q.limit, used: q.used, remaining: q.remaining, resetsAt: q.resetsAt, ...serverTime } };
 }
 const materialsUnavailable = () => new AuthError(503, 'course_materials_unavailable',
   'Материалы курсов временно недоступны. Попробуйте ещё раз.');
@@ -83,6 +85,10 @@ export function createAuthServer({ service, store, courseChecks, courseMaterials
       if (request.method === 'GET' && url.pathname === '/api/auth/ai/history') {
         if (!aiChat) throw new AuthError(503, 'ai_unavailable', 'Лара временно недоступна.');
         send(200, await aiChat.history(readSessionCookie(request), request.headers['x-webpril-account'])); return;
+      }
+      if (request.method === 'GET' && url.pathname === '/api/auth/ai/quota') {
+        if (!aiChat) throw new AuthError(503, 'ai_unavailable', 'Лара временно недоступна.');
+        send(200, await aiChat.readQuota(readSessionCookie(request), request.headers['x-webpril-account'])); return;
       }
       if (request.method === 'GET' && (url.pathname === '/api/auth/club' || url.pathname.startsWith('/api/auth/club/messages') || url.pathname.startsWith('/api/auth/club/changes'))) {
         if (!clubChat) throw new AuthError(503, 'club_unavailable', 'Чат временно недоступен.');

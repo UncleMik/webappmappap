@@ -147,10 +147,20 @@ export function createAiChat({ pool, service, courseMaterials, sourceMapPath, ur
     return { user, ctx, allowedKnowledgeSources, allowedLessons, rightsHash, dailyLimit };
   }
   async function quota(userId, limit) {
-    const today = day(clock());
+    const capturedNow = clock(), today = day(capturedNow);
     const { rows: [row] } = await pool.query('SELECT used FROM ai_chat_daily_usage WHERE user_id=$1 AND day_moscow=$2', [userId, today]);
     const used = row?.used || 0;
-    return { limit, used, remaining: Math.max(0, limit - used), resetsAt: reset(today) };
+    return { limit, used, remaining: Math.max(0, limit - used), resetsAt: reset(today), serverTime: new Date(capturedNow).toISOString() };
+  }
+  async function readQuota(token, expected) {
+    const a = await access(token, expected);
+    let currentQuota = await quota(a.user.id, a.dailyLimit);
+    const current = await access(token, expected);
+    // This response contains no conversation or materials. Return the current tier
+    // instead of treating a legitimate purchase expiry as a stale content response.
+    if (current.rightsHash !== a.rightsHash || day(clock()) !== day(Date.parse(currentQuota.serverTime)))
+      currentQuota = await quota(current.user.id, current.dailyLimit);
+    return { accountId: a.user.id, quota: currentQuota };
   }
   async function authorizeVoice(token, expected) {
     const a = await access(token, expected);
@@ -327,5 +337,5 @@ export function createAiChat({ pool, service, courseMaterials, sourceMapPath, ur
     await pool.query('DELETE FROM ai_chat_requests WHERE accepted_at<$1', [new Date(clock() - RETENTION_MS)]);
     await pool.query('DELETE FROM ai_chat_daily_usage WHERE day_moscow<$1', [day(clock() - RETENTION_MS)]);
   }
-  return Object.freeze({ history, send, status, authorize: access, authorizeVoice, transcribe, cleanup });
+  return Object.freeze({ history, send, status, readQuota, authorize: access, authorizeVoice, transcribe, cleanup });
 }

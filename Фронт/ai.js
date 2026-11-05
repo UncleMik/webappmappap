@@ -10,6 +10,7 @@ const historyMore = document.querySelector('#history-more');
 const retry = document.querySelector('#chat-retry');
 let accountId, revision = 0, controller, ended = false, ready = false;
 let messages = [], hasMore = false, nextBefore = null, busy = false, pending = null;
+let quotaTimer, quotaFlight = null, quotaDeadline = null, quotaRetryAt = 0, quotaSnapshot = null, quotaClock = null, limitNotice = false;
 let remaining = null, currentLimit = null, replyWaiting = false, selectedAttachment = null;
 const fileInput = document.querySelector('#analysis-file');
 const attachmentChip = document.querySelector('#selected-attachment');
@@ -43,7 +44,7 @@ function resizeChat() { document.documentElement.style.setProperty('--chat-viewp
 window.visualViewport?.addEventListener('resize', resizeChat);
 window.addEventListener('resize', resizeChat);
 resizeChat();
-function notice(message) { status.textContent = message; status.hidden = !message; }
+function notice(message, isLimit = false) { status.textContent = message; status.hidden = !message; limitNotice = isLimit && !!message; }
 function updateControls() {
   const locked = !ready || busy || !!pending || remaining === 0;
   input.disabled = locked || !!voice;
@@ -61,7 +62,7 @@ function updateControls() {
   retry.textContent = pending ? 'Проверить результат' : 'Повторить загрузку';
 }
 function clearPrivate() {
-  revision++; cancelVoice(); controller?.abort(); controller = null;
+  revision++; clearQuotaRefresh(); cancelVoice(); controller?.abort(); controller = null;
   accountId = null; ready = false; busy = false; pending = null;
   messages = []; hasMore = false; nextBefore = null; remaining = null; currentLimit = null;
   replyWaiting = false; selectAttachment(null);
@@ -115,21 +116,81 @@ function validateIdentity(error) {
   if (error.status === 403 && error.code !== 'ai_purchase_required' || error.code === 'ai_access_changed') { clearPrivate(); notice(errorMessage(error)); return true; }
   return false;
 }
+function quotaStamp(value) {
+  const iso = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d{1,3})?(?:Z|[+-]\d{2}:\d{2})$/;
+  if (typeof value?.serverTime !== 'string' || typeof value?.resetsAt !== 'string' || !iso.test(value.serverTime) || !iso.test(value.resetsAt)) return null;
+  const server = Date.parse(value.serverTime), reset = Date.parse(value.resetsAt);
+  return Number.isFinite(server) && Number.isFinite(reset) && reset > server ? { server, reset } : null;
+}
+function olderQuota(stamp) {
+  return quotaSnapshot && (!stamp || stamp.reset < quotaSnapshot.reset || stamp.server < quotaSnapshot.server);
+}
 function quota(value) {
-  if (value && Number.isInteger(value.remaining) && Number.isInteger(value.limit) && value.limit > 0 && value.remaining >= 0 && value.remaining <= value.limit) {
-    remaining = value.remaining; currentLimit = value.limit;
-    quotaLabel.textContent = `Осталось вопросов сегодня: ${value.remaining} из ${value.limit}`;
-    return true;
+  if (!value || !Number.isInteger(value.remaining) || !Number.isInteger(value.limit) || value.limit <= 0 || value.remaining < 0 || value.remaining > value.limit) return false;
+  const stamp = quotaStamp(value);
+  if (olderQuota(stamp)) return false;
+  remaining = value.remaining; currentLimit = value.limit;
+  quotaLabel.textContent = `Осталось вопросов сегодня: ${value.remaining} из ${value.limit}`;
+  if (stamp) {
+    quotaSnapshot = stamp; quotaDeadline = performance.now() + stamp.reset - stamp.server; quotaRetryAt = 0;
+    quotaClock = { wall: Date.now(), monotonic: performance.now() };
+    scheduleQuotaRefresh();
   }
-  return false;
+  if (remaining > 0 && limitNotice) notice('');
+  return true;
 }
 function dailyLimitError(error) {
+  const obsolete = error.quota && olderQuota(quotaStamp(error.quota));
   const fresh = quota(error.quota);
-  if (fresh && remaining > 0) return 'Лимит обновился. Попробуйте отправить вопрос ещё раз.';
-  remaining = 0;
-  quotaLabel.textContent = currentLimit === null ? 'На сегодня вопросы закончились.' : `Осталось вопросов сегодня: 0 из ${currentLimit}`;
+  if ((fresh || obsolete) && remaining > 0) return 'Лимит обновился. Попробуйте отправить вопрос ещё раз.';
+  if (!obsolete) remaining = 0;
+  quotaLabel.textContent = currentLimit === null ? 'На сегодня вопросы закончились.' : `Осталось вопросов сегодня: ${remaining} из ${currentLimit}`;
   return errorMessage(error);
 }
+function quotaPanelVisible() { return !document.hidden && !voicePanel?.hidden; }
+function clearQuotaRefresh() {
+  clearTimeout(quotaTimer); quotaTimer = undefined;
+  quotaFlight?.abort.abort(); quotaFlight = null;
+  quotaDeadline = null; quotaRetryAt = 0; quotaSnapshot = null; quotaClock = null; limitNotice = false;
+}
+function scheduleQuotaRefresh() {
+  clearTimeout(quotaTimer); quotaTimer = undefined;
+  if (ended || !accountId || quotaDeadline === null || !quotaPanelVisible()) return;
+  const delay = Math.max(0, quotaDeadline - performance.now(), quotaRetryAt - performance.now());
+  quotaTimer = setTimeout(refreshQuotaIfDue, Math.min(delay, 2_147_483_647));
+}
+async function refreshQuotaIfDue() {
+  if (ended || !ready || !accountId || quotaFlight || quotaDeadline === null || !quotaPanelVisible()) return;
+  if (performance.now() < Math.max(quotaDeadline, quotaRetryAt)) { scheduleQuotaRefresh(); return; }
+  const flight = { abort: new AbortController(), revision }; quotaFlight = flight;
+  try {
+    const data = await request('quota', undefined, flight.abort.signal);
+    if (flight.revision !== revision || ended) return;
+    quota(data.quota); updateControls();
+  } catch (error) {
+    if (flight.revision !== revision || validateIdentity(error)) return;
+    // Keep the server-confirmed count and all drafts while the connection recovers.
+  } finally {
+    if (quotaFlight === flight) {
+      quotaFlight = null;
+      if (quotaDeadline !== null && performance.now() >= quotaDeadline) quotaRetryAt = performance.now() + 30_000;
+      scheduleQuotaRefresh();
+    }
+  }
+}
+function resumeQuotaRefresh() {
+  if (!quotaPanelVisible()) { clearTimeout(quotaTimer); quotaTimer = undefined; return; }
+  // Some mobile browsers pause the monotonic clock during OS sleep. A wall-clock
+  // discontinuity requests a server check; it never grants questions locally.
+  if (quotaClock && Math.abs(Date.now() - quotaClock.wall - (performance.now() - quotaClock.monotonic)) > 1000) {
+    quotaDeadline = Math.min(quotaDeadline, performance.now());
+  }
+  if (quotaDeadline !== null && performance.now() >= Math.max(quotaDeadline, quotaRetryAt)) refreshQuotaIfDue();
+  else scheduleQuotaRefresh();
+}
+window.addEventListener('focus', resumeQuotaRefresh);
+window.addEventListener('pageshow', resumeQuotaRefresh);
+document.addEventListener('visibilitychange', resumeQuotaRefresh);
 function sourceLink(source) {
   if (typeof source?.url !== 'string' || typeof source?.title !== 'string') return null;
   if (source.url.startsWith('//') || !source.url.startsWith('/') && !source.url.startsWith('https://')) return null;
@@ -296,7 +357,7 @@ async function submit() {
       input.value = attempt.text; pending = null; selectAttachment(attempt.attachment || null);
     }
     if (error.code === 'ai_busy') notice('Предыдущий вопрос ещё обрабатывается. Проверьте историю через несколько секунд.');
-    if (error.code !== 'ai_busy') notice(dailyNotice || errorMessage(error, !!pending));
+    if (error.code !== 'ai_busy') notice(dailyNotice || errorMessage(error, !!pending), !!dailyNotice);
   } finally { if (current === revision) { busy = false; controller = null; updateControls(); } }
 }
 function currentVoice(attempt) { return voice === attempt && !attempt.cancelled && !ended && attempt.revision === revision; }
@@ -381,7 +442,7 @@ async function transcribeVoice(attempt) {
   } catch (error) {
     if (!currentVoice(attempt) || validateIdentity(error)) return;
     if (error.code === 'ai_purchase_required') { clearPrivate(); notice(errorMessage(error)); return; }
-    if (error.code === 'ai_daily_limit') { cancelVoice(dailyLimitError(error)); return; }
+    if (error.code === 'ai_daily_limit') { const message = dailyLimitError(error); cancelVoice(); notice(message, true); return; }
     const definitive = ['ai_voice_unavailable', 'invalid_ai_voice', 'invalid_ai_audio', 'audio_too_long', 'ai_audio_too_long', 'audio_unrecognized', 'ai_audio_unrecognized', 'voice_rate_limited', 'voice_daily_limit', 'daily_limit', 'rate_limited', 'ai_daily_limit', 'request_id_conflict'].includes(error.code);
     if (definitive) cancelVoice(voiceError(error));
     else { attempt.stage = 'retry'; voiceStatus.textContent = 'Речь пока не распознана'; notice(voiceError(error)); updateControls(); }
@@ -394,6 +455,7 @@ document.addEventListener('visibilitychange', () => { if (document.hidden && voi
 const voicePanel = window.frameElement || document.querySelector('.app');
 if (voicePanel) new MutationObserver(() => {
   if (voicePanel.hidden && voice) cancelVoice();
+  resumeQuotaRefresh();
 }).observe(voicePanel, { attributes: true, attributeFilter: ['hidden'] });
 input.addEventListener('input', updateControls);
 form.addEventListener('submit', event => {

@@ -49,6 +49,74 @@ const audio = (suffix = 'synthetic-audio-fixture') => ({ mimeType: 'audio/ogg', 
 const transcribe = (id = currentId, recorded = audio(), limiter = async () => {}) =>
   chat.transcribe(token, user, { requestId: id, audio: recorded }, limiter);
 
+test('read-only quota refresh restores free and paid availability exactly at Moscow midnight without touching history', async () => {
+  for(const limit of [5,30]){
+    await setup();if(limit===5)context.courses=[];now=Date.parse('2026-11-04T20:59:59.000Z');
+    await pool.query('INSERT INTO ai_chat_daily_usage(user_id,day_moscow,used) VALUES($1,$2,$3)',[user,'2026-11-04',limit]);
+    const requestId=randomUUID(),a=await chat.authorize(token,user);
+    await pool.query(`INSERT INTO ai_chat_requests(user_id,request_id,question,question_hash,rights_hash,status,accepted_at)
+      VALUES($1,$2,$3,$4,$5,'pending',$6)`,[user,requestId,'History must remain unchanged','qa-hash',a.rightsHash,new Date(now-90_000)]);
+    const before=(await pool.query('SELECT * FROM ai_chat_requests')).rows;
+    const old=await chat.readQuota(token,user);
+    assert.deepEqual(old,{accountId:user,quota:{limit,used:limit,remaining:0,resetsAt:'2026-11-04T21:00:00.000Z',serverTime:'2026-11-04T20:59:59.000Z'}});
+    now+=1000;
+    const fresh=await chat.readQuota(token,user);
+    assert.deepEqual(fresh,{accountId:user,quota:{limit,used:0,remaining:limit,resetsAt:'2026-11-05T21:00:00.000Z',serverTime:'2026-11-04T21:00:00.000Z'}});
+    assert.deepEqual((await pool.query('SELECT * FROM ai_chat_requests')).rows,before);
+    assert.equal((await pool.query('SELECT * FROM ai_chat_daily_usage')).rows.length,1);assert.equal(calls,0);
+  }
+});
+
+test('quota read spanning midnight returns a fresh current-day snapshot with a consistent timestamp and reset', async () => {
+  await setup();context.courses=[];now=Date.parse('2026-11-04T20:59:59.000Z');
+  await pool.query('INSERT INTO ai_chat_daily_usage(user_id,day_moscow,used) VALUES($1,$2,5)',[user,'2026-11-04']);
+  let advance=true;
+  const observingPool={connect:()=>pool.connect(),async query(sql,args){const result=await pool.query(sql,args);
+    if(advance&&sql.startsWith('SELECT used FROM ai_chat_daily_usage')){advance=false;now+=1000;}return result;}};
+  const observed=createAiChat({pool:observingPool,service,courseMaterials:{aiContext:async()=>context},sourceMapPath,
+    url:'https://admin.legkie-rody.ru/internal/lara-web/reply',secret:'test-lara-secret-longer-than-32-bytes',clock:()=>now,
+    fetchImpl:async()=>{throw new Error('must_not_call');}});
+  const fresh=(await observed.readQuota(token,user)).quota;
+  assert.equal(fresh.serverTime,'2026-11-04T21:00:00.000Z');assert.equal(fresh.resetsAt,'2026-11-05T21:00:00.000Z');assert.equal(fresh.remaining,5);
+  assert.equal((await observed.readQuota(token,user)).quota.remaining,5);assert.equal(calls,0);
+});
+
+test('quota refresh rejects late session revocation and returns the current tier after a legitimate purchase expiry', async () => {
+  for(const change of ['session','tier']){
+    await setup();let armed=true;
+    const observingPool={connect:()=>pool.connect(),async query(sql,args){const result=await pool.query(sql,args);
+      if(armed&&sql.startsWith('SELECT used FROM ai_chat_daily_usage')){armed=false;
+        if(change==='session')await pool.query('UPDATE auth_sessions SET revoked_at=$1 WHERE token_hash=$2',[new Date(now),hashToken(token)]);
+        else context.courses=[];
+      }return result;}};
+    const observed=createAiChat({pool:observingPool,service,courseMaterials:{aiContext:async()=>context},sourceMapPath,
+      url:'https://admin.legkie-rody.ru/internal/lara-web/reply',secret:'test-lara-secret-longer-than-32-bytes',clock:()=>now,
+      fetchImpl:async()=>{throw new Error('must_not_call');}});
+    if(change==='session')await assert.rejects(observed.readQuota(token,user),e=>e.code==='sign_in_required');
+    else{const current=await observed.readQuota(token,user);assert.equal(current.accountId,user);assert.equal(current.quota.limit,5);assert.equal(current.quota.remaining,5);}
+    assert.equal(calls,0);assert.equal((await pool.query('SELECT * FROM ai_chat_requests')).rows.length,0);
+  }
+});
+
+test('GET quota requires its current session, account and completed profile and returns no conversation', async () => {
+  await setup();context.courses=[];
+  const store=createStore(pool,{secret:'test-secret-longer-than-thirty-two-bytes',clock:()=>now});
+  const server=createAuthServer({service,store,aiChat:chat,enabled:true,origin:'https://app.legkie-rody.ru'});
+  server.listen(0,'127.0.0.1');await once(server,'listening');const endpoint=`http://127.0.0.1:${server.address().port}/api/auth/ai/quota`;
+  const headers={Cookie:`__Host-school_session=${token}`,'X-Webpril-Account':user};
+  try{
+    assert.equal((await fetch(endpoint)).status,401);
+    assert.equal((await fetch(endpoint,{headers:{Cookie:headers.Cookie}})).status,409);
+    assert.equal((await fetch(endpoint,{headers:{...headers,'X-Webpril-Account':randomUUID()}})).status,409);
+    const valid=await fetch(endpoint,{headers}),body=await valid.json();assert.equal(valid.status,200);
+    assert.equal(valid.headers.get('Cache-Control'),'no-store');assert.deepEqual(Object.keys(body).sort(),['accountId','quota']);
+    assert.equal(body.quota.limit,5);assert.equal(body.quota.serverTime,new Date(now).toISOString());
+    await pool.query('UPDATE auth_users SET profile=$1 WHERE id=$2',[JSON.stringify({stage:'pregnancy',dueDate:'2027-03-01'}),user]);
+    const incomplete=await fetch(endpoint,{headers});assert.equal(incomplete.status,403);assert.equal((await incomplete.json()).error,'onboarding_required');
+    assert.equal(calls,0);assert.equal((await pool.query('SELECT * FROM ai_chat_daily_usage')).rows.length,0);
+  }finally{server.closeAllConnections();await new Promise(resolve=>server.close(resolve));}
+});
+
 test('free accounts get five shared daily questions, safe retry and a Moscow midnight reset', async () => {
   await setup();context.courses=[];
   for(let i=0;i<5;i++){
@@ -160,8 +228,8 @@ test('HTTP cap errors carry only current structured free-tier quota for send and
     for(const [path,data] of [['messages',{requestId:currentId,text:'Вопрос'}],['voice',{requestId:currentId,audio:audio()}]]){
       const response=await fetch(`${base}/api/auth/ai/${path}`,{method:'POST',headers,body:JSON.stringify(data)}),body=await response.json();
       assert.equal(response.status,429);assert.equal(body.error,'ai_daily_limit');
-      assert.deepEqual(body.quota,{limit:5,used:8,remaining:0,resetsAt:'2026-11-04T21:00:00.000Z'});
-      assert.deepEqual(Object.keys(body.quota).sort(),['limit','remaining','resetsAt','used']);
+      assert.deepEqual(body.quota,{limit:5,used:8,remaining:0,resetsAt:'2026-11-04T21:00:00.000Z',serverTime:new Date(now).toISOString()});
+      assert.deepEqual(Object.keys(body.quota).sort(),['limit','remaining','resetsAt','serverTime','used']);
     }
     assert.equal(calls,0);assert.equal((await pool.query('SELECT * FROM ai_chat_requests')).rows.length,0);
   }finally{server.closeAllConnections();await new Promise(resolve=>server.close(resolve));}
