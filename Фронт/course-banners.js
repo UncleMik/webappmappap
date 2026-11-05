@@ -1,6 +1,6 @@
-// Verified GetCourse data-training-image snapshot, 2026-10-27.
+// GetCourse snapshot (2026-10-27); Express 2.0 artwork supplied by the user (2026-11-05).
 const productBanners = {
-  "4309095": "935386893",
+  "4309095": "express-2",
   "4316498": "267352508",
   "4302509": "935386893",
   "4302523": "430799983",
@@ -11,7 +11,7 @@ const productBanners = {
   "4302567": "267352508"
 };
 const trainingBanners = {
-  "935397478": "935386893",
+  "935397478": "express-2",
   "935397511": "267352508",
   "935386893": "935386893",
   "935386911": "430799983",
