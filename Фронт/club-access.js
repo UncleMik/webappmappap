@@ -12,13 +12,15 @@ for (const room of clubRooms) {
   const title = document.createElement('strong'); title.textContent = room.title;
   const description = document.createElement('span'); description.textContent = 'Проверяем доступ…';
   const unread = document.createElement('span'); unread.className = 'unread'; unread.hidden = true;
-  copy.append(title, description); row.append(icon, copy, unread);
-  document.querySelector(room.kind === 'experts' ? '#club-expert-rooms' : '#club-participant-rooms').append(row);
-  rows.set(room.id, { row, description, unread });
+  const lock = document.createElement('span'); lock.className = 'club-room-lock'; lock.hidden = true; lock.setAttribute('role', 'img'); lock.setAttribute('aria-label', 'Нужна покупка курса');
+  const lockSvg = document.createElementNS('http://www.w3.org/2000/svg', 'svg'); const lockUse = document.createElementNS('http://www.w3.org/2000/svg', 'use'); lockUse.setAttribute('href', '#lock'); lockSvg.setAttribute('viewBox', '0 0 16 20'); lockSvg.setAttribute('aria-hidden', 'true'); lockSvg.append(lockUse); lock.append(lockSvg);
+  copy.append(title, description); row.append(icon, copy, lock, unread);
+  document.querySelector(room.kind === 'experts' ? '#club-expert-rooms' : room.id.startsWith('pregnancy-') ? '#club-pregnancy-rooms' : '#club-mother-rooms').append(row);
+  rows.set(room.id, { row, description, lock, unread });
 }
 function clear() {
   revision++; controller?.abort(); clearTimeout(timer);
-  for (const { row, unread } of rows.values()) { row.removeAttribute('href'); unread.hidden = true; unread.textContent = ''; }
+  for (const { row, lock, unread } of rows.values()) { lock.hidden = true; row.removeAttribute('href'); unread.hidden = true; unread.textContent = ''; }
 }
 async function refresh() {
   clear();
@@ -32,7 +34,7 @@ async function refresh() {
     accountId = data.accountId;
     let remaining = 15_000, failed = false;
     for (const definition of clubRooms) {
-      const { row, description, unread } = rows.get(definition.id);
+      const { row, description, lock, unread } = rows.get(definition.id);
       const matches = data.rooms.filter(item => item.id === definition.id);
       const room = matches.length === 1 ? matches[0] : null;
       try {
@@ -48,7 +50,7 @@ async function refresh() {
             unread.setAttribute('aria-label', 'Непрочитанных сообщений: ' + count);
           }
         } else if (room.access === 'purchase_required' && definition.kind === 'experts') {
-          description.textContent = 'Доступны при действующей покупке любого курса'; row.href = 'courses.html';
+          description.textContent = 'Доступны при действующей покупке любого курса'; lock.hidden = false; row.href = 'courses.html';
         } else throw new Error();
       } catch {
         description.textContent = 'Не удалось проверить доступ. Повторите попытку.'; failed = true;
