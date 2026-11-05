@@ -11,8 +11,8 @@
   <link rel="preload" href="assets/fonts/Intro-Regular.woff" as="font" type="font/woff" crossorigin>
   <link rel="preload" href="assets/fonts/Intro-Bold.woff" as="font" type="font/woff" crossorigin>
   <link rel="stylesheet" href="styles.css?v=20261008-close">
-  <link rel="stylesheet" href="club.css?v=20261105-grouped">
-  <script src="club.js?v=20261105-grouped" defer></script>
+  <link rel="stylesheet" href="club.css?v=20261105-speaker-bios">
+  <script src="club.js?v=20261105-speaker-bios" defer></script>
   <link rel="stylesheet" href="club-chat-live.css?v=20261105-card">
   <script type="module" src="club-access.js?v=20261105-grouped"></script>
   <link rel="stylesheet" href="app-navigation.css?v=20261006-gotham">
@@ -51,7 +51,10 @@
    <ul class="speaker-description"><li>Опыт более 10 лет</li><li>Диплом педиатра</li></ul>
   </article>
  </div>
- <div class="speaker-controls"><div class="speaker-dots" aria-label="Выбрать спикера"><button type="button" aria-label="Анастасия Сафина" aria-current="true" data-speaker="0"><span></span></button><button type="button" aria-label="Юлия Сулейманова" data-speaker="1"><span></span></button><button type="button" aria-label="Татьяна Анисимова" data-speaker="2"><span></span></button></div></div>
+ <div class="speaker-controls"><div class="speaker-dots" aria-label="Выбрать спикера"><button type="button" aria-label="Анастасия Сафина" aria-current="true" data-speaker="0"><span></span></button><button type="button" aria-label="Юлия Сулейманова" data-speaker="1"><span></span></button><button type="button" aria-label="Татьяна Анисимова" data-speaker="2"><span></span></button></div><button class="speaker-toggle" id="speaker-toggle" type="button" aria-expanded="false" aria-controls="speaker-bio-0">Подробнее</button></div>
+<div class="speaker-full-bio" id="speaker-bio-0" hidden><p class="speaker-full-role">Перинатальный психолог, доула, мама</p><ul><li>Член Ассоциации «АКЕВ»</li><li>Консультант по ГВ, сну и прикорму</li><li>Преподаватель «ВОЗ ЮНИСЕФ» по грудному вскармливанию</li><li>Сооснователь школы «Легкие роды» и ведущая курсов подготовки к родам</li><li>Выпускница «МГУ» кафедры «Психология»</li><li>Сопровождает роды в роддомах г. Москвы</li></ul></div>
+<div class="speaker-full-bio" id="speaker-bio-1" hidden><p class="speaker-full-role">Врач акушер-гинеколог</p><ul><li>Ведёт беременности и роды разной степени сложности</li><li>Проводит оперативные роды</li><li>Приняла более 2000 родов</li><li>Выпускница «БГМУ»</li><li>Проходила стажировку в Хорватии в акушерско-гинекологическом отделении</li><li>С 2017 г. работает в Клиническом госпитале «Мать и дитя» в г. Уфа</li></ul></div>
+<div class="speaker-full-bio" id="speaker-bio-2" hidden><p class="speaker-full-role">Врач-неонатолог</p><ul><li>Опыт работы более 10 лет</li><li>Ведёт врачебную деятельность в одном из топовых родильных отделений Уфы — клиническом госпитале «Мать и дитя»</li><li>Мама двух детей</li><li>Закончила Башкирский медуниверситет, неоднократно проходила повышение квалификации в Санкт-Петербурге. Имеет диплом педиатра</li><li>Более 5 лет проводит «Завтрак с неонатологом», где помогает мамам разобраться с проблемами в развитии малышей</li><li>Максимально придерживается принципов доказательной медицины, но убеждена: в каждом деле важен индивидуальный подход</li></ul></div>
 </section>
 <div class="club-search" id="club-search" hidden><label for="club-query">Поиск по названию и описанию</label><input id="club-query" type="search" placeholder="Найти в клубе" autocomplete="off"></div>
 <div class="community-tabs" role="tablist" aria-label="Разделы клуба"><button role="tab" id="participants-tab" data-tab="participants" aria-selected="true" aria-controls="community-content" tabindex="0">Чаты участниц</button><button role="tab" id="events-tab" data-tab="events" aria-selected="false" aria-controls="community-content" tabindex="-1">События</button></div>

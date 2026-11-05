@@ -3,9 +3,27 @@
  if (carousel) {
   const slides = [...carousel.querySelectorAll('.speaker-slide')];
   const dots = [...carousel.querySelectorAll('[data-speaker]')];
-  let current = 0, timer;
+  const biographies = [...carousel.querySelectorAll('.speaker-full-bio')];
+  const toggle = carousel.querySelector('#speaker-toggle');
+  let current = 0, timer, expanded = false;
+  function expand(value) {
+   if (!toggle || !biographies[current]) return;
+   expanded = value;
+   biographies.forEach((bio, i) => { bio.hidden = !expanded || i !== current; });
+   slides.forEach((slide, i) => {
+    slide.querySelector('.speaker-description').hidden = expanded && i === current;
+    slide.querySelector('.speaker-role').hidden = expanded && i === current;
+   });
+   toggle.textContent = expanded ? 'Свернуть' : 'Подробнее';
+   toggle.setAttribute('aria-expanded', String(expanded));
+   toggle.setAttribute('aria-controls', biographies[current].id);
+   if (!expanded && document.activeElement === toggle) {
+    const box = toggle.getBoundingClientRect(), bottom = document.querySelector('.bottom-navigation')?.getBoundingClientRect().top ?? innerHeight;
+    if (box.top < 0 || box.bottom > Math.min(innerHeight, bottom)) toggle.scrollIntoView({ block: 'nearest' });
+   }
+  }
   function show(index) {
-   current = index;
+   current = index; expand(false);
    slides.forEach((slide, i) => {
     slide.classList.toggle('is-active', i === current);
     slide.setAttribute('aria-hidden', String(i !== current));
@@ -18,9 +36,10 @@
   }
   function schedule() {
    clearInterval(timer);
-   if (!document.hidden) timer = setInterval(() => show((current + 1) % slides.length), 5000);
+   if (!document.hidden && !expanded) timer = setInterval(() => show((current + 1) % slides.length), 5000);
   }
   dots.forEach(dot => dot.addEventListener('click', () => { show(Number(dot.dataset.speaker)); schedule(); }));
+  toggle?.addEventListener('click', () => { expand(!expanded); schedule(); });
   document.addEventListener('visibilitychange', schedule);
   window.addEventListener('pagehide', () => clearInterval(timer));
   window.addEventListener('pageshow', schedule);

@@ -5,6 +5,8 @@ async (page) => {
   let accountId = account, paid = false, purchaseFailure = false, wrongRoom = false, failSend = false;
   let releaseSearch, searchStarted, delayedSearch = false, holdList = false, releaseList;
   const bannerMetrics = [];
+  const originalBios = [["Член Ассоциации «АКЕВ»", "Консультант по ГВ, сну и прикорму", "Преподаватель «ВОЗ ЮНИСЕФ» по грудному вскармливанию", "Сооснователь школы «Легкие роды» и ведущая курсов подготовки к родам", "Выпускница «МГУ» кафедры «Психология»", "Сопровождает роды в роддомах г. Москвы"], ["Ведёт беременности и роды разной степени сложности", "Проводит оперативные роды", "Приняла более 2000 родов", "Выпускница «БГМУ»", "Проходила стажировку в Хорватии в акушерско-гинекологическом отделении", "С 2017 г. работает в Клиническом госпитале «Мать и дитя» в г. Уфа"], ["Опыт работы более 10 лет", "Ведёт врачебную деятельность в одном из топовых родильных отделений Уфы — клиническом госпитале «Мать и дитя»", "Мама двух детей", "Закончила Башкирский медуниверситет, неоднократно проходила повышение квалификации в Санкт-Петербурге. Имеет диплом педиатра", "Более 5 лет проводит «Завтрак с неонатологом», где помогает мамам разобраться с проблемами в развитии малышей", "Максимально придерживается принципов доказательной медицины, но убеждена: в каждом деле важен индивидуальный подход"]];
+  const originalRoles = ["Перинатальный психолог, доула, мама", "Врач акушер-гинеколог", "Врач-неонатолог"];
   await page.emulateMedia({ reducedMotion: 'reduce' });
   const requests = [], attempts = [], errors = [];
   const roomIds = ['pregnancy-trimester-1', 'pregnancy-trimester-2', 'pregnancy-trimester-3', 'mother-0-6', 'mother-6-plus', 'experts-birth', 'experts-motherhood'];
@@ -56,6 +58,8 @@ async (page) => {
   check(await page.locator('#community-content a[href*="club-chat"]').count() === 5, 'Free rooms missing');
   check(await page.locator('#club-expert-rooms a[href="courses.html"]').count() === 2, 'Experts purchase gate missing');
   check(!(await page.locator('body').innerText()).includes('Чат участниц курса'), 'Legacy card remains');
+  check(JSON.stringify(await page.locator('.speaker-full-bio').evaluateAll(bios => bios.map(bio => [...bio.querySelectorAll('li')].map(li => li.textContent))))===JSON.stringify(originalBios),'Original complete biographies changed');
+  check(JSON.stringify(await page.locator('.speaker-full-role').allTextContents())===JSON.stringify(originalRoles),'Original full roles changed');
   check(await page.getByRole('tab').count() === 2, 'Expert tab remains');
   check(await page.locator('[data-category="participants"] [data-room]').count() === 7, 'Rooms not in main tab');
   const ordered = await page.locator('[data-category="participants"] [data-room]').evaluateAll(rows => rows.map(row => row.dataset.room));
@@ -73,11 +77,36 @@ async (page) => {
       bannerMetrics.push(metric);check(!metric.overflow && metric.bioInside && metric.photoContained && metric.font>=12, 'Compact carousel clipping '+JSON.stringify(metric));
       check(metric.ratio>=.28 && metric.ratio<=.43, 'Carousel height not near third '+JSON.stringify(metric));
       await page.screenshot({path:'output/playwright/club-grouped-'+width+'-slide-'+slide+'.png'});
+      const toggle=page.locator('#speaker-toggle');
+      check(await toggle.getAttribute('aria-expanded')==='false' && await toggle.getAttribute('aria-controls')==='speaker-bio-'+slide,'Collapsed disclosure state');
+      await toggle.focus();await page.keyboard.press('Enter');
+      check(await toggle.innerText()==='Свернуть' && await toggle.getAttribute('aria-expanded')==='true','Expand label/aria');
+      const full=page.locator('#speaker-bio-'+slide);await full.waitFor();
+      check(await full.locator('li').count()===6 && await page.locator('.speaker-full-bio:visible').count()===1,'Full bio content/speaker mismatch');
+      const opened=await full.evaluate(bio => {const box=bio.getBoundingClientRect(),card=bio.closest('.speaker-carousel').getBoundingClientRect();return {inside:box.bottom<=card.bottom,unclipped:bio.scrollHeight<=bio.clientHeight,overflow:document.documentElement.scrollWidth>innerWidth};});
+      check(opened.inside&&opened.unclipped&&!opened.overflow,'Expanded biography clipped '+width+' slide '+slide);
+      check(await page.locator('.speaker-slide.is-active .speaker-description').isHidden(),'Preview duplicated full biography');
+      if ((width===390 && slide===0)||(width===320 && slide===2)) await page.screenshot({path:'output/playwright/club-speaker-expanded-'+width+'-'+slide+'.png'});
+      await page.keyboard.press('Space');
+      check(await toggle.getAttribute('aria-expanded')==='false' && await toggle.innerText()==='Подробнее' && await full.isHidden(),'Keyboard collapse failed');
+
     }
   }
   check(await page.locator('.speaker-slide.is-active').evaluate(slide => getComputedStyle(slide).transitionDuration)==='0s','Reduced-motion CSS changed');
+  await page.setViewportSize({width:320,height:568});await page.waitForTimeout(150);
+  const disclosure=page.locator('#speaker-toggle');await disclosure.click();
   await page.waitForTimeout(5100);
-  check(await page.locator('[data-speaker="0"]').getAttribute('aria-current')==='true','Existing five-second auto carousel stopped');
+  check(await page.locator('[data-speaker="2"]').getAttribute('aria-current')==='true','Auto advanced during reading');
+  await page.locator('#speaker-bio-2 li').last().scrollIntoViewIfNeeded();
+  await page.keyboard.press('Space');
+  check(await disclosure.getAttribute('aria-expanded')==='false','Focused Space did not collapse');
+  const focused=await disclosure.evaluate(button=>{const box=button.getBoundingClientRect(),nav=document.querySelector('.bottom-navigation').getBoundingClientRect();return document.activeElement===button&&box.top>=0&&box.bottom<=Math.min(innerHeight,nav.top);});
+  check(focused,'Collapse left focused control offscreen');
+  await page.screenshot({path:'output/playwright/club-speaker-collapse-focus-320.png'});
+  await page.waitForTimeout(5100);
+  check(await page.locator('[data-speaker="0"]').getAttribute('aria-current')==='true','Auto did not resume after collapse');
+  await disclosure.click();await page.locator('[data-speaker="1"]').click();
+  check(await disclosure.getAttribute('aria-expanded')==='false'&&await disclosure.getAttribute('aria-controls')==='speaker-bio-1'&&await page.locator('.speaker-full-bio:visible').count()===0,'Manual switch retained previous biography');
   await page.emulateMedia({reducedMotion:'no-preference'});
   await page.getByRole('tab',{name:'События',exact:true}).click();
   await page.getByText('Событий пока нет.',{exact:true}).waitFor();
@@ -157,8 +186,19 @@ async (page) => {
   await page.getByText('Не удалось подтвердить комнату. Повторите подключение.', { exact: true }).waitFor();
   check(await page.locator('#chat-messages > *').count() === 0 && await page.locator('#chat-controls').isHidden(), 'Mismatched response exposed room');
   wrongRoom = false;
+  const emptyClubScript = route => route.fulfill({status:200,contentType:'text/javascript',body:''});
+  await page.route(base+'/club.js**',emptyClubScript);await page.goto(base+'/club.html');
+  await page.locator('[data-room]').first().waitFor();
+  await page.evaluate(() => document.querySelectorAll('#speaker-toggle,.speaker-full-bio').forEach(element=>element.remove()));
+  await page.unroute(base+'/club.js**',emptyClubScript);await page.addScriptTag({url:base+'/club.js?v=20261105-speaker-bios'});
+  await page.locator('[data-speaker="1"]').click();await page.waitForTimeout(5100);
+  check(await page.locator('[data-speaker="2"]').getAttribute('aria-current')==='true','Old DOM auto carousel broke');
+  await page.getByRole('tab',{name:'События',exact:true}).click();
+  check(await page.getByRole('tab',{name:'События',exact:true}).getAttribute('aria-selected')==='true','Old DOM tabs broke');
+  await page.getByRole('tab',{name:'Чаты участниц',exact:true}).click();await page.locator('#search-toggle').click();
+  check(await page.locator('#club-search').isVisible(),'Old DOM search broke');
   check(!errors.length, 'Browser errors: ' + errors.join(';'));
   check(requests.filter(r => r.path !== 'club').every(r => roomIds.includes(r.id)), 'Endpoint without room');
-  return { groupedMainList: true, freePaidExpiredErrorLoadingLogout: true, carouselMetrics: bannerMetrics, carouselDotsAutoAndReducedMotionCss: true, rooms: 7, freeRoomsDuringPurchaseFailure: 5, paidExperts: 2, widths: [320,390,500,1440], legacyRedirect: true, roomAccountDraftIsolation: true, searchRoom: true, delayedRoomSearch: true, reactions: true, deletion: true, replyPendingUuidRetry: true, sessionWipe: true, mismatchedResponseRejected: true, requests: requests.length, errors };
+  return { groupedMainList: true, freePaidExpiredErrorLoadingLogout: true, carouselMetrics: bannerMetrics, carouselDotsAutoAndReducedMotionCss: true, fullBiographiesExact: true, missingDisclosureDomCompatibility: true, disclosureKeyboardAndAria: true, autoPauseReadingAndResume: true, manualSwitchCollapses: true, collapseFocusVisible: true, rooms: 7, freeRoomsDuringPurchaseFailure: 5, paidExperts: 2, widths: [320,390,500,1440], legacyRedirect: true, roomAccountDraftIsolation: true, searchRoom: true, delayedRoomSearch: true, reactions: true, deletion: true, replyPendingUuidRetry: true, sessionWipe: true, mismatchedResponseRejected: true, requests: requests.length, errors };
 }
 
