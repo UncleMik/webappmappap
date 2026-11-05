@@ -10,7 +10,7 @@ import time
 import urllib.parse
 import urllib.request
 
-FILES = {'assets/course-banners/express-2.webp': {'old': None, 'new': '82ad152915e34c8da70b6e8367eb0c5970630fd12ab4a006fa4ed6242076a741'}, 'course-banners.js': {'old': '338afab7527cb1877f17044b870ca73f92950136bddca43abff39119fefef3a0', 'new': '968001440e397adea718d8c432391ff34f1721fbcf2cc5ebff2cb7ca93c75337'}}
+FILES = {'assets/course-banners/express-2.webp': {'old': None, 'new': '82ad152915e34c8da70b6e8367eb0c5970630fd12ab4a006fa4ed6242076a741'}, 'course-banners.js': {'old': '338afab7527cb1877f17044b870ca73f92950136bddca43abff39119fefef3a0', 'new': '7fa74f2953868b7d326ee7d22ab749f1c3f02d7c729a6753ec3e783b2083fee9'}}
 
 
 def digest(data):
