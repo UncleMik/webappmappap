@@ -60,6 +60,7 @@ async (page) => {
   check(!(await page.locator('body').innerText()).includes('Чат участниц курса'), 'Legacy card remains');
   check(JSON.stringify(await page.locator('.speaker-full-bio').evaluateAll(bios => bios.map(bio => [...bio.querySelectorAll('li')].map(li => li.textContent))))===JSON.stringify(originalBios),'Original complete biographies changed');
   check(JSON.stringify(await page.locator('.speaker-full-role').allTextContents())===JSON.stringify(originalRoles),'Original full roles changed');
+  check(await page.locator('link[href="club.css?v=20261105-speaker-compact"]').count()===1,'Compact stylesheet cache version missing');
   check(await page.getByRole('tab').count() === 2, 'Expert tab remains');
   check(await page.locator('[data-category="participants"] [data-room]').count() === 7, 'Rooms not in main tab');
   const ordered = await page.locator('[data-category="participants"] [data-room]').evaluateAll(rows => rows.map(row => row.dataset.room));
@@ -71,11 +72,13 @@ async (page) => {
       await page.locator('[data-speaker="'+slide+'"]').click();
       const metric=await page.evaluate(() => {
         const banner=document.querySelector('.speaker-carousel'), active=banner.querySelector('.is-active');
-        const box=banner.getBoundingClientRect(), image=active.querySelector('img'), description=active.querySelector('.speaker-description').getBoundingClientRect();
-        return {width:innerWidth,height:innerHeight,bannerHeight:box.height,ratio:box.height/innerHeight,overflow:document.documentElement.scrollWidth>innerWidth,bioInside:description.bottom<=box.bottom,photoContained:getComputedStyle(image).objectFit==='contain',font:parseFloat(getComputedStyle(active.querySelector('.speaker-description')).fontSize)};
+        const box=banner.getBoundingClientRect(), image=active.querySelector('img'), imageBox=image.getBoundingClientRect(), description=active.querySelector('.speaker-description').getBoundingClientRect();
+        const name=active.querySelector('h2'),role=active.querySelector('.speaker-role');
+        return {width:innerWidth,height:innerHeight,bannerHeight:box.height,ratio:box.height/innerHeight,overflow:document.documentElement.scrollWidth>innerWidth,bioInside:description.bottom<=box.bottom,photoContained:getComputedStyle(image).objectFit==='contain'&&imageBox.top>=box.top&&imageBox.bottom<=box.bottom,nameFont:parseFloat(getComputedStyle(name).fontSize),roleFont:parseFloat(getComputedStyle(role).fontSize),previewFacts:[...active.querySelectorAll('.speaker-description li')].filter(li=>li.getBoundingClientRect().height>0).length,toggleHeight:banner.querySelector('#speaker-toggle').getBoundingClientRect().height,font:parseFloat(getComputedStyle(active.querySelector('.speaker-description')).fontSize)};
       });
-      bannerMetrics.push(metric);check(!metric.overflow && metric.bioInside && metric.photoContained && metric.font>=12, 'Compact carousel clipping '+JSON.stringify(metric));
-      check(metric.ratio>=.28 && metric.ratio<=.43, 'Carousel height not near third '+JSON.stringify(metric));
+      bannerMetrics.push(metric);check(!metric.overflow && metric.bioInside && metric.photoContained && metric.font>=12 && metric.nameFont>=17 && metric.roleFont>=12 && metric.previewFacts===1 && metric.toggleHeight>=44, 'Compact carousel clipping '+JSON.stringify(metric));
+      const previousHeight=width===320?181.75:width===390?270.08:288;
+      check(metric.bannerHeight<=175 && metric.bannerHeight<previousHeight,'Closed carousel remains too tall '+JSON.stringify(metric));
       await page.screenshot({path:'output/playwright/club-grouped-'+width+'-slide-'+slide+'.png'});
       const toggle=page.locator('#speaker-toggle');
       check(await toggle.getAttribute('aria-expanded')==='false' && await toggle.getAttribute('aria-controls')==='speaker-bio-'+slide,'Collapsed disclosure state');
@@ -190,7 +193,7 @@ async (page) => {
   await page.route(base+'/club.js**',emptyClubScript);await page.goto(base+'/club.html');
   await page.locator('[data-room]').first().waitFor();
   await page.evaluate(() => document.querySelectorAll('#speaker-toggle,.speaker-full-bio').forEach(element=>element.remove()));
-  await page.unroute(base+'/club.js**',emptyClubScript);await page.addScriptTag({url:base+'/club.js?v=20261105-speaker-bios'});
+  await page.unroute(base+'/club.js**',emptyClubScript);await page.addScriptTag({url:base+'/'+await page.locator('script[src^="club.js"]').first().getAttribute('src')});
   await page.locator('[data-speaker="1"]').click();await page.waitForTimeout(5100);
   check(await page.locator('[data-speaker="2"]').getAttribute('aria-current')==='true','Old DOM auto carousel broke');
   await page.getByRole('tab',{name:'События',exact:true}).click();
