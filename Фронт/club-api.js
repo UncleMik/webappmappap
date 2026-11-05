@@ -1,8 +1,8 @@
-export async function clubRequest(path, { accountId, body, signal } = {}) {
+export async function clubRequest(path, { accountId, room, body, signal } = {}) {
   const started = performance.now();
   let response;
   try {
-    response = await fetch('/api/auth/' + path, { method: body === undefined ? 'GET' : 'POST',
+    response = await fetch('/api/auth/' + path + (room ? '?room=' + encodeURIComponent(room) : ''), { method: body === undefined ? 'GET' : 'POST',
       credentials: 'same-origin', cache: 'no-store',
       headers: { 'X-Webpril-Chat-Version': '2', ...(accountId ? { 'X-Webpril-Account': accountId } : {}),
         ...(body === undefined ? {} : { 'Content-Type': 'application/json' }) },
@@ -15,6 +15,8 @@ export async function clubRequest(path, { accountId, body, signal } = {}) {
   const data = await response.json().catch(() => null);
   if (!response.ok) throw Object.assign(new Error(data?.message || 'Чат временно недоступен.'),
     { code: data?.error, status: response.status });
+  if (accountId && data?.accountId !== accountId) throw Object.assign(new Error('Аккаунт изменился. Войдите снова.'), { code: 'account_changed' });
+  if (room && data?.room?.id !== room) throw Object.assign(new Error('Не удалось подтвердить комнату. Повторите подключение.'), { code: 'invalid_chat_response' });
   return data && typeof data === 'object' ? { ...data, responseAgeMs: performance.now() - started } : data;
 }
 export function chatLease(data, expectedAccountId) {

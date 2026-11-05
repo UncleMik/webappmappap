@@ -197,11 +197,14 @@ function sourceLink(source) {
   let url; try { url = new URL(source.url, location.origin); } catch { return null; }
   if (url.origin !== 'https://app.legkie-rody.ru' || url.hash || url.username || url.password) return null;
   const expected = url.pathname === '/article.html' ? ['courseLesson', 'course', 'section']
-    : url.pathname === '/my-courses.html' ? ['course'] : null;
+    : url.pathname === '/my-courses.html' ? (url.searchParams.has('section') ? ['course', 'section'] : ['course']) : null;
   if (!expected) return null;
   const keys = [...url.searchParams.keys()];
   if (keys.length !== expected.length || new Set(keys).size !== expected.length || !expected.every(key => keys.includes(key) && /^[1-9][0-9]*$/.test(url.searchParams.get(key)) && Number.isSafeInteger(Number(url.searchParams.get(key))))) return null;
   const link = document.createElement('a'); link.href = url.href; link.textContent = source.title; link.target = '_blank'; link.rel = 'noopener noreferrer'; return link;
+}
+function failedMessage(message) {
+  return typeof message?.failureMessage === 'string' && message.failureMessage.trim() && message.failureMessage.length <= 500 ? message.failureMessage.trim() : 'Ответ не получен.';
 }
 function messageNode(message) {
   if (!message || !['user', 'assistant'].includes(message.role) || typeof message.content !== 'string') return null;
@@ -211,7 +214,7 @@ function messageNode(message) {
   const content = document.createElement('div'); content.className = 'message-content';
   const bubble = document.createElement('div'); bubble.className = 'bubble'; bubble.textContent = message.content; content.append(bubble);
   if (message.role === 'user' && message.status === 'failed') {
-    const failed = document.createElement('small'); failed.className = 'message-failed'; failed.textContent = 'Ответ не получен'; content.append(failed);
+    const failed = document.createElement('small'); failed.className = 'message-failed'; failed.textContent = failedMessage(message); content.append(failed);
   }
   const date = Date.parse(message.createdAt);
   if (Number.isFinite(date)) { const time = document.createElement('time'); time.dateTime = message.createdAt; time.textContent = timeFormat.format(date); content.append(time); }
@@ -272,7 +275,7 @@ function restorePending() {
     replyWaiting = true; render(); conversation.scrollTop = conversation.scrollHeight;
     notice('Нажмите «Проверить результат».');
   } else if ([...messages].reverse().find(item => item.role === 'user')?.status === 'failed') {
-    notice('Ответ не получен. Вопрос учтён в дневном лимите; можно задать новый.');
+    notice(`${failedMessage([...messages].reverse().find(item => item.role === 'user'))} Вопрос учтён в дневном лимите; можно задать новый.`);
   }
 }
 async function loadHistory(older = false) {
@@ -342,7 +345,7 @@ async function submit() {
     if (data.status === 'completed') { pending = null; input.value = ''; notice(''); }
     else if (data.status === 'failed') {
       pending = null; input.value = '';
-      const failure = typeof data.failureMessage === 'string' && data.failureMessage.trim() && data.failureMessage.length <= 500 ? data.failureMessage.trim() : 'Ответ не получен.';
+      const failure = failedMessage(data.messages?.find(item => item.role === 'user' && item.status === 'failed') || data);
       notice(`${failure} Вопрос учтён в дневном лимите; можно задать новый.`);
     } else notice('Нажмите «Проверить результат» через несколько секунд.');
   } catch (error) {

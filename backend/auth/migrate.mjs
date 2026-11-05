@@ -16,7 +16,10 @@ try {
   const clubDelete = await readFile(new URL('./club-delete-migration.sql', import.meta.url), 'utf8');
   const extraReactions = await readFile(new URL('./chat-reactions-extra-migration.sql', import.meta.url), 'utf8');
   const clubReading = await readFile(new URL('./club-reading-migration.sql', import.meta.url), 'utf8');
-  await transaction(pool, client => client.query(sql + '\n' + sessions + '\n' + courses + '\n' + personal + '\n' + club + '\n' + reactions + '\n' + clubDelete + '\n' + extraReactions + '\n' + clubReading));
+  const clubRooms = await readFile(new URL('./club-rooms-migration.sql', import.meta.url), 'utf8');
+  const aiChat = await readFile(new URL('./ai-chat-migration.sql', import.meta.url), 'utf8');
+  const aiFailure = await readFile(new URL('./ai-failure-migration.sql', import.meta.url), 'utf8');
+  await transaction(pool, client => client.query(sql + '\n' + sessions + '\n' + courses + '\n' + personal + '\n' + club + '\n' + reactions + '\n' + clubDelete + '\n' + extraReactions + '\n' + clubReading + '\n' + clubRooms + '\n' + aiChat + '\n' + aiFailure));
   console.log('Auth database migration complete');
 } catch {
   console.error('auth_migration_failed_check_private_configuration'); process.exitCode = 1;

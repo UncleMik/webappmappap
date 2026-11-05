@@ -94,6 +94,20 @@ def encoded_audio_fixture(mime):
     return output.getvalue()
 
 
+class SafeModuleURLTests(unittest.TestCase):
+    def test_course_module_and_lesson_urls(self):
+        for url in ('/my-courses.html?course=1', '/my-courses.html?course=1&section=22',
+                    '/my-courses.html?section=22&course=1',
+                    '/article.html?courseLesson=3&course=1&section=22'):
+            self.assertTrue(web.safe_url(url), url)
+        for query in ('course=1&section=0', 'course=1&section=-1', 'course=1&section=01',
+                      'course=1&section=2&section=3', 'course=1&section=2&extra=3',
+                      'course=1&section=2#x', 'section=2', 'course=1&section=',
+                      'course=1&section=2%26other=3', 'course=1&section=2/3'):
+            self.assertFalse(web.safe_url('/my-courses.html?' + query), query)
+        self.assertFalse(web.safe_url('https://evil.test/my-courses.html?course=1&section=2'))
+
+
 class AttachmentValidationTests(unittest.TestCase):
     def test_complete_extraction_requires_all_pages_and_nonempty_text(self):
         self.assertEqual(web.extracted_document('{"complete":true,"pages":2,"text":"Hb 110 г/л"}', 2), 'Hb 110 г/л')
@@ -197,8 +211,9 @@ class DocumentReaderTests(unittest.IsolatedAsyncioTestCase):
         with patch.object(web.asyncio, 'create_subprocess_exec', new=AsyncMock(return_value=process)) as spawn, \
              patch.object(web.asyncio, 'wait_for', side_effect=timeout), \
              patch.dict(web.os.environ, {'GEMINI_API_KEY': 'private-test', 'POSTGRES_PASSWORD': 'private-db'}):
-            with self.assertRaises(web.AttachmentError):
+            with self.assertRaises(web.AttachmentError) as raised:
                 await web.validated_file(b'image', 'image/png')
+            self.assertEqual(str(raised.exception), 'timeout')
             process.kill.assert_called_once()
             process.wait.assert_awaited_once()
             env = spawn.call_args.kwargs['env']
@@ -239,6 +254,26 @@ class DocumentReaderTests(unittest.IsolatedAsyncioTestCase):
             with patch.object(web, 'gemini_document', new=AsyncMock(return_value=None)), patch.object(web, 'grok_document', new=AsyncMock(return_value=result)) as grok:
                 await web.DocumentReader().read(b'png', 'image/png', 1)
                 grok.assert_awaited_once()
+
+    async def test_provider_failure_codes_preserve_fallback_and_hide_details(self):
+        response = httpx.Response(429, request=httpx.Request('POST', 'https://provider.test'))
+        failures = ((asyncio.TimeoutError('private'), 'timeout'),
+                    (httpx.ReadTimeout('private'), 'timeout'),
+                    (httpx.ConnectError('private'), 'provider_unavailable'),
+                    (httpx.HTTPStatusError('private', request=response.request, response=response), 'busy'),
+                    (RuntimeError('private'), 'unknown_failure'))
+        for error, code in failures:
+            with self.subTest(code=code), patch.dict(sys.modules, {'config': self.config()}), \
+                 patch.object(web, 'gemini_document', new=AsyncMock(side_effect=error)), \
+                 patch.object(web, 'grok_document', new=AsyncMock(side_effect=error)):
+                with self.assertRaises(web.AttachmentError) as raised:
+                    await web.DocumentReader().read(b'png', 'image/png', 1)
+                self.assertEqual(str(raised.exception), code)
+        good = '{"complete":true,"pages":1,"text":"Hb 123 g/L"}'
+        with patch.dict(sys.modules, {'config': self.config()}), \
+             patch.object(web, 'gemini_document', new=AsyncMock(side_effect=httpx.ConnectError('private'))), \
+             patch.object(web, 'grok_document', new=AsyncMock(return_value=good)):
+            self.assertEqual(await web.DocumentReader().read(b'png', 'image/png', 1), 'Hb 123 g/L')
 
     async def test_uncertain_extraction_cannot_be_overruled_by_fallback_guess(self):
         with patch.dict(sys.modules, {'config': self.config()}), patch.object(web, 'gemini_document', new=AsyncMock(return_value='{"complete":false,"pages":0,"text":""}')), patch.object(web, 'grok_document', new=AsyncMock()) as grok:
@@ -786,6 +821,21 @@ class AdapterTests(unittest.IsolatedAsyncioTestCase):
         self.assertEqual((await self.post(payload())).status_code, 503)
         release.set()
         self.assertEqual([r.status_code for r in await asyncio.gather(*tasks)], [200, 200])
+
+    async def test_safe_failure_http_statuses(self):
+        for code, status in web.FAILURE_STATUSES.items():
+            class FailedReader:
+                async def read(self, *args):
+                    raise web.AttachmentError(code)
+            app = web.create_app(KEY, FakeRepo(), FakeModel(), FailedReader())
+            p = {**payload(), 'attachment': image_attachment()}
+            async with httpx.AsyncClient(transport=httpx.ASGITransport(app=app), base_url='http://test') as client:
+                raw = json.dumps(p).encode()
+                stamp = str(int(time.time()))
+                signature = hmac.new(KEY, stamp.encode() + b'\n' + raw, hashlib.sha256).hexdigest()
+                result = await client.post('/reply', content=raw,
+                    headers={'x-lara-timestamp': stamp, 'x-lara-signature': signature})
+            self.assertEqual((result.status_code, result.json()), (status, {'error': code}))
 
     async def test_provider_error_does_not_leak_or_allow_retry(self):
         class BadModel:

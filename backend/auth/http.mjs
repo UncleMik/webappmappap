@@ -73,7 +73,9 @@ export function createAuthServer({ service, store, courseChecks, courseMaterials
       const photoVersion = url.pathname === '/api/auth/profile-photo' && request.method === 'GET' &&
         url.searchParams.size === 1 && /^[0-9a-f-]{36}$/i.test(url.searchParams.get('v') || '')
         ? url.searchParams.get('v') : null;
-      if (url.search && !photoVersion) throw new AuthError(400, 'invalid_url', 'Неверный запрос.');
+      const clubRoomQuery = (url.pathname === '/api/auth/club' || url.pathname.startsWith('/api/auth/club/')) && url.searchParams.size === 1 && url.searchParams.has('room');
+      const clubRoom = clubRoomQuery ? url.searchParams.get('room') : undefined;
+      if (url.search && !photoVersion && !clubRoomQuery) throw new AuthError(400, 'invalid_url', 'Неверный запрос.');
       if (request.method === 'GET' && url.pathname === '/api/auth/check') {
         const user = await service.session(readSessionCookie(request));
         if (!user) throw new AuthError(401, 'sign_in_required', 'Войдите в аккаунт.');
@@ -94,19 +96,19 @@ export function createAuthServer({ service, store, courseChecks, courseMaterials
         if (!clubChat) throw new AuthError(503, 'club_unavailable', 'Чат временно недоступен.');
         const expected = request.headers['x-webpril-account'];
         if (url.pathname === '/api/auth/club') {
-          send(200, await clubChat.info(readSessionCookie(request), expected)); return;
+          send(200, await clubChat.info(readSessionCookie(request), expected, clubRoom)); return;
         }
         if (request.headers['x-webpril-chat-version'] !== '2') {
           if (!await service.session(readSessionCookie(request))) throw new AuthError(401,'sign_in_required','Войдите в аккаунт.');
           throw new AuthError(409, 'chat_update_required', 'Чат обновлён. Обновите страницу.');
         }
         const changes = url.pathname.match(/^\/api\/auth\/club\/changes\/after\/(0|[1-9]\d{0,18})$/);
-        if (changes) { send(200, await clubChat.changes(readSessionCookie(request), expected, changes[1])); return; }
+        if (changes) { send(200, await clubChat.changes(readSessionCookie(request), expected, changes[1], clubRoom)); return; }
         const around = url.pathname.match(/^\/api\/auth\/club\/messages\/around\/([1-9]\d{0,18})$/);
-        if (around) { send(200, await clubChat.around(readSessionCookie(request), expected, around[1])); return; }
+        if (around) { send(200, await clubChat.around(readSessionCookie(request), expected, around[1], clubRoom)); return; }
         const cursor = url.pathname.match(/^\/api\/auth\/club\/messages\/(before|after)\/(0|[1-9]\d{0,18})$/);
         if (url.pathname !== '/api/auth/club/messages' && !cursor) { send(404, { error: 'not_found' }); return; }
-        send(200, await clubChat.messages(readSessionCookie(request), expected, cursor?.[1], cursor?.[2])); return;
+        send(200, await clubChat.messages(readSessionCookie(request), expected, cursor?.[1], cursor?.[2], clubRoom)); return;
       }
       if (request.method === 'GET' && url.pathname === '/api/auth/profile-photo') {
         if (!profilePhoto) throw new AuthError(503, 'photo_unavailable', 'Фото временно недоступно.');
@@ -198,12 +200,12 @@ export function createAuthServer({ service, store, courseChecks, courseMaterials
           throw new AuthError(409, 'chat_update_required', 'Чат обновлён. Обновите страницу.');
         }
         const action = url.pathname.endsWith('/read') ? 'markRead' : 'search';
-        send(200, await clubChat[action](readSessionCookie(request), request.headers['x-webpril-account'], data)); return;
+        send(200, await clubChat[action](readSessionCookie(request), request.headers['x-webpril-account'], data, clubRoom)); return;
       }
       if (url.pathname === '/api/auth/club/reactions' || url.pathname === '/api/auth/club/reactions/read') {
         if (!clubChat) throw new AuthError(503, 'club_unavailable', 'Чат временно недоступен.');
         const action = url.pathname.endsWith('/read') ? 'reactions' : 'react';
-        send(200, await clubChat[action](readSessionCookie(request), request.headers['x-webpril-account'], data)); return;
+        send(200, await clubChat[action](readSessionCookie(request), request.headers['x-webpril-account'], data, clubRoom)); return;
       }
       const deleteMessage = url.pathname.match(/^\/api\/auth\/club\/messages\/([1-9]\d{0,18})\/delete$/);
       if (url.pathname === '/api/auth/club/messages' || deleteMessage) {
@@ -213,9 +215,9 @@ export function createAuthServer({ service, store, courseChecks, courseMaterials
           throw new AuthError(409, 'chat_update_required', 'Чат обновлён. Обновите страницу.');
         }
         if (deleteMessage) {
-          send(200, await clubChat.deleteMessage(readSessionCookie(request), request.headers['x-webpril-account'], deleteMessage[1], data)); return;
+          send(200, await clubChat.deleteMessage(readSessionCookie(request), request.headers['x-webpril-account'], deleteMessage[1], data, clubRoom)); return;
         }
-        send(200, await clubChat.send(readSessionCookie(request), request.headers['x-webpril-account'], data)); return;
+        send(200, await clubChat.send(readSessionCookie(request), request.headers['x-webpril-account'], data, clubRoom)); return;
       }
       if (url.pathname === '/api/auth/personal') {
         if (!personalData) throw new AuthError(503, 'personal_data_unavailable', 'Личные данные временно недоступны.');

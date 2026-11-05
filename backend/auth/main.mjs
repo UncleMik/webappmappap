@@ -45,7 +45,7 @@ if (courseChecks) {
 const aiChat = config.laraWeb && courseMaterials ? createAiChat({ pool, service, courseMaterials, ...config.laraWeb }) : null;
 const server = createAuthServer({ ...config, service, store, courseChecks, courseMaterials, aiChat,
   personalData: createPersonalData(pool), profilePhoto: createProfilePhoto(pool),
-  clubChat: createClubChat({ pool, service, courseChecks, store, ownerUserId: config.clubOwnerUserId }), trustProxy: true });
+  clubChat: createClubChat({ pool, service, courseMaterials, store, ownerUserId: config.clubOwnerUserId }), trustProxy: true });
 let working = false, stopping = false, lastCleanup = 0;
 const worker = setInterval(async () => {
   if (working || stopping || !config.enabled) return;

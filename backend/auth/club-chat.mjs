@@ -1,26 +1,26 @@
 import { createHash } from 'node:crypto';
-import { activeCourseProducts } from '../course-entitlements.mjs';
 import { AuthError, hashToken } from './security.mjs';
 import { transaction } from './store.mjs';
 
-const ROOM = Object.freeze({ id: 'pregnancy-students', title: 'Лёгкие роды · Чат участниц' });
-// The approved main course products, not bonus lessons or the Telegram group product.
-const COURSES = [
-  { productId: 4302509, trainingId: 935386893, type: 'training' },
-  { productId: 4309095, trainingId: 935397478, type: 'training' },
-];
+export const CLUB_ROOMS = Object.freeze([
+  ...[1, 2, 3].map(n => Object.freeze({ id: `pregnancy-trimester-${n}`, title: `Беременность — ${n} триместр`, kind: 'participants' })),
+  Object.freeze({ id: 'mother-0-6', title: 'Я мама — от 0 до 6 месяцев', kind: 'participants' }),
+  Object.freeze({ id: 'mother-6-plus', title: 'Я мама — от 6 месяцев', kind: 'participants' }),
+  Object.freeze({ id: 'experts-birth', title: 'По родам', kind: 'experts' }),
+  Object.freeze({ id: 'experts-motherhood', title: 'По материнству', kind: 'experts' }),
+]);
 const uuid = value => typeof value === 'string' && /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(value);
 const messageId = value => typeof value === 'string' && /^[1-9]\d{0,18}$/.test(value) && BigInt(value) <= 9223372036854775807n;
 const bad = () => new AuthError(400, 'invalid_chat_message', 'Проверьте сообщение.');
 const signedOut = () => new AuthError(401, 'sign_in_required', 'Войдите в аккаунт.');
 const changed = () => new AuthError(409, 'account_changed', 'Аккаунт изменился. Обновите страницу.');
-const denied = () => new AuthError(403, 'club_course_required', 'Чат доступен при действующем доступе к курсу «Лёгкие роды».');
+const denied = () => new AuthError(403, 'club_course_required', 'Экспертный чат доступен при действующей покупке курса школы.');
 const unavailable = () => new AuthError(503, 'club_unavailable', 'Чат временно недоступен. Попробуйте ещё раз.');
 const badReaction = () => new AuthError(400, 'invalid_chat_reaction', 'Выберите одну из доступных реакций.');
 const reactionMissing = () => new AuthError(404, 'reaction_message_not_found', 'Сообщение для реакции не найдено.');
 const missing = () => new AuthError(404, 'chat_message_not_found', 'Сообщение не найдено.');
 const badSearch = () => new AuthError(400, 'invalid_chat_search', 'Введите от 2 до 100 символов для поиска.');
-async function reactionStates(client, userId, ids) {
+async function roomReactionStates(client, userId, ids, ROOM) {
   if (!ids.length) return [];
   const { rows } = await client.query(`SELECT m.id,
     count(r.user_id) FILTER (WHERE r.reaction='heart')::integer AS heart,
@@ -50,7 +50,8 @@ const format = (row, owner = false) => ({ id: String(row.id), text: row.deleted_
 const fingerprint = (text, replyTo) => createHash('sha256').update(JSON.stringify([text, replyTo])).digest('hex');
 const cursorId = value => value === '0' || messageId(value);
 
-export function createClubChat({ pool, service, courseChecks, store, ownerUserId = null, clock = Date.now }) {
+function createRoomChat({ pool, service, courseMaterials, store, ownerUserId = null, clock = Date.now }, ROOM) {
+  const reactionStates = (client, userId, ids) => roomReactionStates(client, userId, ids, ROOM);
   if (ownerUserId !== null && !uuid(ownerUserId)) throw new Error('Invalid Club owner');
   async function access(token, expectedAccountId, required, action, sending = false) {
     const user = await service.session(token);
@@ -58,22 +59,29 @@ export function createClubChat({ pool, service, courseChecks, store, ownerUserId
     if (expectedAccountId !== undefined && (!uuid(expectedAccountId) || expectedAccountId !== user.id)) throw changed();
     if (!user.profile?.completedAt) throw new AuthError(403, 'onboarding_required', 'Заполните профиль, чтобы открыть чат.');
     const owner = ownerUserId !== null && user.id === ownerUserId.toLowerCase();
-    let check, products;
-    try {
-      if (!courseChecks) throw unavailable();
-      check = await courseChecks.requireCurrent(user.id);
-      const now = clock(), end = Date.parse(check?.expiresAt), start = Date.parse(check?.checkedAt);
-      if (!Number.isFinite(end) || !Number.isFinite(start) || start > now || end <= now || end <= start || end - start > 300_000) throw unavailable();
-      products = activeCourseProducts(COURSES, check, now);
-    } catch (error) {
-      if (!owner || sending) throw error;
-      check = { checkedAt: new Date(clock()).toISOString(), expiresAt: new Date(clock() + 60_000).toISOString() };
-      products = [];
+    const free = ROOM.kind === 'participants';
+    let check = { checkedAt: new Date(clock()).toISOString(), expiresAt: new Date(clock() + 60_000).toISOString() };
+    let canSend = free, validUntil = Date.parse(check.expiresAt);
+    if (!free) {
+      try {
+        if (!courseMaterials) throw unavailable();
+        const rights = await courseMaterials.list(user.id);
+        const now = clock(), end = Date.parse(rights.expiresAt), start = Date.parse(rights.checkedAt);
+        validUntil = Date.parse(rights.validUntil);
+        if (!Number.isFinite(end) || !Number.isFinite(start) || !Number.isFinite(validUntil)
+          || start > now || end <= now || end <= start || end - start > 300_000
+          || validUntil > end || validUntil <= now || !Array.isArray(rights.courses)) throw unavailable();
+        check = rights;
+        canSend = rights.courses.length > 0;
+      } catch (error) {
+        if (!owner || sending) throw unavailable();
+        check = { checkedAt: new Date(clock()).toISOString(), expiresAt: new Date(clock() + 60_000).toISOString() };
+        validUntil = Date.parse(check.expiresAt);
+      }
     }
-    const canSend = products.length > 0, allowed = canSend || owner;
+    const allowed = canSend || owner;
     if ((required && !allowed) || (sending && !canSend)) throw denied();
-    let validUntil = canSend ? Math.max(...products.map(p => p.validUntil)) : Date.parse(check.expiresAt);
-    if (owner) validUntil = Math.min(validUntil, clock() + 60_000);
+    if (owner && !free) validUntil = Math.min(validUntil, clock() + 60_000);
     if (required) await store.rateLimit('club_read_or_send', user.id, 180);
     return transaction(pool, async client => {
       const { rows: [session] } = await client.query(`SELECT s.user_id,s.expires_at,u.profile
@@ -83,11 +91,12 @@ export function createClubChat({ pool, service, courseChecks, store, ownerUserId
       if (!session) throw signedOut();
       if (session.user_id !== user.id) throw changed();
       if (!session.profile?.completedAt) throw new AuthError(403, 'onboarding_required', 'Заполните профиль, чтобы открыть чат.');
+      validUntil = Math.min(validUntil, +new Date(session.expires_at));
       if (clock() >= validUntil) throw unavailable();
       const result = await action(client, user.id, allowed, owner);
       if (clock() >= +new Date(session.expires_at)) throw signedOut();
       if (clock() >= validUntil) throw unavailable();
-      return { ...result, accountId: user.id, serverTime: new Date(clock()).toISOString(),
+      return { ...result, room: ROOM, accountId: user.id, serverTime: new Date(clock()).toISOString(),
         checkedAt: check.checkedAt, validUntil: new Date(validUntil).toISOString(), canSend, canModerate: owner };
     });
   }
@@ -245,6 +254,9 @@ export function createClubChat({ pool, service, courseChecks, store, ownerUserId
       if (!text || text.length > 2000 || (replyTo !== null && !messageId(replyTo))) throw bad();
       return access(token, expectedAccountId, true, async (client, userId, _, owner) => {
         await state(client, true);
+        await client.query('SELECT pg_advisory_xact_lock(hashtext($1))', [userId + ':' + data.requestId]);
+        const { rows: reused } = await client.query('SELECT room FROM club_messages WHERE author_id=$1 AND request_id=$2', [userId, data.requestId]);
+        if (reused.length && reused[0].room !== ROOM.id) throw new AuthError(409, 'chat_request_reused', 'Сообщение изменилось. Отправьте его ещё раз.');
         const digest = fingerprint(text, replyTo);
         const { rows: [existing] } = await client.query(`SELECT ${columns},m.reply_to_id,m.request_digest ${joins}
           WHERE m.room=$1 AND m.author_id=$2 AND m.request_id=$3`, [ROOM.id, userId, data.requestId]);
@@ -300,6 +312,47 @@ export function createClubChat({ pool, service, courseChecks, store, ownerUserId
           fingerprint(message.body,message.reply_to_id == null ? null : String(message.reply_to_id))]);
         return { deletedId: id, duplicate: false };
       });
+    },
+  });
+}
+
+// Room choice is explicit at the API boundary; legacy room IDs are never exposed.
+export function createClubChat(options) {
+  const rooms = new Map(CLUB_ROOMS.map(room => [room.id, createRoomChat(options, room)]));
+  const selected = id => {
+    const room = rooms.get(id);
+    if (!room) throw new AuthError(404, 'club_room_not_found', 'Чат не найден.');
+    return room;
+  };
+  const methods = {};
+  const arity = { messages: 4, markRead: 3, around: 3, search: 3, reactions: 3, react: 3, send: 3, changes: 3, deleteMessage: 4 };
+  for (const [name, count] of Object.entries(arity)) methods[name] = async (...args) => selected(args[count])[name](...args.slice(0, count));
+  return Object.freeze({ ...methods,
+    async info(token, expectedAccountId, roomId) {
+      if (roomId !== undefined) return selected(roomId).info(token, expectedAccountId);
+      const entries = [];
+      let accountId;
+      for (const room of CLUB_ROOMS) {
+        try {
+          const value = await rooms.get(room.id).info(token, expectedAccountId);
+          accountId = value.accountId;
+          entries.push({ ...room, allowed: value.access === 'available', ...value, room: undefined,
+            unreadCount: value.readState.unreadCount });
+        } catch (error) {
+          if (room.kind !== 'experts' || error.status !== 503) throw error;
+          entries.push({ ...room, allowed: false, canSend: false, canModerate: false,
+            access: 'temporarily_unavailable', unreadCount: 0, readState: null,
+            serverTime: new Date((options.clock || Date.now)()).toISOString(), checkedAt: null, validUntil: null });
+        }
+      }
+      // A slow GetCourse request must not return an already revoked session with free cards.
+      let confirmed;
+      for (let index = 0; index < 5; index++) {
+        const room = CLUB_ROOMS[index];
+        confirmed = await rooms.get(room.id).info(token, accountId);
+        entries[index] = { ...room, allowed: true, ...confirmed, room: undefined, unreadCount: confirmed.readState.unreadCount };
+      }
+      return { accountId, rooms: entries, serverTime: confirmed.serverTime };
     },
   });
 }

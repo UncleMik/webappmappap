@@ -19,6 +19,43 @@ const RETENTION_MS = 90 * 86_400_000;
 const IN_FLIGHT_MS = 70_000;
 const MODEL_HISTORY_CHARS = 20_000;
 const MAX_REPLY_BYTES = 128 * 1024;
+const FAILURE_MESSAGES = Object.freeze({
+  invalid_attachment: 'Не удалось прочитать файл. Поддерживаются PDF до 10 страниц и фотографии JPG/PNG до 16 Мп, размером до 10 МБ.',
+  attachment_unreadable: 'Не удалось уверенно прочитать показатели. Прикрепите более чёткий файл или фото.',
+  provider_unavailable: 'Сервис ответов Лары временно недоступен. Попробуйте немного позже.',
+  timeout: 'Обработка заняла слишком много времени. Попробуйте ещё раз немного позже.',
+  busy: 'Лара сейчас обрабатывает другой файл. Попробуйте позже.',
+  unknown_failure: 'Ларе не удалось подготовить ответ. Попробуйте немного позже.',
+  bridge_unavailable: 'Не удалось связаться с сервисом Лары. Попробуйте немного позже.',
+  invalid_response: 'Не удалось получить корректный ответ Лары. Попробуйте немного позже.',
+  request_expired: 'Не удалось завершить обработку вопроса вовремя. Можно задать его снова.',
+});
+function failureFields(row) {
+  if (row.status !== 'failed') return {};
+  const failureCode = Object.hasOwn(FAILURE_MESSAGES, row.failure_code) ? row.failure_code : 'unknown_failure';
+  return { failureCode, failureMessage: FAILURE_MESSAGES[failureCode] };
+}
+const moduleSource = course => /^Модуль(?:\s|\.)/u.test(course);
+function sourceModuleUrl(source, ctx) {
+  const ids = new Set(source.lessonIds);
+  for (const course of ctx.courses) {
+    const lessons = ctx.lessons.filter(l => l.productId === course.productId && ids.has(l.lessonId));
+    if (new Set(lessons.map(l => l.lessonId)).size !== ids.size) continue;
+    const paths = lessons.map(l => Array.isArray(l.sectionPath) && l.sectionPath.length
+      && l.sectionPath.at(-1) === l.sectionId ? l.sectionPath : [l.sectionId]);
+    const common = [];
+    for (const [index, sid] of paths[0].entries()) {
+      if (!paths.every(path => path[index] === sid)) break;
+      common.push(sid);
+    }
+    const section = common.at(-1);
+    // The existing module page lists direct sections with readable lessons.
+    if (Number.isSafeInteger(section) && section > 0
+      && lessons.some(l => l.sectionId === section))
+      return `/my-courses.html?course=${course.productId}&section=${section}`;
+  }
+  return null;
+}
 const conversationPhrase = new RegExp('^(?:(?:'
   + '(?:доктор )?лара|привет(?:ик)?|здравствуй(?:те)?|доброе утро|добрый (?:день|вечер)|'
   + 'доброго (?:дня|вечера|времени суток)|спасибо(?: (?:большое|огромное|за (?:ответ|помощь)))?|'
@@ -82,13 +119,18 @@ function profileFor(user, now) {
   throw unavailable();
 }
 const format = row => ({ id: String(row.id), role: 'user', content: row.question, status: row.status,
-  createdAt: new Date(row.accepted_at).toISOString(), requestId: row.request_id });
-function messages(row) {
+  createdAt: new Date(row.accepted_at).toISOString(), requestId: row.request_id, ...failureFields(row) });
+function messages(row, currentSources) {
   const result = [format(row)];
   if (row.status === 'completed') result.push({ id: `${row.id}:answer`, role: 'assistant', content: row.answer,
     createdAt: new Date(row.accepted_at).toISOString(), requestId: row.request_id,
     sources: (!conversationOnly(row.question) && Array.isArray(row.sources) ? row.sources : []).filter(source => source?.selection === 'answer')
-      .slice(0, 3).map(({ id, title, url }) => ({ id, title, url })) });
+      .slice(0, 3).map(({ id, title, url }) => {
+        const current = currentSources?.get(id);
+        // Resolve old module links using current readable catalog metadata.
+        if (moduleSource(String(id))) return current || null;
+        return { id, title, url };
+      }).filter(Boolean) });
   return result;
 }
 async function signedSession(pool, token, userId, clock) {
@@ -122,6 +164,7 @@ export function createAiChat({ pool, service, courseMaterials, sourceMapPath, ur
     const lessonById = new Map(ctx.lessons.map(l => [l.lessonId, l]));
     const sourceKeys = new Set();
     const allowedKnowledgeSources = [];
+    const canonicalKnowledgeSources = [];
     // Free accounts use readable inline lessons only, never broad knowledge chunks.
     for (const source of ctx.courses.length ? map.sources : []) {
       if (!source.lessonIds.every(id => available.has(id))) continue;
@@ -129,11 +172,12 @@ export function createAiChat({ pool, service, courseMaterials, sourceMapPath, ur
       if (sourceKeys.has(key)) continue; // Alternative approved lesson sets are OR, not a combined AND.
       sourceKeys.add(key);
       const lesson = lessonById.get(source.lessonIds[0]);
-      allowedKnowledgeSources.push({ course: source.course, source: source.source,
-        // A folder-to-module match is not an exact transcript-to-lesson match.
-        // Link to the owned course, rather than pretending its first lesson is
-        // the source of this particular transcript.
-        title: source.title || source.course, url: `/my-courses.html?course=${lesson.productId}` });
+      const canonical = { course: source.course, source: source.source,
+        title: source.title || source.course, url: `/my-courses.html?course=${lesson.productId}` };
+      // A display URL does not change purchases or invalidate accepted request UUIDs.
+      canonicalKnowledgeSources.push(canonical);
+      const target = moduleSource(source.course) ? sourceModuleUrl(source, ctx) : canonical.url;
+      if (target) allowedKnowledgeSources.push({ ...canonical, url: target });
     }
     const gcUrls = new Map((map.lessonUrls || []).filter(row => available.has(row.lessonId))
       .map(row => [row.lessonId, row.urls]));
@@ -142,9 +186,14 @@ export function createAiChat({ pool, service, courseMaterials, sourceMapPath, ur
     const rightsHash = sha(JSON.stringify({ profile: [user.profile.stage, user.profile.dueDate, user.profile.birthDate],
       courses: ctx.courses.map(c => c.productId).sort(),
       lessons: ctx.lessons.map(l => [l.lessonId, l.sectionId, l.productId, l.contentHash]).sort((a, b) => a[0] - b[0]),
-      sources: allowedKnowledgeSources.sort((a, b) => a.source.localeCompare(b.source)), mapHash: sha(JSON.stringify(map)) }));
+      sources: canonicalKnowledgeSources.sort((a, b) => a.source.localeCompare(b.source)), mapHash: sha(JSON.stringify(map)) }));
+    const currentSources = new Map([
+      ...allowedLessons.map(l => [String(l.lessonId), { id: String(l.lessonId), title: l.title, url: l.url }]),
+      ...allowedKnowledgeSources.map(s => [`${s.course}:${s.source}`,
+        { id: `${s.course}:${s.source}`, title: s.title, url: s.url }]),
+    ]);
     await signedSession(pool, token, user.id, clock);
-    return { user, ctx, allowedKnowledgeSources, allowedLessons, rightsHash, dailyLimit };
+    return { user, ctx, allowedKnowledgeSources, allowedLessons, currentSources, rightsHash, dailyLimit };
   }
   async function quota(userId, limit) {
     const capturedNow = clock(), today = day(capturedNow);
@@ -175,8 +224,17 @@ export function createAiChat({ pool, service, courseMaterials, sourceMapPath, ur
       return () => { fileInFlight = false; };
     } });
   async function failStale(userId, client = pool) {
-    await client.query(`UPDATE ai_chat_requests SET status='failed' WHERE user_id=$1
+    await client.query(`UPDATE ai_chat_requests SET status='failed',failure_code='request_expired' WHERE user_id=$1
       AND status='pending' AND accepted_at<=$2`, [userId, new Date(clock() - IN_FLIGHT_MS)]);
+  }
+  async function terminalResult(token, expected, userId, requestId) {
+    const { rows: [row] } = await pool.query('SELECT * FROM ai_chat_requests WHERE user_id=$1 AND request_id=$2', [userId, requestId]);
+    const current = await access(token, expected);
+    if (!row || row.status === 'pending') throw unavailable();
+    if (row.rights_hash !== current.rightsHash)
+      throw new AuthError(409, 'ai_access_changed', 'Доступ к материалам изменился. Обновите страницу.');
+    return { accountId: userId, requestId, status: row.status, ...failureFields(row),
+      messages: messages(row, current.currentSources), quota: await quota(userId, current.dailyLimit) };
   }
   async function history(token, expected, before) {
     const a = await access(token, expected);
@@ -184,12 +242,12 @@ export function createAiChat({ pool, service, courseMaterials, sourceMapPath, ur
       throw new AuthError(400, 'invalid_cursor', 'Обновите историю.');
     await failStale(a.user.id);
     const cutoff = new Date(clock() - RETENTION_MS);
-    const { rows } = await pool.query(`SELECT id,request_id,question,answer,sources,status,accepted_at FROM ai_chat_requests
+    const { rows } = await pool.query(`SELECT id,request_id,question,answer,sources,status,accepted_at,failure_code FROM ai_chat_requests
       WHERE user_id=$1 AND accepted_at>=$2 AND ($3::bigint IS NULL OR id<$3::bigint)
       ORDER BY id DESC LIMIT 31`, [a.user.id, cutoff, before || null]);
     const current = await access(token, expected);
     const page = rows.slice(0, 30);
-    return { accountId: a.user.id, messages: page.reverse().flatMap(messages), hasMore: rows.length > 30,
+    return { accountId: a.user.id, messages: page.reverse().flatMap(row => messages(row, current.currentSources)), hasMore: rows.length > 30,
       nextBefore: rows.length > 30 ? String(rows[29].id) : null, quota: await quota(a.user.id, current.dailyLimit) };
   }
   async function status(token, expected, data) {
@@ -201,7 +259,8 @@ export function createAiChat({ pool, service, courseMaterials, sourceMapPath, ur
     if (!row) throw new AuthError(404, 'ai_request_not_found', 'Вопрос не был принят. Можно отправить его снова.');
     const current = await access(token, expected);
     if (current.rightsHash !== row.rights_hash) throw new AuthError(409, 'ai_access_changed', 'Доступ к материалам изменился. Обновите страницу.');
-    return { accountId: a.user.id, requestId, status: row.status, messages: messages(row), quota: await quota(a.user.id, a.dailyLimit) };
+    return { accountId: a.user.id, requestId, status: row.status, ...failureFields(row),
+      messages: messages(row, current.currentSources), quota: await quota(a.user.id, a.dailyLimit) };
   }
   async function send(token, expected, data) {
     const a = await access(token, expected);
@@ -250,7 +309,7 @@ export function createAiChat({ pool, service, courseMaterials, sourceMapPath, ur
     if (existing.question_hash !== questionHash) throw new AuthError(409, 'request_id_conflict', 'Обновите страницу и повторите вопрос.');
     if (existing.rights_hash !== a.rightsHash) throw new AuthError(409, 'ai_access_changed', 'Доступ к материалам изменился. Обновите страницу.');
     if (!existing.newlyAccepted) return { accountId: a.user.id, requestId, status: existing.status,
-      messages: messages(existing), quota: await quota(a.user.id, a.dailyLimit) };
+      ...failureFields(existing), messages: messages(existing, a.currentSources), quota: await quota(a.user.id, a.dailyLimit) };
     const { rows: prior } = await pool.query(`SELECT question,answer FROM ai_chat_requests WHERE user_id=$1 AND status='completed'
       AND rights_hash=$2 AND accepted_at>=$3 AND id<$4 ORDER BY id DESC LIMIT 10`,
     [a.user.id, a.rightsHash, new Date(clock() - RETENTION_MS), existing.id]);
@@ -268,13 +327,17 @@ export function createAiChat({ pool, service, courseMaterials, sourceMapPath, ur
     const body = Buffer.from(JSON.stringify({ requestId, question: text, ...(file ? { attachment: file.attachment } : {}), profile: profileFor(a.user, clock()),
       history: historyForModel, allowedKnowledgeSources: skipMaterials ? [] : a.allowedKnowledgeSources,
       allowedLessons: skipMaterials ? [] : a.allowedLessons, sources }));
-    if (body.length > (file ? MAX_AI_BODY_BYTES : 500_000)) throw unavailable();
     const timestamp = String(Math.floor(clock() / 1000));
     const signature = createHmac('sha256', secret).update(timestamp).update('\n').update(body).digest('hex');
-    let reply, failureMessage;
+    let reply, failureCode = 'bridge_unavailable';
     try {
+      if (body.length > (file ? MAX_AI_BODY_BYTES : 500_000)) {
+        failureCode = 'invalid_response';
+        throw unavailable();
+      }
       const response = await fetchImpl(endpoint, { method: 'POST', body, signal: AbortSignal.timeout(65_000),
         headers: { 'Content-Type': 'application/json', 'X-Lara-Timestamp': timestamp, 'X-Lara-Signature': signature } });
+      failureCode = 'invalid_response';
       if (response.body?.getReader) {
         const reader = response.body.getReader(), chunks = [];
         let bytes = 0;
@@ -291,32 +354,27 @@ export function createAiChat({ pool, service, courseMaterials, sourceMapPath, ur
       } else reply = await response.json(); // Test adapters without a Response stream.
       if (!response.ok) {
         // Only fixed messages cross the public boundary; never return or persist provider details.
-        if (response.status === 422 && reply?.error === 'invalid_attachment')
-          failureMessage = 'Не удалось прочитать файл. Поддерживаются PDF до 10 страниц и фотографии JPG/PNG до 16 Мп, размером до 10 МБ.';
-        else if (response.status === 422 && reply?.error === 'attachment_unreadable')
-          failureMessage = 'Не удалось уверенно прочитать показатели. Прикрепите более чёткий файл или фото.';
-        else if (response.status === 503 && reply?.error === 'busy')
-          failureMessage = 'Лара сейчас обрабатывает другой файл. Попробуйте позже.';
+        const known = { invalid_attachment: 422, attachment_unreadable: 422, busy: 503,
+          provider_unavailable: 502, timeout: 504, unknown_failure: 502 };
+        failureCode = Object.hasOwn(known, reply?.error) && known[reply.error] === response.status
+          ? reply.error : 'unknown_failure';
         throw unavailable();
       }
       if (reply?.requestId !== requestId || typeof reply.answer !== 'string' || !reply.answer.trim()
         || reply.answer.length > 20_000 || !Array.isArray(reply.sources) || reply.sources.length > 20) throw unavailable();
-    } catch {
-      const { rows: [failed] } = await pool.query(`UPDATE ai_chat_requests SET status='failed'
-        WHERE user_id=$1 AND request_id=$2 AND status='pending' RETURNING *`, [a.user.id, requestId]);
+    } catch (error) {
+      if (error?.name === 'TimeoutError' || error?.name === 'AbortError') failureCode = 'timeout';
+      const { rows: [failed] } = await pool.query(`UPDATE ai_chat_requests SET status='failed',failure_code=$3
+        WHERE user_id=$1 AND request_id=$2 AND status='pending' RETURNING *`, [a.user.id, requestId, failureCode]);
       const current = await access(token, expected);
       if (current.rightsHash !== a.rightsHash) throw new AuthError(409, 'ai_access_changed', 'Доступ к материалам изменился. Обновите страницу.');
-      if (!failed) throw unavailable();
-      return { accountId: a.user.id, requestId, status: 'failed', messages: messages(failed), quota: await quota(a.user.id, a.dailyLimit),
-        ...(failureMessage ? { failureMessage } : {}) };
+      if (!failed) return terminalResult(token, expected, a.user.id, requestId);
+      return { accountId: a.user.id, requestId, status: 'failed', ...failureFields(failed),
+        messages: messages(failed, current.currentSources), quota: await quota(a.user.id, a.dailyLimit) };
     }
     const current = await access(token, expected);
     if (current.rightsHash !== a.rightsHash) throw new AuthError(409, 'ai_access_changed', 'Доступ к материалам изменился. Обновите страницу.');
-    const knownSources = new Map([
-      ...a.allowedLessons.map(l => [String(l.lessonId), { id: String(l.lessonId), title: l.title, url: l.url }]),
-      ...a.allowedKnowledgeSources.map(s => [`${s.course}:${s.source}`,
-        { id: `${s.course}:${s.source}`, title: s.title, url: s.url }]),
-    ]);
+    const knownSources = a.currentSources;
     const safeSources = !skipMaterials && reply.sourcePolicy === 'used_v1' ? [...new Map(reply.sources
       .map(ref => knownSources.get(String(ref?.id))).filter(Boolean).map(s => [s.url, s])).values()]
       .slice(0, 3).map(source => ({ ...source, selection: 'answer' })) : [];
@@ -325,13 +383,13 @@ export function createAiChat({ pool, service, courseMaterials, sourceMapPath, ur
         WHERE s.token_hash=$1 AND s.revoked_at IS NULL AND s.expires_at>$2 FOR SHARE OF s,u`,
       [hashToken(token), new Date(clock())]);
       if (!session || session.user_id !== a.user.id) throw signedOut();
-      const { rows: [row] } = await client.query(`UPDATE ai_chat_requests SET status='completed',answer=$3,sources=$4::jsonb
+      const { rows: [row] } = await client.query(`UPDATE ai_chat_requests SET status='completed',failure_code=NULL,answer=$3,sources=$4::jsonb
         WHERE user_id=$1 AND request_id=$2 AND status='pending' RETURNING *`,
       [a.user.id, requestId, reply.answer, JSON.stringify(safeSources)]);
       return row;
     });
-    if (!saved) throw unavailable();
-    return { accountId: a.user.id, requestId, status: 'completed', messages: messages(saved), quota: await quota(a.user.id, a.dailyLimit) };
+    if (!saved) return terminalResult(token, expected, a.user.id, requestId);
+    return { accountId: a.user.id, requestId, status: 'completed', messages: messages(saved, current.currentSources), quota: await quota(a.user.id, a.dailyLimit) };
   }
   async function cleanup() {
     await pool.query('DELETE FROM ai_chat_requests WHERE accepted_at<$1', [new Date(clock() - RETENTION_MS)]);

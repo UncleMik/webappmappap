@@ -5,9 +5,43 @@ import { randomUUID } from 'node:crypto';
 import { once } from 'node:events';
 import { testPool } from './auth-pool.mjs';
 import { createStore } from '../auth/store.mjs';
-import { createClubChat } from '../auth/club-chat.mjs';
+import { createClubChat as createRooms, CLUB_ROOMS } from '../auth/club-chat.mjs';
 import { createAuthServer } from '../auth/http.mjs';
+import { activeCourseProducts } from '../course-entitlements.mjs';
 import { AuthError, hashToken, randomToken } from '../auth/security.mjs';
+
+// Keep the existing full single-room regression suite focused on one expert room.
+// HTTP supplies the room explicitly and does not use these direct-call defaults.
+function createClubChat(options) {
+  const courseMaterials = { async list(id) {
+    const check = await options.courseChecks.requireCurrent(id);
+    const products = activeCourseProducts([
+      { productId: 4302509, trainingId: 935386893, type: 'training' },
+      { productId: 4309095, trainingId: 935397478, type: 'training' },
+      { productId: 999, trainingId: 888, type: 'training' },
+    ], check, options.clock());
+    const now = options.clock(), start = Date.parse(check?.checkedAt), end = Date.parse(check?.expiresAt);
+    if (!Number.isFinite(start) || !Number.isFinite(end) || start > now || end <= now || end - start > 300000) throw new AuthError(503, 'club_unavailable', 'Нет проверки');
+    return { ...check, courses: products, validUntil: new Date(Math.min(end, ...products.map(p => p.validUntil))).toISOString() };
+  } };
+  const raw = createRooms({ ...options, courseMaterials });
+  const arity = { info: 2, messages: 4, markRead: 3, around: 3, search: 3, reactions: 3, react: 3, send: 3, changes: 3, deleteMessage: 4 };
+  return new Proxy({ ...raw }, { get(target, key) {
+    if (key === 'raw') return raw;
+    if (!(key in arity)) return target[key];
+    return (...args) => {
+      if (args.length <= arity[key]) {
+        args.length = arity[key]; args.push('experts-birth');
+      }
+      return target[key](...args);
+    };
+  } });
+}
+const fetch = (input, options) => {
+  const url = new URL(input);
+  if (url.pathname.startsWith('/api/auth/club/') && !url.search) url.searchParams.set('room', 'experts-birth');
+  return globalThis.fetch(url, options);
+};
 
 let db, pool, now, store, service, chat, checks, students, rights;
 before(async () => {
@@ -17,6 +51,7 @@ before(async () => {
   await pool.query(await readFile(new URL('../auth/chat-reactions-extra-migration.sql', import.meta.url), 'utf8'));
   await pool.query(await readFile(new URL('../auth/club-delete-migration.sql', import.meta.url), 'utf8'));
   await pool.query(await readFile(new URL('../auth/club-reading-migration.sql', import.meta.url), 'utf8'));
+  await pool.query(await readFile(new URL('../auth/club-rooms-migration.sql', import.meta.url), 'utf8'));
 });
 after(async () => { await db?.close(); });
 function snapshot(productId = 4302509, trainingId = 935386893) {
@@ -583,11 +618,128 @@ test('new HTTP navigation and read routes reject stale clients, cross origin, fo
     assert.equal((await fetch(base + path, { headers: { ...headers, cookie: '' } })).status, 401);
     assert.equal((await fetch(base + path, { headers: { ...headers, 'x-webpril-chat-version': '1' } })).status, 409);
     assert.equal((await fetch(base + path, { headers: { ...headers, 'x-webpril-account': students[1].id } })).status, 409);
-    assert.equal((await fetch(base + path + '?room=other', { headers })).status, 400);
+    assert.equal((await fetch(base + path + '?room=other', { headers })).status, 404);
     const response = await fetch(base + path, { headers }); assert.equal(response.status, 200);
     assert.equal(response.headers.get('cache-control'), 'no-store');
     assert.equal((await response.json()).messages[0].id, message.id);
     rights.set(students[0].id, snapshot(4307012, 935397517));
     assert.equal((await fetch(base + path, { headers })).status, 403);
   } finally { await new Promise(resolve => server.close(resolve)); }
+});
+
+
+test('all seven rooms have isolated history, replies, revisions, reactions, search and reading positions', async () => {
+  const raw = chat.raw, user = students[0], other = students[1];
+  const ids = [];
+  for (const room of CLUB_ROOMS) {
+    const initial = await raw.messages(user.token, user.id, 'latest', undefined, room.id);
+    assert.equal(initial.messages.length, 0);
+    const saved = await raw.send(other.token, other.id, { requestId: randomUUID(), text: 'уникально ' + room.id }, room.id);
+    ids.push(saved.message.id);
+    const history = await raw.messages(user.token, user.id, 'latest', undefined, room.id);
+    assert.deepEqual(history.messages.map(m => m.id), [saved.message.id]);
+    assert.equal(history.room.id, room.id);
+    const hits = await raw.search(user.token, user.id, { query: 'уникально' }, room.id);
+    assert.deepEqual(hits.messages.map(m => m.id), [saved.message.id]);
+    await raw.markRead(user.token, user.id, { messageId: saved.message.id }, room.id);
+    assert.equal((await raw.info(user.token, user.id, room.id)).readState.lastReadId, saved.message.id);
+  }
+  const source = CLUB_ROOMS[0].id, target = CLUB_ROOMS[1].id, id = ids[0];
+  for (const action of [
+    () => raw.around(user.token, user.id, id, target),
+    () => raw.markRead(user.token, user.id, { messageId: id }, target),
+    () => raw.deleteMessage(other.token, other.id, id, {}, target),
+    () => raw.react(user.token, user.id, { messageId: id, reaction: 'heart' }, target),
+    () => raw.reactions(user.token, user.id, { messageIds: [id] }, target),
+  ]) await assert.rejects(action(), e => e.status === 404);
+  await assert.rejects(raw.send(user.token, user.id, { requestId: randomUUID(), text: 'ответ', replyTo: id }, target), e => e.code === 'reply_not_found');
+  const before = await raw.messages(user.token, user.id, 'latest', undefined, target);
+  await raw.deleteMessage(other.token, other.id, id, {}, source);
+  const changes = await raw.changes(user.token, user.id, before.changeCursor, target);
+  assert.deepEqual(changes.messages, []);
+});
+
+test('free rooms remain fully usable without a purchase and during GetCourse failure', async () => {
+  checks.requireCurrent = async () => { throw new AuthError(503, 'course_check_unavailable', 'Нет проверки'); };
+  const raw = chat.raw, user = students[0];
+  const directory = await raw.info(user.token, user.id);
+  assert.equal(directory.rooms.length, 7);
+  assert.deepEqual(directory.rooms.map(r => r.allowed), [true, true, true, true, true, false, false]);
+  assert.equal(directory.rooms[5].access, 'temporarily_unavailable');
+  for (const room of CLUB_ROOMS.slice(0, 5)) {
+    const message = await raw.send(user.token, user.id, { requestId: randomUUID(), text: 'доступно' }, room.id);
+    await raw.react(user.token, user.id, { messageId: message.message.id, reaction: 'heart' }, room.id);
+    assert.equal((await raw.messages(user.token, user.id, 'latest', undefined, room.id)).messages.length, 1);
+  }
+  for (const room of CLUB_ROOMS.slice(5)) await assert.rejects(raw.messages(user.token, user.id, 'latest', undefined, room.id), e => e.status === 503);
+});
+
+test('any active catalog training purchase opens both experts; absent, bonus and expired access open neither', async () => {
+  const raw = chat.raw, user = students[0];
+  rights.set(user.id, snapshot(999, 888));
+  for (const room of CLUB_ROOMS.slice(5)) assert.equal((await raw.info(user.token, user.id, room.id)).canSend, true);
+  for (const check of [snapshot(4307012, 935397517), { ...snapshot(), snapshot: { purchases: [], trainingIds: [] } },
+    (() => { const check = snapshot(999, 888); check.snapshot.purchases[0].finish_at = new Date(now).toISOString(); return check; })()]) {
+    rights.set(user.id, check);
+    const directory = await raw.info(user.token, user.id);
+    assert.deepEqual(directory.rooms.map(r => r.allowed), [true, true, true, true, true, false, false]);
+    for (const room of CLUB_ROOMS.slice(5)) await assert.rejects(raw.send(user.token, user.id, { requestId: randomUUID(), text: 'закрыто' }, room.id), e => e.code === 'club_course_required');
+  }
+});
+
+test('global request UUID cannot return, duplicate or reveal a send from another room', async () => {
+  const raw = chat.raw, user = students[0], requestId = randomUUID();
+  const results = await Promise.allSettled(CLUB_ROOMS.slice(0, 2).map(room => raw.send(user.token, user.id, { requestId, text: 'одна попытка' }, room.id)));
+  assert.equal(results.filter(r => r.status === 'fulfilled').length, 1);
+  assert.equal(results.find(r => r.status === 'rejected').reason.code, 'chat_request_reused');
+  assert.equal((await pool.query('SELECT count(*)::int n FROM club_messages WHERE request_id=$1', [requestId])).rows[0].n, 1);
+});
+
+test('legacy room remains stored for rollback but never appears in directory or any API operation', async () => {
+  const raw = chat.raw, user = students[0];
+  await pool.query("INSERT INTO club_messages(room,author_id,request_id,body,revision) VALUES('pregnancy-students',$1,$2,'старый текст',1)", [user.id, randomUUID()]);
+  await pool.query(await readFile(new URL('../auth/club-rooms-migration.sql', import.meta.url), 'utf8'));
+  await pool.query(await readFile(new URL('../auth/club-rooms-migration.sql', import.meta.url), 'utf8'));
+  const directory = await raw.info(user.token, user.id);
+  assert.ok(!JSON.stringify(directory).includes('pregnancy-students'));
+  for (const room of CLUB_ROOMS) assert.deepEqual((await raw.messages(user.token, user.id, 'latest', undefined, room.id)).messages, []);
+  await assert.rejects(raw.info(user.token, user.id, 'pregnancy-students'), e => e.status === 404);
+  await assert.rejects(raw.messages(user.token, user.id, 'latest', undefined, 'pregnancy-students'), e => e.status === 404);
+  assert.equal((await pool.query("SELECT body FROM club_messages WHERE room='pregnancy-students'")).rows[0].body, 'старый текст');
+});
+
+test('room query is mandatory, singular and allowlisted, while directory remains unscoped', async () => {
+  const origin = 'https://app.legkie-rody.ru', user = students[0];
+  const server = createAuthServer({ origin, enabled: true, store, service, clubChat: chat.raw });
+  server.listen(0, '127.0.0.1'); await once(server, 'listening');
+  const base = `http://127.0.0.1:${server.address().port}`;
+  const headers = { cookie: `__Host-school_session=${user.token}`, 'x-webpril-account': user.id, 'x-webpril-chat-version': '2', origin, 'content-type': 'application/json' };
+  try {
+    for (const path of ['/api/auth/club/messages', '/api/auth/club/messages?room=pregnancy-students', '/api/auth/club/messages?room=unknown']) {
+      assert.equal((await globalThis.fetch(base + path, { headers })).status, 404);
+    }
+    assert.equal((await globalThis.fetch(base + '/api/auth/club/messages?room=mother-0-6&room=mother-6-plus', { headers })).status, 400);
+    const directory = await globalThis.fetch(base + '/api/auth/club', { headers });
+    assert.equal((await directory.json()).rooms.length, 7);
+    const response = await globalThis.fetch(base + '/api/auth/club/messages?room=mother-0-6', { headers });
+    assert.equal(response.status, 200); assert.equal((await response.json()).room.id, 'mother-0-6');
+  } finally { await new Promise(resolve => server.close(resolve)); }
+});
+
+test('every free room still requires a completed profile, current account and a live server session', async () => {
+  const raw = chat.raw, user = students[0];
+  for (const room of CLUB_ROOMS.slice(0, 5)) await assert.rejects(raw.messages(user.token, students[1].id, 'latest', undefined, room.id), e => e.code === 'account_changed');
+  await pool.query("UPDATE auth_users SET profile='{}' WHERE id=$1", [user.id]);
+  for (const room of CLUB_ROOMS.slice(0, 5)) await assert.rejects(raw.messages(user.token, user.id, 'latest', undefined, room.id), e => e.code === 'onboarding_required');
+  await pool.query('UPDATE auth_sessions SET revoked_at=$2 WHERE user_id=$1', [user.id, new Date(now)]);
+  for (const room of CLUB_ROOMS.slice(0, 5)) await assert.rejects(raw.messages(user.token, user.id, 'latest', undefined, room.id), e => e.code === 'sign_in_required');
+});
+
+test('directory rechecks free session after a slow paid check revokes it', async () => {
+  const user = students[0];
+  checks.requireCurrent = async id => {
+    await pool.query('UPDATE auth_sessions SET revoked_at=$2 WHERE user_id=$1', [id, new Date(now)]);
+    throw new AuthError(503, 'course_check_unavailable', 'Нет проверки');
+  };
+  await assert.rejects(chat.raw.info(user.token, user.id), e => e.code === 'sign_in_required');
 });

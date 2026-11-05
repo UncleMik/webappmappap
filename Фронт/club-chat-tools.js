@@ -55,10 +55,10 @@ function sanitizeDraft(value) {
  * unbind clears UI and memory, retaining storage unless purge:true is supplied.
  * setBusy makes the textarea read-only. No method sends messages.
  */
-export function createDraftStore({ input, onChange }) {
+export function createDraftStore({ input, onChange, room }) {
   let accountId = null, state = emptyDraft();
   const fallback = new Map();
-  const key = id => 'webpril:club-draft:v1:pregnancy-students:' + id;
+  const key = id => 'webpril:club-draft:v1:' + room + ':' + id;
   function read(id) {
     let value = fallback.get(id) ?? null;
     if (value === null) {

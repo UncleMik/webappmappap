@@ -11,10 +11,10 @@
   <link rel="preload" href="assets/fonts/Intro-Regular.woff" as="font" type="font/woff" crossorigin>
   <link rel="preload" href="assets/fonts/Intro-Bold.woff" as="font" type="font/woff" crossorigin>
   <link rel="stylesheet" href="styles.css?v=20261008-close">
-  <link rel="stylesheet" href="club.css?v=20261013-speakers-centered">
-  <script src="club.js?v=20261029-chat" defer></script>
+  <link rel="stylesheet" href="club.css?v=20261105-rooms">
+  <script src="club.js?v=20261105-rooms" defer></script>
   <link rel="stylesheet" href="club-chat-live.css?v=20261105-card">
-  <script type="module" src="club-access.js?v=20261105-card"></script>
+  <script type="module" src="club-access.js?v=20261105-rooms"></script>
   <link rel="stylesheet" href="app-navigation.css?v=20261006-gotham">
   <link rel="stylesheet" href="mobile-layout.css?v=20261007-darker-sides">
 </head>
@@ -54,18 +54,17 @@
  <div class="speaker-controls"><div class="speaker-dots" aria-label="Выбрать спикера"><button type="button" aria-label="Анастасия Сафина" aria-current="true" data-speaker="0"><span></span></button><button type="button" aria-label="Юлия Сулейманова" data-speaker="1"><span></span></button><button type="button" aria-label="Татьяна Анисимова" data-speaker="2"><span></span></button></div></div>
 </section>
 <div class="club-search" id="club-search" hidden><label for="club-query">Поиск по названию и описанию</label><input id="club-query" type="search" placeholder="Найти в клубе" autocomplete="off"></div>
-<div class="community-tabs" role="tablist" aria-label="Разделы клуба"><button role="tab" id="pregnancy-tab" data-tab="pregnancy" aria-selected="true" aria-controls="community-content" tabindex="0">Беременность</button><button role="tab" id="motherhood-tab" data-tab="motherhood" aria-selected="false" aria-controls="community-content" tabindex="-1">Я мама</button><button role="tab" id="events-tab" data-tab="events" aria-selected="false" aria-controls="community-content" tabindex="-1">События</button></div>
-<div id="community-content" role="tabpanel" aria-labelledby="pregnancy-tab">
-<div data-category="pregnancy">
-<section class="community-section"><div class="community-heading"><h2>Лёгкие роды</h2></div>
-<a class="community-row club-entry" id="club-access-link"><span class="community-icon people"><svg aria-hidden="true"><use href="#people"/></svg></span><span class="community-copy"><strong>Чат участниц курса</strong><span id="club-access-status" role="status">Проверяем доступ к чату…</span></span><span id="club-unread" class="unread" hidden></span></a><button class="club-access-action" id="club-access-retry" type="button" hidden>Повторить проверку</button>
-</section>
+<div class="community-tabs" role="tablist" aria-label="Разделы клуба"><button role="tab" id="participants-tab" data-tab="participants" aria-selected="true" aria-controls="community-content" tabindex="0">Чаты участниц</button><button role="tab" id="experts-tab" data-tab="experts" aria-selected="false" aria-controls="community-content" tabindex="-1">Чаты с экспертами</button><button role="tab" id="events-tab" data-tab="events" aria-selected="false" aria-controls="community-content" tabindex="-1">События</button></div>
+<div id="community-content" role="tabpanel" aria-labelledby="participants-tab">
+<div data-category="participants">
+<section class="community-section"><div class="community-heading"><h2>Чаты участниц</h2></div><div id="club-participant-rooms"></div></section>
 <section class="community-section"><div class="community-heading"><h2>Материалы школы</h2></div><a class="community-row club-entry" href="journey.html"><span class="community-icon calendar"><svg aria-hidden="true"><use href="#calendar"/></svg></span><span class="community-copy"><strong>Статьи и практики</strong><span>Материалы для вас</span></span><span class="community-meta">›</span></a>
 </section>
 </div>
-<div data-category="motherhood" hidden></div>
+<div data-category="experts" hidden><section class="community-section"><div class="community-heading"><h2>Экспертные чаты</h2></div><div id="club-expert-rooms"></div></section></div>
 <div data-category="events" hidden></div>
 </div>
+<p id="club-access-status" class="chat-status" role="status">Проверяем доступ к чатам…</p><button class="club-access-action" id="club-access-retry" type="button" hidden>Повторить проверку</button>
 <p class="club-empty" role="status" hidden></p>
 </main>
     <nav class="bottom-navigation" aria-label="Основная навигация">

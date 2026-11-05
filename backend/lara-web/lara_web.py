@@ -185,7 +185,12 @@ def safe_url(value):
         return False
     if parsed.scheme or parsed.netloc or parsed.fragment:
         return False
-    expected = {'courseLesson', 'course', 'section'} if parsed.path == '/article.html' else {'course'} if parsed.path == '/my-courses.html' else set()
+    if parsed.path == '/article.html':
+        expected = {'courseLesson', 'course', 'section'}
+    elif parsed.path == '/my-courses.html':
+        expected = {'course', 'section'} if any(k == 'section' for k, _ in fields) else {'course'}
+    else:
+        expected = set()
     return bool(expected and len(fields) == len(expected) and {k for k, _ in fields} == expected
                 and all(re.fullmatch(r'[1-9][0-9]{0,18}', v) for _, v in fields))
 
@@ -245,6 +250,26 @@ def validate(data):
 
 class AttachmentError(ValueError):
     """A safe, non-content-bearing attachment error."""
+
+
+FAILURE_STATUSES = {'invalid_attachment': 422, 'attachment_unreadable': 422,
+                    'provider_unavailable': 502, 'timeout': 504, 'busy': 503,
+                    'unknown_failure': 502}
+
+
+def provider_failure(error):
+    """Classify by exception type/status only; never copy provider content."""
+    import httpx
+    if isinstance(error, (asyncio.TimeoutError, httpx.TimeoutException)):
+        return 'timeout'
+    status = getattr(error, 'code', None)
+    if not isinstance(status, int):
+        status = getattr(getattr(error, 'response', None), 'status_code', None)
+    if status == 429:
+        return 'busy'
+    if isinstance(error, httpx.HTTPError) or isinstance(status, int):
+        return 'provider_unavailable'
+    return 'unknown_failure'
 
 
 def validate_attachment_envelope(attachment):
@@ -433,7 +458,9 @@ async def validated_file(raw, mime):
             return pages
         except AttachmentError:
             raise
-        except (ValueError, TypeError, asyncio.TimeoutError):
+        except asyncio.TimeoutError:
+            raise AttachmentError('invalid_audio' if mime.startswith('audio/') else 'timeout') from None
+        except (ValueError, TypeError):
             raise AttachmentError('invalid_audio' if mime.startswith('audio/') else 'invalid_attachment') from None
     finally:
         if process.returncode is None:
@@ -521,18 +548,21 @@ class DocumentReader:
                             for name in settings.gemini_fallback_models)
         else:
             attempts.append(lambda: grok_document(raw, mime))
+        failures = []
         for attempt in attempts:
             try:
                 result = await attempt()
                 if result:
                     return extracted_document(result, pages)
+                failures.append('provider_unavailable')
             except AttachmentError:
                 # A readable response explicitly reporting uncertainty must not be
                 # overturned by a different model guessing the missing figures.
                 raise
-            except Exception:
-                continue
-        raise AttachmentError('attachment_unreadable')
+            except Exception as error:
+                failures.append(provider_failure(error))
+        code = next((code for code in ('timeout', 'busy', 'provider_unavailable') if code in failures), 'unknown_failure')
+        raise AttachmentError(code)
 
 
 class Repository:
@@ -623,7 +653,7 @@ async def reply(data, repository, model, document_reader=None):
             pages = await validated_file(raw, mime)
             document = await asyncio.wait_for((document_reader or DocumentReader()).read(raw, mime, pages), 25)
         except asyncio.TimeoutError:
-            raise AttachmentError('attachment_unreadable') from None
+            raise AttachmentError('timeout') from None
         finally:
             del raw
     candidates = []
@@ -729,12 +759,13 @@ def create_app(secret=None, repository=None, model=None, document_reader=None, t
             result = await asyncio.wait_for(operation, 45 if voice else OPERATION_SECONDS)
             return JSONResponse(result)
         except AttachmentError as error:
-            code = (str(error) if str(error) in ('invalid_audio', 'audio_too_long', 'audio_unrecognized') else 'invalid_audio') if voice else ('invalid_attachment' if str(error) == 'invalid_attachment' else 'attachment_unreadable')
-            return JSONResponse({'error': code}, 422)
+            code = (str(error) if str(error) in ('invalid_audio', 'audio_too_long', 'audio_unrecognized') else 'invalid_audio') if voice else (str(error) if str(error) in FAILURE_STATUSES else 'unknown_failure')
+            return JSONResponse({'error': code}, 422 if voice else FAILURE_STATUSES[code])
         except asyncio.TimeoutError:
             return JSONResponse({'error': 'timeout'}, 504)
-        except Exception:
-            return JSONResponse({'error': 'upstream_failed'}, 502)
+        except Exception as error:
+            code = provider_failure(error)
+            return JSONResponse({'error': code}, FAILURE_STATUSES[code])
         finally:
             active -= 1
             active_files -= int(has_file)

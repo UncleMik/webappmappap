@@ -1,13 +1,20 @@
+import { clubRooms } from './club-rooms.js?v=20261105-rooms';
 import { createReactionControls } from './chat-reactions.js?v=20261031-chips';
 import { createMessageActions } from './club-message-actions.js?v=20261103-chat';
-import { createDraftStore, copyMessageText } from './club-chat-tools.js?v=20261103-chat';
+import { createDraftStore, copyMessageText } from './club-chat-tools.js?v=20261105-rooms';
 import { createChatTimeline } from './club-chat-timeline.js?v=20261103-chat';
-import { clubRequest, chatLease } from './club-api.js?v=20261030-delete';
+import { clubRequest, chatLease } from './club-api.js?v=20261105-rooms';
 
-const room = new URLSearchParams(location.search).get('room');
-if (room !== 'pregnancy-students') {
-  location.replace('club.html#' + (room?.startsWith('motherhood-') || room?.startsWith('baby-') || room === 'moms' ? 'motherhood' : 'pregnancy'));
+const params = new URLSearchParams(location.search);
+const room = params.get('room');
+const definition = clubRooms.find(item => item.id === room);
+if (!definition || params.getAll('room').length !== 1) {
+  location.replace('club.html#participants');
 } else {
+  document.title = definition.title + ' — Клуб';
+  document.querySelector('.discussion-header h1').textContent = definition.title;
+  document.querySelector('.discussion-header p').textContent = definition.kind === 'experts' ? 'Экспертный чат' : 'Чат участниц';
+  document.querySelector('.discussion-header > a').href = 'club.html#' + definition.kind;
   const log = document.querySelector('#chat-messages'), status = document.querySelector('#chat-status');
   const controls = document.querySelector('#chat-controls'), form = document.querySelector('#chat-form');
   const input = document.querySelector('#chat-text'), sendButton = document.querySelector('#chat-send');
@@ -29,8 +36,8 @@ if (room !== 'pregnancy-students') {
   let searchVersion = 0, searchNext = null, searchQuery = '', searching = false;
   const current = value => value === revision && !document.hidden && !ended;
   const validId = id => typeof id === 'string' && /^[1-9]\d{0,18}$/.test(id);
-  const positionKey = () => 'webpril:club-position:v1:pregnancy-students:' + accountId;
-  const draft = createDraftStore({ input, onChange: () => {
+  const positionKey = () => 'webpril:club-position:v1:' + room + ':' + accountId;
+  const draft = createDraftStore({ input, room, onChange: () => {
     // An uncertain attempt keeps its ID while its unchanged text is retried.
     if (pending && pending.signature !== JSON.stringify({ text: input.value.trim(), replyTo: reply?.id || restoreReplyId || null })) pending = null;
     persistDraft();
@@ -106,7 +113,7 @@ if (room !== 'pregnancy-students') {
     }
     acceptRead(data, epoch);
   }
-  function options(body) { return { accountId, signal: controller?.signal, ...(body === undefined ? {} : { body }) }; }
+  function options(body) { return { accountId, room, signal: controller?.signal, ...(body === undefined ? {} : { body }) }; }
   function updateStatus() {
     status.textContent = !canSend ? 'Режим модерации: можно удалять сообщения участниц.'
       : messages.size ? '' : 'Сообщений пока нет. Можно написать первой.';
@@ -235,7 +242,7 @@ if (room !== 'pregnancy-students') {
       const reading = readEpoch, info = await clubRequest('club', options());
       if (!current(value)) return;
       meta(info, reading);
-      if (info.access !== 'available') throw Object.assign(new Error('Чат доступен при действующем доступе к курсу «Лёгкие роды».'), { code: 'club_course_required' });
+      if (info.access !== 'available') throw Object.assign(new Error('Экспертный чат доступен при действующей покупке курса школы.'), { code: 'club_course_required' });
       unreadStart ||= readState.firstUnreadId; view.setUnread(unreadStart);
       const anchor = savedPlace?.messageId || (readState.initialized && readState.lastReadId !== '0' ? readState.lastReadId : readState.firstUnreadId);
       let data; const epoch = reactionEpoch, readVersion = readEpoch;

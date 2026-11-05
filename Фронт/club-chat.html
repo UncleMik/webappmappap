@@ -4,21 +4,21 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <meta name="theme-color" content="#fff">
-  <title>Лёгкие роды · Чат участниц — Клуб</title>
+  <title>Чат — Клуб</title>
   <style id="account-lock">html { visibility: hidden !important; }</style>
   <script src="auth-gate.js?v=20261027-personal"></script>
   <link rel="preload" href="assets/fonts/Intro-Regular.woff" as="font" type="font/woff" crossorigin>
   <link rel="preload" href="assets/fonts/Intro-Bold.woff" as="font" type="font/woff" crossorigin>
   <link rel="stylesheet" href="styles.css?v=20261008-close">
-  <link rel="stylesheet" href="club.css?v=20261013-speakers-centered">
+  <link rel="stylesheet" href="club.css?v=20261105-rooms">
   <link rel="stylesheet" href="club-chat-live.css?v=20261030-delete">
   <link rel="stylesheet" href="chat-reactions.css?v=20261031-chips">
   <link rel="stylesheet" href="club-chat-improvements.css?v=20261103-chat">
   <link rel="stylesheet" href="mobile-layout.css?v=20261007-darker-sides">
-  <script type="module" src="club-chat.js?v=20261103-chat"></script>
+  <script type="module" src="club-chat.js?v=20261105-rooms"></script>
 </head>
 <body class="club-page community-chat"><div class="app">
-  <header class="discussion-header"><a href="club.html#pregnancy" aria-label="Назад в клуб">‹</a><div><h1>Лёгкие роды</h1><p>Чат участниц курса</p></div><button type="button" class="chat-search-toggle" id="chat-search-toggle" aria-label="Поиск по переписке" aria-expanded="false" aria-controls="chat-search-panel" disabled><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5"/><path d="m16 16 5 5"/></svg></button></header>
+  <header class="discussion-header"><a href="club.html#participants" aria-label="Назад в клуб">‹</a><div><h1>Чат</h1><p>Чаты участниц</p></div><button type="button" class="chat-search-toggle" id="chat-search-toggle" aria-label="Поиск по переписке" aria-expanded="false" aria-controls="chat-search-panel" disabled><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5"/><path d="m16 16 5 5"/></svg></button></header>
   <section id="chat-search-panel" class="chat-search-panel" aria-label="Поиск по всей переписке" hidden>
     <form id="chat-search-form"><label for="chat-search-text" class="visually-hidden">Текст сообщения</label><input id="chat-search-text" type="search" minlength="2" maxlength="100" placeholder="Найти в переписке" autocomplete="off"><button type="submit">Найти</button><button id="chat-search-close" type="button" aria-label="Закрыть поиск">×</button></form>
     <p id="chat-search-status" role="status"></p><ol id="chat-search-results"></ol><button type="button" class="chat-search-more" id="chat-search-more" hidden>Ещё результаты</button>

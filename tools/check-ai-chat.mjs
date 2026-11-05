@@ -5,7 +5,8 @@ async (page) => {
   const source = url => ({ id: url, title: 'Урок', url });
   const good = '/article.html?courseLesson=347472707&course=4302509&section=123';
   const course = '/my-courses.html?course=4302509';
-  const sourceList = [source(good), source(base + good), source(course), source('/api/auth/logout'), source('//evil.example/x'), source('https://evil.example' + good), source(good + '#bad'), source(good + '&x=1'), source(course + '&next=logout'), source('/my-courses.html?course=0')];
+  const moduleUrl = course + '&section=123';
+  const sourceList = [source(good), source(base + good), source(course), source(moduleUrl), source(moduleUrl + "&section=124"), source(moduleUrl + "&course=2"), source(moduleUrl + "&x=1"), source(moduleUrl + "#bad"), source('/api/auth/logout'), source('//evil.example/x'), source('https://evil.example' + good), source(good + '#bad'), source(good + '&x=1'), source(course + '&next=logout'), source('/my-courses.html?course=0')];
   const savedAnswers = () => [
     { id: '3:answer', role: 'assistant', requestId: secondId, content: 'Ответ', createdAt: '2026-11-04T11:02:00Z', sources: sourceList },
     { id: '4:answer', role: 'assistant', requestId: 'bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb', content: 'Ответ без ссылок', createdAt: '2026-11-04T11:03:00Z', sources: [source('/api/auth/logout')] },
@@ -116,18 +117,18 @@ async (page) => {
   await assertWaiting(false, 'successful replacement');
   if (await page.locator('#conversation .assistant-message').count() !== 2 || await page.locator('#conversation .assistant-message .bubble').allTextContents().then(texts => texts.join('|')) !== 'Ответ|Ответ без ссылок') throw new Error('Success duplicated or lost assistant answers');
   const links = await page.locator('.message-sources a').evaluateAll(elements => elements.map(element => element.href));
-  if (links.length !== 3 || links.some(link => ![base + '/article.html?courseLesson=347472707&course=4302509&section=123', base + '/my-courses.html?course=4302509'].includes(link))) throw new Error('Source allowlist incorrect: ' + links.join(', '));
+  if (links.length !== 4 || links.some(link => ![base + '/article.html?courseLesson=347472707&course=4302509&section=123', base + '/my-courses.html?course=4302509', base + moduleUrl].includes(link))) throw new Error('Source allowlist incorrect: ' + links.join(', '));
   const toggle = page.getByRole('button', { name: 'Ссылки на материалы', exact: true });
   if (await toggle.count() !== 1) throw new Error('Expected one exact-label button only for answer with valid sources');
   const sourceLinks = page.locator('.message-sources a');
-  if (await sourceLinks.count() !== 3 || await sourceLinks.filter({ visible: true }).count() !== 0 || await toggle.getAttribute('aria-expanded') !== 'false') throw new Error('Sources are not initially collapsed');
+  if (await sourceLinks.count() !== 4 || await sourceLinks.filter({ visible: true }).count() !== 0 || await toggle.getAttribute('aria-expanded') !== 'false') throw new Error('Sources are not initially collapsed');
   await toggle.click();
-  if (await sourceLinks.filter({ visible: true }).count() !== 3 || await toggle.getAttribute('aria-expanded') !== 'true') throw new Error('Click did not open sources');
+  if (await sourceLinks.filter({ visible: true }).count() !== 4 || await toggle.getAttribute('aria-expanded') !== 'true') throw new Error('Click did not open sources');
   await toggle.click();
   if (await sourceLinks.filter({ visible: true }).count() !== 0 || await toggle.getAttribute('aria-expanded') !== 'false') throw new Error('Click did not close sources');
   await toggle.focus();
   await page.keyboard.press('Enter');
-  if (await toggle.getAttribute('aria-expanded') !== 'true' || await sourceLinks.filter({ visible: true }).count() !== 3) throw new Error('Enter did not open sources');
+  if (await toggle.getAttribute('aria-expanded') !== 'true' || await sourceLinks.filter({ visible: true }).count() !== 4) throw new Error('Enter did not open sources');
   await page.keyboard.press('Space');
   if (await toggle.getAttribute('aria-expanded') !== 'false' || await sourceLinks.filter({ visible: true }).count() !== 0) throw new Error('Space did not close sources');
   await toggle.click();
@@ -139,7 +140,7 @@ async (page) => {
   if (await page.locator('#chat-input').inputValue() !== 'Отклонённый вопрос') throw new Error('Rejected question was not restored to composer');
   if (await page.getByText('Отклонённый вопрос', { exact: true }).count() !== 0) throw new Error('Rejected question remained in conversation');
   await assertWaiting(false, 'rejected request');
-  if (await toggle.getAttribute('aria-expanded') !== 'true' || await sourceLinks.filter({ visible: true }).count() !== 3) throw new Error('Open sources were lost after a new question and merge');
+  if (await toggle.getAttribute('aria-expanded') !== 'true' || await sourceLinks.filter({ visible: true }).count() !== 4) throw new Error('Open sources were lost after a new question and merge');
   historyMode = 'completed';
   await page.reload();
   await page.getByText('Ответ без ссылок', { exact: true }).waitFor();
@@ -233,7 +234,7 @@ async (page) => {
       return route.fulfill({ status: 413, json: { error: 'invalid_ai_attachment' } });
     }
     if (uploadPosts === 5) return route.fulfill({ json: { accountId, requestId: body.requestId, status: 'failed', failureMessage: 'Не удалось прочитать анализ <без HTML>.', quota: quota(5), messages: [
-      { id: 'failed:upload', role: 'user', status: 'failed', requestId: body.requestId, content: body.text + '\n\nФайл анализа: ' + body.attachment.name }
+      { id: 'failed:upload', role: 'user', status: 'failed', failureCode: 'attachment_unreadable', failureMessage: 'Не удалось прочитать анализ <без HTML>.', requestId: body.requestId, content: body.text + '\n\nФайл анализа: ' + body.attachment.name }
     ] } });
     return route.fulfill({ status: uploadPosts === 3 ? 503 : 413, json: { error: uploadPosts === 3 ? 'ai_upload_busy' : 'invalid_ai_attachment' } });
   });

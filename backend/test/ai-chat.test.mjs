@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import { readFile, mkdtemp, writeFile, rm } from 'node:fs/promises';
 import { join } from 'node:path';
 import { tmpdir } from 'node:os';
-import { randomUUID, createHmac } from 'node:crypto';
+import { randomUUID, createHmac, createHash } from 'node:crypto';
 import { testPool } from './auth-pool.mjs';
 import { createAiChat } from '../auth/ai-chat.mjs';
 import { createStore } from '../auth/store.mjs';
@@ -18,6 +18,7 @@ let db, pool, folder, sourceMapPath, now, user, token, service, context, calls, 
 before(async () => {
   db = await testPool(); pool = db.pool;
   await pool.query(await readFile(new URL('../auth/ai-chat-migration.sql', import.meta.url), 'utf8'));
+  await pool.query(await readFile(new URL('../auth/ai-failure-migration.sql', import.meta.url), 'utf8'));
   folder = await mkdtemp(join(tmpdir(), 'webpril-ai-test-'));
   sourceMapPath = join(folder, 'source-map.json');
   await writeFile(sourceMapPath, JSON.stringify({ version: 1, sources: [] }));
@@ -461,8 +462,10 @@ test('accepted DO file failures return only fixed public messages, charge once a
     [422, 'invalid_attachment', 'Не удалось прочитать файл. Поддерживаются PDF до 10 страниц и фотографии JPG/PNG до 16 Мп, размером до 10 МБ.'],
     [422, 'attachment_unreadable', 'Не удалось уверенно прочитать показатели. Прикрепите более чёткий файл или фото.'],
     [503, 'busy', 'Лара сейчас обрабатывает другой файл. Попробуйте позже.'],
-    [422, 'private_provider_error', undefined],
-    [502, 'invalid_attachment', undefined],
+    [502, 'provider_unavailable', 'Сервис ответов Лары временно недоступен. Попробуйте немного позже.'],
+    [504, 'timeout', 'Обработка заняла слишком много времени. Попробуйте ещё раз немного позже.'],
+    [422, 'private_provider_error', 'Ларе не удалось подготовить ответ. Попробуйте немного позже.'],
+    [502, 'invalid_attachment', 'Ларе не удалось подготовить ответ. Попробуйте немного позже.'],
   ];
   for (const [status, error, publicMessage] of expected) {
     currentId = randomUUID();
@@ -473,16 +476,65 @@ test('accepted DO file failures return only fixed public messages, charge once a
     assert.ok(!JSON.stringify(result).includes('PRIVATE_PROVIDER_DETAILS'));
     const stored = (await pool.query('SELECT * FROM ai_chat_requests WHERE request_id=$1', [currentId])).rows[0];
     assert.equal(stored.answer, null); assert.ok(!JSON.stringify(stored).includes('PRIVATE_PROVIDER_DETAILS'));
+    assert.equal(stored.failure_code, result.failureCode);
+    assert.equal(result.messages[0].failureMessage, publicMessage);
     const used = result.quota.used, callsBeforeRetry = calls;
-    assert.equal((await chat.status(token, user, data)).quota.used, used);
-    assert.equal((await chat.send(token, user, data)).status, 'failed');
+    const statusResult = await chat.status(token, user, data), retry = await chat.send(token, user, data);
+    assert.equal(statusResult.quota.used, used);
+    assert.equal(statusResult.failureMessage, publicMessage);
+    assert.equal(statusResult.messages[0].failureCode, result.failureCode);
+    assert.equal(retry.status, 'failed'); assert.equal(retry.failureMessage, publicMessage);
+    const history = await chat.history(token, user);
+    assert.equal(history.messages.find(m => m.requestId === currentId).failureMessage, publicMessage);
     assert.equal(calls, callsBeforeRetry);
   }
   assert.equal(calls, expected.length); assert.equal((await chat.history(token, user)).quota.used, expected.length);
   currentId = randomUUID();
   respond = async () => new Response(JSON.stringify({ error: 'invalid_attachment', details: 'A'.repeat(128 * 1024) }), { status: 422 });
   const oversized = await chat.send(token, user, { requestId: currentId, text: 'Вопрос', attachment: pdf() });
-  assert.equal(oversized.status, 'failed'); assert.equal(oversized.failureMessage, undefined);
+  assert.equal(oversized.status, 'failed'); assert.equal(oversized.failureCode, 'invalid_response');
+  assert.equal(oversized.failureMessage, 'Не удалось получить корректный ответ Лары. Попробуйте немного позже.');
+});
+
+test('network, timeout, invalid reply and expired pending reasons remain safe through history and UUID retry', async () => {
+  for (const code of ['bridge_unavailable', 'timeout', 'invalid_response', 'request_expired']) {
+    await setup(); currentId = randomUUID();
+    respond = async () => {
+      if (code === 'invalid_response') return new Response('{private-invalid-json', { status: 200 });
+      if (code === 'timeout') throw new DOMException('PRIVATE_PROVIDER_DETAILS', 'TimeoutError');
+      throw new Error('PRIVATE_PROVIDER_DETAILS');
+    };
+    let result;
+    if (code === 'request_expired') {
+      let release;
+      const held = new Promise(resolve => { release = resolve; });
+      respond = async () => { await held; throw new Error('private'); };
+      const sending = ask();
+      for (let i = 0; i < 100 && calls === 0; i++) await new Promise(resolve => setTimeout(resolve, 2));
+      now += 71_000;
+      result = (await chat.history(token, user)).messages[0];
+      release(); assert.equal((await sending).failureCode, 'request_expired');
+    } else result = (await ask()).messages[0];
+    assert.equal(result.failureCode, code);
+    for (const read of [await chat.status(token, user, { requestId: currentId }), await ask(), await chat.history(token, user)]) {
+      assert.equal(read.messages[0].failureCode, code);
+      assert.equal(read.messages[0].failureMessage, result.failureMessage);
+      assert.ok(!JSON.stringify(read).includes('PRIVATE_PROVIDER_DETAILS'));
+      assert.equal(read.quota.used, code === 'request_expired' ? 0 : 1);
+    }
+    assert.equal((await pool.query('SELECT sum(used)::integer AS used FROM ai_chat_daily_usage')).rows[0].used, 1);
+    assert.equal(calls, 1);
+  }
+});
+
+test('failed reasons are constrained to fixed codes and legacy failures receive a safe fallback', async () => {
+  await setup(); currentId = randomUUID(); respond = async () => { throw new Error('private'); };
+  await ask();
+  await assert.rejects(pool.query('UPDATE ai_chat_requests SET failure_code=$1', ['PRIVATE_PROVIDER_DETAILS']));
+  await pool.query('UPDATE ai_chat_requests SET failure_code=NULL');
+  const old = await chat.status(token, user, { requestId: currentId });
+  assert.equal(old.failureCode, 'unknown_failure');
+  assert.equal(old.messages[0].failureMessage, 'Ларе не удалось подготовить ответ. Попробуйте немного позже.');
 });
 
 test('status polls pending/completed/stale without model, quota or original; checks account and rights', async () => {
@@ -717,6 +769,63 @@ test('server passes only readable mapped sources, GC URL keys and relevant short
   assert.deepEqual(answer.messages[1].sources.map(s => s.id), ['Курс:breath.md']);
 });
 
+test('module sources open their readable common parent and normalize stored links without invalidating old UUIDs', async () => {
+  await setup(); currentId = randomUUID();
+  const course = 'Модуль 3. Организация ГВ', source = 'feeding.md', sourceId = `${course}:${source}`;
+  context.lessons[0].sectionPath = [9, 3];
+  context.lessons.push({ productId: 1, course: 'Курс', lessonId: 4, sectionId: 7,
+    sectionPath: [9, 3, 7], title: 'Дополнительный урок', contentHash: 'child', text: 'Материал' });
+  const mapping = { version: 1, sources: [{ course, source, title: `Материалы: ${course}`, lessonIds: [2, 4] }] };
+  await writeFile(sourceMapPath, JSON.stringify(mapping));
+  const digest = value => createHash('sha256').update(value).digest('hex');
+  const oldRightsHash = digest(JSON.stringify({ profile: ['pregnancy', '2027-03-01', null],
+    courses: [1], lessons: [[2, 3, 1, 'abc'], [4, 7, 1, 'child']],
+    sources: [{ course, source, title: `Материалы: ${course}`, url: '/my-courses.html?course=1' }],
+    mapHash: digest(JSON.stringify(mapping)) }));
+  let body;
+  respond = async (_url, options) => {
+    body = JSON.parse(options.body.toString());
+    return { ok: true, json: async () => ({ requestId: currentId, answer: 'Ответ о кормлении',
+      sourcePolicy: 'used_v1', sources: [{ id: sourceId }] }) };
+  };
+  const sent = await ask('Подскажите про кормление');
+  assert.equal(body.allowedKnowledgeSources[0].url, '/my-courses.html?course=1&section=3');
+  assert.equal(sent.messages[1].sources[0].url, '/my-courses.html?course=1&section=3');
+  const stored = (await pool.query('SELECT * FROM ai_chat_requests WHERE request_id=$1', [currentId])).rows[0];
+  assert.equal(stored.rights_hash, oldRightsHash);
+  stored.sources[0].url = '/my-courses.html?course=1';
+  await pool.query('UPDATE ai_chat_requests SET sources=$1::jsonb WHERE request_id=$2', [JSON.stringify(stored.sources), currentId]);
+  const preserved = (await pool.query('SELECT sources FROM ai_chat_requests WHERE request_id=$1', [currentId])).rows[0].sources;
+  for (const read of [await chat.history(token, user), await chat.status(token, user, { requestId: currentId }), await ask('Подскажите про кормление')]) {
+    assert.equal(read.messages[1].sources[0].url, '/my-courses.html?course=1&section=3');
+    assert.equal(read.quota.used, 1);
+  }
+  assert.deepEqual((await pool.query('SELECT sources FROM ai_chat_requests WHERE request_id=$1', [currentId])).rows[0].sources, preserved);
+  assert.equal(calls, 1);
+});
+
+test('module candidates without one readable existing parent never fall back to the whole course', async () => {
+  for (const mode of ['unrelated', 'partial', 'mixed-products']) {
+    await setup(); currentId = randomUUID();
+    const course = 'Модуль. Проверенный материал', source = 'guide.md';
+    context.lessons[0].sectionPath = [9, 3];
+    context.lessons.push({ productId: mode === 'mixed-products' ? 5 : 1, course: 'Другой курс', lessonId: 4,
+      sectionId: 7, sectionPath: [9, 7], title: 'Урок', contentHash: 'child', text: 'Материал' });
+    if (mode === 'mixed-products') context.courses.push({ productId: 5, title: 'Другой курс' });
+    await writeFile(sourceMapPath, JSON.stringify({ version: 1, sources: [{ course, source,
+      lessonIds: mode === 'partial' ? [2, 999] : [2, 4] }] }));
+    let body;
+    respond = async (_url, options) => {
+      body = JSON.parse(options.body.toString());
+      return { ok: true, json: async () => ({ requestId: currentId, answer: 'Ответ', sourcePolicy: 'used_v1',
+        sources: [{ id: `${course}:${source}` }] }) };
+    };
+    const sent = await ask('Подскажите про кормление');
+    assert.deepEqual(body.allowedKnowledgeSources, []);
+    assert.deepEqual(sent.messages[1].sources, []);
+  }
+});
+
 test('one active question blocks a different UUID briefly, then stale crash pending becomes failed', async () => {
   await setup(); currentId = randomUUID();
   await ask('Вопрос');
@@ -791,7 +900,7 @@ test('late DO success cannot overwrite a stale request already marked failed', a
   now += 71_000;
   assert.equal((await chat.history(token, user)).messages[0].status, 'failed');
   release();
-  await assert.rejects(first, e => e.code === 'ai_unavailable');
+  assert.equal((await first).failureCode, 'request_expired');
   assert.equal((await chat.history(token, user)).messages[0].status, 'failed');
   assert.equal((await pool.query('SELECT answer FROM ai_chat_requests')).rows[0].answer, null);
 });

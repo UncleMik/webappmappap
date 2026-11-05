@@ -29,7 +29,7 @@
  const tabs = [...document.querySelectorAll('[data-tab]')];
  const query = document.querySelector('#club-query');
  const empty = document.querySelector('.club-empty');
- let active = 'pregnancy';
+ let active = 'participants';
  function filter() {
   const text = query.value.trim().toLocaleLowerCase('ru');
   let count = 0;
@@ -51,7 +51,7 @@
    : active === 'events' ? 'Событий пока нет.' : 'Чаты пока не подключены.';
  }
  function select(name) {
-  active = tabs.some(tab => tab.dataset.tab === name) ? name : 'pregnancy';
+  active = tabs.some(tab => tab.dataset.tab === name) ? name : 'participants';
   tabs.forEach(tab => {
    const selected = tab.dataset.tab === active;
    tab.setAttribute('aria-selected', selected);

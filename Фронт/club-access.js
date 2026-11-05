@@ -1,33 +1,65 @@
-import { clubRequest, chatLease } from './club-api.js?v=20261030-delete';
+import { clubRequest, chatLease } from './club-api.js?v=20261105-rooms';
+import { clubRooms } from './club-rooms.js?v=20261105-rooms';
 
 const status = document.querySelector('#club-access-status');
-const link = document.querySelector('#club-access-link');
 const retry = document.querySelector('#club-access-retry');
-const unread = document.querySelector('#club-unread');
+const rows = new Map();
 let revision = 0, controller, timer, accountId, ended = false;
+for (const room of clubRooms) {
+  const row = document.createElement('a'); row.className = 'community-row club-entry'; row.dataset.room = room.id;
+  const icon = document.createElement('span'); icon.className = 'community-icon people'; const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg'); const use = document.createElementNS('http://www.w3.org/2000/svg', 'use'); use.setAttribute('href', room.kind === 'experts' ? '#crown' : '#people'); svg.append(use); icon.append(svg); icon.setAttribute('aria-hidden', 'true');
+  const copy = document.createElement('span'); copy.className = 'community-copy';
+  const title = document.createElement('strong'); title.textContent = room.title;
+  const description = document.createElement('span'); description.textContent = 'Проверяем доступ…';
+  const unread = document.createElement('span'); unread.className = 'unread'; unread.hidden = true;
+  copy.append(title, description); row.append(icon, copy, unread);
+  document.querySelector(room.kind === 'experts' ? '#club-expert-rooms' : '#club-participant-rooms').append(row);
+  rows.set(room.id, { row, description, unread });
+}
 function clear() {
-  revision++; controller?.abort(); clearTimeout(timer); link.removeAttribute('href');
-  unread.hidden = true; unread.textContent = '';
+  revision++; controller?.abort(); clearTimeout(timer);
+  for (const { row, unread } of rows.values()) { row.removeAttribute('href'); unread.hidden = true; unread.textContent = ''; }
 }
 async function refresh() {
   clear();
   if (document.hidden || ended) return;
   const current = revision; controller = new AbortController();
-  status.textContent = 'Проверяем доступ к чату…'; retry.hidden = true;
+  status.textContent = 'Проверяем доступ к чатам…'; retry.hidden = true;
   try {
     const data = await clubRequest('club', { accountId, signal: controller.signal });
     if (current !== revision) return;
-    const remaining = chatLease(data, accountId); accountId = data.accountId;
-    if (!['available', 'purchase_required'].includes(data.access)) throw new Error('Не удалось проверить доступ.');
-    status.textContent = data.access === 'available' ? 'Общение с участницами курса' : 'Доступен ученицам курса «Лёгкие роды»';
-    link.href = data.access === 'available' ? 'club-chat.html?room=pregnancy-students' : 'courses.html';
-    const count = data.access === 'available' && Number.isSafeInteger(data.readState?.unreadCount) ? data.readState.unreadCount : 0;
-    unread.textContent = count > 99 ? '99+' : String(count);
-    unread.setAttribute('aria-label', 'Непрочитанных сообщений: ' + count); unread.hidden = count <= 0;
-    timer = setTimeout(refresh, Math.min(remaining, 15_000));
+    if (typeof data.accountId !== 'string' || !Array.isArray(data.rooms)) throw new Error('Не удалось проверить доступ к чатам.');
+    accountId = data.accountId;
+    let remaining = 15_000, failed = false;
+    for (const definition of clubRooms) {
+      const { row, description, unread } = rows.get(definition.id);
+      const matches = data.rooms.filter(item => item.id === definition.id);
+      const room = matches.length === 1 ? matches[0] : null;
+      try {
+        if (!room || !['available', 'purchase_required', 'temporarily_unavailable'].includes(room.access)) throw new Error();
+        if (room.access === 'temporarily_unavailable') throw new Error();
+        remaining = Math.min(remaining, chatLease({ ...room, accountId, responseAgeMs: data.responseAgeMs }, accountId));
+        if (room.allowed === true && room.access === 'available') {
+          description.textContent = definition.kind === 'experts' ? 'Общение с экспертами школы' : 'Общение и поддержка участниц';
+          row.href = 'club-chat.html?room=' + definition.id;
+          const count = room.readState?.unreadCount ?? room.unreadCount;
+          if (Number.isSafeInteger(count) && count > 0) {
+            unread.textContent = count > 99 ? '99+' : String(count); unread.hidden = false;
+            unread.setAttribute('aria-label', 'Непрочитанных сообщений: ' + count);
+          }
+        } else if (room.access === 'purchase_required' && definition.kind === 'experts') {
+          description.textContent = 'Доступны при действующей покупке любого курса'; row.href = 'courses.html';
+        } else throw new Error();
+      } catch {
+        description.textContent = 'Не удалось проверить доступ. Повторите попытку.'; failed = true;
+      }
+    }
+    status.textContent = failed ? 'Доступ к некоторым чатам пока не подтверждён.' : '';
+    retry.hidden = !failed; timer = setTimeout(refresh, remaining);
   } catch (error) {
     if (current !== revision) return;
     status.textContent = error.message; retry.hidden = false;
+    for (const { description } of rows.values()) description.textContent = 'Доступ пока не подтверждён';
     if (error.status === 401 || error.code === 'account_changed') window.webprilSessionGate?.end();
     else timer = setTimeout(refresh, 15_000);
   }
@@ -39,5 +71,5 @@ window.addEventListener('online', refresh);
 document.addEventListener('visibilitychange', refresh);
 window.addEventListener('pagehide', clear);
 window.addEventListener('pageshow', event => { if (event.persisted) refresh(); });
-window.addEventListener('webpril:session-ended', () => { ended = true; clear(); status.textContent = ''; });
+window.addEventListener('webpril:session-ended', () => { ended = true; clear(); status.textContent = ''; for (const { description } of rows.values()) description.textContent = ''; });
 refresh();

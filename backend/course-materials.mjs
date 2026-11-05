@@ -201,7 +201,7 @@ export function createCourseMaterials({ db, courseChecks, clock = Date.now }) {
         if (previous?.hasMission && previous.stop && (!ctx.answers.get(earlier.id)?.accepted || previous.stopType !== 'self')) return null;
       }
     }
-    return { validUntil: access.validUntil, contentCopyDisabled: p.disableCopy || sp.disableCopyCurrent
+    return { validUntil: access.validUntil, sectionPath: access.path, contentCopyDisabled: p.disableCopy || sp.disableCopyCurrent
       || access.path.some(sid => streamPolicies.get(sid).disableCopy) };
   }
   function owned(productId, ctx) {
@@ -212,7 +212,7 @@ export function createCourseMaterials({ db, courseChecks, clock = Date.now }) {
   function summaries(product, ctx) {
     return [...catalog.lessons.values()].filter(l => readable(l, product, ctx));
   }
-  function aiLesson(lesson, product) {
+  function aiLesson(lesson, product, sectionPath) {
     const record = lessonStatement.get(lesson.id);
     if (!record || digest(record.content_json) !== record.sha256 || record.sha256 !== lesson.contentHash) throw unavailable();
     const blocks = publicBlocks(JSON.parse(record.content_json), lesson.id, record.sha256, videoLinks);
@@ -221,7 +221,7 @@ export function createCourseMaterials({ db, courseChecks, clock = Date.now }) {
       .replace(/https?:\/\/[^\s"'<>]+(?:\.mp4|\/files\/|\/video\/)[^\s"'<>]*/gi, '[видео]')
       .trim();
     return { productId: product.productId, course: product.title, lessonId: lesson.id,
-      sectionId: lesson.parent, title: lesson.title, contentHash: record.sha256, text };
+      sectionId: lesson.parent, sectionPath, title: lesson.title, contentHash: record.sha256, text };
   }
   return Object.freeze({
     async aiContext(userId) {
@@ -235,7 +235,7 @@ export function createCourseMaterials({ db, courseChecks, clock = Date.now }) {
           const access = readable(lesson, product, ctx);
           if (!access) continue;
           validUntil = Math.min(validUntil, access.validUntil);
-          lessons.push(aiLesson(lesson, product));
+          lessons.push(aiLesson(lesson, product, access.sectionPath));
         }
       }
       // Keep paid context stable; free accounts receive only these already public lessons.
@@ -244,7 +244,7 @@ export function createCourseMaterials({ db, courseChecks, clock = Date.now }) {
         const lesson = catalog.lessons.get(lessonId);
         const product = catalog.products.find(p => p.productId === productId);
         if (!lesson || !product || !pathsToRoot(lesson.parent, product.trainingId).length) continue;
-        lessons.push(aiLesson(lesson, product));
+        lessons.push(aiLesson(lesson, product, pathsToRoot(lesson.parent, product.trainingId)[0]));
       }
       return { courses: courses.map(p => ({ productId: p.productId, title: p.title })), lessons,
         ...ctx.meta(validUntil) };
