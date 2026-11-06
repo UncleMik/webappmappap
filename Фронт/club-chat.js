@@ -395,6 +395,21 @@ if (!definition || params.getAll('room').length !== 1) {
       if (current(value)) { busy = false; sendButton.disabled = false; draft.setBusy(false); form.removeAttribute('aria-busy'); draft.resize(); }
     }
   });
+  input.addEventListener('keydown', event => {
+    if (event.key !== 'Enter' || event.isComposing || event.keyCode === 229
+      || !window.matchMedia('(any-hover: hover) and (any-pointer: fine)').matches) return;
+    if (event.ctrlKey && !event.altKey && !event.metaKey) {
+      event.preventDefault();
+      if (input.disabled || input.readOnly) return;
+      const start = input.selectionStart, end = input.selectionEnd;
+      if (input.maxLength >= 0 && input.value.length - (end - start) + 1 > input.maxLength) return;
+      input.setRangeText('\n', start, end, 'end');
+      input.dispatchEvent(new Event('input', { bubbles: true }));
+    } else if (!event.shiftKey && !event.altKey && !event.metaKey) {
+      event.preventDefault();
+      if (!event.repeat) form.requestSubmit();
+    }
+  });
   replyPreview.querySelector('button').addEventListener('click', () => { reply = null; restoreReplyId = null; pending = null; updateReply(); input.focus(); });
   history.addEventListener('click', () => loadHistory('before'));
   down.addEventListener('click', goDown);
