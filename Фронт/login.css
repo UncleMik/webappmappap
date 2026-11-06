@@ -2,7 +2,11 @@
 .login-flow label { display: block; font-size: 15px; line-height: 1.5; margin-bottom: 8px; }
 .login-flow input { min-width: 0; }
 .login-flow .auth-title:focus { outline: none; }
-#code { font-size: 28px; letter-spacing: .25em; }
+.code-cells { display:grid; grid-template-columns:repeat(6,minmax(0,1fr)); gap:8px; }
+.code-cells .code-digit { min-width:0; width:100%; min-height:52px; padding:8px 0; font-size:26px; line-height:1.3; text-align:center; letter-spacing:normal; caret-color:#794aff; }
+.code-cells .code-digit[aria-invalid=true] { border-color:#a12632; }
+.code-cells .code-digit:read-only { background:#faf8fd; }
+@media (max-width:360px) { .code-cells { gap:6px; } }
 .login-help, .login-privacy { font-size: 13px; line-height: 1.55; color: #666995; margin-top: 10px; }
 .login-privacy { margin-top: 24px; }
 .login-privacy a { color: #6436d7; text-underline-offset: 3px; }

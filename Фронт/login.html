@@ -10,8 +10,8 @@
   <link rel="preload" href="assets/fonts/Intro-Regular.woff" as="font" type="font/woff" crossorigin>
   <link rel="preload" href="assets/fonts/Intro-Bold.woff" as="font" type="font/woff" crossorigin>
   <link rel="stylesheet" href="auth.css">
-  <link rel="stylesheet" href="login.css?v=20261017">
-  <script type="module" src="login.js?v=20261019-required"></script>
+  <link rel="stylesheet" href="login.css?v=20261106-code-cells">
+  <script type="module" src="login.js?v=20261106-code-cells"></script>
 </head>
 <body class="login-page">
   <div class="auth-shell">
@@ -29,7 +29,18 @@
         </form>
         <form class="auth-form" id="code-form" hidden>
           <p class="login-recipient">Письмо отправлено на <strong id="sent-email"></strong></p>
-          <div id="code-fields"><label for="code">Код из письма</label><input class="auth-input" id="code" name="code" type="text" inputmode="numeric" pattern="[0-9]{6}" maxlength="6" minlength="6" autocomplete="one-time-code" required aria-describedby="code-help login-status"><p class="login-help" id="code-help">Шесть цифр. Код действует 5 минут. Проверьте также папку «Спам».</p></div>
+          <div id="code-fields">
+            <label id="code-label" for="code">Код из письма</label>
+            <div class="code-cells" role="group" aria-labelledby="code-label" aria-describedby="code-help login-status">
+              <input class="auth-input code-digit" id="code" name="code" type="text" inputmode="numeric" pattern="[0-9]" maxlength="6" autocomplete="one-time-code" required aria-label="Цифра 1 из 6" aria-describedby="code-help login-status">
+              <input class="auth-input code-digit" id="code-2" name="code2" type="text" inputmode="numeric" pattern="[0-9]" maxlength="6" autocomplete="off" required aria-label="Цифра 2 из 6" aria-describedby="code-help login-status">
+              <input class="auth-input code-digit" id="code-3" name="code3" type="text" inputmode="numeric" pattern="[0-9]" maxlength="6" autocomplete="off" required aria-label="Цифра 3 из 6" aria-describedby="code-help login-status">
+              <input class="auth-input code-digit" id="code-4" name="code4" type="text" inputmode="numeric" pattern="[0-9]" maxlength="6" autocomplete="off" required aria-label="Цифра 4 из 6" aria-describedby="code-help login-status">
+              <input class="auth-input code-digit" id="code-5" name="code5" type="text" inputmode="numeric" pattern="[0-9]" maxlength="6" autocomplete="off" required aria-label="Цифра 5 из 6" aria-describedby="code-help login-status">
+              <input class="auth-input code-digit" id="code-6" name="code6" type="text" inputmode="numeric" pattern="[0-9]" maxlength="6" autocomplete="off" required aria-label="Цифра 6 из 6" aria-describedby="code-help login-status">
+            </div>
+            <p class="login-help" id="code-help">Шесть цифр. Код действует 5 минут. Проверьте также папку «Спам».</p>
+          </div>
           <button class="auth-button login-primary" id="verify-button" type="submit">Войти</button>
           <button class="login-secondary" id="resend-code" type="button">Отправить код ещё раз</button>
           <button class="login-secondary" id="change-email" type="button">Изменить почту</button>
