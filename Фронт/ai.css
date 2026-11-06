@@ -52,7 +52,6 @@
 .attachment-button { width: 44px; height: 44px; display: grid; place-items: center; background: white; border: 1px solid #ece3fc; border-radius: 50%; color: #8073a8; flex-shrink: 0; }
 .attachment-button svg { width: 23px; height: 23px; }
 .input-wrap { flex: 1; min-width: 0; display: flex; align-items: center; border: 1px solid #ece3fc; border-radius: 28px; padding: 2px; }
-.input-wrap:focus-within { outline: 2px solid #9a71ea; outline-offset: 2px; }
 .input-wrap input { width: 100%; min-width: 0; border: 0; background: transparent; font: inherit; font-size: 16px; padding: 10px 13px; outline: none; color: #393456; }
 .input-wrap input::placeholder { color: #8b7eb5; }
 .send-button { display: grid; place-items: center; width: 40px; height: 40px; border-radius: 50%; background: linear-gradient(140deg, #b071ff, #7934ff); color: white; flex-shrink: 0; }
