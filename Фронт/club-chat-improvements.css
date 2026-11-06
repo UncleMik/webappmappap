@@ -31,5 +31,5 @@
 .chat-send-status { margin:2px 18px 4px; color:#6b597b; font-size:12px; line-height:1.4; }
 .chat-send-status:empty { display:none; }
 .chat-search-toggle:focus-visible,.chat-search-panel button:focus-visible,.chat-down:focus-visible,.chat-quote-link:focus-visible { outline:2px solid #794aff; outline-offset:2px; }
-.community-chat .composer-field textarea:focus-visible { outline:2px solid #794aff; outline-offset:-2px; border-radius:22px; }
+.community-chat .composer-field:focus-within { outline:none; }
 @media (max-height:500px) { .chat-search-panel { max-height:48%; } .community-chat .discussion-header { padding-block:5px; } }
