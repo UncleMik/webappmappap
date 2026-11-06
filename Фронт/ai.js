@@ -1,11 +1,11 @@
+import { createConversationMenu } from './ai-conversations.js?v=20261106-conversations';
+
 const conversation = document.querySelector('#conversation');
 const input = document.querySelector('#chat-input');
 const form = document.querySelector('#chat-form');
 const send = form.querySelector('.send-button');
 const status = document.querySelector('#chat-status');
 const quotaLabel = document.querySelector('#chat-quota');
-const historyDialog = document.querySelector('#history-dialog');
-const historyList = document.querySelector('#history-list');
 const historyMore = document.querySelector('#history-more');
 const retry = document.querySelector('#chat-retry');
 let accountId, revision = 0, controller, ended = false, ready = false;
@@ -36,9 +36,139 @@ const voiceControls = document.querySelector('#voice-controls');
 const voiceStatus = document.querySelector('#voice-status');
 const voiceCancel = document.querySelector('#voice-cancel');
 const voiceRetry = document.querySelector('#voice-retry');
-const expandedSources = new Set();
+let expandedSources = new Set();
 const timeFormat = new Intl.DateTimeFormat('ru-RU', { timeZone: 'Europe/Moscow', hour: '2-digit', minute: '2-digit' });
 const sendingId = requestId => `sending:${requestId}`;
+
+const threadStates = new Map();
+let activeConversationId = null, conversations = [], listHasMore = false, listNext = null, listBusy = false;
+let listRevision = 0, listController, accountEpoch = 0;
+const conversationTitle = document.querySelector('#conversation-title');
+const uuid = value => typeof value === 'string' && /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(value);
+const menu = createConversationMenu({
+  onOpen: () => loadConversations(), onNew: newConversation, onSelect: id => selectConversation(id, true),
+  onMore: () => loadConversations(true), onRetry: () => initializeConversations(),
+});
+function validConversation(row) {
+  return row && uuid(row.id) && typeof row.title === 'string' && row.title.trim() && [...row.title].length <= 60
+    && Number.isFinite(Date.parse(row.createdAt)) && Number.isFinite(Date.parse(row.updatedAt));
+}
+function renderConversations() { menu.render(conversations, activeConversationId, listHasMore); }
+function rememberConversation(row) {
+  if (!validConversation(row)) return;
+  const previous = conversations.find(item => item.id === row.id);
+  if (previous && Date.parse(previous.updatedAt) > Date.parse(row.updatedAt)) return;
+  conversations = conversations.filter(item => item.id !== row.id); conversations.push(row);
+  conversations.sort((a, b) => Date.parse(b.updatedAt) - Date.parse(a.updatedAt) || b.id.localeCompare(a.id));
+  if (row.id === activeConversationId) conversationTitle.textContent = row.title;
+  renderConversations();
+}
+function acceptConversation(data) { if (data.conversation?.id === activeConversationId) rememberConversation(data.conversation); }
+function saveThread() {
+  if (!activeConversationId) return;
+  const state = threadStates.get(activeConversationId) || {};
+  Object.assign(state, { messages, hasMore, nextBefore, pending, draft: input.value, attachment: selectedAttachment, expandedSources });
+  threadStates.set(activeConversationId, state);
+}
+function leaveThread() {
+  saveThread(); revision++; controller?.abort(); controller = null; cancelVoice(); busy = false;
+}
+function showThread(id) {
+  activeConversationId = id; const state = id && threadStates.get(id);
+  messages = state?.messages || []; hasMore = state?.hasMore || false; nextBefore = state?.nextBefore || null;
+  pending = state?.pending || null; replyWaiting = false; expandedSources = state?.expandedSources || new Set();
+  input.value = state?.draft || ''; selectAttachment(state?.attachment || null); ready = false;
+  conversationTitle.textContent = conversations.find(row => row.id === id)?.title || 'Новый чат';
+  notice(''); render(); renderConversations();
+}
+async function selectConversation(id, focus = false) {
+  if (ended || !accountId || !uuid(id)) return;
+  if (id === activeConversationId && ready) { menu.close(false); if (focus) conversationTitle.focus({ preventScroll: true }); return; }
+  leaveThread(); showThread(id); menu.close(false); updateControls();
+  const current = revision, state = threadStates.get(id);
+  try {
+    if (state && !state.saved) await ensureConversation(id);
+    if (current !== revision || ended) return;
+    await loadHistory();
+  } catch (error) {
+    if (current !== revision || ended || validateIdentity(error)) return;
+    ready = true; render(); notice('Не удалось создать чат. Повторите попытку — новый чат не потерян.'); updateControls();
+  }
+  if (focus && id === activeConversationId && !ended) conversationTitle.focus({ preventScroll: true });
+}
+function allocateConversation() {
+  const id = crypto.randomUUID(), now = new Date().toISOString();
+  activeConversationId = id; threadStates.set(id, { saved: false }); saveThread();
+  rememberConversation({ id, title: 'Новый чат', createdAt: now, updatedAt: now });
+  return id;
+}
+async function ensureConversation(id) {
+  const state = threadStates.get(id); if (!state) throw new Error('Conversation unavailable');
+  if (state.saved) return;
+  if (state.creating) return state.creating;
+  const epoch = accountEpoch; state.createAbort = new AbortController();
+  if (id === activeConversationId) { state.createError = false; menu.setCreating(true); }
+  state.creating = (async () => {
+    const data = await request('conversations', { conversationId: id }, state.createAbort.signal);
+    if (epoch !== accountEpoch || ended) return;
+    if (!validConversation(data.conversation) || data.conversation.id !== id) throw new Error('Invalid conversation response');
+    state.saved = true; state.createError = false; rememberConversation(data.conversation);
+  })().catch(error => { if (epoch === accountEpoch) state.createError = true; throw error; }).finally(() => {
+    state.creating = null; state.createAbort = null;
+    if (epoch === accountEpoch && id === activeConversationId) { menu.setCreating(false); updateControls(); }
+  });
+  return state.creating;
+}
+async function newConversation() {
+  if (ended || !accountId) return;
+  leaveThread(); showThread(null); const id = allocateConversation(); ready = true; render(); updateControls(); menu.close(false); input.focus();
+  try { await ensureConversation(id); }
+  catch (error) {
+    if (id !== activeConversationId || ended || validateIdentity(error)) return;
+    notice('Не удалось создать чат. Повторите попытку — новый чат не потерян.'); updateControls();
+  }
+}
+async function loadConversations(more = false) {
+  if (ended || !accountId || (more && (listBusy || !listHasMore))) return false;
+  const version = ++listRevision, epoch = accountEpoch; listController?.abort(); listController = new AbortController();
+  listBusy = true; menu.setBusy(true); menu.notice('Загружаем чаты…');
+  try {
+    const data = await request(more ? 'conversations/read' : 'conversations', more ? { before: listNext } : undefined, listController.signal);
+    if (version !== listRevision || epoch !== accountEpoch || ended) return false;
+    if (!Array.isArray(data.conversations) || !data.conversations.every(validConversation) || typeof data.hasMore !== 'boolean'
+      || (data.hasMore && (typeof data.nextBefore !== 'string' || !data.nextBefore))) throw new Error('Invalid conversation list');
+    // Merge by UUID so delayed directory snapshots cannot replace newer message metadata.
+    for (const row of data.conversations) { const state = threadStates.get(row.id) || {}; state.saved = true; threadStates.set(row.id, state); rememberConversation(row); }
+    listHasMore = data.hasMore; listNext = typeof data.nextBefore === 'string' ? data.nextBefore : null;
+    menu.notice(conversations.length ? '' : 'Сохранённых чатов пока нет.'); renderConversations(); return true;
+  } catch (error) {
+    if (version !== listRevision || epoch !== accountEpoch || ended || validateIdentity(error)) return false;
+    menu.notice('Не удалось загрузить чаты. Проверьте интернет и повторите попытку.', true); return false;
+  } finally { if (version === listRevision && epoch === accountEpoch) { listBusy = false; menu.setBusy(false); } }
+}
+async function initializeConversations() {
+  const epoch = accountEpoch;
+  if (!await loadConversations() || epoch !== accountEpoch || ended) { if (!activeConversationId && !ended) { notice('Не удалось загрузить чаты. Повторите попытку.'); updateControls(); } return; }
+  if (activeConversationId) return;
+  if (conversations.length) { await selectConversation(conversations[0].id); return; }
+  const current = revision; busy = true; updateControls();
+  try {
+    const data = await request('quota'); if (current !== revision || ended) return;
+    quota(data.quota); ready = true; render(); notice('');
+  } catch (error) { if (current === revision && !validateIdentity(error)) notice(errorMessage(error)); }
+  finally { if (current === revision) { busy = false; updateControls(); } }
+}
+function emptyConversation() {
+  const welcome = document.createElement('div'); welcome.className = 'conversation-empty';
+  const heading = document.createElement('h2'); heading.textContent = 'Начнём новый разговор?';
+  const text = document.createElement('p'); text.textContent = 'Напишите вопрос Ларе или выберите подсказку';
+  const prompts = document.createElement('div'); prompts.className = 'conversation-empty-prompts';
+  for (const value of ['Помоги найти материалы курса', 'Какие темы есть в курсе', 'Помоги подготовить вопросы врачу']) {
+    const button = document.createElement('button'); button.type = 'button'; button.textContent = value;
+    button.addEventListener('click', () => { if (!input.disabled) { input.value = value; updateControls(); input.focus(); } }); prompts.append(button);
+  }
+  welcome.append(heading, text, prompts); return welcome;
+}
 
 function resizeChat() { document.documentElement.style.setProperty('--chat-viewport-height', `${window.visualViewport?.height ?? window.innerHeight}px`); }
 window.visualViewport?.addEventListener('resize', resizeChat);
@@ -58,18 +188,23 @@ function updateControls() {
   voiceControls.hidden = !voice;
   voiceRetry.hidden = voice?.stage !== 'retry';
   attachmentButton.disabled = analysesButton.disabled = removeAttachment.disabled = input.disabled;
-  retry.hidden = busy || (!pending && ready);
-  retry.textContent = pending ? 'Проверить результат' : 'Повторить загрузку';
+  const state = threadStates.get(activeConversationId);
+  menu.setCreating(!!state?.creating);
+  retry.hidden = busy || (!pending && ready && !state?.createError);
+  retry.textContent = state?.createError ? 'Повторить создание чата' : pending ? 'Проверить результат' : 'Повторить загрузку';
+  menu.setEnabled(!!accountId && !ended);
 }
 function clearPrivate() {
   revision++; clearQuotaRefresh(); cancelVoice(); controller?.abort(); controller = null;
-  accountId = null; ready = false; busy = false; pending = null;
+  accountEpoch++; listRevision++; listController?.abort(); listController = null; listBusy = false;
+  for (const state of threadStates.values()) state.createAbort?.abort();
+  threadStates.clear(); conversations = []; activeConversationId = null; listHasMore = false; listNext = null; menu.reset();
+  conversationTitle.textContent = 'Новый чат'; document.querySelector('#ai-profile-summary').textContent = 'Личные данные пока не заполнены'; accountId = null; ready = false; busy = false; pending = null;
   messages = []; hasMore = false; nextBefore = null; remaining = null; currentLimit = null;
   replyWaiting = false; selectAttachment(null);
   expandedSources.clear();
-  input.value = ''; conversation.replaceChildren(); historyList.replaceChildren();
+  input.value = ''; conversation.replaceChildren();
   historyMore.hidden = true; quotaLabel.textContent = '';
-  if (historyDialog.open) historyDialog.close();
   notice(''); updateControls();
 }
 function sessionEnded() { ended = true; clearPrivate(); }
@@ -80,11 +215,15 @@ window.addEventListener('account:change', event => {
   const id = event.detail?.user?.id;
   if (accountId && id && id !== accountId) { sessionEnded(); window.webprilSessionGate?.end('session_replaced'); }
   else if (!ended && id && !accountId) start(id);
-  const summary = document.querySelector('#ai-profile-summary');
-  if (id && summary) summary.textContent = event.detail?.week ? `${event.detail.week}-я неделя беременности` : event.detail?.profile?.stage === 'mother' ? 'Материалы для мамы' : 'Личные данные пока не заполнены';
+  if (!ended) profileSummary(event.detail);
 });
 
+function profileSummary(detail) {
+  const summary = document.querySelector('#ai-profile-summary');
+  if (detail?.user?.id && summary) summary.textContent = detail.week ? `${detail.week}-я неделя беременности` : detail.profile?.stage === 'mother' ? 'Материалы для мамы' : 'Личные данные пока не заполнены';
+}
 async function request(path, body, signal, timeoutMs) {
+  const identity = accountId;
   const abort = new AbortController();
   const timer = setTimeout(() => abort.abort(), timeoutMs ?? (body?.text ? 75_000 : 20_000));
   const onAbort = () => abort.abort();
@@ -92,16 +231,19 @@ async function request(path, body, signal, timeoutMs) {
   try {
     const response = await fetch('/api/auth/ai/' + path, {
       method: body === undefined ? 'GET' : 'POST', credentials: 'same-origin', cache: 'no-store',
-      headers: { 'X-Webpril-Account': accountId, ...(body === undefined ? {} : { 'Content-Type': 'application/json' }) },
+      headers: { 'X-Webpril-Account': identity, ...(body === undefined ? {} : { 'Content-Type': 'application/json' }) },
       ...(body === undefined ? {} : { body: JSON.stringify(body) }), signal: abort.signal
     });
     const data = await response.json().catch(() => null);
     if (!response.ok) throw Object.assign(new Error(data?.message || 'Чат временно недоступен.'), { code: data?.error, status: response.status, ...(data?.error === 'ai_daily_limit' ? { quota: data.quota } : {}) });
-    if (!data || data.accountId !== accountId) throw Object.assign(new Error('Аккаунт изменился.'), { code: 'account_changed' });
+    if (!data || data.accountId !== identity || identity !== accountId) throw Object.assign(new Error('Аккаунт изменился.'), { code: 'account_changed' });
+    if (body?.conversationId && ['history/read', 'messages', 'messages/status'].includes(path) && data.conversationId !== body.conversationId) throw Object.assign(new Error('Не удалось подтвердить беседу.'), { code: 'invalid_conversation_response' });
     return data;
   } finally { clearTimeout(timer); signal?.removeEventListener('abort', onAbort); }
 }
 function errorMessage(error, sending = false) {
+  if (error.code === 'ai_conversation_not_found') return 'Этот чат больше недоступен. Выберите другой или начните новый.';
+  if (error.code === 'invalid_conversation_response') return 'Не удалось подтвердить беседу. Повторите загрузку.';
   if (error.code === 'ai_purchase_required') return 'AI врач доступен после покупки курса. Посмотрите доступные курсы.';
   if (error.code === 'ai_daily_limit') return currentLimit === null ? 'На сегодня вопросы закончились. Новые вопросы будут доступны завтра.' : `На сегодня использованы все ${currentLimit} вопросов. Новые вопросы будут доступны завтра.`;
   if (error.code === 'ai_unavailable') return 'AI врач временно недоступен. Попробуйте позже.';
@@ -238,20 +380,14 @@ function messageNode(message) {
   article.append(content); return article;
 }
 function render() {
-  const nodes = messages.map(messageNode).filter(Boolean);
-  if (replyWaiting && pending && !messages.some(message => message.role === 'assistant' && message.requestId === pending.requestId)) {
-    nodes.push(messageNode({ id: `waiting:${pending.requestId}`, role: 'assistant',
-      content: 'Лара готовит ответ…', waiting: true }));
+  const nodes = ready ? messages.map(messageNode).filter(Boolean) : [];
+  if (ready && replyWaiting && pending && !messages.some(message => message.role === 'assistant' && message.requestId === pending.requestId)) {
+    nodes.push(messageNode({ id: `waiting:${pending.requestId}`, role: 'assistant', content: 'Лара готовит ответ…', waiting: true }));
   }
-  conversation.replaceChildren(...nodes);
-  historyList.replaceChildren(...messages.map(message => {
-    const item = document.createElement('li'); const button = document.createElement('button'); button.type = 'button';
-    button.textContent = `${message.role === 'user' ? 'Вы' : 'Лара'}: ${typeof message.content === 'string' ? message.content.slice(0, 90) : ''}`;
-    button.addEventListener('click', () => { historyDialog.close(); conversation.querySelectorAll('.message')[messages.indexOf(message)]?.scrollIntoView({ block: 'center' }); });
-    item.append(button); return item;
-  }));
-  historyMore.hidden = !hasMore; document.querySelector('#history-empty').hidden = messages.length > 0;
+  if (ready && !nodes.length) nodes.push(emptyConversation());
+  conversation.replaceChildren(...nodes); historyMore.hidden = !ready || !hasMore;
 }
+
 function merge(incoming, older = false) {
   incoming = Array.isArray(incoming) ? incoming : [];
   const confirmed = new Set(incoming.filter(item => item?.role === 'user' && item.id != null).map(item => item.requestId));
@@ -268,10 +404,14 @@ function merge(incoming, older = false) {
   if (!older) conversation.scrollTop = conversation.scrollHeight;
 }
 function restorePending() {
-  if (pending) return;
+  if (pending) {
+    const terminal = messages.find(item => item.role === 'user' && item.requestId === pending.requestId && ['completed', 'failed'].includes(item.status));
+    if (!terminal) { replyWaiting = messages.some(item => item.role === 'user' && item.requestId === pending.requestId && item.status === 'pending'); notice('Нажмите «Проверить результат».'); render(); return; }
+    pending = null; replyWaiting = false;
+  }
   const unmatched = [...messages].reverse().find(item => item.role === 'user' && item.status === 'pending' && item.requestId);
   if (unmatched) {
-    pending = { requestId: unmatched.requestId, text: unmatched.content, statusOnly: true };
+    pending = { requestId: unmatched.requestId, conversationId: activeConversationId, text: unmatched.content, statusOnly: true };
     replyWaiting = true; render(); conversation.scrollTop = conversation.scrollHeight;
     notice('Нажмите «Проверить результат».');
   } else if ([...messages].reverse().find(item => item.role === 'user')?.status === 'failed') {
@@ -279,23 +419,26 @@ function restorePending() {
   }
 }
 async function loadHistory(older = false) {
-  if (busy || ended || !accountId || older && !hasMore) return;
+  if (busy || ended || !accountId || !activeConversationId || older && !hasMore) return;
   busy = true; updateControls(); const current = revision; controller = new AbortController();
   if (!older) notice('Загружаем переписку…');
   try {
-    const data = await request(older ? 'history/read' : 'history', older ? { before: nextBefore } : undefined, controller.signal);
+    const data = await request('history/read', { conversationId: activeConversationId, ...(older ? { before: nextBefore } : {}) }, controller.signal);
     if (current !== revision) return;
     quota(data.quota); hasMore = data.hasMore === true; nextBefore = typeof data.nextBefore === 'string' ? data.nextBefore : null;
-    merge(data.messages, older); ready = true;
-    notice(older ? '' : messages.length ? '' : 'Задайте Ларе вопрос. Переписка хранится 90 дней.');
+    const scrollHeight = conversation.scrollHeight, scrollTop = conversation.scrollTop;
+    if (!older) messages = messages.filter(item => pending && item.requestId === pending.requestId && item.id === sendingId(pending.requestId));
+    ready = true; acceptConversation(data); merge(data.messages, older);
+    if (older) conversation.scrollTop = scrollTop + conversation.scrollHeight - scrollHeight;
+    notice('');
     if (!older) restorePending();
   } catch (error) {
     if (current !== revision || validateIdentity(error)) return;
-    if (error.code === 'ai_purchase_required') { ready = false; messages = []; pending = null; selectAttachment(null); replyWaiting = false; render(); }
+    if (error.status === 404 || error.code === 'ai_purchase_required') { ready = false; messages = []; pending = null; selectAttachment(null); replyWaiting = false; render(); if (error.status === 404) { threadStates.delete(activeConversationId); conversations = conversations.filter(row => row.id !== activeConversationId); renderConversations(); } }
     notice(errorMessage(error));
-  } finally { if (current === revision) { busy = false; controller = null; updateControls(); } }
+  } finally { if (current === revision) { busy = false; controller = null; if (threadStates.has(activeConversationId)) saveThread(); updateControls(); } }
 }
-async function start(id) { if (ended || accountId || typeof id !== 'string') return; accountId = id; await loadHistory(); }
+async function start(id) { if (ended || accountId || typeof id !== 'string') return; accountId = id; if (window.webprilAccount?.user?.id === id) profileSummary(window.webprilAccount); menu.setEnabled(true); await initializeConversations(); }
 async function waitForSession() {
   for (let i = 0; i < 150 && !ended && !accountId; i++) {
     if (window.webprilSessionAccountId) { start(window.webprilSessionAccountId); break; }
@@ -304,11 +447,13 @@ async function waitForSession() {
 }
 async function submit() {
   if (busy || !ready || ended || !accountId || !pending && remaining === 0) return;
+  if (!activeConversationId) allocateConversation();
+  const threadId = activeConversationId;
   const wasRetry = !!pending;
   const text = pending?.text || input.value.trim() || (selectedAttachment ? 'Помоги разобраться с результатами анализов.' : ''); if (!text) return;
   replyWaiting = true;
   if (!pending) {
-    pending = { requestId: crypto.randomUUID(), text, attachment: selectedAttachment };
+    pending = { requestId: crypto.randomUUID(), conversationId: threadId, text, attachment: selectedAttachment };
     input.value = ''; selectAttachment(null);
     const content = pending.attachment ? `${text}\n\nФайл анализа: ${pending.attachment.name}` : text;
     merge([{ id: sendingId(pending.requestId), role: 'user', content,
@@ -318,9 +463,10 @@ async function submit() {
   const attempt = pending; busy = true; updateControls(); notice('');
   const current = revision; controller = new AbortController();
   try {
+    await ensureConversation(threadId); if (current !== revision) return;
     let data;
-    if (attempt.statusOnly || attempt.attachment && attempt.checkStatus) {
-      try { data = await request('messages/status', { requestId: attempt.requestId }, controller.signal, attempt.attachment ? 180_000 : 75_000); }
+    if (attempt.statusOnly || attempt.checkStatus) {
+      try { data = await request('messages/status', { requestId: attempt.requestId, conversationId: attempt.conversationId }, controller.signal, attempt.attachment ? 180_000 : 75_000); }
       catch (error) {
         if (error.code !== 'ai_request_not_found') throw error;
         if (attempt.statusOnly) {
@@ -330,7 +476,7 @@ async function submit() {
       }
     }
     if (!data) {
-      const body = { requestId: attempt.requestId, text: attempt.text };
+      const body = { conversationId: attempt.conversationId, requestId: attempt.requestId, text: attempt.text };
       if (attempt.attachment) {
         body.attachment = { name: attempt.attachment.name, mimeType: attempt.attachment.type,
           data: await fileData(attempt.attachment) };
@@ -341,7 +487,7 @@ async function submit() {
     }
     if (current !== revision) return;
     replyWaiting = data.status === 'pending';
-    quota(data.quota); merge(data.messages);
+    quota(data.quota); acceptConversation(data); merge(data.messages);
     if (data.status === 'completed') { pending = null; input.value = ''; notice(''); }
     else if (data.status === 'failed') {
       pending = null; input.value = '';
@@ -351,7 +497,9 @@ async function submit() {
   } catch (error) {
     if (current !== revision || validateIdentity(error)) return;
     replyWaiting = false; render();
+    if (!threadStates.get(threadId)?.saved) { notice('Не удалось создать чат. Повторите попытку — вопрос пока не отправлен.'); return; }
     if (error.code === 'ai_purchase_required') { clearPrivate(); notice(errorMessage(error)); return; }
+    if (error.code === 'ai_conversation_not_found') { messages = []; pending = null; replyWaiting = false; ready = false; input.value = ''; selectAttachment(null); threadStates.delete(threadId); conversations = conversations.filter(row => row.id !== threadId); renderConversations(); render(); notice(errorMessage(error)); return; }
     const dailyNotice = error.code === 'ai_daily_limit' ? dailyLimitError(error) : null;
     // A busy resend does not disprove acceptance of the original, uncertain upload.
     const uncertainBusy = wasRetry && (attempt.attachment || attempt.statusOnly) && ['ai_busy', 'ai_upload_busy'].includes(error.code);
@@ -361,7 +509,7 @@ async function submit() {
     }
     if (error.code === 'ai_busy') notice('Предыдущий вопрос ещё обрабатывается. Проверьте историю через несколько секунд.');
     if (error.code !== 'ai_busy') notice(dailyNotice || errorMessage(error, !!pending), !!dailyNotice);
-  } finally { if (current === revision) { busy = false; controller = null; updateControls(); } }
+  } finally { if (current === revision) { busy = false; controller = null; if (threadStates.has(activeConversationId)) saveThread(); updateControls(); } }
 }
 function currentVoice(attempt) { return voice === attempt && !attempt.cancelled && !ended && attempt.revision === revision; }
 function stopTracks(attempt) { attempt.stream?.getTracks().forEach(track => track.stop()); attempt.stream = null; }
@@ -467,7 +615,12 @@ form.addEventListener('submit', event => {
   else if (!voice && !input.value.trim() && !selectedAttachment) startVoice();
   else if (!voice) submit();
 });
-retry.addEventListener('click', () => pending ? submit() : loadHistory());
+retry.addEventListener('click', async () => {
+  if (pending) { submit(); return; }
+  const state = threadStates.get(activeConversationId);
+  if (state?.createError) { const id = activeConversationId; try { await ensureConversation(id); if (id === activeConversationId) notice(''); } catch (error) { if (id === activeConversationId && !validateIdentity(error)) notice('Не удалось создать чат. Повторите попытку.'); } return; }
+  if (activeConversationId) loadHistory(); else initializeConversations();
+});
 document.querySelectorAll('[data-prompt]').forEach(button => button.addEventListener('click', () => { if (input.disabled) return; input.value = button.dataset.prompt; updateControls(); input.focus(); }));
 function openFilePicker() { if (!input.disabled) fileInput.click(); }
 attachmentButton.addEventListener('click', openFilePicker);
@@ -486,13 +639,5 @@ fileInput.addEventListener('change', () => {
   }
   selectAttachment(file); notice('');
 });
-document.querySelector('#history-open').addEventListener('click', () => historyDialog.showModal());
 historyMore.addEventListener('click', () => loadHistory(true));
-document.querySelector('#history-close').addEventListener('click', () => historyDialog.close());
-document.querySelector('#return-chat').addEventListener('click', () => historyDialog.close());
-historyDialog.addEventListener('click', event => {
-  if (event.target !== historyDialog) return;
-  const bounds = historyDialog.getBoundingClientRect();
-  if (event.clientX < bounds.left || event.clientX > bounds.right || event.clientY < bounds.top || event.clientY > bounds.bottom) historyDialog.close();
-});
 updateControls(); waitForSession();

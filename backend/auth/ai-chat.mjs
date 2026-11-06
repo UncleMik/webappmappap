@@ -1,4 +1,4 @@
-import { createHash, createHmac } from 'node:crypto';
+import { createHash, createHmac, randomUUID } from 'node:crypto';
 import { readFileSync } from 'node:fs';
 import { AuthError, hashToken } from './security.mjs';
 import { transaction } from './store.mjs';
@@ -10,6 +10,9 @@ const sha = value => createHash('sha256').update(value).digest('hex');
 const unavailable = () => new AuthError(503, 'ai_unavailable', 'Лара временно недоступна. Попробуйте позже.');
 const changed = () => new AuthError(409, 'account_changed', 'Аккаунт изменился. Обновите страницу.');
 const signedOut = () => new AuthError(401, 'sign_in_required', 'Войдите в аккаунт.');
+const conversationMissing = () => new AuthError(404, 'ai_conversation_not_found', 'Чат не найден. Обновите список чатов.');
+const conversationFormat = (row, now) => ({ id: row.id, title: row.title_expires_at && +new Date(row.title_expires_at) <= now ? 'Новый чат' : row.title, createdAt: new Date(row.created_at).toISOString(), updatedAt: new Date(row.updated_at).toISOString() });
+const firstTitle = text => [...text.replace(/\s+/gu, ' ').trim()].slice(0, 60).join('');
 const MAX_QUESTION = 4000;
 const PAID_DAILY_LIMIT = 30;
 const FREE_DAILY_LIMIT = 5;
@@ -227,39 +230,93 @@ export function createAiChat({ pool, service, courseMaterials, sourceMapPath, ur
     await client.query(`UPDATE ai_chat_requests SET status='failed',failure_code='request_expired' WHERE user_id=$1
       AND status='pending' AND accepted_at<=$2`, [userId, new Date(clock() - IN_FLIGHT_MS)]);
   }
+  function conversationId(value) {
+    if (!uuid(value)) throw new AuthError(400, 'invalid_ai_conversation', 'Обновите список чатов.');
+    return value.toLowerCase();
+  }
+  async function findConversation(userId, id, client = pool, createLegacy = false) {
+    if (id !== undefined) {
+      const { rows: [row] } = await client.query('SELECT * FROM ai_chat_conversations WHERE user_id=$1 AND id=$2', [userId, conversationId(id)]);
+      if (!row) throw conversationMissing();
+      return row;
+    }
+    if (createLegacy) await client.query(`INSERT INTO ai_chat_conversations(id,user_id,title,legacy,created_at,updated_at)
+      VALUES($1,$2,'Предыдущая переписка',true,$3,$3) ON CONFLICT(user_id) WHERE legacy DO NOTHING`,
+    [randomUUID(), userId, new Date(clock())]);
+    return (await client.query('SELECT * FROM ai_chat_conversations WHERE user_id=$1 AND legacy', [userId])).rows[0] || null;
+  }
+  async function conversationFields(userId, id) {
+    const row = await findConversation(userId, id);
+    return { conversationId: row.id, conversation: conversationFormat(row, clock()) };
+  }
+  async function createConversation(token, expected, data) {
+    const a = await access(token, expected), id = conversationId(data?.conversationId);
+    const row = await transaction(pool, async client => {
+      await client.query('SELECT id FROM auth_users WHERE id=$1 FOR UPDATE', [a.user.id]);
+      const { rows: [session] } = await client.query(`SELECT user_id FROM auth_sessions WHERE token_hash=$1
+        AND revoked_at IS NULL AND expires_at>$2 FOR SHARE`, [hashToken(token), new Date(clock())]);
+      if (!session || session.user_id !== a.user.id) throw signedOut();
+      await client.query(`INSERT INTO ai_chat_conversations(id,user_id,title,created_at,updated_at)
+        VALUES($1,$2,'Новый чат',$3,$3) ON CONFLICT(id) DO NOTHING`, [id, a.user.id, new Date(clock())]);
+      return findConversation(a.user.id, id, client);
+    });
+    await access(token, expected);
+    return { accountId: a.user.id, conversation: conversationFormat(row, clock()) };
+  }
+  async function conversations(token, expected, before) {
+    const a = await access(token, expected);
+    let cursor = null;
+    if (before !== undefined) {
+      try {
+        if (typeof before !== 'string' || before.length > 200) throw new Error();
+        cursor = JSON.parse(Buffer.from(before, 'base64url').toString('utf8'));
+        if (!Array.isArray(cursor) || cursor.length !== 2 || !uuid(cursor[1])
+          || typeof cursor[0] !== 'string' || new Date(cursor[0]).toISOString() !== cursor[0]) throw new Error();
+      } catch { throw new AuthError(400, 'invalid_cursor', 'Обновите список чатов.'); }
+    }
+    const { rows } = await pool.query(`SELECT * FROM ai_chat_conversations WHERE user_id=$1 AND updated_at>=$2
+      AND ($3::timestamptz IS NULL OR (updated_at,id)<($3::timestamptz,$4::uuid))
+      ORDER BY updated_at DESC,id DESC LIMIT 31`, [a.user.id, new Date(clock() - RETENTION_MS), cursor?.[0] || null, cursor?.[1] || null]);
+    await access(token, expected);
+    const page = rows.slice(0, 30), last = page.at(-1);
+    return { accountId: a.user.id, conversations: page.map(row => conversationFormat(row, clock())), hasMore: rows.length > 30,
+      nextBefore: rows.length > 30 ? Buffer.from(JSON.stringify([new Date(last.updated_at).toISOString(), last.id])).toString('base64url') : null };
+  }
   async function terminalResult(token, expected, userId, requestId) {
     const { rows: [row] } = await pool.query('SELECT * FROM ai_chat_requests WHERE user_id=$1 AND request_id=$2', [userId, requestId]);
     const current = await access(token, expected);
     if (!row || row.status === 'pending') throw unavailable();
     if (row.rights_hash !== current.rightsHash)
       throw new AuthError(409, 'ai_access_changed', 'Доступ к материалам изменился. Обновите страницу.');
-    return { accountId: userId, requestId, status: row.status, ...failureFields(row),
+    return { accountId: userId, ...await conversationFields(userId, row.conversation_id), requestId, status: row.status, ...failureFields(row),
       messages: messages(row, current.currentSources), quota: await quota(userId, current.dailyLimit) };
   }
-  async function history(token, expected, before) {
+  async function history(token, expected, before, id) {
     const a = await access(token, expected);
     if (before !== undefined && (typeof before !== 'string' || !/^[1-9]\d{0,18}$/.test(before)))
       throw new AuthError(400, 'invalid_cursor', 'Обновите историю.');
+    const conversation = await findConversation(a.user.id, id);
     await failStale(a.user.id);
     const cutoff = new Date(clock() - RETENTION_MS);
     const { rows } = await pool.query(`SELECT id,request_id,question,answer,sources,status,accepted_at,failure_code FROM ai_chat_requests
-      WHERE user_id=$1 AND accepted_at>=$2 AND ($3::bigint IS NULL OR id<$3::bigint)
-      ORDER BY id DESC LIMIT 31`, [a.user.id, cutoff, before || null]);
+      WHERE user_id=$1 AND conversation_id=$4 AND accepted_at>=$2 AND ($3::bigint IS NULL OR id<$3::bigint)
+      ORDER BY id DESC LIMIT 31`, [a.user.id, cutoff, before || null, conversation?.id || null]);
     const current = await access(token, expected);
     const page = rows.slice(0, 30);
-    return { accountId: a.user.id, messages: page.reverse().flatMap(row => messages(row, current.currentSources)), hasMore: rows.length > 30,
+    return { accountId: a.user.id, conversationId: conversation?.id || null, conversation: conversation ? conversationFormat(conversation, clock()) : null, messages: page.reverse().flatMap(row => messages(row, current.currentSources)), hasMore: rows.length > 30,
       nextBefore: rows.length > 30 ? String(rows[29].id) : null, quota: await quota(a.user.id, current.dailyLimit) };
   }
   async function status(token, expected, data) {
+    if (data?.conversationId !== undefined) conversationId(data.conversationId);
     if (!uuid(data?.requestId)) throw new AuthError(400, 'invalid_ai_message', 'Обновите страницу.');
     const a = await access(token, expected), requestId = data.requestId.toLowerCase();
     await failStale(a.user.id);
     const { rows: [row] } = await pool.query(`SELECT * FROM ai_chat_requests WHERE user_id=$1 AND request_id=$2
       AND accepted_at>=$3`, [a.user.id, requestId, new Date(clock() - RETENTION_MS)]);
-    if (!row) throw new AuthError(404, 'ai_request_not_found', 'Вопрос не был принят. Можно отправить его снова.');
+    if (!row || (data.conversationId !== undefined && row.conversation_id !== data.conversationId.toLowerCase())) throw new AuthError(404, 'ai_request_not_found', 'Вопрос не был принят. Можно отправить его снова.');
     const current = await access(token, expected);
     if (current.rightsHash !== row.rights_hash) throw new AuthError(409, 'ai_access_changed', 'Доступ к материалам изменился. Обновите страницу.');
-    return { accountId: a.user.id, requestId, status: row.status, ...failureFields(row),
+    return { accountId: a.user.id, ...await conversationFields(a.user.id, row.conversation_id), requestId, status: row.status, ...failureFields(row),
       messages: messages(row, current.currentSources), quota: await quota(a.user.id, a.dailyLimit) };
   }
   async function send(token, expected, data) {
@@ -275,6 +332,7 @@ export function createAiChat({ pool, service, courseMaterials, sourceMapPath, ur
     if (!uuid(data?.requestId) || typeof data.text !== 'string' || !data.text.trim()
       || [...data.text].length > MAX_QUESTION || /[\p{Cc}\p{Cf}]/u.test(data.text.replace(/[\n\r\t]/g, '')))
       throw new AuthError(400, 'invalid_ai_message', 'Введите вопрос до 4000 символов.');
+    if (data.conversationId !== undefined) conversationId(data.conversationId);
     const file = validateAiAttachment(data.attachment);
     const text = data.text.trim(), requestId = data.requestId.toLowerCase();
     const question = file ? `${text}\n\nФайл анализа: ${file.attachment.name}` : text;
@@ -288,7 +346,13 @@ export function createAiChat({ pool, service, courseMaterials, sourceMapPath, ur
       if (!session || session.user_id !== a.user.id) throw signedOut();
       await failStale(a.user.id, client);
       const { rows: [old] } = await client.query('SELECT * FROM ai_chat_requests WHERE user_id=$1 AND request_id=$2', [a.user.id, requestId]);
-      if (old) return old;
+      if (old) {
+        const conversation = await findConversation(a.user.id, data.conversationId, client);
+        if (!conversation || old.conversation_id !== conversation.id)
+          throw new AuthError(409, 'request_id_conflict', 'Обновите страницу и повторите вопрос.');
+        return old;
+      }
+      const conversation = await findConversation(a.user.id, data.conversationId, client, true);
       const { rows: [busy] } = await client.query(`SELECT id FROM ai_chat_requests WHERE user_id=$1
         AND status='pending' AND accepted_at>$2 LIMIT 1`, [a.user.id, new Date(clock() - IN_FLIGHT_MS)]);
       if (busy) throw new AuthError(409, 'ai_busy', 'Лара отвечает на предыдущий вопрос. Подождите немного.');
@@ -297,8 +361,11 @@ export function createAiChat({ pool, service, courseMaterials, sourceMapPath, ur
         VALUES($1,$2,1) ON CONFLICT(user_id,day_moscow) DO UPDATE SET used=ai_chat_daily_usage.used+1
         WHERE ai_chat_daily_usage.used<$3 RETURNING used`, [a.user.id, today, a.dailyLimit]);
       if (!usage) throw new AuthError(429, 'ai_daily_limit', 'Сегодня доступные вопросы закончились. Возвращайтесь завтра.');
-      const { rows: [saved] } = await client.query(`INSERT INTO ai_chat_requests(user_id,request_id,question,question_hash,rights_hash,status,accepted_at)
-        VALUES($1,$2,$3,$4,$5,'pending',$6) RETURNING *`, [a.user.id, requestId, question, questionHash, a.rightsHash, new Date(acceptedNow)]);
+      const { rows: [saved] } = await client.query(`INSERT INTO ai_chat_requests(user_id,request_id,question,question_hash,rights_hash,status,accepted_at,conversation_id)
+        VALUES($1,$2,$3,$4,$5,'pending',$6,$7) RETURNING *`, [a.user.id, requestId, question, questionHash, a.rightsHash, new Date(acceptedNow), conversation.id]);
+      await client.query(`UPDATE ai_chat_conversations SET updated_at=$3,
+        title=CASE WHEN NOT legacy AND title_expires_at IS NULL THEN $4 ELSE title END,
+        title_expires_at=CASE WHEN NOT legacy AND title_expires_at IS NULL THEN $5 ELSE title_expires_at END WHERE user_id=$1 AND id=$2`, [a.user.id, conversation.id, new Date(acceptedNow), firstTitle(text), new Date(acceptedNow + RETENTION_MS)]);
       return { ...saved, newlyAccepted: true };
     }).catch(async error => {
       // transaction() has rolled back and released its client before this read.
@@ -308,11 +375,11 @@ export function createAiChat({ pool, service, courseMaterials, sourceMapPath, ur
     });
     if (existing.question_hash !== questionHash) throw new AuthError(409, 'request_id_conflict', 'Обновите страницу и повторите вопрос.');
     if (existing.rights_hash !== a.rightsHash) throw new AuthError(409, 'ai_access_changed', 'Доступ к материалам изменился. Обновите страницу.');
-    if (!existing.newlyAccepted) return { accountId: a.user.id, requestId, status: existing.status,
+    if (!existing.newlyAccepted) return { accountId: a.user.id, ...await conversationFields(a.user.id, existing.conversation_id), requestId, status: existing.status,
       ...failureFields(existing), messages: messages(existing, a.currentSources), quota: await quota(a.user.id, a.dailyLimit) };
     const { rows: prior } = await pool.query(`SELECT question,answer FROM ai_chat_requests WHERE user_id=$1 AND status='completed'
-      AND rights_hash=$2 AND accepted_at>=$3 AND id<$4 ORDER BY id DESC LIMIT 10`,
-    [a.user.id, a.rightsHash, new Date(clock() - RETENTION_MS), existing.id]);
+      AND rights_hash=$2 AND accepted_at>=$3 AND id<$4 AND conversation_id=$5 ORDER BY id DESC LIMIT 10`,
+    [a.user.id, a.rightsHash, new Date(clock() - RETENTION_MS), existing.id, existing.conversation_id]);
     const latestPairs = [];
     let historyChars = 0;
     for (const row of prior) {
@@ -369,7 +436,7 @@ export function createAiChat({ pool, service, courseMaterials, sourceMapPath, ur
       const current = await access(token, expected);
       if (current.rightsHash !== a.rightsHash) throw new AuthError(409, 'ai_access_changed', 'Доступ к материалам изменился. Обновите страницу.');
       if (!failed) return terminalResult(token, expected, a.user.id, requestId);
-      return { accountId: a.user.id, requestId, status: 'failed', ...failureFields(failed),
+      return { accountId: a.user.id, ...await conversationFields(a.user.id, existing.conversation_id), requestId, status: 'failed', ...failureFields(failed),
         messages: messages(failed, current.currentSources), quota: await quota(a.user.id, a.dailyLimit) };
     }
     const current = await access(token, expected);
@@ -389,11 +456,14 @@ export function createAiChat({ pool, service, courseMaterials, sourceMapPath, ur
       return row;
     });
     if (!saved) return terminalResult(token, expected, a.user.id, requestId);
-    return { accountId: a.user.id, requestId, status: 'completed', messages: messages(saved, current.currentSources), quota: await quota(a.user.id, a.dailyLimit) };
+    return { accountId: a.user.id, ...await conversationFields(a.user.id, existing.conversation_id), requestId, status: 'completed', messages: messages(saved, current.currentSources), quota: await quota(a.user.id, a.dailyLimit) };
   }
   async function cleanup() {
     await pool.query('DELETE FROM ai_chat_requests WHERE accepted_at<$1', [new Date(clock() - RETENTION_MS)]);
+    await pool.query(`UPDATE ai_chat_conversations SET title='Новый чат' WHERE title_expires_at<=$1 AND title<>'Новый чат'`, [new Date(clock())]);
+    await pool.query(`DELETE FROM ai_chat_conversations c WHERE updated_at<$1
+      AND NOT EXISTS(SELECT 1 FROM ai_chat_requests r WHERE r.user_id=c.user_id AND r.conversation_id=c.id)`, [new Date(clock() - RETENTION_MS)]);
     await pool.query('DELETE FROM ai_chat_daily_usage WHERE day_moscow<$1', [day(clock() - RETENTION_MS)]);
   }
-  return Object.freeze({ history, send, status, readQuota, authorize: access, authorizeVoice, transcribe, cleanup });
+  return Object.freeze({ conversations, createConversation, history, send, status, readQuota, authorize: access, authorizeVoice, transcribe, cleanup });
 }

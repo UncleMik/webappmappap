@@ -19,13 +19,14 @@ before(async () => {
   db = await testPool(); pool = db.pool;
   await pool.query(await readFile(new URL('../auth/ai-chat-migration.sql', import.meta.url), 'utf8'));
   await pool.query(await readFile(new URL('../auth/ai-failure-migration.sql', import.meta.url), 'utf8'));
+  await pool.query(await readFile(new URL('../auth/ai-conversations-migration.sql', import.meta.url), 'utf8'));
   folder = await mkdtemp(join(tmpdir(), 'webpril-ai-test-'));
   sourceMapPath = join(folder, 'source-map.json');
   await writeFile(sourceMapPath, JSON.stringify({ version: 1, sources: [] }));
 });
 after(async () => { await db?.close(); await rm(folder, { recursive: true, force: true }); });
 async function setup() {
-  await pool.query('TRUNCATE ai_chat_requests,ai_chat_daily_usage,auth_sessions,auth_users,auth_rate_limits');
+  await pool.query('TRUNCATE ai_chat_requests,ai_chat_conversations,ai_chat_daily_usage,auth_sessions,auth_users,auth_rate_limits');
   now = Date.parse('2026-11-04T20:59:00Z'); user = randomUUID(); token = randomToken(); calls = 0;
   await pool.query('INSERT INTO auth_users(id,email,getcourse_id,profile) VALUES($1,$2,$3,$4)',
     [user, 'ai@example.invalid', 11, JSON.stringify({ stage: 'pregnancy', dueDate: '2027-03-01', completedAt: new Date(now).toISOString() })]);
@@ -55,8 +56,10 @@ test('read-only quota refresh restores free and paid availability exactly at Mos
     await setup();if(limit===5)context.courses=[];now=Date.parse('2026-11-04T20:59:59.000Z');
     await pool.query('INSERT INTO ai_chat_daily_usage(user_id,day_moscow,used) VALUES($1,$2,$3)',[user,'2026-11-04',limit]);
     const requestId=randomUUID(),a=await chat.authorize(token,user);
-    await pool.query(`INSERT INTO ai_chat_requests(user_id,request_id,question,question_hash,rights_hash,status,accepted_at)
-      VALUES($1,$2,$3,$4,$5,'pending',$6)`,[user,requestId,'History must remain unchanged','qa-hash',a.rightsHash,new Date(now-90_000)]);
+    const legacyId=randomUUID();
+    await pool.query(`INSERT INTO ai_chat_conversations(id,user_id,title,legacy,created_at,updated_at) VALUES($1,$2,'Предыдущая переписка',true,$3,$3)`,[legacyId,user,new Date(now)]);
+    await pool.query(`INSERT INTO ai_chat_requests(user_id,request_id,question,question_hash,rights_hash,status,accepted_at,conversation_id)
+      VALUES($1,$2,$3,$4,$5,'pending',$6,$7)`,[user,requestId,'History must remain unchanged','qa-hash',a.rightsHash,new Date(now-90_000),legacyId]);
     const before=(await pool.query('SELECT * FROM ai_chat_requests')).rows;
     const old=await chat.readQuota(token,user);
     assert.deepEqual(old,{accountId:user,quota:{limit,used:limit,remaining:0,resetsAt:'2026-11-04T21:00:00.000Z',serverTime:'2026-11-04T20:59:59.000Z'}});
@@ -903,4 +906,188 @@ test('late DO success cannot overwrite a stale request already marked failed', a
   assert.equal((await first).failureCode, 'request_expired');
   assert.equal((await chat.history(token, user)).messages[0].status, 'failed');
   assert.equal((await pool.query('SELECT answer FROM ai_chat_requests')).rows[0].answer, null);
+});
+
+test('conversation creation is idempotent, empty and does not spend shared quota', async () => {
+  await setup(); const id=randomUUID();
+  const created=await Promise.all([chat.createConversation(token,user,{conversationId:id}),chat.createConversation(token,user,{conversationId:id})]);
+  assert.deepEqual(created[0],created[1]);assert.equal(created[0].conversation.title,'Новый чат');
+  assert.equal((await chat.conversations(token,user)).conversations.length,1);
+  assert.deepEqual((await chat.history(token,user,undefined,id)).messages,[]);
+  assert.equal((await chat.history(token,user)).conversationId,null);
+  assert.equal((await chat.readQuota(token,user)).quota.used,0);assert.equal(calls,0);
+});
+
+test('conversation history and model context are isolated while quota and request IDs stay per account', async () => {
+  await setup();context.courses=[];const ids=[randomUUID(),randomUUID()];
+  for(const id of ids)await chat.createConversation(token,user,{conversationId:id});
+  const payloads=[];respond=async(_,options)=>{const body=JSON.parse(options.body);payloads.push(body);return new Response(JSON.stringify({requestId:body.requestId,answer:'Synthetic answer '+body.question,sources:[]}));};
+  const requests=[];
+  for(let i=0;i<5;i++){
+    const conversationId=ids[i%2],requestId=randomUUID();requests.push(requestId);
+    const result=await chat.send(token,user,{conversationId,requestId,text:'Thread '+i%2+' question '+i});
+    assert.equal(result.conversationId,conversationId);assert.equal(result.conversation.id,conversationId);assert.equal(result.conversation.title,'Thread '+i%2+' question '+i%2);assert.equal(result.quota.used,i+1);
+  }
+  assert.deepEqual(payloads[0].history,[]);assert.deepEqual(payloads[1].history,[]);
+  assert.equal(payloads[2].history.length,2);assert.match(payloads[2].history[0].content,/Thread 0/);
+  assert.equal(payloads[3].history.length,2);assert.match(payloads[3].history[0].content,/Thread 1/);
+  const read=await chat.history(token,user,undefined,ids[0]);assert.equal(read.messages.length,6);assert.equal(read.conversation.title,'Thread 0 question 0');
+  assert.equal((await chat.history(token,user)).messages.length,0);
+  await assert.rejects(chat.send(token,user,{conversationId:ids[1],requestId:requests[0],text:'Thread 0 question 0'}),e=>e.code==='request_id_conflict');
+  const state=await chat.status(token,user,{requestId:requests[0]});assert.equal(state.conversationId,ids[0]);assert.equal(state.conversation.title,'Thread 0 question 0');
+  await assert.rejects(chat.status(token,user,{conversationId:ids[1],requestId:requests[0]}),e=>e.status===404);
+  await assert.rejects(chat.send(token,user,{conversationId:ids[1],requestId:randomUUID(),text:'Sixth'}),e=>e.code==='ai_daily_limit');
+  assert.equal(calls,5);assert.equal((await chat.readQuota(token,user)).quota.used,5);
+});
+
+test('conversation ownership is enforced on create, read, send and database references', async () => {
+  await setup();const mine=randomUUID(),other=randomUUID(),foreign=randomUUID();await chat.createConversation(token,user,{conversationId:mine});
+  await pool.query('INSERT INTO auth_users(id,email,getcourse_id,profile) VALUES($1,$2,22,$3)',[other,'foreign@example.invalid','{}']);
+  await pool.query("INSERT INTO ai_chat_conversations(id,user_id,title,created_at,updated_at) VALUES($1,$2,'Foreign',$3,$3)",[foreign,other,new Date(now)]);
+  await assert.rejects(chat.createConversation(token,user,{conversationId:foreign}),e=>e.status===404);
+  await assert.rejects(chat.history(token,user,undefined,foreign),e=>e.status===404);
+  await assert.rejects(chat.send(token,user,{conversationId:foreign,requestId:randomUUID(),text:'Synthetic'}),e=>e.status===404);
+  assert.deepEqual((await chat.conversations(token,user)).conversations.map(c=>c.id),[mine]);
+  await assert.rejects(pool.query(`INSERT INTO ai_chat_requests(user_id,conversation_id,request_id,question,question_hash,rights_hash,status,accepted_at)
+    VALUES($1,$2,$3,'Synthetic','hash','rights','pending',$4)`,[user,foreign,randomUUID(),new Date(now)]));
+  assert.equal(calls,0);assert.equal((await chat.readQuota(token,user)).quota.used,0);
+});
+
+test('conversation pagination has stable ties and viewing or retrying does not reorder chats', async () => {
+  await setup();const ids=[];for(let i=0;i<32;i++){const id=randomUUID();ids.push(id);await chat.createConversation(token,user,{conversationId:id});}
+  const page=await chat.conversations(token,user);assert.equal(page.conversations.length,30);assert.equal(page.hasMore,true);
+  const second=await chat.conversations(token,user,page.nextBefore);assert.equal(second.conversations.length,2);assert.equal(second.hasMore,false);
+  assert.equal(new Set([...page.conversations,...second.conversations].map(c=>c.id)).size,32);
+  await assert.rejects(chat.conversations(token,user,'bad cursor'),e=>e.code==='invalid_cursor');
+  const target=ids[0];currentId=randomUUID();now+=1000;
+  await chat.send(token,user,{requestId:currentId,conversationId:target,text:'Title\n '+ 'а'.repeat(70)});
+  const title=(await chat.conversations(token,user)).conversations[0];assert.equal(title.id,target);assert.equal([...title.title].length,60);
+  now+=1000;await chat.history(token,user,undefined,target);
+  await chat.send(token,user,{requestId:currentId,conversationId:target,text:'Title\n '+ 'а'.repeat(70)});
+  assert.equal((await chat.conversations(token,user)).conversations[0].updatedAt,title.updatedAt);
+});
+
+test('late response remains bound to its original conversation and pending retries spend once', async () => {
+  await setup();const ids=[randomUUID(),randomUUID()];for(const id of ids)await chat.createConversation(token,user,{conversationId:id});
+  currentId=randomUUID();const requestId=currentId;let release,entered;const ready=new Promise(r=>entered=r),hold=new Promise(r=>release=r);
+  respond=async()=>{entered();await hold;return new Response(JSON.stringify({requestId,answer:'Original thread answer',sources:[]}));};
+  const data={requestId,conversationId:ids[0],text:'Original thread question'};
+  const pending=chat.send(token,user,data);await ready;
+  const retry=await chat.send(token,user,data);assert.equal(retry.status,'pending');assert.equal(retry.conversation.id,ids[0]);assert.equal(retry.conversation.title,'Original thread question');
+  assert.equal((await chat.history(token,user,undefined,ids[1])).messages.length,0);
+  await assert.rejects(chat.send(token,user,{...data,conversationId:ids[1]}),e=>e.code==='request_id_conflict');
+  release();assert.equal((await pending).conversationId,ids[0]);assert.equal(calls,1);
+  assert.equal((await chat.history(token,user,undefined,ids[0])).messages.length,2);
+  assert.equal((await chat.history(token,user,undefined,ids[1])).messages.length,0);
+});
+
+test('title snippet expires after 90 days even when the thread remains active', async () => {
+  await setup();const id=randomUUID();await chat.createConversation(token,user,{conversationId:id});currentId=randomUUID();
+  await chat.send(token,user,{requestId:currentId,conversationId:id,text:'Private original title'});
+  now+=89*86400000;await pool.query('UPDATE auth_sessions SET expires_at=$1',[new Date(now+3*86400000)]);currentId=randomUUID();
+  await chat.send(token,user,{requestId:currentId,conversationId:id,text:'Recent question'});
+  now+=2*86400000;
+  assert.equal((await chat.conversations(token,user)).conversations[0].title,'Новый чат');
+  assert.equal((await chat.history(token,user,undefined,id)).messages.length,2);
+  await chat.cleanup();assert.equal((await pool.query('SELECT title FROM ai_chat_conversations WHERE id=$1',[id])).rows[0].title,'Новый чат');
+  assert.equal((await pool.query('SELECT count(*)::integer AS n FROM ai_chat_requests')).rows[0].n,1);
+});
+
+test('legacy insert compatibility and repeated migration preserve one owned conversation per account', async () => {
+  await setup();const a=await chat.authorize(token,user),ids=[randomUUID(),randomUUID()];
+  for(const requestId of ids)await pool.query(`INSERT INTO ai_chat_requests(user_id,request_id,question,question_hash,rights_hash,status,accepted_at)
+    VALUES($1,$2,'Old client synthetic','hash',$3,'completed',$4)`,[user,requestId,a.rightsHash,new Date(now)]);
+  const first=(await chat.history(token,user)).conversationId;assert.ok(first);assert.equal((await chat.history(token,user)).messages.length,4);
+  await pool.query(await readFile(new URL('../auth/ai-conversations-migration.sql',import.meta.url),'utf8'));
+  assert.equal((await chat.history(token,user)).conversationId,first);assert.equal((await chat.conversations(token,user)).conversations.length,1);
+  assert.equal((await pool.query('SELECT count(DISTINCT conversation_id)::integer AS n FROM ai_chat_requests')).rows[0].n,1);
+});
+
+test('conversation listing and creation reject session revoked during processing', async () => {
+  for(const action of ['list','create']){
+    await setup();let armed=true;
+    const observingPool={connect:()=>pool.connect(),async query(sql,args){const result=await pool.query(sql,args);
+      if(armed&&sql.startsWith('SELECT * FROM ai_chat_conversations')){armed=false;await pool.query('UPDATE auth_sessions SET revoked_at=$1',[new Date(now)]);}return result;}};
+    const observed=createAiChat({pool:observingPool,service,courseMaterials:{aiContext:async()=>context},sourceMapPath,
+      url:'https://admin.legkie-rody.ru/internal/lara-web/reply',secret:'test-lara-secret-longer-than-32-bytes',clock:()=>now});
+    if(action==='list')await assert.rejects(observed.conversations(token,user),e=>e.code==='sign_in_required');
+    else {await pool.query('UPDATE auth_sessions SET revoked_at=$1',[new Date(now)]);await assert.rejects(observed.createConversation(token,user,{conversationId:randomUUID()}),e=>e.code==='sign_in_required');}
+  }
+});
+
+test('conversation HTTP routes enforce auth and origin and return the selected history', async () => {
+  await setup();const store=createStore(pool,{secret:'test-secret-longer-than-thirty-two-bytes',clock:()=>now});
+  const server=createAuthServer({service,store,aiChat:chat,enabled:true,origin:'https://app.legkie-rody.ru'});
+  server.listen(0,'127.0.0.1');await once(server,'listening');const base=`http://127.0.0.1:${server.address().port}`;
+  const headers={Cookie:`__Host-school_session=${token}`,'X-Webpril-Account':user,'Content-Type':'application/json',Origin:'https://app.legkie-rody.ru'};
+  const post=(path,data,extra={})=>fetch(base+path,{method:'POST',headers:{...headers,...extra},body:JSON.stringify(data)});
+  try{
+    assert.equal((await fetch(base+'/api/auth/ai/conversations')).status,401);
+    const conversationId=randomUUID();assert.equal((await post('/api/auth/ai/conversations',{conversationId},{Origin:'https://foreign.invalid'})).status,403);
+    const created=await post('/api/auth/ai/conversations',{conversationId});assert.equal(created.status,200);assert.equal((await created.json()).conversation.id,conversationId);
+    assert.equal((await (await fetch(base+'/api/auth/ai/conversations',{headers})).json()).conversations.length,1);
+    assert.equal((await (await post('/api/auth/ai/conversations/read',{})).json()).conversations.length,1);
+    currentId=randomUUID();const sent=await post('/api/auth/ai/messages',{conversationId,requestId:currentId,text:'HTTP synthetic question'});assert.equal(sent.status,200);assert.equal((await sent.json()).conversationId,conversationId);
+    const read=await post('/api/auth/ai/history/read',{conversationId});assert.equal(read.status,200);assert.equal((await read.json()).messages.length,2);
+    const legacy=await fetch(base+'/api/auth/ai/history',{headers});assert.equal((await legacy.json()).messages.length,0);
+  }finally{server.closeAllConnections();await new Promise(r=>server.close(r));}
+});
+
+test('existing request migration backfills metadata once without rewriting old requests', async () => {
+  const isolated=await testPool();
+  try{
+    const q=(sql,args)=>isolated.pool.query(sql,args);await q(await readFile(new URL('../auth/ai-chat-migration.sql',import.meta.url),'utf8'));
+    const owners=[randomUUID(),randomUUID()],requests=[];
+    for(let i=0;i<2;i++){
+      await q('INSERT INTO auth_users(id,email,getcourse_id) VALUES($1,$2,$3)',[owners[i],`migration-${i}@example.invalid`,100+i]);
+      for(let j=0;j<2;j++){const id=randomUUID(),at=new Date(Date.parse('2026-11-01T00:00:00Z')+j*1000);requests.push({id,at});
+        await q(`INSERT INTO ai_chat_requests(user_id,request_id,question,question_hash,rights_hash,status,accepted_at,answer)
+          VALUES($1,$2,'Synthetic preserved question','hash','rights','completed',$3,'Synthetic preserved answer')`,[owners[i],id,at]);}
+    }
+    const prior=(await q('SELECT * FROM ai_chat_requests ORDER BY id')).rows;
+    const migration=await readFile(new URL('../auth/ai-conversations-migration.sql',import.meta.url),'utf8');await q(migration);await q(migration);
+    const after=(await q('SELECT * FROM ai_chat_requests ORDER BY id')).rows;
+    assert.deepEqual(after.map(({conversation_id,...row})=>row),prior);
+    const conversations=(await q('SELECT * FROM ai_chat_conversations')).rows;assert.equal(conversations.length,2);
+    for(const row of conversations){assert.equal(row.title,'Предыдущая переписка');assert.equal(row.legacy,true);
+      assert.equal(new Date(row.created_at).toISOString(),'2026-11-01T00:00:00.000Z');assert.equal(new Date(row.updated_at).toISOString(),'2026-11-01T00:00:01.000Z');
+      assert.equal(after.filter(r=>r.conversation_id===row.id).length,2);}
+  }finally{await isolated.close();}
+});
+
+test('history pagination never includes neighboring conversations and respects retention', async () => {
+  await setup();const ids=[randomUUID(),randomUUID()];for(const id of ids)await chat.createConversation(token,user,{conversationId:id});
+  const a=await chat.authorize(token,user);
+  for(let i=0;i<33;i++)await pool.query(`INSERT INTO ai_chat_requests(user_id,conversation_id,request_id,question,question_hash,rights_hash,status,accepted_at)
+    VALUES($1,$2,$3,$4,'hash',$5,'failed',$6)`,[user,ids[i===32?1:0],randomUUID(),`Page ${i}`,a.rightsHash,new Date(now-(i===31?91:0)*86400000)]);
+  const first=await chat.history(token,user,undefined,ids[0]);assert.equal(first.messages.length,30);assert.equal(first.hasMore,true);
+  const second=await chat.history(token,user,first.nextBefore,ids[0]);assert.equal(second.messages.length,1);assert.equal(second.hasMore,false);
+  const all=[...second.messages,...first.messages];assert.equal(new Set(all.map(m=>m.id)).size,31);assert.equal(all.some(m=>m.content==='Page 31'||m.content==='Page 32'),false);
+});
+
+
+test('conversation creation checks revocation again after its database write', async () => {
+  await setup();const id=randomUUID();let armed=true;
+  const observingPool={query:(...args)=>pool.query(...args),async connect(){const client=await pool.connect();
+    return {release:()=>client.release(),async query(sql,args){const result=await client.query(sql,args);
+      if(armed&&sql.startsWith('INSERT INTO ai_chat_conversations')){armed=false;await client.query('UPDATE auth_sessions SET revoked_at=$1',[new Date(now)]);}return result;}};}};
+  const observed=createAiChat({pool:observingPool,service,courseMaterials:{aiContext:async()=>context},sourceMapPath,
+    url:'https://admin.legkie-rody.ru/internal/lara-web/reply',secret:'test-lara-secret-longer-than-32-bytes',clock:()=>now});
+  await assert.rejects(observed.createConversation(token,user,{conversationId:id}),e=>e.code==='sign_in_required');
+  assert.equal(armed,false);assert.equal(calls,0);
+});
+
+test('concurrent creation and send preserve the first title and one conversation', async () => {
+  await setup();const id=randomUUID();let entered,release;const ready=new Promise(r=>entered=r),hold=new Promise(r=>release=r);let armed=true;
+  const observingPool={query:(...args)=>pool.query(...args),async connect(){const client=await pool.connect();
+    return {release:()=>client.release(),async query(sql,args){const result=await client.query(sql,args);
+      if(armed&&sql.startsWith('INSERT INTO ai_chat_conversations')){armed=false;entered();await hold;}return result;}};}};
+  const observed=createAiChat({pool:observingPool,service,courseMaterials:{aiContext:async()=>context},sourceMapPath,
+    url:'https://admin.legkie-rody.ru/internal/lara-web/reply',secret:'test-lara-secret-longer-than-32-bytes',clock:()=>now,
+    fetchImpl:async(...args)=>{calls++;return respond(...args);}});
+  const creating=observed.createConversation(token,user,{conversationId:id});await ready;currentId=randomUUID();
+  const sending=observed.send(token,user,{conversationId:id,requestId:currentId,text:'First synthetic title'});release();await creating;
+  const result=await sending;assert.equal(result.conversation.title,'First synthetic title');
+  await observed.createConversation(token,user,{conversationId:id});assert.equal((await observed.conversations(token,user)).conversations[0].title,'First synthetic title');
+  assert.equal((await pool.query('SELECT count(*)::integer AS n FROM ai_chat_conversations')).rows[0].n,1);assert.equal(calls,1);
 });

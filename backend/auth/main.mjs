@@ -23,7 +23,7 @@ pool = openPool(config);
 await pool.query('SELECT id FROM auth_users LIMIT 0'); // Migration must be applied first.
 await pool.query('SELECT user_id FROM auth_personal_records LIMIT 0');
 await pool.query('SELECT message_id FROM club_message_reactions LIMIT 0');
-if (config.laraWeb) await pool.query('SELECT request_id FROM ai_chat_requests LIMIT 0');
+if (config.laraWeb) await pool.query('SELECT request_id,conversation_id FROM ai_chat_requests LIMIT 0');
 const store = createStore(pool, config);
 const sendMail = createMailer(config.mail), getcourse = createGetCourse(config.getcourse);
 const service = createAuthService({ store, sendMail, ensureGetCourse: async email => {
@@ -42,6 +42,7 @@ if (courseChecks) {
     closeCourseDb();
   }
 }
+if (config.laraWeb) await pool.query('SELECT id,title,title_expires_at,legacy,updated_at FROM ai_chat_conversations LIMIT 0');
 const aiChat = config.laraWeb && courseMaterials ? createAiChat({ pool, service, courseMaterials, ...config.laraWeb }) : null;
 const server = createAuthServer({ ...config, service, store, courseChecks, courseMaterials, aiChat,
   personalData: createPersonalData(pool), profilePhoto: createProfilePhoto(pool),

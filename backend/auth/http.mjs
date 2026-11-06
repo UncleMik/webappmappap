@@ -84,6 +84,10 @@ export function createAuthServer({ service, store, courseChecks, courseMaterials
       if (request.method === 'GET' && url.pathname === '/api/auth/session') {
         send(200, await service.sessionState(readSessionCookie(request))); return;
       }
+      if (request.method === 'GET' && url.pathname === '/api/auth/ai/conversations') {
+        if (!aiChat) throw new AuthError(503, 'ai_unavailable', 'Лара временно недоступна.');
+        send(200, await aiChat.conversations(readSessionCookie(request), request.headers['x-webpril-account'])); return;
+      }
       if (request.method === 'GET' && url.pathname === '/api/auth/ai/history') {
         if (!aiChat) throw new AuthError(503, 'ai_unavailable', 'Лара временно недоступна.');
         send(200, await aiChat.history(readSessionCookie(request), request.headers['x-webpril-account'])); return;
@@ -186,10 +190,16 @@ export function createAuthServer({ service, store, courseChecks, courseMaterials
         send(200, await aiChat.transcribe(readSessionCookie(request), request.headers['x-webpril-account'], data,
           userId => store.rateLimit('ai_voice_user', userId, 6))); return;
       }
+      if (url.pathname === '/api/auth/ai/conversations' || url.pathname === '/api/auth/ai/conversations/read') {
+        if (!aiChat) throw new AuthError(503, 'ai_unavailable', 'Лара временно недоступна.');
+        const token = readSessionCookie(request), expected = request.headers['x-webpril-account'];
+        send(200, url.pathname.endsWith('/read') ? await aiChat.conversations(token, expected, data.before)
+          : await aiChat.createConversation(token, expected, data)); return;
+      }
       if (url.pathname === '/api/auth/ai/history/read' || url.pathname === '/api/auth/ai/messages' || url.pathname === '/api/auth/ai/messages/status') {
         if (!aiChat) throw new AuthError(503, 'ai_unavailable', 'Лара временно недоступна.');
         const token = readSessionCookie(request), expected = request.headers['x-webpril-account'];
-        send(200, url.pathname.endsWith('/read') ? await aiChat.history(token, expected, data.before)
+        send(200, url.pathname.endsWith('/read') ? await aiChat.history(token, expected, data.before, data.conversationId)
           : url.pathname.endsWith('/status') ? await aiChat.status(token, expected, data)
             : await aiChat.send(token, expected, data)); return;
       }
