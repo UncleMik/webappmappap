@@ -18,7 +18,7 @@
 .chat-search-panel li span { font-size:14px; line-height:1.45; white-space:pre-wrap; }
 .chat-search-more { width:100%; }
 .chat-date-divider,.chat-unread-divider { flex:none; align-self:center; margin:12px 0; padding:4px 12px; border-radius:12px; color:#6b597b; font-size:12px; line-height:1.5; text-align:center; }
-.chat-date-divider { background:#f3eef8; }
+.chat-date-divider { width:fit-content; max-width:100%; margin-inline:auto; background:#f3eef8; }
 .chat-unread-divider { align-self:stretch; background:#ede4ff; color:#6b3dc6; }
 .discussion-bubble blockquote { padding:0; }
 .chat-quote-link { display:block; width:100%; min-height:44px; padding:7px 9px; background:transparent; color:inherit; text-align:left; font:inherit; white-space:pre-wrap; overflow-wrap:anywhere; }
