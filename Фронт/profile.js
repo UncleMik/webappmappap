@@ -46,8 +46,8 @@
     status.hidden = true;
     savedScroll = { x: window.scrollX, y: window.scrollY };
     savedStyles = {};
-    for (const key of ['position', 'top', 'left', 'right', 'width', 'overflow']) savedStyles[key] = document.body.style[key];
-    Object.assign(document.body.style, { position: 'fixed', top: `-${savedScroll.y}px`, left: '0', right: '0', width: '100%', overflow: 'hidden' });
+    for (const key of ['position', 'top', 'left', 'right', 'overflow']) savedStyles[key] = document.body.style[key];
+    Object.assign(document.body.style, { position: 'fixed', top: `-${savedScroll.y}px`, left: '0', right: '0', overflow: 'hidden' });
     dialog.showModal();
     dialog.querySelector('.calendar-content').scrollTop = 0;
     trigger.setAttribute('aria-expanded', 'true');
