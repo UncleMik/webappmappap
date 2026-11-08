@@ -1,8 +1,9 @@
 import { authRequest } from './auth-client.js';
 
 export function mountWeeklyVideo(id) {
-  const items = window.webprilWeeklyVideos;
-  const index = items.findIndex(item => item.id === id), item = items[index];
+  const item = window.webprilWeeklyVideos.find(entry => entry.id === id);
+  const items = window.webprilWeeklyVideos.filter(entry => entry.week === item.week);
+  const index = items.indexOf(item);
   const stage = document.querySelector('.video-stage'), cover = document.querySelector('.video-cover');
   const status = document.querySelector('#player-status'), progress = document.querySelector('#video-progress');
   const play = document.querySelector('#video-play'), previous = document.querySelector('#video-prev'), next = document.querySelector('#video-next');
@@ -16,11 +17,12 @@ export function mountWeeklyVideo(id) {
   document.querySelector('.step-count').textContent = `${index + 1} из ${items.length}`;
   document.querySelector('#step-title').textContent = item.title;
   const description = document.querySelector('.step-description');
-  description.textContent = item.description;
-  description.classList.add('weekly-video-description');
-  // The source description belongs above the video, including on narrow screens.
-  stage.before(description);
-  document.querySelector('.video-note p').textContent = 'Три видео школы доступны бесплатно после входа.';
+  if (item.description) {
+    description.textContent = item.description;
+    description.classList.add('weekly-video-description');
+    stage.before(description);
+  } else description.remove();
+  document.querySelector('.video-note p').textContent = 'Видео школы доступно бесплатно после входа.';
   document.querySelector('.video-note').hidden = false;
   cover.classList.add('weekly-cover');
   cover.querySelector('img').src = item.image;
@@ -109,8 +111,9 @@ export function mountWeeklyVideo(id) {
     busy = true; login.hidden = true; message('Загружаем видео…');
     try {
       const result = await authRequest(`videos/${id}`);
-      const source = new URL(result.source);
-      if (source.protocol !== 'https:' || !/^fs\d*\.getcourse\.ru$/.test(source.hostname)) throw new Error('Некорректный адрес видео.');
+      const source = new URL(result.source, location.origin);
+      if (source.origin !== location.origin || source.pathname !== '/api/auth/videos/' + id + '/file'
+        || source.search || source.hash) throw new Error('Некорректный адрес видео.');
       if (!video.getAttribute('src') || failed) { video.src = source.href; failed = false; }
       pending = true; clearTimeout(timer); timer = setTimeout(() => { if (pending) error(); }, 30000);
       cover.hidden = true; video.hidden = false;

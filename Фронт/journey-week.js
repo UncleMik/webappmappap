@@ -77,8 +77,11 @@
     [...dots.children].forEach((dot, index) => dot.classList.toggle('active', index === stage));
     dots.setAttribute('aria-label', ['1–14 недели', '15–28 недели', '29–42 недели'][stage]);
     weeklySections[0].hidden = false;
-    // Temporary videos: remove when real videos are added for this week.
-    weeklySections[1].hidden = false;
+    const videoSection = weeklySections[1];
+    const count = window.renderWeeklyVideoCards?.(videoSection.querySelector('.video-list'), week) ?? 0;
+    videoSection.hidden = count === 0;
+    videoSection.querySelector('.journey-subtitle').textContent = count === 1
+      ? '1 видео, которое поможет сейчас' : count + ' видео, которые помогут сейчас';
     window.renderPregnancyWeekArticles(weeklySections[0].querySelector('.article-list'), week);
     weeklySections[0].querySelector('p').textContent = '3 статьи, которые помогут сейчас';
   }
@@ -156,6 +159,7 @@
     const list = carousel.querySelector('.article-list, .video-list, .course-list');
     carousel.querySelectorAll('.round-arrow').forEach(button => {
       button.addEventListener('click', () => {
+        if (!list.firstElementChild) return;
         const distance = list.firstElementChild.getBoundingClientRect().width + parseFloat(getComputedStyle(list).gap);
         list.scrollBy({ left: distance * (button.classList.contains('carousel-next') ? 1 : -1), behavior: reducedMotion() ? 'instant' : 'smooth' });
       });

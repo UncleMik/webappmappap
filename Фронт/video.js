@@ -12,15 +12,17 @@
     'birth-breathing-video': 'Дыхание в родах', 'back-relief-video': 'Как снять напряжение в спине',
     webinars: 'Запись вебинара'
   };
-  const id = Object.hasOwn(titles, params.get('id')) ? params.get('id') : null;
+  const requestedId = params.get('id');
+  const weeklyItem = window.webprilWeeklyVideos?.find(item => item.id === requestedId);
+  const id = weeklyItem?.id ?? (Object.hasOwn(titles, requestedId) ? requestedId : null);
   const origins = { index: 'index.html', mom: 'mom.html', baby: 'baby.html', journey: 'journey.html', 'my-courses': 'my-courses.html', club: 'club.html#events', articles: 'journey.html' };
   const revealPlayer = () => document.querySelector('.video-app').removeAttribute('data-video-pending');
   document.querySelector('.video-back').href = Object.hasOwn(origins, params.get('from')) ? origins[params.get('from')] : 'mom.html';
   if (params.get('from') === 'journey') {
     const week = Number(params.get('week'));
-    document.querySelector('.video-back').href = `journey.html?week=${Number.isInteger(week) && week >= 1 && week <= 42 ? week : 27}#videos-title`;
+    document.querySelector('.video-back').href = `journey.html?week=${Number.isInteger(week) && week >= 1 && week <= 42 ? week : weeklyItem?.week ?? 27}#videos-title`;
   }
-  if (!['contractions-lesson', 'back-relief-video', 'birth-breathing-video'].includes(id)) {
+  if (!weeklyItem) {
     import('./school-video-routes.js?v=20261028-free-breathing').then(module => {
       module.mountSchoolVideo(id);
     }).catch(() => {
@@ -69,20 +71,16 @@
     coverImage.hidden = false;
   });
   coverImage.addEventListener('error', () => { coverImage.hidden = true; });
-  const weeklyIds = ['contractions-lesson', 'back-relief-video', 'birth-breathing-video'];
-  if (weeklyIds.includes(id)) {
-    import('./weekly-video-player.js?v=20261028-descriptions').then(module => {
-      module.mountWeeklyVideo(id);
-      revealPlayer();
-    }).catch(() => {
-      const status = document.querySelector('#player-status'); status.hidden = false;
-      status.textContent = 'Не удалось загрузить плеер. Обновите страницу.';
-      document.querySelector('.video-cover').disabled = true;
-      document.querySelector('#video-play').disabled = true;
-      document.querySelector('#video-next').disabled = true;
-      revealPlayer();
-    });
-    return;
-  }
+  import('./weekly-video-player.js?v=20261108-free-weekly').then(module => {
+    module.mountWeeklyVideo(id);
+    revealPlayer();
+  }).catch(() => {
+    const status = document.querySelector('#player-status'); status.hidden = false;
+    status.textContent = 'Не удалось загрузить плеер. Обновите страницу.';
+    document.querySelector('.video-cover').disabled = true;
+    document.querySelector('#video-play').disabled = true;
+    document.querySelector('#video-next').disabled = true;
+    revealPlayer();
+  });
 
 })();

@@ -45,12 +45,20 @@
         <div class="content-carousel"><button class="round-arrow carousel-prev" type="button" aria-label="Предыдущие курсы" hidden><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m15 5-6 7 6 7"/></svg></button><div class="journey-three-grid course-list" aria-busy="true"></div><button class="round-arrow carousel-next" type="button" aria-label="Следующие курсы" hidden><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m9 5 6 7-6 7"/></svg></button></div>
       </section>
 
-      <section class="journey-section" aria-labelledby="videos-title"><h2 id="videos-title">Полезные видео на эту неделю</h2><p class="journey-subtitle">3 видео, которые помогут сейчас</p>
-        <div class="content-carousel"><button class="round-arrow carousel-prev" type="button" aria-label="Предыдущие видео"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m15 5-6 7 6 7"/></svg></button><div class="journey-three-grid video-list">
-          <button class="journey-content-card video-card" type="button" data-action="contractions-lesson"><span class="video-photo journey-photo" style="--x:282;--y:854;--w:187;--h:69" aria-hidden="true"><span class="small-play"><svg><use href="#j-play"/></svg></span><span class="photo-duration">8:26</span></span><h3>Витамины и дефициты во время беременности</h3><span class="content-type video-type"><svg aria-hidden="true"><use href="#j-video"/></svg>Видео</span></button>
-          <button class="journey-content-card video-card" type="button" data-action="back-relief-video"><span class="video-photo journey-photo" style="--x:475;--y:854;--w:187;--h:69" aria-hidden="true"><span class="small-play"><svg><use href="#j-play"/></svg></span><span class="photo-duration">4:58</span></span><h3>Самомассаж головы и расслабление</h3><span class="content-type video-type"><svg aria-hidden="true"><use href="#j-video"/></svg>Видео</span></button>
-          <button class="journey-content-card video-card" type="button" data-action="birth-breathing-video"><span class="video-photo journey-photo" style="--x:282;--y:854;--w:187;--h:69" aria-hidden="true"><span class="small-play"><svg><use href="#j-play"/></svg></span><span class="photo-duration">2:33</span></span><h3>Практика поддержки и уверенности в себе</h3><span class="content-type video-type"><svg aria-hidden="true"><use href="#j-video"/></svg>Видео</span></button>
-        </div><button class="round-arrow carousel-next" type="button" aria-label="Следующие видео"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m9 5 6 7-6 7"/></svg></button></div>
+      <section class="journey-section" aria-labelledby="videos-title" hidden>
+        <h2 id="videos-title">Полезные видео на эту неделю</h2><p class="journey-subtitle"></p>
+        <div class="content-carousel">
+          <button class="round-arrow carousel-prev" type="button" aria-label="Предыдущие видео" hidden><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m15 5-6 7 6 7"/></svg></button>
+          <div class="journey-three-grid video-list"></div>
+          <button class="round-arrow carousel-next" type="button" aria-label="Следующие видео" hidden><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m9 5 6 7-6 7"/></svg></button>
+        </div>
+        <template id="weekly-video-card">
+          <button class="journey-content-card video-card" type="button">
+            <span class="video-photo journey-photo weekly-video-photo" aria-hidden="true"><img alt="" loading="lazy" decoding="async"><span class="small-play"><svg><use href="#j-play"/></svg></span><span class="photo-duration"></span></span>
+            <h3></h3>
+            <span class="content-type video-type"><svg aria-hidden="true"><use href="#j-video"/></svg>Видео</span>
+          </button>
+        </template>
       </section>
 
     </main>
@@ -93,14 +101,14 @@
       <footer class="calendar-footer"><button class="calendar-go-current" type="button">Перейти к материалам недели</button></footer>
     </div>
   </dialog>
-  <script src="weekly-videos.js?v=20261019-timestamps-1"></script>
+  <script src="weekly-videos.js?v=20261108-free-weekly"></script>
   <script type="module" src="journey-courses.js?v=20261027-banners"></script>
   <script src="article-read-state.js?v=20261027-personal"></script>
 <script src="weekly-content-api.js?v=20261008-weekly"></script>
   <script src="mom-week.js?v=20261020-initial-content"></script>
   <script src="app.js?v=20261006-week-samples"></script>
   <script src="articles-api.js?v=20261019-onboarding"></script>
-<script src="journey-week.js?v=20261020-initial-content"></script>
+<script src="journey-week.js?v=20261108-free-weekly"></script>
   <script src="calendar-sheet.js?v=20261019-onboarding"></script>
 <script src="app-navigation.js?v=20261020-initial-content"></script>  <script src="carousel-controls.js?v=20261008-centered-arrows"></script>
 <script src="resource-prefetch.js?v=20261009"></script>

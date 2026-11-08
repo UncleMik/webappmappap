@@ -1,6 +1,6 @@
 import { createServer } from 'node:http';
 import { AuthError, normalizeEmail, readSessionCookie, sessionCookie } from './security.mjs';
-import { weeklyVideoSource } from './weekly-videos.mjs';
+import { createWeeklyMedia, weeklyVideoPosition } from './weekly-videos.mjs';
 import { MAX_AI_BODY_BYTES } from './ai-attachment.mjs';
 import { MAX_AI_VOICE_BODY_BYTES } from './ai-voice.mjs';
 
@@ -45,7 +45,7 @@ function limitQuota(error) {
 const materialsUnavailable = () => new AuthError(503, 'course_materials_unavailable',
   'Материалы курсов временно недоступны. Попробуйте ещё раз.');
 
-export function createAuthServer({ service, store, courseChecks, courseMaterials, personalData, profilePhoto, clubChat, aiChat, origin, enabled = false, trustProxy = false, mailPerMinute = 120 }) {
+export function createAuthServer({ service, store, courseChecks, courseMaterials, personalData, profilePhoto, clubChat, aiChat, origin, enabled = false, trustProxy = false, mailPerMinute = 120, weeklyMedia = createWeeklyMedia() }) {
   let largeAiInFlight = false;
   return createServer({ requestTimeout: 90_000, headersTimeout: 10_000, maxHeaderSize: 8192 }, async (request, response) => {
     let ownsLargeSlot = false;
@@ -155,13 +155,16 @@ export function createAuthServer({ service, store, courseChecks, courseMaterials
           throw materialsUnavailable();
         }
       }
-      if (request.method === 'GET' && url.pathname.startsWith('/api/auth/videos/')) {
+      if ((request.method === 'GET' || request.method === 'HEAD') && url.pathname.startsWith('/api/auth/videos/')) {
         const user = await service.session(readSessionCookie(request));
         if (!user) throw new AuthError(401, 'sign_in_required', 'Войдите, чтобы посмотреть бесплатное видео.');
         if (!user.profile?.completedAt) throw new AuthError(403, 'onboarding_required', 'Заполните профиль, чтобы продолжить.');
-        const source = weeklyVideoSource(url.pathname.slice('/api/auth/videos/'.length));
-        if (!source) { send(404, { error: 'video_not_found', message: 'Видео не найдено.' }); return; }
-        send(200, { source }); return;
+        const match = /^\/api\/auth\/videos\/([a-z0-9-]+)(?:\/(file|cover))?$/.exec(url.pathname);
+        const position = match && weeklyVideoPosition(match[1]);
+        if (!position) { send(404, { error: 'video_not_found', message: 'Видео не найдено.' }); return; }
+        if (match[2]) await weeklyMedia(request, response, position, match[2]);
+        else send(200, { source: '/api/auth/videos/' + match[1] + '/file' });
+        return;
       }
       if (request.method !== 'POST') { send(405, { error: 'method_not_allowed' }, { Allow: 'GET, POST' }); return; }
       // Same-origin only. In particular, GitHub Pages cannot create school sessions.
