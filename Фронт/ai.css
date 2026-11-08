@@ -5,8 +5,7 @@
 .ai-header { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: calc(12px + env(safe-area-inset-top, 0px)) 20px 8px; }
 .ai-header h1 { font-size: 20px; line-height: 1.25; letter-spacing: -.45px; }
 .ai-page svg { width: 20px; height: 20px; fill: none; stroke: currentColor; stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; flex-shrink: 0; }
-.conversations-open { display:grid; place-items:center; flex-shrink:0; width:44px; height:44px; color:#7669ad; background:none; border-radius:14px; }
-.conversations-open svg { width:25px; height:25px; }
+.conversations-open { display:inline-flex; align-items:center; justify-content:center; gap:6px; flex-shrink:0; min-height:44px; color:#7669ad; background:none; border-radius:14px; font-size:13px; white-space:nowrap; }
 .ai-main { padding: 0 16px; display: flex; flex-direction: column; flex: 1; min-height: 0; overflow: hidden; }
 .assistant-card { display: flex; align-items: center; gap: 10px; margin-inline: 6px; padding: 4px 10px; min-height: 80px; background: #f6f0ff; border-radius: 18px; }
 .assistant-art { flex-shrink: 0; width: 64px; height: 64px; object-fit: cover; border-radius: 14px; }
