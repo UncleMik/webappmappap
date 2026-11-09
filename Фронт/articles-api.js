@@ -66,10 +66,11 @@ function articleCover(article, className) {
   if (!article.image) return null;
   const image = document.createElement('img');
   image.className = className;
-  image.src = window.articleImageUrl(article.image);
   image.alt = '';
   image.loading = 'lazy';
   image.decoding = 'async';
+  const cardImage = article.image.replace(/^\/uploads\/articles\/([a-z0-9-]+\.webp)$/, '/uploads/article-cards/$1');
+  image.src = window.articleImageUrl(cardImage);
   return image;
 }
 

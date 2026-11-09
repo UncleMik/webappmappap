@@ -83,7 +83,7 @@ import { todayDate, isoDate, parseDate, formatDate, pregnancyDate, returnPage } 
     }
     content.querySelectorAll('.stage-art').forEach(holder => {
       const image = document.createElement('img');
-      image.src = 'assets/onboarding-motherhood.png';
+      image.src = 'assets/onboarding-motherhood-v1.webp';
       image.alt = '';
       holder.append(image);
     });

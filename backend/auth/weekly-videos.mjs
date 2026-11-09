@@ -56,7 +56,7 @@ export function createWeeklyMedia(configPath = '/etc/wep-pril-media/free-weekly-
   return async function streamWeeklyMedia(request, response, position, asset) {
     config ??= readMediaConfig(configPath);
     const cover = asset === 'cover';
-    const key = cover ? 'covers/' + position + '.png' : 'videos/' + position + '.mp4';
+    const key = cover ? 'covers-webp/' + position + '.webp' : 'videos/' + position + '.mp4';
     const path = '/' + config.bucket + '/free-weekly/v1/' + key;
     const range = request.headers.range;
     if (range && !/^bytes=(?:\d{1,18}-\d{0,18}|-\d{1,18})$/.test(range)) {
@@ -97,7 +97,7 @@ export function createWeeklyMedia(configPath = '/etc/wep-pril-media/free-weekly-
         response.end();
         return;
       }
-      const mime = cover ? 'image/png' : 'video/mp4';
+      const mime = cover ? 'image/webp' : 'video/mp4';
       const length = object.headers.get('content-length');
       if (object.status !== (range ? 206 : 200) || object.headers.get('content-type') !== mime
         || !/^\d+$/.test(length ?? '') || object.headers.has('content-encoding')
