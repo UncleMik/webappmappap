@@ -1,6 +1,10 @@
 (() => {
   const api = window.personalDataApi;
-  const chatIcon = `<svg class="helper-icon" viewBox="0 0 60 60" aria-hidden="true"><circle cx="30" cy="30" r="30" fill="#f3edff"/><path d="M43 29a13 11 0 0 1-13 11 16 16 0 0 1-5-.8L18 43l1.7-7A10 10 0 0 1 17 29a13 11 0 0 1 26 0Z" fill="none" stroke="#794aff" stroke-width="2.5" stroke-linejoin="round"/></svg>`;
+  const chatIcon = `<svg class="helper-icon" viewBox="0 0 60 60" aria-hidden="true">
+    <circle cx="30" cy="30" r="29" fill="#f1ecff"/>
+    <path d="M30 16c-8.3 0-15 5.6-15 12.5 0 3.3 1.5 6.2 4 8.5l-1.2 6.2a1 1 0 0 0 1.5 1l6.6-3.8c1.3.3 2.7.5 4.1.5 8.3 0 15-5.6 15-12.4S38.3 16 30 16Z" fill="#8062eb"/>
+    <path d="M23.5 28.5h.1m6.4 0h.1m6.4 0h.1" fill="none" stroke="#f1ecff" stroke-width="3.2" stroke-linecap="round"/>
+  </svg>`;
   const dialog = document.createElement('dialog');
   dialog.className = 'helper-dialog';
   dialog.setAttribute('aria-labelledby', 'helper-title');
@@ -106,7 +110,11 @@
           <span>Чат с экспертами</span>
         </button>
         <a class="helper" href="my-courses.html">
-          <svg class="helper-icon" viewBox="0 0 60 60" aria-hidden="true"><circle cx="30" cy="30" r="30" fill="#f3edff"/><path d="M30 22c-4-3-8-4-13-3v20c5-1 9 0 13 3 4-3 8-4 13-3V19c-5-1-9 0-13 3Zm0 0v20" fill="none" stroke="#794aff" stroke-width="2.5" stroke-linejoin="round"/></svg>
+          <svg class="helper-icon" viewBox="0 0 60 60" aria-hidden="true">
+            <circle cx="30" cy="30" r="29" fill="#f1ecff"/>
+            <path d="M28.5 20.5c-4-3-8.2-3.7-13-2.4a2 2 0 0 0-1.5 1.9v19a2 2 0 0 0 2.5 1.9c4.2-1 8.3-.2 12 2.6Zm3 0c4-3 8.2-3.7 13-2.4a2 2 0 0 1 1.5 1.9v19a2 2 0 0 1-2.5 1.9c-4.2-1-8.3-.2-12 2.6Z" fill="#8062eb"/>
+            <path d="M19.5 25.5c1.8-.1 3.5.2 5 1m-5 5c1.8-.1 3.5.2 5 1m11-6c1.5-.8 3.2-1.1 5-1m-5 7c1.5-.8 3.2-1.1 5-1" fill="none" stroke="#f1ecff" stroke-width="1.8" stroke-linecap="round"/>
+          </svg>
           <span>Мои курсы</span>
         </a>
       </div>`;

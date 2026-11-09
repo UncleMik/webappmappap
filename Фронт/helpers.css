@@ -5,10 +5,12 @@
 .helper-dialog h3 { margin: 16px 0 8px; font-size: 16px; }
 .helper-dialog [data-helper-close] { flex: none; width: 36px; height: 36px; border-radius: 50%; background: #f4eeff; color: #794aff; text-align: center; font-size: 26px; }
 .helper-options { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; }
-.helper-options .helper { width: 100%; height: auto; aspect-ratio: 1; min-width: 0; padding: 6px 2px; justify-content: center; gap: 0; text-align: center; }
+.helper-options .helper { width: 100%; height: auto; aspect-ratio: 1; min-width: 0; padding: 6px 2px; justify-content: center; gap: 0; text-align: center; color: inherit; text-decoration: none; }
 @media (max-width: 360px) {
   .helper-options .helper { font-size: 12px; line-height: 16px; }
   .helper-options .helper-icon { transform: scale(.8); margin: -6px 0; }
+  .helper-options svg.helper-icon { flex-shrink: 0; }
+  .helper-options svg.helper-icon + span { min-height: 2lh; }
 }
 .helper-save { width: 100%; margin-top: 16px; padding: 13px; border-radius: 14px; background: #794aff; color: white; text-align: center; font-weight: 700; }
 .helper-feedback { color: #51446f; margin-top: 8px; }
