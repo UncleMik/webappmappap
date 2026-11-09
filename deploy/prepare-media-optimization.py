@@ -72,12 +72,12 @@ def store_verified(config, key, data, mime):
         raise RuntimeError(f'S3 readback mismatch for {key}')
 
 
-def webp(data, width, quality):
+def webp(data, width, quality, *, method=5):
     with Image.open(BytesIO(data)) as source:
         image = ImageOps.exif_transpose(source)
         image.thumbnail((width, width), RESAMPLE)
         output = BytesIO()
-        image.save(output, format='WEBP', quality=quality, method=5)
+        image.save(output, format='WEBP', quality=quality, method=method)
         result = output.getvalue()
         with Image.open(BytesIO(result)) as check:
             check.load()
@@ -153,6 +153,43 @@ def prepare(stage, config):
     }, indent=2) + '\n', encoding='utf-8')
 
 
+def prepare_course_covers(source, stage, config):
+    files = sorted(source.iterdir(), key=lambda path: path.name)
+    if not files or any(path.is_symlink() or not path.is_file()
+                        or not re.fullmatch(r'(?:[1-9]|10)\.png', path.name) for path in files):
+        raise RuntimeError('Supply PNG sources named 1.png to 10.png for the approved cover slots')
+
+    covers = []
+    for path in files:
+        data = path.read_bytes()
+        with Image.open(BytesIO(data)) as original:
+            if original.format != 'PNG' or original.size != (1200, 800):
+                raise RuntimeError(f'Expected a 1200 x 800 PNG for slot {path.stem}')
+        optimized = webp(data, 1200, 89, method=6)
+        if len(optimized) >= len(data):
+            raise RuntimeError(f'WebP did not reduce the size of slot {path.stem}')
+        covers.append((path, data, optimized))
+
+    stage.mkdir(mode=0o700)
+    manifest = []
+    for path, data, optimized in covers:
+        checksum = digest(data)
+        key = f'course-covers/v1/originals/{checksum}/{path.name}'
+        store_verified(config, key, data, 'image/png')
+        verify_private(config, key)
+        filename = f'school-{path.stem}.webp'
+        (stage / filename).write_bytes(optimized)
+        manifest.append({'name': path.name, 'key': key, 'sha256': checksum, 'bytes': len(data),
+                         'webp': filename, 'webp_sha256': digest(optimized), 'webp_bytes': len(optimized)})
+
+    archive_manifest = (json.dumps(manifest, sort_keys=True, indent=2) + '\n').encode()
+    key = 'course-covers/v1/manifests/' + digest(archive_manifest) + '.json'
+    store_verified(config, key, archive_manifest, 'application/json')
+    verify_private(config, key)
+    (stage / 'manifest.json').write_bytes(archive_manifest)
+    print(f'Verified {len(manifest)} archived originals and prepared WebP in {stage}')
+
+
 def restore_originals(config):
     data, mime = request(config, 'GET', ARCHIVE_MANIFEST)
     if mime != 'application/json':
@@ -185,14 +222,18 @@ def restore_originals(config):
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument('action', choices=('prepare', 'restore-originals'))
-    parser.add_argument('stage', type=Path, nargs='?')
+    commands = parser.add_subparsers(dest='action', required=True)
+    commands.add_parser('prepare').add_argument('stage', type=Path)
+    course_command = commands.add_parser('prepare-course-covers')
+    course_command.add_argument('source', type=Path)
+    course_command.add_argument('stage', type=Path)
+    commands.add_parser('restore-originals')
     args = parser.parse_args()
-    if args.action == 'prepare' and args.stage is None:
-        parser.error('prepare requires a new staging directory')
     config = json.loads(MEDIA_CONFIG.read_text(encoding='utf-8'))
     if args.action == 'prepare':
         prepare(args.stage, config)
+    elif args.action == 'prepare-course-covers':
+        prepare_course_covers(args.source, args.stage, config)
     else:
         restore_originals(config)
 
