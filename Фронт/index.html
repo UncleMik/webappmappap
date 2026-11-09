@@ -14,7 +14,7 @@
   <link rel="preload" href="assets/reference.webp" as="image">
   <link rel="stylesheet" href="styles.css?v=20261008-close">
   <link rel="stylesheet" href="article.css?v=20261007-mobile">
-  <link rel="stylesheet" href="today.css?v=20261008-without-materials-link">
+  <link rel="stylesheet" href="today.css?v=20261109-pregnancy-summary">
   <link rel="stylesheet" href="calendar-sheet.css?v=20261008-purple-week">
   <link rel="stylesheet" href="app-navigation.css?v=20261006-gotham">
   <link rel="stylesheet" href="mobile-layout.css?v=20261007-darker-sides">
@@ -74,7 +74,15 @@
 
       <section class="recommendations" aria-label="Материалы по неделям">
         <a class="pregnancy-summary" href="journey.html" aria-label="Открыть материалы по неделям">
-          <span class="summary-row"><strong class="pregnancy-age">Материалы по неделям</strong><svg class="chevron" aria-hidden="true"><use href="#i-chevron"/></svg></span>
+          <span class="summary-row">
+            <strong class="pregnancy-age">Материалы по неделям</strong>
+            <span class="pregnancy-meta" hidden>
+              <span class="summary-trimester"></span>
+              <span class="summary-days"></span>
+            </span>
+            <svg class="chevron" aria-hidden="true"><use href="#i-chevron"/></svg>
+          </span>
+          <progress class="summary-progress" max="280" value="0" aria-label="Срок беременности относительно ПДР" hidden></progress>
           <em class="section-description">Выберите интересующую неделю</em>
         </a>
         <div class="article-grid" id="today-articles"></div>

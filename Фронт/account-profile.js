@@ -1,6 +1,7 @@
 import { authRequest } from './auth-client.js';
 import { profileTiming, formatDate } from './profile-dates.js';
 
+const russianPlural = new Intl.PluralRules('ru');
 const pregnancyGoals = ['Спокойно пройти беременность', 'Подготовиться к родам', 'Понимать развитие малыша', 'Подготовить тело к родам', 'Разобраться с анализами', 'Справиться с тревогой', 'Подготовиться к первым дням с малышом'];
 const motherGoals = ['Восстановиться после родов', 'Наладить грудное вскармливание', 'Разобраться с уходом за малышом', 'Наладить сон малыша и свой сон', 'Вернуться к физической активности', 'Справиться со стрессом', 'Общаться с мамами и делиться опытом'];
 let revision = 0;
@@ -43,9 +44,36 @@ function render(user) {
   if (greeting) greeting.firstChild.textContent = profile ? `Рады видеть вас, ${profile.name}! ` : 'Рады видеть вас! ';
   const summary = document.querySelector('#today .pregnancy-summary');
   if (summary) {
-    summary.querySelector('.pregnancy-age').textContent = profile?.stage === 'pregnancy' ? timing.label : 'Материалы по неделям беременности';
-    summary.querySelector('.section-description').textContent = profile?.stage === 'pregnancy' ? `ПДР: ${formatDate(profile.dueDate)}` : 'Библиотека школы';
-    summary.href = profile?.stage === 'pregnancy' ? `journey.html?week=${timing.week}` : 'journey.html';
+    const pregnant = profile?.stage === 'pregnancy' && Boolean(timing);
+    const age = summary.querySelector('.pregnancy-age');
+    const description = summary.querySelector('.section-description');
+    const meta = summary.querySelector('.pregnancy-meta');
+    const progress = summary.querySelector('.summary-progress');
+
+    age.textContent = pregnant ? timing.label : 'Материалы по неделям беременности';
+    description.textContent = pregnant ? `ПДР: ${formatDate(profile.dueDate)}` : 'Библиотека школы';
+    summary.href = pregnant ? `journey.html?week=${timing.week}` : 'journey.html';
+
+    if (meta && progress) {
+      meta.hidden = progress.hidden = !pregnant;
+      description.hidden = pregnant;
+      summary.removeAttribute('aria-label');
+      if (pregnant) {
+        const weeks = Math.max(0, Math.floor(timing.days / 7));
+        const days = Math.max(0, timing.days % 7);
+        const weekWord = { one: 'неделя', few: 'недели', many: 'недель' }[russianPlural.select(weeks)];
+        const dayWords = { one: 'день', few: 'дня', many: 'дней' };
+        age.textContent = `${weeks} ${weekWord} и ${days} ${dayWords[russianPlural.select(days)]}`;
+
+        const trimester = timing.week < 14 ? 1 : timing.week < 28 ? 2 : 3;
+        const remaining = Math.max(0, progress.max - timing.days);
+        meta.querySelector('.summary-trimester').textContent = `${trimester} триместр`;
+        meta.querySelector('.summary-days').textContent = remaining
+          ? `До родов ≈ ${remaining} ${dayWords[russianPlural.select(remaining)]}`
+          : timing.days === progress.max ? 'ПДР сегодня' : 'ПДР прошла';
+        progress.value = Math.max(0, Math.min(timing.days, progress.max));
+      }
+    }
   }
   window.dispatchEvent(new CustomEvent('account:change', { detail: window.webprilAccount }));
   resolveInitialProfile();

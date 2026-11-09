@@ -7,11 +7,25 @@
 #today .section-description { display: block; margin-top: .5rem; }
 #today .pregnancy-summary { height: auto; margin-top: 1rem; padding: 1.3rem 1.6rem; }
 #today .summary-row { height: auto; min-height: 2.8rem; gap: 1rem; }
-#today .pregnancy-age { font-size: 2.15rem; line-height: 2.8rem; }
-#today .summary-progress-row { display: flex; align-items: center; gap: 1.5rem; margin-top: 1.5rem; }
-#today .pregnancy-meta { margin-right: 0; font-size: 1.4rem; line-height: 1.8rem; white-space: nowrap; }
-#today .progress-track { flex: 1; min-width: 0; margin: 0; height: 1.3rem; }
-#today .progress-track > span { width: 68.93%; }
+#today .pregnancy-age { min-width: 0; font-size: 2.15rem; line-height: 1.2; white-space: normal; }
+#today .pregnancy-meta { flex: 0 0 auto; margin: 0; font-size: 1.25rem; line-height: 1.3; }
+#today .pregnancy-meta span { display: block; }
+#today .pregnancy-summary .chevron { flex-shrink: 0; }
+#today .pregnancy-summary [hidden] { display: none; }
+#today .summary-progress {
+  display: block;
+  appearance: none;
+  width: calc(100% - 2.4rem);
+  height: .85rem;
+  margin-top: .5rem;
+  border: 0;
+  border-radius: 1rem;
+  background: #ece5fa;
+  overflow: hidden;
+}
+#today .summary-progress::-webkit-progress-bar { background: #ece5fa; }
+#today .summary-progress::-webkit-progress-value { background: linear-gradient(90deg, #c8a7ff, #9772ff); border-radius: 1rem; }
+#today .summary-progress::-moz-progress-bar { background: linear-gradient(90deg, #c8a7ff, #9772ff); border-radius: 1rem; }
 #today-articles { margin-top: 1rem; }
 #today-articles > .today-material-card:first-child { grid-column: 1 / -1; }
 #today-articles > .article-load-status { grid-column: 1 / -1; }

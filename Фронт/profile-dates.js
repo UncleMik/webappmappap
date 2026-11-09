@@ -36,7 +36,7 @@ export function profileTiming(profile, now = Date.now()) {
     const days = 280 - (due - todayDate(now)) / DAY;
     // Due date alone never switches the account to motherhood.
     const week = Math.max(1, Math.min(42, Math.floor(days / 7)));
-    return { week, label: `${Math.max(0, Math.floor(days / 7))} нед. и ${Math.max(0, days % 7)} дн.`, dueDate: profile.dueDate };
+    return { week, days, label: `${Math.max(0, Math.floor(days / 7))} нед. и ${Math.max(0, days % 7)} дн.`, dueDate: profile.dueDate };
   }
   const birth = parseDate(profile.birthDate), current = new Date(todayDate(now));
   if (!Number.isFinite(birth) || birth > +current) return null;
