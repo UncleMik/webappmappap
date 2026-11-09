@@ -89,7 +89,8 @@ function renderProgram(data, owned) {
   const fragment = document.createDocumentFragment();
   const topic = topics.find(item => item.id === topicId);
   if (topicId === null) {
-    const grid = node('div', 'course-topic-grid');
+    const full = program === 'full';
+    const grid = node('div', full ? 'course-topic-grid course-topic-grid-original' : 'course-topic-grid');
     if (program === 'full' && programProducts.has(fullCourseId)) {
       const link = node('a', 'course-topic-tile course-program-tile');
       const available = owned.has(fullCourseId);
@@ -103,8 +104,8 @@ function renderProgram(data, owned) {
       grid.append(link);
     }
     for (const item of topics) {
-      const link = node('a', 'course-topic-tile');
-      link.append(cover(item.id), node('span', '', item.title));
+      const link = node('a', 'course-topic-tile', full ? item.title : undefined);
+      if (!full) link.append(cover(item.id), node('span', '', item.title));
       link.dataset.topic = item.id;
       link.href = topicUrl(item.id);
       grid.append(link);
