@@ -64,6 +64,56 @@ function showError(error, retry) {
   scroller.removeAttribute('aria-busy');
 }
 
+function buildCourseNavigator(course, lessonId, program) {
+  const children = new Map();
+  for (const section of course.sections) {
+    const key = String(section.parentStreamId);
+    if (!children.has(key)) children.set(key, []);
+    children.get(key).push(section);
+  }
+  const navigator = node('section', 'reader-section course-navigator');
+  navigator.append(node('h2', '', 'Разделы и уроки'),
+    node('p', 'course-navigator-hint', 'Раскройте раздел и выберите урок.'));
+
+  function appendLessons(parent, section) {
+    const lessons = section.lessons.filter(lesson => String(lesson.lessonId) !== lessonId);
+    if (!lessons.length) return;
+    const list = node('ul', 'course-navigator-lessons');
+    for (const lesson of lessons) {
+      const row = node('li');
+      const link = node('a', '', lesson.title);
+      link.href = lessonUrl(course.productId, lesson.lessonId, section.streamId, program);
+      row.append(link);
+      list.append(row);
+    }
+    parent.append(list);
+  }
+
+  function appendSection(parent, section) {
+    const group = node('details', 'course-navigator-group');
+    const body = node('div', 'course-navigator-body');
+    const link = node('a', 'course-navigator-section-link', 'Открыть раздел');
+    link.href = courseUrl(course.productId, section.streamId, program);
+    link.setAttribute('aria-label', `Открыть раздел «${section.title}»`);
+    body.append(link);
+    appendLessons(body, section);
+    for (const child of children.get(String(section.streamId)) ?? []) appendSection(body, child);
+    group.append(node('summary', '', section.title), body);
+    parent.append(group);
+  }
+
+  const rootId = String(course.rootStreamId);
+  const root = course.sections.find(section => String(section.streamId) === rootId);
+  if (root?.lessons.some(lesson => String(lesson.lessonId) !== lessonId)) {
+    const intro = node('details', 'course-navigator-group');
+    intro.append(node('summary', '', 'Вводные уроки'));
+    appendLessons(intro, root);
+    navigator.append(intro);
+  }
+  for (const section of children.get(rootId) ?? []) appendSection(navigator, section);
+  return navigator.childElementCount > 2 ? navigator : null;
+}
+
 const allowedTags = new Set('div span p h1 h2 h3 h4 h5 h6 ul ol li table thead tbody tfoot tr td th caption colgroup col br hr strong b em i u s del blockquote pre code details summary sup sub'.split(' '));
 function safeFragment(html) {
   if (typeof html !== 'string') return null;
@@ -195,6 +245,8 @@ function renderLesson(data) {
   const course = validateCourse(data.navigation, productId);
   const section = course.sections.find(item => item.lessons.some(row => String(row.lessonId) === String(lessonId)));
   if (!section) throw Object.assign(new Error('lesson_not_in_course'), { status: 403 });
+  const courseNavigator = productId === '4302509' && lessonId === '347472344'
+    ? buildCourseNavigator(course, lessonId, program) : null;
   const ordered = course.sections.flatMap(item => item.lessons.map(row => ({ ...row, sectionId: item.streamId })));
   const lessonIndex = ordered.findIndex(row => String(row.lessonId) === String(lessonId));
   const next = ordered[lessonIndex + 1];
@@ -397,9 +449,18 @@ function renderLesson(data) {
     about.append(section);
   }
   if (!about.childNodes.length) about.append(sectionWithMessage('Описание этого урока пока не добавлено.', 'Об уроке'));
+  if (courseNavigator) {
+    const source = node('details', 'reader-section course-navigator-source');
+    source.append(node('summary', '', 'Подробное описание тем'), ...about.childNodes);
+    about.append(courseNavigator, source);
+  }
   fragment.append(videoHero);
   if (videos.length > 1) fragment.append(topics);
-  fragment.append(tabs, about);
+  if (courseNavigator && !hasMaterials) {
+    about.removeAttribute('role');
+    about.removeAttribute('aria-labelledby');
+  } else fragment.append(tabs);
+  fragment.append(about);
   if (hasMaterials) fragment.append(materials);
   const navigation = node('section', 'reader-section course-lesson-navigation');
   if (next) {
