@@ -1,4 +1,5 @@
 import { authRequest } from './auth-client.js';
+import { trackVideoPoints } from './video-points.js?v=20261109-points';
 
 export function mountWeeklyVideo(id) {
   const item = window.webprilWeeklyVideos.find(entry => entry.id === id);
@@ -138,7 +139,13 @@ export function mountWeeklyVideo(id) {
   video.addEventListener('pause', () => playing(false));
   video.addEventListener('timeupdate', update);
   video.addEventListener('error', () => { if (video.getAttribute('src')) error(); });
-  video.addEventListener('ended', () => {
+  const pointsNote = document.createElement('p');
+  pointsNote.setAttribute('role', 'status');
+  document.querySelector('.video-note').append(pointsNote);
+  const finishPoints = trackVideoPoints(video, id, pointsNote);
+  video.addEventListener('ended', async () => {
+    await finishPoints();
+    if (!video.ended) return;
     if (index < items.length - 1) go(index + 1);
     else message('Все видео этой недели завершены. Можно вернуться к материалам недели или посмотреть видео ещё раз.');
   });

@@ -74,7 +74,8 @@ export function createAuthServer({ service, store, courseChecks, courseMaterials
       const url = new URL(request.url, origin);
       const pointsRead = request.method === 'GET' && url.pathname === '/api/auth/points';
       const articleReading = request.method === 'POST' && url.pathname === '/api/auth/points/articles';
-      isPoints = pointsRead || articleReading;
+      const videoWatching = request.method === 'POST' && url.pathname === '/api/auth/points/videos';
+      isPoints = pointsRead || articleReading || videoWatching;
       const photoVersion = url.pathname === '/api/auth/profile-photo' && request.method === 'GET' &&
         url.searchParams.size === 1 && /^[0-9a-f-]{36}$/i.test(url.searchParams.get('v') || '')
         ? url.searchParams.get('v') : null;
@@ -199,9 +200,9 @@ export function createAuthServer({ service, store, courseChecks, courseMaterials
       const proxy = trustProxy && ['127.0.0.1', '::1', '::ffff:127.0.0.1'].includes(peer);
       const ip = proxy ? String(request.headers['x-real-ip'] || peer) : peer;
       await store.rateLimit('request_ip', ip, 600);
-      if (articleReading) {
+      if (articleReading || videoWatching) {
         if (!points) throw new AuthError(503, 'points_unavailable', 'Баллы временно недоступны.');
-        send(200, await points.articleReading(readSessionCookie(request), request.headers['x-webpril-account'], data)); return;
+        send(200, await points[videoWatching ? 'videoWatching' : 'articleReading'](readSessionCookie(request), request.headers['x-webpril-account'], data)); return;
       }
       if (isAiVoice) {
         send(200, await aiChat.transcribe(readSessionCookie(request), request.headers['x-webpril-account'], data,

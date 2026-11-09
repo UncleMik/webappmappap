@@ -53,6 +53,7 @@ test('chat pilot credits one saved message per Moscow day and serves only the ac
     const articleMigration = await readFile(new URL('../auth/points-article-migration.sql', import.meta.url), 'utf8');
     await pool.query(articleMigration);
     await pool.query(articleMigration);
+    await pool.query(await readFile(new URL('../auth/points-video-migration.sql', import.meta.url), 'utf8'));
     const lookupArticle = id => /^pregnancy-0[01][0-9]$/.test(id) ? { id, minutes: 1 } : null;
     const points = createPoints({ pool, userIds: [pilot.id, reader.id, daily.id, weekly.id, legacy.id], clock, lookupArticle });
     const clubChat = createClubChat({ pool, service, store, points, clock });
@@ -257,6 +258,33 @@ test('chat pilot credits one saved message per Moscow day and serves only the ac
       now = Date.parse('2026-11-15T21:00:00Z');
       assert.equal((await readArticleToEnd(weekly, 'pregnancy-010')).amount, 20);
       assert.equal((await request('/points', weekly)).data.balance, 200);
+    });
+    await t.test('free video needs 80 percent of distinct played ranges and shares the daily cap', async () => {
+      now = Date.parse('2026-11-17T09:00:00Z');
+      const route = '/points/videos', videoId = 'week-video-004';
+      assert.equal((await request(route, reader, { videoId: 'week-video-075' })).status, 404);
+      assert.equal((await request(route, null, { videoId })).status, 401);
+      assert.equal((await readArticleToEnd(reader, 'pregnancy-002')).amount, 20);
+      assert.equal((await readArticleToEnd(reader, 'pregnancy-003')).amount, 20);
+      assert.equal((await send(room1, fresh(), reader)).status, 200);
+      const start = (await request(route, reader, { videoId })).data;
+      assert.equal(start.availableAmount, 15);
+      const tick = ranges => request(route, reader, { videoId, attemptId: start.attemptId, ranges });
+      assert.equal((await tick([[0, 190000]])).data.status, 'watching');
+      for (let i = 0; i < 7; i++) {
+        now += 20_000;
+        assert.equal((await tick([[0, 20000]])).data.status, 'watching');
+      }
+      for (let i = 1; i < 7; i++) {
+        now += 20_000;
+        assert.equal((await tick([[i * 20000, (i + 1) * 20000]])).data.status, 'watching');
+      }
+      now += 12_000;
+      assert.deepEqual((await tick([[140000, 152000]])).data, { status: 'earned', amount: 15 });
+      assert.deepEqual((await request(route, reader, { videoId })).data, { status: 'already_earned' });
+      const result = (await request('/points', reader)).data;
+      assert.equal(result.balance, 80);
+      assert.equal(result.history.filter(row => row.kind === 'video_watch').length, 1);
     });
   } finally {
     if (server?.listening) await new Promise(resolve => server.close(resolve));

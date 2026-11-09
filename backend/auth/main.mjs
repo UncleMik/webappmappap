@@ -47,7 +47,8 @@ if (courseChecks && courseDb) {
 if (config.laraWeb) await pool.query('SELECT id,title,title_expires_at,legacy,updated_at FROM ai_chat_conversations LIMIT 0');
 const aiChat = config.laraWeb && courseMaterials ? createAiChat({ pool, service, courseMaterials, ...config.laraWeb }) : null;
 if (pointsEnabled) {
-  await pool.query('SELECT article_id FROM auth_points_ledger LIMIT 0');
+  await pool.query('SELECT article_id,video_id FROM auth_points_ledger LIMIT 0');
+  await pool.query('SELECT attempt_id FROM auth_points_video_views LIMIT 0');
   await pool.query('SELECT attempt_id FROM auth_points_article_reads LIMIT 0');
 }
 const points = createPoints({ pool, userIds: config.pointsPilotUserIds, forAll: config.pointsForAll,

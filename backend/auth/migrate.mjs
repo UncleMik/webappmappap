@@ -21,8 +21,9 @@ try {
   const aiFailure = await readFile(new URL('./ai-failure-migration.sql', import.meta.url), 'utf8');
   const aiConversations = await readFile(new URL('./ai-conversations-migration.sql', import.meta.url), 'utf8');
   const points = await readFile(new URL('./points-migration.sql', import.meta.url), 'utf8');
+  const pointsVideos = await readFile(new URL('./points-video-migration.sql', import.meta.url), 'utf8');
   const pointsArticles = await readFile(new URL('./points-article-migration.sql', import.meta.url), 'utf8');
-  await transaction(pool, client => client.query(sql + '\n' + sessions + '\n' + courses + '\n' + personal + '\n' + club + '\n' + reactions + '\n' + clubDelete + '\n' + extraReactions + '\n' + clubReading + '\n' + clubRooms + '\n' + aiChat + '\n' + aiFailure + '\n' + aiConversations + '\n' + points + '\n' + pointsArticles));
+  await transaction(pool, client => client.query(sql + '\n' + sessions + '\n' + courses + '\n' + personal + '\n' + club + '\n' + reactions + '\n' + clubDelete + '\n' + extraReactions + '\n' + clubReading + '\n' + clubRooms + '\n' + aiChat + '\n' + aiFailure + '\n' + aiConversations + '\n' + points + '\n' + pointsArticles + '\n' + pointsVideos));
   console.log('Auth database migration complete');
 } catch {
   console.error('auth_migration_failed_check_private_configuration'); process.exitCode = 1;

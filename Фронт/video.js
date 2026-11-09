@@ -71,7 +71,7 @@
     coverImage.hidden = false;
   });
   coverImage.addEventListener('error', () => { coverImage.hidden = true; });
-  import('./weekly-video-player.js?v=20261108-free-weekly').then(module => {
+  import('./weekly-video-player.js?v=20261109-points').then(module => {
     module.mountWeeklyVideo(id);
     revealPlayer();
   }).catch(() => {
