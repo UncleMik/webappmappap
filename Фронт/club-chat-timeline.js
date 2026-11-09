@@ -70,6 +70,18 @@ export function createChatTimeline({ log, messages, deletedIds, reactions, actio
         }
         bubble.append(quote);
       }
+      if (message.hasScreenshot) {
+        const link = document.createElement('a');
+        link.className = 'club-message-screenshot';
+        link.href = '/api/auth/club/messages/' + encodeURIComponent(message.id) + '/screenshot?room=weekly-activity';
+        link.target = '_blank';
+        link.rel = 'noopener noreferrer';
+        const image = document.createElement('img');
+        image.alt = 'Скриншот активности';
+        image.src = link.href;
+        link.append(image);
+        bubble.append(link);
+      }
       const text = document.createElement('p'); appendMessageText(text, message.text); bubble.append(text);
       const footer = document.createElement('footer'), replyButton = document.createElement('button'), time = document.createElement('time');
       reactions.add(message, footer);

@@ -8,31 +8,31 @@ const invalid = () => new AuthError(400, 'invalid_photo', 'Выберите фо
 const missing = () => new AuthError(404, 'photo_not_found', 'Фото не найдено.');
 const filename = (id, version) => `${id}-${version}.jpg`;
 
-function decodePhoto(value) {
+export function decodePhoto(value, { maxDimension = 512, invalidPhoto = invalid } = {}) {
   if (typeof value !== 'string' || !value.length || value.length > 480_000 || value.length % 4 !== 0 ||
-    /[^A-Za-z0-9+/=]/.test(value) || (value.includes('=') && !/={1,2}$/.test(value))) throw invalid();
+    /[^A-Za-z0-9+/=]/.test(value) || (value.includes('=') && !/={1,2}$/.test(value))) throw invalidPhoto();
   const bytes = Buffer.from(value, 'base64');
-  if (bytes.toString('base64') !== value) throw invalid();
+  if (bytes.toString('base64') !== value) throw invalidPhoto();
   if (bytes.length < 100 || bytes.length > 350 * 1024 || bytes[0] !== 0xff || bytes[1] !== 0xd8 ||
-    bytes.at(-2) !== 0xff || bytes.at(-1) !== 0xd9) throw invalid();
+    bytes.at(-2) !== 0xff || bytes.at(-1) !== 0xd9) throw invalidPhoto();
   let i = 2, dimensions = null, foundScan = false;
   while (i < bytes.length - 2) {
-    if (bytes[i++] !== 0xff) throw invalid();
+    if (bytes[i++] !== 0xff) throw invalidPhoto();
     while (bytes[i] === 0xff) i++;
     const marker = bytes[i++];
     if (marker === 0xda) { foundScan = true; break; }
     if (marker === 0xd9) break;
     if (marker === 0x01 || (marker >= 0xd0 && marker <= 0xd7)) continue;
-    if (i + 2 > bytes.length) throw invalid();
+    if (i + 2 > bytes.length) throw invalidPhoto();
     const length = bytes.readUInt16BE(i);
-    if (length < 2 || i + length > bytes.length) throw invalid();
+    if (length < 2 || i + length > bytes.length) throw invalidPhoto();
     if ([0xc0, 0xc1, 0xc2, 0xc3, 0xc5, 0xc6, 0xc7, 0xc9, 0xca, 0xcb, 0xcd, 0xce, 0xcf].includes(marker)) {
-      if (length < 7) throw invalid();
+      if (length < 7) throw invalidPhoto();
       dimensions = { height: bytes.readUInt16BE(i + 3), width: bytes.readUInt16BE(i + 5) };
     }
     i += length;
   }
-  if (!foundScan || !dimensions || !dimensions.width || !dimensions.height || dimensions.width > 512 || dimensions.height > 512) throw invalid();
+  if (!foundScan || !dimensions || !dimensions.width || !dimensions.height || dimensions.width > maxDimension || dimensions.height > maxDimension) throw invalidPhoto();
   return bytes;
 }
 

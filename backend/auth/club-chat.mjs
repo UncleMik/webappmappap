@@ -1,6 +1,7 @@
 import { createHash } from 'node:crypto';
 import { AuthError, hashToken, isUuid as uuid } from './security.mjs';
 import { transaction } from './store.mjs';
+import { decodePhoto } from './profile-photo.mjs';
 
 export const CLUB_ROOMS = Object.freeze([
   ...[1, 2, 3].map(n => Object.freeze({ id: `pregnancy-trimester-${n}`, title: `Беременность — ${n} триместр`, kind: 'participants' })),
@@ -9,6 +10,7 @@ export const CLUB_ROOMS = Object.freeze([
   Object.freeze({ id: 'experts-birth', title: 'По родам', kind: 'experts' }),
   Object.freeze({ id: 'experts-motherhood', title: 'По материнству', kind: 'experts' }),
 ]);
+const activityRoom = Object.freeze({ id: 'weekly-activity', title: 'Активности недели', kind: 'participants' });
 const messageId = value => typeof value === 'string' && /^[1-9]\d{0,18}$/.test(value) && BigInt(value) <= 9223372036854775807n;
 const bad = () => new AuthError(400, 'invalid_chat_message', 'Проверьте сообщение.');
 const signedOut = () => new AuthError(401, 'sign_in_required', 'Войдите в аккаунт.');
@@ -33,7 +35,7 @@ async function roomReactionStates(client, userId, ids, ROOM) {
   return rows.map(row => ({ messageId: String(row.id),
     counts: { heart: row.heart, love: row.love, like: row.like, hug: row.hug, laugh: row.laugh }, selected: row.selected }));
 }
-const columns = `m.id, m.body, m.created_at,m.deleted_at,m.revision, m.author_id=$2::uuid AS own,
+const columns = `m.id, m.body, m.created_at,m.deleted_at,m.revision, m.screenshot IS NOT NULL AS has_screenshot, m.author_id=$2::uuid AS own,
   COALESCE(NULLIF(btrim(u.profile->>'name'),''),'Участница') AS author_name,
   r.id AS reply_id, r.body AS reply_body,r.deleted_at AS reply_deleted_at,
   COALESCE(NULLIF(btrim(ru.profile->>'name'),''),'Участница') AS reply_author`;
@@ -41,12 +43,14 @@ const joins = `FROM club_messages m JOIN auth_users u ON u.id=m.author_id
   LEFT JOIN club_messages r ON r.room=m.room AND r.id=m.reply_to_id
   LEFT JOIN auth_users ru ON ru.id=r.author_id`;
 const format = (row, owner = false) => ({ id: String(row.id), text: row.deleted_at == null ? row.body : null,
+  ...(row.has_screenshot && !row.deleted_at ? { hasScreenshot: true } : {}),
   revision: String(row.revision), deleted: row.deleted_at != null,
   createdAt: new Date(row.created_at).toISOString(), own: row.own,
   canDelete: row.deleted_at == null && (row.own || owner), author: { name: row.author_name },
   reply: row.reply_id == null ? null : { id: String(row.reply_id),
     text: row.reply_deleted_at == null ? row.reply_body : null, deleted: row.reply_deleted_at != null, authorName: row.reply_author } });
-const fingerprint = (text, replyTo) => createHash('sha256').update(JSON.stringify([text, replyTo])).digest('hex');
+const fingerprint = (text, replyTo, screenshot) => createHash('sha256')
+  .update(JSON.stringify(screenshot ? [text, replyTo, screenshot] : [text, replyTo])).digest('hex');
 const cursorId = value => value === '0' || messageId(value);
 
 function createRoomChat({ pool, service, courseMaterials, store, points, ownerUserId = null, clock = Date.now }, ROOM) {
@@ -246,17 +250,21 @@ function createRoomChat({ pool, service, courseMaterials, store, points, ownerUs
     async send(token, expectedAccountId, data) {
       if (!uuid(expectedAccountId)) throw changed();
       if (!data || typeof data !== 'object' || Array.isArray(data)
-        || Object.keys(data).some(key => !['requestId', 'text', 'replyTo'].includes(key))
+        || Object.keys(data).some(key => !['requestId', 'text', 'replyTo', 'screenshot'].includes(key))
+        || (data.screenshot !== undefined && ROOM !== activityRoom)
         || !uuid(data.requestId) || typeof data.text !== 'string'
         || /[\u0000-\u0008\u000b\u000c\u000e-\u001f\u007f]/u.test(data.text)) throw bad();
       const text = data.text.replace(/\r\n?/g, '\n').trim(), replyTo = data.replyTo ?? null;
-      if (!text || text.length > 2000 || (replyTo !== null && !messageId(replyTo))) throw bad();
+      if ((!text && data.screenshot === undefined) || text.length > 2000 || (replyTo !== null && !messageId(replyTo))) throw bad();
       return access(token, expectedAccountId, true, async (client, userId, _, owner) => {
         await state(client, true);
         await client.query('SELECT pg_advisory_xact_lock(hashtext($1))', [userId + ':' + data.requestId]);
         const { rows: reused } = await client.query('SELECT room FROM club_messages WHERE author_id=$1 AND request_id=$2', [userId, data.requestId]);
         if (reused.length && reused[0].room !== ROOM.id) throw new AuthError(409, 'chat_request_reused', 'Сообщение изменилось. Отправьте его ещё раз.');
-        const digest = fingerprint(text, replyTo);
+        const screenshot = data.screenshot === undefined ? null : decodePhoto(data.screenshot, {
+          maxDimension: 1400, invalidPhoto: () => new AuthError(400, 'invalid_screenshot', 'Выберите изображение размером до 350 КБ.')
+        });
+        const digest = fingerprint(text, replyTo, data.screenshot);
         const { rows: [existing] } = await client.query(`SELECT ${columns},m.reply_to_id,m.request_digest ${joins}
           WHERE m.room=$1 AND m.author_id=$2 AND m.request_id=$3`, [ROOM.id, userId, data.requestId]);
         if (existing) {
@@ -275,9 +283,9 @@ function createRoomChat({ pool, service, courseMaterials, store, points, ownerUs
         if (eligibleForPoints) await points.lockAccount(client, userId);
         const createdAt = eligibleForPoints ? new Date(clock()) : null;
         const revision = await nextRevision(client);
-        await client.query(`INSERT INTO club_messages(room,author_id,request_id,body,reply_to_id,revision,request_digest,created_at)
-          VALUES($1,$2,$3,$4,$5,$6,$7,COALESCE($8::timestamptz,now()))`,
-        [ROOM.id,userId,data.requestId,text,replyTo,revision,digest,createdAt]);
+        await client.query(`INSERT INTO club_messages(room,author_id,request_id,body,reply_to_id,revision,request_digest,created_at,screenshot)
+          VALUES($1,$2,$3,$4,$5,$6,$7,COALESCE($8::timestamptz,now()),$9)`,
+        [ROOM.id,userId,data.requestId,text || 'Скриншот активности',replyTo,revision,digest,createdAt,screenshot]);
         const { rows: [saved] } = await client.query(`SELECT ${columns} ${joins}
           WHERE m.room=$1 AND m.author_id=$2 AND m.request_id=$3`, [ROOM.id, userId, data.requestId]);
         if (eligibleForPoints) await points.awardClubMessage(client, userId, saved.id, createdAt);
@@ -300,6 +308,16 @@ function createRoomChat({ pool, service, courseMaterials, store, points, ownerUs
           reactions: await reactionStates(client,userId,messages.filter(m=>!m.deleted).map(m=>m.id)) };
       });
     },
+    async screenshot(token, id) {
+      if (ROOM !== activityRoom || !messageId(id)) throw missing();
+      const { bytes } = await access(token, undefined, true, async client => {
+        const { rows: [message] } = await client.query(
+          'SELECT screenshot FROM club_messages WHERE room=$1 AND id=$2 AND deleted_at IS NULL', [ROOM.id, id]);
+        if (!message?.screenshot) throw missing();
+        return { bytes: message.screenshot };
+      });
+      return bytes;
+    },
     async deleteMessage(token, expectedAccountId, id, data = {}) {
       if (!uuid(expectedAccountId)) throw changed();
       if (!messageId(id) || !data || typeof data !== 'object' || Array.isArray(data) || Object.keys(data).length) throw bad();
@@ -311,7 +329,7 @@ function createRoomChat({ pool, service, courseMaterials, store, points, ownerUs
         if (message.deleted_at) return { deletedId: id, duplicate: true };
         const revision = await nextRevision(client);
         await client.query('DELETE FROM club_message_reactions WHERE message_id=$1',[id]);
-        await client.query(`UPDATE club_messages SET body='',deleted_at=$3,revision=$4,request_digest=COALESCE(request_digest,$5)
+        await client.query(`UPDATE club_messages SET body='',screenshot=NULL,deleted_at=$3,revision=$4,request_digest=COALESCE(request_digest,$5)
           WHERE room=$1 AND id=$2::bigint`, [ROOM.id,id,new Date(clock()),revision,
           fingerprint(message.body,message.reply_to_id == null ? null : String(message.reply_to_id))]);
         return { deletedId: id, duplicate: false };
@@ -322,14 +340,14 @@ function createRoomChat({ pool, service, courseMaterials, store, points, ownerUs
 
 // Room choice is explicit at the API boundary; legacy room IDs are never exposed.
 export function createClubChat(options) {
-  const rooms = new Map(CLUB_ROOMS.map(room => [room.id, createRoomChat(options, room)]));
+  const rooms = new Map([...CLUB_ROOMS, activityRoom].map(room => [room.id, createRoomChat(options, room)]));
   const selected = id => {
     const room = rooms.get(id);
     if (!room) throw new AuthError(404, 'club_room_not_found', 'Чат не найден.');
     return room;
   };
   const methods = {};
-  const arity = { messages: 4, markRead: 3, around: 3, search: 3, reactions: 3, react: 3, send: 3, changes: 3, deleteMessage: 4 };
+  const arity = { messages: 4, markRead: 3, around: 3, search: 3, reactions: 3, react: 3, send: 3, changes: 3, screenshot: 2, deleteMessage: 4 };
   for (const [name, count] of Object.entries(arity)) methods[name] = async (...args) => selected(args[count])[name](...args.slice(0, count));
   return Object.freeze({ ...methods,
     async info(token, expectedAccountId, roomId) {

@@ -11,11 +11,11 @@
   <link rel="preload" href="assets/fonts/Intro-Bold.woff" as="font" type="font/woff" crossorigin>
   <link rel="stylesheet" href="styles.css?v=20261008-close">
   <link rel="stylesheet" href="club.css?v=20261105-rooms">
-  <link rel="stylesheet" href="club-chat-live.css?v=20261030-delete">
+  <link rel="stylesheet" href="club-chat-live.css?v=20261109-activity">
   <link rel="stylesheet" href="chat-reactions.css?v=20261031-chips">
   <link rel="stylesheet" href="club-chat-improvements.css?v=20261109-keyboard">
   <link rel="stylesheet" href="mobile-layout.css?v=20261007-darker-sides">
-  <script type="module" src="club-chat.js?v=20261109-keyboard"></script>
+  <script type="module" src="club-chat.js?v=20261109-activity"></script>
 </head>
 <body class="club-page community-chat"><div class="app">
   <header class="discussion-header"><a href="club.html#participants" aria-label="Назад в клуб">‹</a><div><h1>Чат</h1><p>Чаты участниц</p></div><button type="button" class="chat-search-toggle" id="chat-search-toggle" aria-label="Поиск по переписке" aria-expanded="false" aria-controls="chat-search-panel" disabled><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5"/><path d="m16 16 5 5"/></svg></button></header>
@@ -33,7 +33,10 @@
   <dialog class="chat-delete-dialog" id="chat-delete-dialog" aria-labelledby="chat-delete-title" aria-describedby="chat-delete-description"><h2 id="chat-delete-title">Удаление сообщения</h2><p id="chat-delete-description">Удалить сообщение у всех участниц?</p><p class="chat-delete-error" id="chat-delete-error" role="alert"></p><div class="chat-delete-buttons"><button type="button" id="chat-delete-cancel">Отмена</button><button type="button" class="chat-delete-confirm" id="chat-delete-confirm">Удалить</button></div></dialog>
   <div class="discussion-controls" id="chat-controls" hidden>
     <div class="chat-reply-preview" id="chat-reply" hidden><p></p><button type="button" aria-label="Отменить ответ">×</button></div>
+    <p class="chat-screenshot-selection" id="chat-screenshot-selection" hidden>Скриншот прикреплён <button type="button" id="chat-screenshot-clear">Убрать</button></p>
     <form class="discussion-composer" id="chat-form">
+      <button class="chat-screenshot-button" id="chat-screenshot-button" type="button" aria-label="Прикрепить скриншот" hidden>＋</button>
+      <input id="chat-screenshot-file" type="file" accept="image/jpeg,image/png,image/webp" hidden>
       <label class="composer-field"><span class="visually-hidden">Сообщение</span><textarea id="chat-text" rows="1" maxlength="2000" placeholder="Напишите сообщение…" required></textarea></label>
       <button class="discussion-send" id="chat-send" type="submit" aria-label="Отправить сообщение" disabled><svg viewBox="0 0 225 225" aria-hidden="true"><path d="M50.1 109.7c32.8-14.3 54.6-23.7 65.6-28.3 31.2-13 37.7-15.3 41.9-15.4 1 0 3 .2 4.3 1.3 1.1.9 1.4 2.2 1.6 3.1.1.9.3 2.8.1 4.3-1.7 17.8-9 61.1-12.7 81.1-1.6 8.5-4.7 11.3-7.7 11.6-6.5.6-11.4-4.3-17.7-8.4-9.8-6.4-15.4-10.4-24.9-16.7-11-7.3-3.9-11.3 2.4-17.8 1.7-1.7 30.3-27.7 30.8-30.1.1-.3.1-1.4-.5-1.9s-1.5-.3-2.2-.1c-.9.2-16.7 10.7-47.2 31.3-4.5 3.1-8.5 4.6-12.1 4.5-4-.1-11.6-2.3-17.3-4.1-7-2.3-12.6-3.5-12.1-7.3.3-1.9 2.8-3.9 7.7-6.1Z"/></svg></button>
     </form>

@@ -1,20 +1,20 @@
-import { clubRooms } from './club-rooms.js?v=20261105-rooms';
+import { activityRoom, clubRooms } from './club-rooms.js?v=20261109-activity';
 import { createReactionControls } from './chat-reactions.js?v=20261031-chips';
 import { createMessageActions } from './club-message-actions.js?v=20261103-chat';
 import { createDraftStore, copyMessageText } from './club-chat-tools.js?v=20261105-rooms';
-import { createChatTimeline } from './club-chat-timeline.js?v=20261103-chat';
+import { createChatTimeline } from './club-chat-timeline.js?v=20261109-activity';
 import { clubRequest, chatLease } from './club-api.js?v=20261105-rooms';
 
 const params = new URLSearchParams(location.search);
 const room = params.get('room');
-const definition = clubRooms.find(item => item.id === room);
+const definition = [activityRoom, ...clubRooms].find(item => item.id === room);
 if (!definition || params.getAll('room').length !== 1) {
   location.replace('club.html#participants');
 } else {
   document.title = definition.title + ' — Клуб';
   document.querySelector('.discussion-header h1').textContent = definition.title;
   document.querySelector('.discussion-header p').textContent = definition.kind === 'experts' ? 'Экспертный чат' : 'Чат участниц';
-  document.querySelector('.discussion-header > a').href = 'club.html#' + definition.kind;
+  document.querySelector('.discussion-header > a').href = 'club.html#' + (definition === activityRoom ? 'events' : definition.kind);
   const log = document.querySelector('#chat-messages'), status = document.querySelector('#chat-status');
   const controls = document.querySelector('#chat-controls'), form = document.querySelector('#chat-form');
   const input = document.querySelector('#chat-text'), sendButton = document.querySelector('#chat-send');
@@ -25,6 +25,16 @@ if (!definition || params.getAll('room').length !== 1) {
   const searchPanel = document.querySelector('#chat-search-panel'), searchForm = document.querySelector('#chat-search-form');
   const searchInput = document.querySelector('#chat-search-text'), searchResults = document.querySelector('#chat-search-results');
   const searchStatus = document.querySelector('#chat-search-status'), searchMore = document.querySelector('#chat-search-more');
+  const screenshotButton = document.querySelector('#chat-screenshot-button');
+  const screenshotFile = document.querySelector('#chat-screenshot-file');
+  const screenshotSelection = document.querySelector('#chat-screenshot-selection');
+  const screenshotClear = document.querySelector('#chat-screenshot-clear');
+  let screenshot = null, preparingScreenshot = false, screenshotGeneration = 0;
+  if (definition === activityRoom) {
+    screenshotButton.hidden = false;
+    input.required = false;
+    input.placeholder = 'Расскажите о своей активности…';
+  }
   const reactionControls = createReactionControls({ root: log, onSelect: setReaction });
   const messages = new Map(), deletedIds = new Set();
   let canSend = false, canModerate = false, ready = false, ended = false, blocked = false, busy = false, reacting = false;
@@ -37,9 +47,10 @@ if (!definition || params.getAll('room').length !== 1) {
   const current = value => value === revision && !document.hidden && !ended;
   const validId = id => typeof id === 'string' && /^[1-9]\d{0,18}$/.test(id);
   const positionKey = () => 'webpril:club-position:v1:' + room + ':' + accountId;
+  const messageSignature = (text, replyTo) => JSON.stringify({ text, replyTo, ...(screenshot ? { screenshotId: screenshot.id } : {}) });
   const draft = createDraftStore({ input, room, onChange: () => {
     // An uncertain attempt keeps its ID while its unchanged text is retried.
-    if (pending && pending.signature !== JSON.stringify({ text: input.value.trim(), replyTo: reply?.id || restoreReplyId || null })) pending = null;
+    if (pending && pending.signature !== messageSignature(input.value.trim(), reply?.id || restoreReplyId || null)) pending = null;
     persistDraft();
   } });
   const actions = createMessageActions({ log, getMessage: id => messages.get(id), canReply: () => canSend && ready,
@@ -50,7 +61,7 @@ if (!definition || params.getAll('room').length !== 1) {
   const view = createChatTimeline({ log, messages, deletedIds, reactions: reactionControls, actions,
     canSend: () => canSend && ready, onReply: chooseReply, onJump: jumpToMessage });
 
-  function persistDraft() { draft.save({ replyTo: reply?.id || restoreReplyId || null, pending }); }
+  function persistDraft() { draft.save({ replyTo: reply?.id || restoreReplyId || null, pending: pending?.body.screenshot ? null : pending }); }
   function readPlace() {
     try {
       const value = JSON.parse(sessionStorage.getItem(positionKey()));
@@ -133,10 +144,10 @@ if (!definition || params.getAll('room').length !== 1) {
   function failure(error) {
     suspend(); status.textContent = error.message || 'Чат временно недоступен.';
     if (error.status === 401 || error.code === 'account_changed') {
-      ended = true; draft.unbind({ purge: true }); draftBound = false; pending = null; restoreReplyId = null; savedPlace = null;
+      ended = true; clearScreenshot(); draft.unbind({ purge: true }); draftBound = false; pending = null; restoreReplyId = null; savedPlace = null;
       window.webprilSessionGate?.end();
     } else if (error.code === 'club_course_required' || error.code === 'onboarding_required') {
-      blocked = true; courses.hidden = false; draft.unbind(); draftBound = false; pending = null; restoreReplyId = null; savedPlace = null;
+      blocked = true; clearScreenshot(); courses.hidden = false; draft.unbind(); draftBound = false; pending = null; restoreReplyId = null; savedPlace = null;
     } else {
       retry.hidden = false;
       if (error.code !== 'chat_update_required') reconnect();
@@ -362,11 +373,50 @@ if (!definition || params.getAll('room').length !== 1) {
       else failure(error);
     } finally { if (version === searchVersion) { searching = false; searchMore.disabled = false; } }
   }
+  function clearScreenshot() {
+    screenshotGeneration++;
+    screenshot = null;
+    preparingScreenshot = false;
+    screenshotFile.value = '';
+    screenshotSelection.hidden = true;
+    screenshotButton.disabled = false;
+  }
+  screenshotButton.addEventListener('click', () => {
+    if (ready && canSend && !busy && !preparingScreenshot) screenshotFile.click();
+  });
+  screenshotClear.addEventListener('click', () => {
+    if (busy) return;
+    clearScreenshot();
+    pending = null;
+  });
+  screenshotFile.addEventListener('change', async () => {
+    const file = screenshotFile.files[0];
+    if (!file || !ready || busy) return;
+    clearScreenshot();
+    pending = null;
+    const generation = screenshotGeneration;
+    preparingScreenshot = true;
+    screenshotButton.disabled = true;
+    try {
+      const image = await compressScreenshot(file);
+      if (generation !== screenshotGeneration) return;
+      screenshot = { id: crypto.randomUUID(), image };
+      screenshotSelection.hidden = false;
+      sendStatus.textContent = '';
+    } catch {
+      if (generation === screenshotGeneration) sendStatus.textContent = 'Не удалось прикрепить изображение. Выберите PNG, JPEG или WebP до 20 МБ.';
+    } finally {
+      if (generation === screenshotGeneration) {
+        preparingScreenshot = false;
+        screenshotButton.disabled = false;
+      }
+    }
+  });
   form.addEventListener('submit', async event => {
     event.preventDefault();
-    if (busy || !ready || controls.hidden || !input.value.trim()) return;
-    const text = input.value.trim(), replyTo = reply?.id || restoreReplyId || null, signature = JSON.stringify({ text, replyTo });
-    if (pending?.signature !== signature) pending = { signature, body: { requestId: crypto.randomUUID(), text, replyTo } };
+    if (busy || preparingScreenshot || !ready || controls.hidden || (!input.value.trim() && !screenshot)) return;
+    const text = input.value.trim(), replyTo = reply?.id || restoreReplyId || null, signature = messageSignature(text, replyTo);
+    if (pending?.signature !== signature) pending = { signature, body: { requestId: crypto.randomUUID(), text, replyTo, ...(screenshot ? { screenshot: screenshot.image } : {}) } };
     const attempt = pending, value = revision; busy = true; sendButton.disabled = true; draft.setBusy(true); persistDraft();
     form.setAttribute('aria-busy', 'true'); sendStatus.textContent = 'Отправляется…';
     try {
@@ -374,7 +424,7 @@ if (!definition || params.getAll('room').length !== 1) {
       if (!current(value)) return;
       meta(data);
       const sent = data.message;
-      if (pending === attempt) { input.value = ''; reply = null; restoreReplyId = null; pending = null; draft.clear(); updateReply(); }
+      if (pending === attempt) { clearScreenshot(); input.value = ''; reply = null; restoreReplyId = null; pending = null; draft.clear(); updateReply(); }
       sendStatus.textContent = 'Сообщение отправлено.';
       if (sent.deleted) { removeMessage(sent.id); sendStatus.textContent = 'Сообщение уже было отправлено и удалено.'; }
       // Reload a continuous latest page before acknowledging reading: other
@@ -433,7 +483,7 @@ if (!definition || params.getAll('room').length !== 1) {
   window.addEventListener('pagehide', () => suspend());
   window.addEventListener('pageshow', event => { if (event.persisted) start(); });
   window.addEventListener('webpril:session-ended', () => {
-    ended = true; suspend({ preserve: false }); draft.unbind({ purge: true }); draftBound = false; pending = null; restoreReplyId = null; savedPlace = null; status.textContent = '';
+    ended = true; clearScreenshot(); suspend({ preserve: false }); draft.unbind({ purge: true }); draftBound = false; pending = null; restoreReplyId = null; savedPlace = null; status.textContent = '';
   });
   const viewport = window.visualViewport;
   const rootStyle = document.documentElement.style;
@@ -470,4 +520,24 @@ if (!definition || params.getAll('room').length !== 1) {
   document.addEventListener('focusout', scheduleResize);
   resize();
   start();
+}
+
+async function compressScreenshot(file) {
+  if (file.size > 20 * 1024 * 1024 || !['image/png', 'image/jpeg', 'image/webp'].includes(file.type)) throw Error();
+  const bitmap = await createImageBitmap(file);
+  try {
+    const canvas = document.createElement('canvas');
+    const scale = Math.min(1, 1400 / Math.max(bitmap.width, bitmap.height));
+    canvas.width = Math.max(1, Math.round(bitmap.width * scale));
+    canvas.height = Math.max(1, Math.round(bitmap.height * scale));
+    const context = canvas.getContext('2d', { alpha: false });
+    context.fillStyle = '#fff';
+    context.fillRect(0, 0, canvas.width, canvas.height);
+    context.drawImage(bitmap, 0, 0, canvas.width, canvas.height);
+    for (const quality of [.87, .72, .55, .4]) {
+      const data = canvas.toDataURL('image/jpeg', quality).split(',')[1];
+      if (data && data.length <= 477_868) return data;
+    }
+    throw Error();
+  } finally { bitmap.close(); }
 }

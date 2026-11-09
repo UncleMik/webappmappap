@@ -11,7 +11,7 @@
   <link rel="preload" href="assets/fonts/Intro-Regular.woff" as="font" type="font/woff" crossorigin>
   <link rel="preload" href="assets/fonts/Intro-Bold.woff" as="font" type="font/woff" crossorigin>
   <link rel="stylesheet" href="styles.css?v=20261008-close">
-  <link rel="stylesheet" href="club.css?v=20261109-poll-results">
+  <link rel="stylesheet" href="club.css?v=20261109-activity">
   <script src="club.js?v=20261109-poll" defer></script>
   <link rel="stylesheet" href="club-chat-live.css?v=20261105-card">
   <script type="module" src="club-access.js?v=20261105-grouped"></script>
@@ -78,10 +78,10 @@
   <ol class="weekly-poll-results" aria-label="Результаты голосования" role="list" hidden></ol>
   <p class="weekly-poll-total" hidden></p>
 </section>
-<section class="weekly-poll" aria-labelledby="weekly-activity-title">
-  <h2 id="weekly-activity-title">Активности недели</h2>
-  <p><strong>Шаги за неделю</strong> · пока нет данных</p>
-</section>
+<a class="weekly-poll weekly-activity-link" href="club-chat.html?room=weekly-activity">
+  <div><h2>Активности недели</h2><p>Поделитесь шагами и другими активностями</p></div>
+  <svg class="row-arrow" aria-hidden="true"><use href="#arrow"/></svg>
+</a>
 </div>
 </div>
 <p id="club-access-status" class="chat-status" role="status">Проверяем доступ к чатам…</p><button class="club-access-action" id="club-access-retry" type="button" hidden>Повторить проверку</button>

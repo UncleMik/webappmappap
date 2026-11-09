@@ -743,3 +743,23 @@ test('directory rechecks free session after a slow paid check revokes it', async
   };
   await assert.rejects(chat.raw.info(user.token, user.id), e => e.code === 'sign_in_required');
 });
+
+test('activity room shares screenshots only through authenticated room access and removes them on deletion', async () => {
+  const photo = '/9j/4AAQSkZJRgABAgAAAQABAAD//gAQTGF2YzYyLjI4LjEwMQD/2wBDAAgoKC8oLzc3Nzc3N0E8QUNDQ0FBQUFDQ0NISEhVVVVISEhDQ0hIUFBVVVxfXFdXVVdfX2RkZHh4c3OMjJGsrM//xABMAAEBAAAAAAAAAAAAAAAAAAAABgEBAQAAAAAAAAAAAAAAAAAABgcQAQAAAAAAAAAAAAAAAAAAAAARAQAAAAAAAAAAAAAAAAAAAAD/wAARCAACAAIDASIAAhEAAxEA/9oADAMBAAIRAxEAPwCLAE1/f//Z';
+  const [sender, reader] = students;
+  const room = 'weekly-activity';
+  const body = { requestId: randomUUID(), text: '', screenshot: photo };
+  const saved = await chat.raw.send(sender.token, sender.id, body, room);
+  assert.equal(saved.message.hasScreenshot, true);
+  assert.equal((await chat.raw.send(sender.token, sender.id, body, room)).duplicate, true);
+  const history = await chat.raw.messages(reader.token, reader.id, undefined, undefined, room);
+  assert.equal(history.messages[0].hasScreenshot, true);
+  assert.deepEqual(Buffer.from(await chat.raw.screenshot(reader.token, saved.message.id, room)), Buffer.from(photo, 'base64'));
+  await assert.rejects(chat.raw.screenshot('', saved.message.id, room), { status: 401 });
+  await assert.rejects(chat.raw.screenshot(reader.token, saved.message.id, 'experts-birth'), { status: 404 });
+  await assert.rejects(chat.raw.send(sender.token, sender.id, { ...body, requestId: randomUUID() }, 'experts-birth'), { status: 400 });
+  await chat.raw.deleteMessage(sender.token, sender.id, saved.message.id, {}, room);
+  await assert.rejects(chat.raw.screenshot(reader.token, saved.message.id, room), { status: 404 });
+  const { rows: [row] } = await pool.query('SELECT screenshot FROM club_messages WHERE id=$1', [saved.message.id]);
+  assert.equal(row.screenshot, null);
+});

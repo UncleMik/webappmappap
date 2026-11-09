@@ -198,3 +198,6 @@
 .weekly-poll-results .is-own-vote progress::-webkit-progress-value { background: #794aff; }
 .weekly-poll-results .is-own-vote progress::-moz-progress-bar { background: #794aff; }
 .weekly-poll-total { color: #606589; font-size: 1.2rem; }
+
+.weekly-activity-link { display: flex; align-items: center; justify-content: space-between; gap: 1rem; color: inherit; text-decoration: none; }
+.weekly-activity-link .row-arrow { flex: none; }

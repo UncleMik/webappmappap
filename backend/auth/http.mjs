@@ -113,6 +113,13 @@ export function createAuthServer({ service, store, courseChecks, courseMaterials
         if (url.pathname === '/api/auth/club') {
           send(200, await clubChat.info(readSessionCookie(request), expected, clubRoom)); return;
         }
+        const screenshot = url.pathname.match(/^\/api\/auth\/club\/messages\/([1-9]\d{0,18})\/screenshot$/);
+        if (screenshot) {
+          const bytes = await clubChat.screenshot(readSessionCookie(request), screenshot[1], clubRoom);
+          response.writeHead(200, { 'Content-Type': 'image/jpeg', 'Content-Length': bytes.length,
+            'Cache-Control': 'private, no-store', 'X-Content-Type-Options': 'nosniff' });
+          response.end(bytes); return;
+        }
         if (request.headers['x-webpril-chat-version'] !== '2') {
           if (!await service.session(readSessionCookie(request))) throw new AuthError(401,'sign_in_required','Войдите в аккаунт.');
           throw new AuthError(409, 'chat_update_required', 'Чат обновлён. Обновите страницу.');
@@ -200,7 +207,7 @@ export function createAuthServer({ service, store, courseChecks, courseMaterials
       }
       const data = await readJson(request, isAiVoice ? MAX_AI_VOICE_BODY_BYTES : isAiSend ? MAX_AI_BODY_BYTES : url.pathname === '/api/auth/personal' ? 1_000_000
         : url.pathname === '/api/auth/profile-photo' ? 512_000
-          : url.pathname === '/api/auth/club/messages' ? 16_000 : 4096, isAiSend);
+          : url.pathname === '/api/auth/club/messages' ? (clubRoom === 'weekly-activity' ? 512_000 : 16_000) : 4096, isAiSend);
       const peer = request.socket.remoteAddress;
       const proxy = trustProxy && ['127.0.0.1', '::1', '::ffff:127.0.0.1'].includes(peer);
       const ip = proxy ? String(request.headers['x-real-ip'] || peer) : peer;

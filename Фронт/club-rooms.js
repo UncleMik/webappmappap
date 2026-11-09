@@ -7,3 +7,5 @@ export const clubRooms = [
   { id: 'experts-birth', title: 'По родам', kind: 'experts' },
   { id: 'experts-motherhood', title: 'По материнству', kind: 'experts' },
 ];
+
+export const activityRoom = { id: 'weekly-activity', title: 'Активности недели', kind: 'participants' };
