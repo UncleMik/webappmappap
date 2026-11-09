@@ -1,9 +1,5 @@
 (() => {
   const params = new URLSearchParams(location.search);
-  if (params.get('id') === 'breathing' && params.get('from') === 'index') {
-    document.querySelector('.bottom-navigation').hidden = false;
-    document.body.classList.add('breathing-navigation');
-  }
   const titles = {
     'back-practice': 'Расслабление спины', breathing: 'Дыхательная практика',
     'practice-article': 'Расслабление тазового дна', 'birth-course': 'Подготовка к родам',
@@ -23,11 +19,11 @@
     document.querySelector('.video-back').href = `journey.html?week=${Number.isInteger(week) && week >= 1 && week <= 42 ? week : weeklyItem?.week ?? 27}#videos-title`;
   }
   if (!weeklyItem) {
-    import('./school-video-routes.js?v=20261028-free-breathing').then(module => {
-      module.mountSchoolVideo(id);
-    }).catch(() => {
+    import('./school-video-routes.js?v=20261109-reader-entry').then(module => module.mountSchoolVideo(id)).catch(() => {
       document.querySelector('.video-stage').hidden = true;
       document.querySelector('.video-panel').hidden = true;
+      document.querySelector('.video-header p').hidden = true;
+      document.querySelector('.video-favorite').remove();
       const message = document.createElement('p');
       message.setAttribute('role', 'status');
       message.textContent = 'Не удалось загрузить видео. Обновите страницу.';

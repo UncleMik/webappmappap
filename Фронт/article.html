@@ -6,7 +6,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <meta name="theme-color" content="#fffcfb">
-  <title>Статья</title>
+  <title>Материал</title>
   <link rel="preload" href="assets/fonts/Intro-Regular.woff" as="font" type="font/woff" crossorigin>
   <link rel="preload" href="assets/fonts/Intro-Bold.woff" as="font" type="font/woff" crossorigin>
   <link rel="stylesheet" href="styles.css?v=20261008-close">
@@ -20,21 +20,22 @@
 <body>
 <div class="app reader-page">
   <header class="reader-header">
-    <div class="reader-toolbar"><a class="reader-back" href="index.html#recommendations-title" data-reader-return aria-label="Вернуться к разделу"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m14 5-7 7 7 7"/></svg></a><span>Статья</span></div>
-    <div class="reader-progress" hidden><progress value="1" max="6" aria-label="Прогресс чтения статьи"></progress><output aria-label="Текущий блок">1/6</output></div>
+    <div class="reader-toolbar"><a class="reader-back" href="index.html#recommendations-title" data-reader-return aria-label="Вернуться к разделу"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m14 5-7 7 7 7"/></svg></a><span></span></div>
+    <div class="reader-progress" hidden><progress aria-label="Прогресс чтения статьи"></progress><output aria-label="Текущий блок"></output></div>
   </header>
-  <main class="reader-scroll" tabindex="0" aria-label="Текст статьи" aria-busy="true">
+  <main class="reader-scroll" tabindex="0" aria-label="Содержание материала" aria-busy="true"></main>
+  <template id="article-finish">
     <section class="reader-section reader-finish" aria-labelledby="finish-title">
       <svg class="reader-heart" viewBox="0 0 140 120" fill="none" aria-hidden="true"><circle cx="70" cy="57" r="49" fill="#f2eaf9"/><path d="M70 84C28 53 53 24 68 54 83 18 111 44 70 84Z" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/><path d="m8 43-6-3m8 20H3m11 16-5 5m122-38 6-3m-5 20h6m-11 16 5 5" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
       <h2 id="finish-title">Вы разобрались!</h2>
       <p>Вы дочитали статью. Можно перейти к следующему материалу или вернуться к подборке.</p>
-      <div class="reader-actions"><a class="reader-button reader-next" href="article.html?id=pregnancy-002" data-reader-next>Читать следующую статью →</a><a class="reader-button" href="index.html#recommendations-title" data-reader-return>Вернуться к разделу</a></div>
+      <div class="reader-actions"><a class="reader-button reader-next" data-reader-next>Читать следующую статью →</a><a class="reader-button" data-reader-return>Вернуться к разделу</a></div>
     </section>
-  </main>
+  </template>
   <!-- Shared navigation is copied from index.html. -->
       <nav class="bottom-navigation" aria-label="Основная навигация">
       <div class="navigation-items">
-        <a class="nav-item active" href="index.html" aria-current="page"><svg class="nav-icon home-icon" viewBox="0 0 30 30" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 13 15 4l10 9v13h-7v-8h-6v8H5Z"/></svg><span>Сегодня</span></a>
+        <a class="nav-item" href="index.html"><svg class="nav-icon home-icon" viewBox="0 0 30 30" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 13 15 4l10 9v13h-7v-8h-6v8H5Z"/></svg><span>Сегодня</span></a>
         <a class="nav-item" href="journey.html"><svg class="nav-icon journey-icon" viewBox="0 0 30 30" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 7 11 4 19 7 26 4v20l-7 3-8-3-7 3V7Z"/><path d="M11 4v20M19 7v20"/></svg><span>Мой путь</span></a>
         <a class="nav-item" href="ai.html"><svg class="nav-icon ai-icon" viewBox="0 0 30 30" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 4v6a6 6 0 0 0 12 0V4M5 4h3M14 4h3M11 16v4a6 6 0 0 0 12 0v-3"/><circle cx="23" cy="14" r="3"/></svg><span>AI врач</span></a>
         <a class="nav-item" href="club.html"><svg class="nav-icon club-icon" viewBox="0 0 30 30" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="15" cy="9" r="4"/><path d="M8 25v-3a7 7 0 0 1 14 0v3Z" fill="currentColor" stroke="none"/><path d="M7 7a4 4 0 0 0 0 8M23 7a4 4 0 0 1 0 8M7 18a5 5 0 0 0-5 5v2h3M23 18a5 5 0 0 1 5 5v2h-3"/></svg><span>Клуб</span></a>
@@ -44,7 +45,7 @@
 </div>
 <script src="article-read-state.js?v=20261027-personal"></script>
 <script src="weekly-content-api.js?v=20261008-weekly"></script>
-<script src="articles-api.js?v=20261109-images"></script>
-<script src="article.js?v=20261109-silent-access"></script>
+<script src="articles-api.js?v=20261109-reader-entry"></script>
+<script src="article.js?v=20261109-reader-entry"></script>
 <script src="app.js?v=20261006-week-samples"></script></body>
 </html>

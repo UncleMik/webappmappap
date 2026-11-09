@@ -1,16 +1,24 @@
 (async () => {
 const scroller = document.querySelector('.reader-scroll');
 const params = new URLSearchParams(location.search);
+const toolbar = document.querySelector('.reader-toolbar > span');
 if (params.has('courseLesson')) {
-  if (params.get('from') === 'index-breathing') {
-    document.querySelectorAll('.nav-item').forEach(link => {
-      link.classList.remove('active');
-      link.removeAttribute('aria-current');
-    });
+  document.title = toolbar.textContent = 'Урок';
+  scroller.setAttribute('aria-label', 'Содержание урока');
+  try {
+    await import('./course-lesson.js?v=20261109-reader-entry');
+  } catch {
+    window.showArticleLoadError(scroller, 'Не удалось открыть урок. Попробуйте ещё раз.');
   }
-  await import('./course-lesson.js?v=20261109-silent-access');
   return;
 }
+document.title = toolbar.textContent = 'Статья';
+scroller.setAttribute('aria-label', 'Текст статьи');
+const originSection = { journey: 'journey.html', 'club-motherhood': 'club.html' };
+const from = params.get('from');
+const activeLink = document.querySelector(`.nav-item[href="${Object.hasOwn(originSection, from) ? originSection[from] : 'index.html'}"]`);
+activeLink.classList.add('active');
+activeLink.setAttribute('aria-current', 'page');
 function showArticleNotFound() {
   document.title = 'Статья не найдена';
   document.querySelector('.reader-progress').hidden = true;
@@ -64,7 +72,7 @@ const escapeText = text => text.replace(/[&<>"']/g, char => ({'&':'&amp;','<':'&
 loadingMessage.remove();
 scroller.removeAttribute('aria-busy');
 if (article.pregnancy) {
-  const finish = scroller.querySelector('.reader-finish').cloneNode(true);
+  const finish = document.querySelector('#article-finish').content.firstElementChild.cloneNode(true);
   finish.querySelector('p').textContent = 'Вы дочитали статью. Можно перейти к следующему материалу или вернуться к подборке.';
   scroller.replaceChildren();
   let section = document.createElement('section');
@@ -104,7 +112,7 @@ if (article.pregnancy) {
   scroller.append(finish);
   document.querySelector('.reader-toolbar > span').textContent = article.type;
 } else if (articleId !== 'dating') {
-  const finish = scroller.querySelector('.reader-finish').cloneNode(true);
+  const finish = document.querySelector('#article-finish').content.firstElementChild.cloneNode(true);
   finish.querySelector('p').textContent = 'Процессы развиваются постепенно: описанные изменения могут появляться раньше или позже. Все сроки — акушерские.';
   scroller.innerHTML = `<section class="reader-section reader-intro"><div><span class="reader-week">${escapeText(article.type || '27 неделя')}</span><h1>${escapeText(article.title)}</h1><p>${escapeText(article.intro)}</p></div><p class="reader-reading-time">≈ ${article.minutes} мин на чтение</p></section>`;
   article.headings.forEach((heading, index) => {
@@ -188,14 +196,6 @@ if (article.pregnancy) {
   const next = document.querySelector('[data-reader-next]');
   next.href = momWeek < 42 ? `article.html?id=mom-week&week=${momWeek + 1}&from=${origin}` : returnUrl;
   next.textContent = momWeek < 42 ? `Читать о ${momWeek + 1}-й неделе →` : 'Вернуться к разделу';
-}
-if (origin === 'journey' || origin === 'club-motherhood') {
-  document.querySelectorAll('.nav-item').forEach(link => {
-    const active = link.getAttribute('href') === (origin === 'journey' ? 'journey.html' : 'club.html');
-    link.classList.toggle('active', active);
-    if (active) link.setAttribute('aria-current', 'page');
-    else link.removeAttribute('aria-current');
-  });
 }
 updateProgress();
 document.querySelector('.reader-progress').hidden = false;

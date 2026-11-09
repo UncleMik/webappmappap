@@ -73,7 +73,8 @@ export async function mountSchoolVideo(id) {
   status.setAttribute('role', 'status');
   status.textContent = 'Проверяем доступ к уроку…';
   panel.replaceChildren(status);
-  document.querySelector('.video-app').removeAttribute('data-video-pending');
+  const app = document.querySelector('.video-app');
+  if (id !== 'breathing') app.removeAttribute('data-video-pending');
   try {
     const result = await resolveSchoolVideo(id);
     if (result.state === 'available') {
@@ -96,6 +97,7 @@ export async function mountSchoolVideo(id) {
     status.textContent = error.status === 401 ? 'Войдите, чтобы открыть урок.'
       : 'Не удалось проверить доступ. Попробуйте ещё раз.';
   }
+  app.removeAttribute('data-video-pending');
   const retry = document.createElement('button');
   retry.type = 'button'; retry.className = 'video-login'; retry.textContent = 'Повторить проверку';
   retry.addEventListener('click', () => mountSchoolVideo(id));

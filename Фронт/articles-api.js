@@ -5,13 +5,13 @@ window.articleLibrary = {};
 window.pregnancyArticleList = [];
 window.articleImageUrl = image => image ? new URL(image, window.articlesApiBase).href : '';
 
-window.showArticleLoadError = container => {
+window.showArticleLoadError = (container, text = 'Не удалось загрузить статьи. Проверьте соединение и попробуйте ещё раз.') => {
   if (!container) return;
   container.removeAttribute('aria-busy');
   const message = document.createElement('p');
   message.className = 'article-load-status';
   message.setAttribute('role', 'status');
-  message.textContent = 'Не удалось загрузить статьи. Проверьте соединение и попробуйте ещё раз.';
+  message.textContent = text;
   const retry = document.createElement('button');
   retry.type = 'button';
   retry.className = 'article-load-retry';
@@ -28,12 +28,14 @@ async function requestArticleData(path) {
 
 let articleLoadingError = null;
 const decorateArticle = article => Object.assign(article, { type: `${article.week} неделя`, supplied: true, pregnancy: true });
-window.articlesReady = requestArticleData('/api/articles').then(payload => {
-  if (!Array.isArray(payload.articles)) throw new Error('Invalid article list');
-  window.pregnancyArticleList = payload.articles.map(decorateArticle);
-  window.pregnancyArticleList.forEach(article => { window.articleLibrary[article.id] = article; });
-  window.articleLibrary.dating = window.pregnancyArticleList[0];
-}).catch(error => { articleLoadingError = error; });
+if (!new URLSearchParams(location.search).has('courseLesson') || !document.querySelector('#article-finish')) {
+  window.articlesReady = requestArticleData('/api/articles').then(payload => {
+    if (!Array.isArray(payload.articles)) throw new Error('Invalid article list');
+    window.pregnancyArticleList = payload.articles.map(decorateArticle);
+    window.pregnancyArticleList.forEach(article => { window.articleLibrary[article.id] = article; });
+    window.articleLibrary.dating = window.pregnancyArticleList[0];
+  }).catch(error => { articleLoadingError = error; });
+}
 
 window.loadSchoolArticle = async id => {
   await window.articlesReady;

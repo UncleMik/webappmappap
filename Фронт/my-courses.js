@@ -16,9 +16,12 @@ const program = courseProgram(params.get('program'));
 const selected = productId !== null;
 const topicId = params.get('topic');
 const subsectionId = params.get('sub');
+const topic = topics.find(item => item.id === topicId);
+const subsection = topic?.sections.find(([id]) => id === subsectionId);
 
 const validId = (!selected || positiveId(productId)) && (sectionId === null || (selected && positiveId(sectionId)));
-const baseTitle = selected ? 'Курс' : program ? 'Курсы школы' : 'Мои курсы';
+const baseTitle = selected ? (sectionId === null ? 'Курс' : 'Раздел курса')
+  : program ? (subsection?.[1] ?? topic?.title ?? 'Курсы школы') : 'Мои курсы';
 const programOffers = { express: [8835218], full: [8835266, 8835331] };
 const programCourseIds = { express: '4309095', full: '4302509' };
 const fullCourseId = programCourseIds.full;
@@ -87,7 +90,6 @@ const subsectionArtwork = {
 
 function renderProgram(data, owned) {
   const fragment = document.createDocumentFragment();
-  const topic = topics.find(item => item.id === topicId);
   if (topicId === null) {
     const full = program === 'full';
     const grid = node('div', full ? 'course-topic-grid course-topic-grid-original' : 'course-topic-grid');
@@ -127,9 +129,6 @@ function renderProgram(data, owned) {
     }
     const available = topic.sections.filter(([id]) =>
       (topic.id !== 'other' || id !== 'course') && lessons.has(topic.id + '/' + id));
-    const subsection = topic.sections.find(([id]) => id === subsectionId);
-    heading.textContent = subsection?.[1] ?? topic.title;
-    document.title = heading.textContent;
     setBack(subsectionId === null ? courseListUrl(program) : topicUrl(topic.id),
       subsectionId === null ? 'К курсам школы' : topic.title);
     if (subsectionId === null) {
@@ -323,7 +322,11 @@ function clear() {
   setBack(selected ? courseListUrl(program) : 'journey.html', selected ? program ? 'К курсам школы' : 'Мои курсы' : 'Мой путь');
 }
 
-function loading() { list.replaceChildren(paragraph('Проверяем доступ к курсам…')); }
+function loading() {
+  const status = paragraph(selected ? 'Загружаем разделы и уроки…' : 'Проверяем доступ к курсам…');
+  status.setAttribute('role', 'status');
+  list.replaceChildren(status);
+}
 
 function startView() {
   createCourseView({
@@ -379,4 +382,7 @@ if (!validId) {
   clear();
   showError({ status: 404 }, () => location.assign(courseListUrl(program)));
 } else if (!selected && program) void loadProgram();
-else startView();
+else {
+  clear();
+  startView();
+}

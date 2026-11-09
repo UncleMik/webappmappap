@@ -25,11 +25,12 @@ let selectedTab = 'about';
 let selectedVideoKey = null;
 document.querySelector('.reader-page').classList.add('course-lesson-mode');
 progress.hidden = true;
-toolbar.textContent = 'Урок';
-scroller.setAttribute('aria-label', 'Текст урока');
-back.href = positiveId(productId) ? courseUrl(productId, undefined, program) : courseListUrl(program);
-back.setAttribute('aria-label', 'Вернуться к курсу');
-toolbar.textContent = 'К программе курса';
+scroller.setAttribute('aria-label', 'Содержание урока');
+const initialBackText = thematicBack ? 'К урокам по теме' : freeLesson ? 'На главную' : 'К программе курса';
+back.href = thematicBack ?? (freeLesson ? 'index.html'
+  : positiveId(productId) ? courseUrl(productId, undefined, program) : courseListUrl(program));
+back.setAttribute('aria-label', initialBackText);
+toolbar.textContent = initialBackText;
 toolbar.addEventListener('click', () => back.click());
 document.querySelectorAll('.nav-item').forEach(link => {
   const selected = params.get('from') !== 'index-breathing' && link.getAttribute('href') === 'journey.html';

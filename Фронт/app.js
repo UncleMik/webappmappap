@@ -1,9 +1,15 @@
-/* Video destinations share the same player, including practice and course cards. */
+/* Open school lessons and weekly videos from the shared cards. */
 (() => {
   const navigate = url => window.navigateApp ? window.navigateApp(url) : location.assign(url);
   const videoActions = new Set(['back-practice', 'breathing', 'practice-article', 'birth-course', 'back-course', 'confidence-course', 'baby-course', 'contractions-lesson', 'birth-breathing-video', 'back-relief-video', 'webinars']);
   const from = location.pathname.split('/').pop().replace('.html', '') || 'index';
-  const videoUrl = id => `video.html?id=${encodeURIComponent(id === 'birth-course' && ['baby', 'articles', 'article'].includes(from) ? 'baby-birth-lesson' : id)}&from=${encodeURIComponent(from === 'article' ? 'articles' : from)}${from === 'journey' ? `&week=${document.querySelector('#journey').dataset.week || 27}` : ''}`;
+  const videoUrl = id => {
+    if (id === 'breathing') {
+      return 'article.html?courseLesson=347472707&course=4302509' + (from === 'index' ? '&from=index-breathing' : '');
+    }
+    const videoId = id === 'birth-course' && ['baby', 'articles', 'article'].includes(from) ? 'baby-birth-lesson' : id;
+    return `video.html?id=${encodeURIComponent(videoId)}&from=${encodeURIComponent(from === 'article' ? 'articles' : from)}${from === 'journey' ? `&week=${document.querySelector('#journey').dataset.week || 27}` : ''}`;
+  };
   document.querySelectorAll('a[href*="article.html?"]').forEach(link => {
     const id = new URL(link.href).searchParams.get('id');
     if (videoActions.has(id)) link.href = videoUrl(id);
