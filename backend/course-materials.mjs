@@ -96,6 +96,24 @@ export function importCourseDeliveryPolicy(db, source) {
   return { streams: streams.size, lessons: lessons.size, videosEnabled: false };
 }
 
+const webAppFaqLessonIds = new Set([347472351, 347529680]);
+const webAppFaqHtml = `
+  <h2>Как войти в приложение «Лёгкие роды»</h2>
+  <ol>
+    <li>Откройте app.legkie-rody.ru.</li>
+    <li>Введите электронную почту. Если вы уже покупали курс, укажите тот же адрес, что и при покупке в GetCourse.</li>
+    <li>Нажмите «Получить код». Откройте письмо, введите шестизначный код и нажмите «Войти». Код действует 5 минут.</li>
+  </ol>
+  <p>Для входа достаточно кода из письма. При следующем входе запросите новый код.</p>
+  <h2>Если письмо с кодом не пришло</h2>
+  <p>Проверьте папку «Спам» и адрес, указанный на экране. Если в адресе ошибка, нажмите «Изменить почту». Если адрес верный, дождитесь, когда станет доступна кнопка «Отправить код ещё раз», и запросите новый код.</p>
+  <h2>Как открыть купленный курс</h2>
+  <p>В нижнем меню откройте «Мой путь». В разделе «Курсы для вас» выберите свой курс или нажмите «Все курсы». Затем откройте нужный раздел и урок.</p>
+  <h2>Если курс не открывается</h2>
+  <p>Проверьте, что вы вошли с той же почтой, которую указали при покупке. Если приложение показывает кнопку «Повторить проверку», нажмите её. Если проблема осталась, откройте «Профиль», в разделе «Поддержка» нажмите «Написать» и выберите мессенджер. Укажите название курса, почту покупки и опишите, на каком шаге возникла проблема.</p>
+`;
+
+
 function publicBlocks(content, lessonId, contentHash, links) {
   if (!Array.isArray(content.blocks)) throw unavailable();
   return content.blocks.map(block => {
@@ -325,7 +343,11 @@ export function createCourseMaterials({ db, courseChecks, clock = Date.now }) {
       if (!access) throw denied();
       const record = lessonStatement.get(lessonId);
       if (!record || digest(record.content_json) !== record.sha256 || record.sha256 !== lesson.contentHash) throw unavailable();
-      const blocks = publicBlocks(JSON.parse(record.content_json), lessonId, record.sha256, videoLinks);
+      const sourceBlocks = publicBlocks(JSON.parse(record.content_json), lessonId, record.sha256, videoLinks);
+      const blocks = webAppFaqLessonIds.has(lessonId)
+        ? [{ type: 'text', text: '', html: webAppFaqHtml },
+          ...sourceBlocks.filter(block => !['text', 'list', 'table'].includes(block.type))]
+        : sourceBlocks;
       return { lesson: { lessonId, title: lesson.title, productId, blocks, contentCopyDisabled: access.contentCopyDisabled,
         videoAvailable: blocks.some(block => block.videos?.some(video => video.url !== null)),
         hasAssignment: lessonPolicies.get(lessonId).hasMission, assignmentAvailable: false },
