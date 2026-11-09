@@ -113,7 +113,8 @@ function renderProgram(data, owned) {
         lessons.set(target, [...entries, { productId: courseId, lessonId: freeId, title: 'Диафрагмальное дыхание', hasVideo: true }]);
       }
     }
-    const available = topic.sections.filter(([id]) => lessons.has(topic.id + '/' + id));
+    const available = topic.sections.filter(([id]) =>
+      (topic.id !== 'other' || id !== 'course') && lessons.has(topic.id + '/' + id));
     const subsection = topic.sections.find(([id]) => id === subsectionId);
     heading.textContent = subsection?.[1] ?? topic.title;
     document.title = heading.textContent;
