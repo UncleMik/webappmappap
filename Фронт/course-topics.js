@@ -5,7 +5,7 @@ export const topics = [
   ['feeding', 'Кормление малыша', [['breast', 'Грудное вскармливание'], ['formula', 'Смесь и бутылочка'], ['solids', 'Прикорм'], ['weaning', 'Завершение ГВ']]],
   ['sleep', 'Сон малыша', [['routine', 'Безопасность и режим'], ['settling', 'Засыпание'], ['night', 'Ночной сон']]],
   ['recovery', 'Восстановление после родов', [['body', 'Уход и восстановление тела'], ['wellbeing', 'Эмоции и ресурс мамы']]],
-  ['exercise', 'Упражнения', [['pregnancy', 'Йога и фитнес для беременных'], ['recovery', 'Тренировки после родов']]],
+  ['exercise', 'Упражнения', [['pregnancy', 'Упражнения во время беременности'], ['recovery', 'Тренировки после родов']]],
   ['baby-care', 'Уход за малышом', [['daily', 'Ежедневный уход'], ['water', 'Купание и плавание'], ['carrying', 'Ношение и слинг']]],
   ['development', 'Развитие малыша', [['early', 'От рождения до 6 месяцев'], ['later', 'От 6 месяцев до года'], ['play', 'Игры и развитие']]],
   ['health', 'Детское здоровье', [['prevention', 'Вакцинация и иммунитет'], ['illness', 'Болезни и самочувствие']]],
@@ -50,6 +50,12 @@ const reviewedLessons = new Map(Object.entries({
   'birth/process': [347472741, 347472758, 347472761, 347472785, 347472810],
   'other/course': [347472352, 347472622, 347472661, 347472674, 347472716],
 }).flatMap(([topic, ids]) => ids.map(id => [id, topic])));
+
+// These practices also belong to the pregnancy and birth-preparation sequences.
+const additionalPregnancyExercises = new Set([
+  347529457, 347529465, 347531402, 347531403, // Express
+  347472386, 347472394, 347472707, 347472708, // Full
+]);
 
 const normalize = value => value.toLowerCase().replaceAll('ё', 'е');
 const parentRules = [
@@ -143,6 +149,9 @@ export function groupTopicLessons(courses) {
         seen.add(String(lesson.lessonId));
         const key = reviewedLessons.get(Number(lesson.lessonId)) ?? classify(lesson.title, path, Number(course.productId));
         const keys = [key];
+        if (key !== 'exercise/pregnancy' && additionalPregnancyExercises.has(Number(lesson.lessonId))) {
+          keys.push('exercise/pregnancy');
+        }
         const title = normalize(lesson.title);
         if (Number(lesson.lessonId) === 347472734) keys.push('sleep/routine');
         if (Number(lesson.lessonId) === 347472412) keys.push('feeding/formula');
