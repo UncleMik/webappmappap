@@ -20,7 +20,7 @@
   <link rel="stylesheet" href="mobile-layout.css?v=20261007-darker-sides">
   <link rel="stylesheet" href="helpers.css?v=20261109-tile-style">
   <link rel="stylesheet" href="account-ui.css?v=20261019-onboarding">
-  <link rel="stylesheet" href="points.css?v=20261109-pilot">
+  <link rel="stylesheet" href="points.css?v=20261109-header">
 </head>
 <body>
   <div class="app" id="today">
@@ -31,14 +31,16 @@
       </div>
       <div class="header-actions">
         <button class="notification icon-button" type="button" data-action="notifications" aria-label="Уведомления"><span class="sprite bell" aria-hidden="true"></span></button>
+        <button type="button" class="points-trigger" id="points-trigger" aria-haspopup="dialog" aria-controls="points-dialog" aria-labelledby="points-trigger-label points-trigger-balance" title="Баллы" hidden>
+          <span id="points-trigger-label" hidden>Баллы</span>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9.5"/><path d="m12 7 1.5 3.1 3.4.5-2.5 2.4.6 3.4-3-1.6-3 1.6.6-3.4-2.5-2.4 3.4-.5Z"/></svg>
+          <strong id="points-trigger-balance"></strong>
+        </button>
         <a class="avatar account-placeholder" href="profile.html" aria-label="Открыть профиль"><svg viewBox="0 0 30 30" aria-hidden="true"><circle cx="15" cy="9" r="5"/><path d="M5 26v-3a10 10 0 0 1 20 0v3Z"/></svg></a>
       </div>
     </header>
 
     <main>
-      <button type="button" class="points-trigger" id="points-trigger" aria-haspopup="dialog" aria-controls="points-dialog" hidden>
-        <span>Баллы</span><strong id="points-trigger-balance"></strong>
-      </button>
       <a class="feature-card baby-card" href="baby.html" aria-labelledby="baby-title">
         <img class="feature-art baby-art" alt="" width="400" height="400">
         <span class="card-heading"><span class="round-icon baby-icon sprite" aria-hidden="true"></span><span id="baby-title">Малыш</span></span>
