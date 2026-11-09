@@ -14,6 +14,10 @@
 .reader-scroll { flex: 1; min-height: 0; padding: 0; overflow-y: auto; overscroll-behavior-y: contain; }
 .reader-section { padding: 16px 20px 12px; font-size: 16px; line-height: 1.42; color: #424b61; }
 .reader-section h1, .reader-section h2 { font-size: 25px; line-height: 1.13; letter-spacing: -.45px; color: #10152f; margin: 0 0 16px; }
+.reader-article-content {
+  -webkit-user-select: none;
+  user-select: none;
+}
 .reader-section p + p { margin-top: 18px; }
 .reader-week { display: inline-block; padding: 6px 14px; border-radius: 20px; background: #eee5ff; color: #9270e3; font-size: 13px; font-weight: 700; margin-bottom: 13px; }
 .reader-intro { display: flex; flex-direction: column; padding-bottom: 0; }

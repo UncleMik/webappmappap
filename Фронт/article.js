@@ -115,6 +115,19 @@ if (article.pregnancy) {
 }
 document.title = article.title;
 const sections = [...document.querySelectorAll('.reader-section')];
+const articleSections = sections.filter(section => !section.classList.contains('reader-finish'));
+articleSections.forEach(section => section.classList.add('reader-article-content'));
+document.addEventListener('copy', event => {
+  const selection = window.getSelection();
+  if (!selection || selection.isCollapsed) return;
+  for (let index = 0; index < selection.rangeCount; index++) {
+    const range = selection.getRangeAt(index);
+    if (articleSections.some(section => range.intersectsNode(section))) {
+      event.preventDefault();
+      return;
+    }
+  }
+});
 sections.forEach((section, index) => {
   const heading = section.querySelector('h1, h2');
   if (!heading.id) heading.id = `article-section-${index + 1}`;
