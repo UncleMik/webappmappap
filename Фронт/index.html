@@ -21,6 +21,7 @@
   <link rel="stylesheet" href="helpers.css?v=20261109-tile-style">
   <link rel="stylesheet" href="account-ui.css?v=20261019-onboarding">
   <link rel="stylesheet" href="points.css?v=20261109-header">
+  <link rel="stylesheet" href="notifications.css?v=20261109">
 </head>
 <body>
   <div class="app" id="today">
@@ -30,7 +31,7 @@
         <p class="greeting">Рады видеть вас! <span class="greeting-heart sprite" aria-hidden="true"></span></p>
       </div>
       <div class="header-actions">
-        <button class="notification icon-button" type="button" data-action="notifications" aria-label="Уведомления"><span class="sprite bell" aria-hidden="true"></span></button>
+        <button class="notification icon-button" type="button" data-notifications-trigger aria-label="Уведомления" aria-haspopup="dialog" aria-controls="notifications-dialog"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.65" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9m-8 12a2 2 0 0 0 4 0"/></svg></button>
         <button type="button" class="points-trigger" id="points-trigger" aria-haspopup="dialog" aria-controls="points-dialog" aria-labelledby="points-trigger-label points-trigger-balance" title="Баллы" hidden>
           <span id="points-trigger-label" hidden>Баллы</span>
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9.5"/><path d="m12 7 1.5 3.1 3.4.5-2.5 2.4.6 3.4-3-1.6-3 1.6.6-3.4-2.5-2.4 3.4-.5Z"/></svg>
@@ -148,5 +149,6 @@
   <script src="calendar-sheet.js?v=20261019-onboarding"></script>
 <script src="app-navigation.js?v=20261020-initial-content"></script>  <script src="helpers.js?v=20261109-all-helpers"></script>
 <script src="resource-prefetch.js?v=20261009"></script>
+  <script type="module" src="notifications.js?v=20261109"></script>
 </body>
 </html>
