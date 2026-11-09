@@ -8,6 +8,7 @@ import hmac
 from io import BytesIO
 import json
 from pathlib import Path
+from tempfile import NamedTemporaryFile
 import re
 from urllib.error import HTTPError
 from urllib.parse import quote
@@ -171,11 +172,15 @@ def restore_originals(config):
         data, mime = request(config, 'GET', item['key'])
         if mime != 'image/png' or digest(data) != item['sha256']:
             raise RuntimeError(f'Archived original differs: {name}')
-        temporary = path.with_suffix('.restore')
-        with temporary.open('xb') as handle:
-            handle.write(data)
-        temporary.chmod(0o644)
-        temporary.replace(path)
+        with NamedTemporaryFile(dir=folder, prefix='.restore-', delete=False) as handle:
+            temporary = Path(handle.name)
+            try:
+                handle.write(data)
+                handle.close()
+                temporary.chmod(0o644)
+                temporary.replace(path)
+            finally:
+                temporary.unlink(missing_ok=True)
 
 
 def main():
