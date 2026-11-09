@@ -15,15 +15,12 @@
     return data;
   }
 
-  function render({ poll, points, accountId }) {
+  function render({ poll, accountId }) {
     if (card) {
       card.hidden = !poll?.open;
       if (!card.hidden) card.querySelector('.article-title').textContent = poll.question;
     }
     if (!section) return;
-    const balance = document.querySelector('#weekly-poll-points');
-    balance.hidden = false;
-    balance.textContent = 'Баллы за голосования: ' + points;
     section.hidden = !poll;
     if (!poll) return;
 
@@ -99,7 +96,7 @@
           headers: { 'Content-Type': 'application/json', 'X-Webpril-Account': accountId },
           body: JSON.stringify({ pollId: poll.id, choice: Number(selected) })
         });
-        render({ poll: { ...poll, choice: vote.choice, counts: vote.counts }, points, accountId });
+        render({ poll: { ...poll, choice: vote.choice, counts: vote.counts }, accountId });
       } catch (error) {
         status.textContent = error.message;
         submit.disabled = false;
