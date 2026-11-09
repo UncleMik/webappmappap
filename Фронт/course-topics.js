@@ -26,6 +26,31 @@ const defaults = new Map([
   [4302532, 'baby-care/water'], [4302549, 'baby-care/carrying'],
   [4302543, 'pregnancy/nutrition'], [4302555, 'birth/preparation'],
 ]);
+// Reviewed exceptions from the school catalog. Keep original lesson links and access checks.
+const reviewedLessons = new Map(Object.entries({
+  'sleep/routine': [347472706],
+  'sleep/settling': [347472501, 347472730, 349405902],
+  'feeding/formula': [347472428, 347472442],
+  'feeding/weaning': [347472512, 347472672, 347472834],
+  'feeding/breast': [350366414, 350366415, 350366416, 350366417, 350366419, 350366420,
+    347472522, 347472523, 347472524, 347472525, 347472527, 347472528, 347472756],
+  'baby-care/daily': [350366418, 347472526, 347472815],
+  'development/early': [347472745],
+  'development/later': [347472499],
+  'development/play': [347529609],
+  'health/illness': [347472438, 347472443, 347472444, 347472446, 347472448, 347472449,
+    347472451, 347472740, 347472770],
+  'first-aid/emergency': [347472753, 347472784],
+  'exercise/pregnancy': [347472655, 347472656, 347472657, 347472659],
+  'exercise/recovery': [347529571, 347529572, 347529573, 347529574, 347529575, 347529576,
+    347472600, 347472601, 347472602, 347472603, 347472604, 347472605],
+  'cesarean/recovery': [347531298, 347531307, 347531309, 347472543, 347472547, 347472548],
+  'recovery/wellbeing': [347472626, 347472731, 347472732, 347472739, 347472781, 347927985],
+  'birth/preparation': [347472729, 347472735],
+  'birth/process': [347472741, 347472758, 347472761, 347472785, 347472810],
+  'other/course': [347472352, 347472622, 347472661, 347472674, 347472716],
+}).flatMap(([topic, ids]) => ids.map(id => [id, topic])));
+
 const normalize = value => value.toLowerCase().replaceAll('ё', 'е');
 const parentRules = [
   [/завершение гв|отлучение от груди/, 'feeding/weaning'],
@@ -44,7 +69,7 @@ const parentRules = [
   [/мама в ресурсе/, 'recovery/wellbeing'],
   [/восстановление после родов|массаж лица/, 'recovery/body'],
   [/йога после родов|плоский живот/, 'exercise/recovery'],
-  [/йога для беременных|фитнес/, 'exercise/pregnancy'],
+  [/йога для беременных|фитнес|здоровая спина/, 'exercise/pregnancy'],
   [/питание.*беременн|питание.*анеми/, 'pregnancy/nutrition'],
   [/6 до 12|6 месяцев до 1 года|6 до 9|9 месяцев/, 'development/later'],
   [/0 до 6|новорожденные до 3|с 3 до 6/, 'development/early'],
@@ -53,20 +78,20 @@ const parentRules = [
   [/^введение$|^заключение$|раздел обратной связи|отзыв о родах/, 'other/course'],
 ];
 const lessonRules = [
-  [/навига(тор|ция)|организационные моменты|отложить\/активировать|вступайте в чат|отзыв (о курсе|о родах)|раздел по вопросам/, 'other/course'],
+  [/навига(тор|ция)|организационные моменты|раздел обратной связи|правила работы раздела|отложить\/активировать|вступайте в чат|отзыв (о курсе|о родах)|раздел по вопросам/, 'other/course'],
   [/прикорм/, 'feeding/solids'],
   [/отлучени|самоотлучен|завершение гв/, 'feeding/weaning'],
   [/искусственн.*вскармл|смешанн.*вскармл|смес[ьи]|из бутылк|\bив\b|на ив|сторона ив/, 'feeding/formula'],
-  [/грудн.*вскармл|прикладыван|кормлени|сцеживан|лактостаз|мастит|молок[аоуе]|\sгв(?:\s|$)|у груди|к груди/, 'feeding/breast'],
+  [/грудн.*вскармл|вопросы грудного вскартмливания|проблемы гв|организовать гв|вид вскармливания|психологический взгляд на вскармливани|прикладыван|кормлени|сцеживан|лактостаз|мастит|молок[аоуе]|\sгв(?:\s|$)|у груди|к груди/, 'feeding/breast'],
   [/ночн.*пробужден|ночной сон/, 'sleep/night'],
   [/укладыва|засыпан|ассоциаци.*сон|окно в сон/, 'sleep/settling'],
-  [/детский сон|сон (малыша|ребенка)|здоровый сон|условия сна|режим сна|безопасн.*сон/, 'sleep/routine'],
+  [/детский сон|сон (малыша|ребенка)|здоровый сон|условия сна|режим сна|дневник сна|безопасн.*сон/, 'sleep/routine'],
   [/кесарев|после кс|рубц[ае] после/, 'cesarean/preparation'],
-  [/первая помощь|аптечк|подавилс/, 'first-aid/emergency'],
+  [/первая помощь|аптечк|подавилс|неотложных состояниях/, 'first-aid/emergency'],
   [/вакцинац|детский иммунитет/, 'health/prevention'],
   [/орви|колики|газики/, 'health/illness'],
   [/купани|плавани/, 'baby-care/water'],
-  [/как одеть ребенка|летние прогулки|уход с первого месяца|покупки для ребенка/, 'baby-care/daily'],
+  [/как одеть ребенка|летние прогулки|путешестви.*малыш|уход за кожей|особенности развития и ухода|уход с первого месяца|покупки для ребенка/, 'baby-care/daily'],
   [/малыш[еау]? 0[–-]5|развитие ребенка от 0 до 3/, 'development/early'],
   [/малыш[еау]? 6[–-]12/, 'development/later'],
   [/дерматит|жкт у детей|кишечные инфекции|беспокойства ребенка первых месяцев|витамин д/, 'health/illness'],
@@ -76,7 +101,7 @@ const lessonRules = [
   [/йога после родов|плоский живот/, 'exercise/recovery'],
   [/анеми|гсд|питание во время беременности|витамин/, 'pregnancy/nutrition'],
   [/контрацепци|восстановлен.*после родов|послеродов/, 'recovery/body'],
-  [/выгорание|материнской вины/, 'recovery/wellbeing'],
+  [/выгор(ание|еть)|материнской вины|послеродовая депрессия/, 'recovery/wellbeing'],
   [/уход за (собой и ребенком|ребенком|младенцем|новорожденным)|пеленани|подгузник/, 'baby-care/daily'],
   [/схватк|потуг|роддом|воды отошли|как организм готовится к родам|дыхание в родах|партнерские роды|движение и позы в родах|гормоны в родах/, 'birth/process'],
   [/медицинск.*стимуляци|неожиданные состояния в родах|решения в родах/, 'birth/special'],
@@ -86,7 +111,11 @@ const lessonRules = [
 const find = (rules, text) => rules.find(([pattern]) => pattern.test(text))?.[1];
 
 function classify(title, parents, productId) {
-  const name = normalize(title);
+  const normalized = normalize(title);
+  // A meeting host can cover several topics. Prefer the subject over their job title.
+  const subject = normalized.startsWith('запись встречи')
+    ? normalized.match(/(?:на тему|тема:)\s*[«"]?(.+)/)?.[1] : undefined;
+  const name = subject ?? normalized;
   const ancestry = parents.map(normalize);
   const parent = ancestry.map(value => find(parentRules, value)).find(Boolean);
   const fallback = defaults.get(productId);
@@ -95,6 +124,7 @@ function classify(title, parents, productId) {
   const direct = find(lessonRules, name);
   if (direct?.startsWith('feeding/') && direct === 'feeding/breast' && [parent, fallback].includes('feeding/weaning')) return 'feeding/weaning';
   if (direct) return direct;
+  if (subject) return 'other/meetings';
   if (fallback && fallback !== 'birth/preparation' && (!parent || parent === 'other/course')) return fallback;
   return parent ?? fallback ?? 'other/course';
 }
@@ -111,9 +141,11 @@ export function groupTopicLessons(courses) {
       for (const lesson of section.lessons) {
         if (seen.has(String(lesson.lessonId))) continue;
         seen.add(String(lesson.lessonId));
-        const key = classify(lesson.title, path, Number(course.productId));
+        const key = reviewedLessons.get(Number(lesson.lessonId)) ?? classify(lesson.title, path, Number(course.productId));
         const keys = [key];
         const title = normalize(lesson.title);
+        if (Number(lesson.lessonId) === 347472734) keys.push('sleep/routine');
+        if (Number(lesson.lessonId) === 347472412) keys.push('feeding/formula');
         if (key === 'sleep/night' && /кормлен.*на сон/.test(title)) keys.push('feeding/weaning');
         if (key === 'feeding/weaning' && /ночн.*кормлен/.test(title)) keys.push('sleep/night');
         for (const target of keys) {
