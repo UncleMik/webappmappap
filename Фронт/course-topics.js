@@ -135,6 +135,10 @@ function classify(title, parents, productId) {
   return parent ?? fallback ?? 'other/course';
 }
 
+export function courseLessonTopic(lesson, parents, productId) {
+  return reviewedLessons.get(Number(lesson.lessonId)) ?? classify(lesson.title, parents, Number(productId));
+}
+
 export function groupTopicLessons(courses) {
   const groups = new Map();
   const seen = new Set();
@@ -147,7 +151,7 @@ export function groupTopicLessons(courses) {
       for (const lesson of section.lessons) {
         if (seen.has(String(lesson.lessonId))) continue;
         seen.add(String(lesson.lessonId));
-        const key = reviewedLessons.get(Number(lesson.lessonId)) ?? classify(lesson.title, path, Number(course.productId));
+        const key = courseLessonTopic(lesson, path, course.productId);
         const keys = [key];
         if (key !== 'exercise/pregnancy' && additionalPregnancyExercises.has(Number(lesson.lessonId))) {
           keys.push('exercise/pregnancy');

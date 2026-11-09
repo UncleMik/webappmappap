@@ -3,6 +3,7 @@
 .course-lesson-mode .course-player .video-stage { background:#18151d; }
 .course-lesson-mode .course-player .video-stage > .course-video-element { position:absolute; inset:0; width:100%; height:100%; max-width:100%; aspect-ratio:auto; border-radius:0; object-fit:contain; }
 .course-lesson-mode .course-player .video-cover { position:absolute; inset:0; width:100%; height:100%; display:block; min-height:0; aspect-ratio:auto; margin:0; padding:0; border:0; border-radius:0; background:#eee8e5; text-shadow:none; color:#68518f; }
+.course-lesson-mode .course-player .course-video-start[data-cover-topic] { background:var(--course-topic-art, none) right center / cover no-repeat #f1e6fa; }
 .course-lesson-mode .course-player .video-cover[hidden],
 .course-lesson-mode .course-player [hidden] { display:none !important; }
 .course-lesson-mode .course-player .video-panel { padding:10px 20px 18px; border-radius:0 0 20px 20px; }

@@ -1,3 +1,4 @@
+import { courseLessonTopic } from './course-topics.js?v=20261109-topic-covers';
 import { courseVideoTopic } from './course-video-topics.js?v=20261027-topic-titles';
 import { courseVideoDescription } from './course-video-description.js?v=20261028-descriptions';
 import { mountCourseVideo } from './course-video-player.js?v=20261027-subtopics';
@@ -166,7 +167,7 @@ function currentVideoPositions() {
   return positions;
 }
 
-function videoPlayer(video, index, total, available, key, positions, restoreJobs, navigation, chapters) {
+function videoPlayer(video, index, total, available, key, positions, restoreJobs, navigation, chapters, coverTopic) {
   const container = document.createElement('div');
   container.className = 'course-video-item';
   if (!playableVideo(video, available)) {
@@ -186,6 +187,7 @@ function videoPlayer(video, index, total, available, key, positions, restoreJobs
   const stage = node('div', 'video-stage');
   const button = node('button', 'video-cover course-video-start');
   button.type = 'button';
+  button.dataset.coverTopic = coverTopic;
   button.setAttribute('aria-label', total > 1 ? `Смотреть видео ${index + 1}` : 'Смотреть видео');
   const symbol = node('span', 'cover-play');
   symbol.innerHTML = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="m8 4 13 8-13 8Z"/></svg>';
@@ -251,6 +253,7 @@ function renderLesson(data) {
   if (!section) throw Object.assign(new Error('lesson_not_in_course'), { status: 403 });
   const courseNavigator = productId === '4302509' && lessonId === '347472344'
     ? buildCourseNavigator(course, lessonId, program) : null;
+  const coverTopic = courseLessonTopic(lesson, [section.title], productId).split('/')[0];
   const ordered = course.sections.flatMap(item => item.lessons.map(row => ({ ...row, sectionId: item.streamId })));
   const lessonIndex = ordered.findIndex(row => String(row.lessonId) === String(lessonId));
   const next = ordered[lessonIndex + 1];
@@ -409,7 +412,7 @@ function renderLesson(data) {
           next: videoTarget(videos[videoIndex + 1]) || target(next), title: item.title,
         };
         part.append(videoPlayer(video, index, block.videos.length, lesson.videoAvailable,
-          key, positions, restoreJobs, playerNavigation, lessonChapters.get(blockIndex) || []));
+          key, positions, restoreJobs, playerNavigation, lessonChapters.get(blockIndex) || [], coverTopic));
         videoNodes.set(key, part);
         videoHero.append(part);
       }

@@ -8,12 +8,11 @@ export function node(tag, className, text) {
   return element;
 }
 
-export function cover(title, id, kind = 'product') {
-  const tone = /психолог|медитац|эмоци|страх|дыхани/i.test(title) ? 'calm'
-    : /врач|медицин|тревог|кесар|КС|вакцин/i.test(title) ? 'care' : 'prepare';
-  const photo = node('span', `course-cover course-cover-${tone}`);
+export function cover(topic, productId) {
+  const photo = node('span', 'course-cover');
+  photo.dataset.coverTopic = topic;
   photo.setAttribute('aria-hidden', 'true');
-  applyCourseBanner(photo, id, kind);
+  if (productId !== undefined) applyCourseBanner(photo, productId);
   return photo;
 }
 

@@ -1,9 +1,9 @@
 import { createCourseView, courseErrorText, positiveId } from './course-views.js?v=20261109-thematic-lessons';
-import { node, cover, courseProgram, courseListUrl, courseUrl, lessonUrl, validateCourse, primaryLink } from './course-ui.js?v=20261109-programs';
+import { node, cover, courseProgram, courseListUrl, courseUrl, lessonUrl, validateCourse, primaryLink } from './course-ui.js?v=20261109-topic-covers';
 
 import { applySchoolCourseBanner, schoolCourseBanners } from './course-banners.js?v=20261109-school-covers';
 
-import { topics, groupTopicLessons } from './course-topics.js?v=20261109-school-meetings';
+import { topics, groupTopicLessons, courseLessonTopic } from './course-topics.js?v=20261109-topic-covers';
 
 const list = document.querySelector('.owned-list');
 const heading = document.querySelector('.owned-header h1');
@@ -180,12 +180,13 @@ function moduleCard(section, count, number) {
   return card;
 }
 
-function lessonCard(lesson, streamId) {
+function lessonCard(lesson, section) {
   const link = node('a', 'course-lesson-link');
-  link.href = lessonUrl(productId, lesson.lessonId, streamId, program);
+  link.href = lessonUrl(productId, lesson.lessonId, section.streamId, program);
   const copy = node('div', 'course-lesson-copy');
   copy.append(node('strong', '', lesson.title), node('span', '', lesson.hasVideo ? 'Видеоурок' : lesson.hasText ? 'Текст урока' : 'Материалы урока'));
-  link.append(cover(lesson.title), copy);
+  const topic = courseLessonTopic(lesson, [section.title], productId).split('/')[0];
+  link.append(cover(topic), copy);
   return link;
 }
 
@@ -229,7 +230,7 @@ function renderCourse(data) {
       const banner = node('a', 'course-start-banner');
       banner.href = lessonUrl(productId, first.lessons[0].lessonId, first.streamId, program);
       const caption = node('span', 'course-start-caption', 'Начать обучение');
-      banner.append(cover(course.title, productId), caption);
+      banner.append(cover(courseLessonTopic(first.lessons[0], [first.title], productId).split('/')[0], productId), caption);
       fragment.append(banner);
     }
   }
@@ -239,7 +240,7 @@ function renderCourse(data) {
   }
   if (directLessons.length) {
     fragment.append(node('h2', 'course-list-title', atRoot ? 'Уроки курса' : 'Уроки раздела'));
-    for (const lesson of directLessons) fragment.append(lessonCard(lesson, section.streamId));
+    for (const lesson of directLessons) fragment.append(lessonCard(lesson, section));
     if (!atRoot) fragment.append(primaryLink('Открыть первый урок', lessonUrl(productId, directLessons[0].lessonId, section.streamId, program)));
   }
   if (!modules.length && !directLessons.length) fragment.append(paragraph('Доступных уроков сейчас нет.'));
