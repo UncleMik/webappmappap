@@ -208,7 +208,10 @@ function renderCourse(data) {
   const modules = hasTree
     ? course.sections.filter(item => section && String(item.parentStreamId) === String(section.streamId))
     : atRoot ? course.sections : [];
-  const directLessons = section?.lessons ?? [];
+  let directLessons = section?.lessons ?? [];
+  if (atRoot && productId === fullCourseId) {
+    directLessons = directLessons.filter(lesson => String(lesson.lessonId) !== '347472344');
+  }
   const counts = new Map();
   // The server sends parents before children, so a reverse pass counts entire folders.
   for (let i = course.sections.length - 1; i >= 0; i--) {
