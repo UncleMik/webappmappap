@@ -282,7 +282,7 @@ async function loadProgram() {
 }
 
 if (!selected) {
-  programNav.hidden = false;
+  programNav.hidden = Boolean(program);
   for (const link of programNav.querySelectorAll('a')) {
     if (courseProgram(link.dataset.program) === program) link.setAttribute('aria-current', 'page');
   }
