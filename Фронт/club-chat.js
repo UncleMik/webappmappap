@@ -150,7 +150,7 @@ if (!definition || params.getAll('room').length !== 1) {
   }
   function chooseReply(message) {
     if (!ready || !canSend || deletedIds.has(message.id)) return;
-    reply = message; restoreReplyId = message.id; pending = null; updateReply(); input.focus();
+    reply = message; restoreReplyId = message.id; pending = null; updateReply(); input.focus({ preventScroll: true });
   }
   async function restoreReply(value) {
     if (!restoreReplyId || !canSend) return;
@@ -410,14 +410,14 @@ if (!definition || params.getAll('room').length !== 1) {
       if (!event.repeat) form.requestSubmit();
     }
   });
-  replyPreview.querySelector('button').addEventListener('click', () => { reply = null; restoreReplyId = null; pending = null; updateReply(); input.focus(); });
+  replyPreview.querySelector('button').addEventListener('click', () => { reply = null; restoreReplyId = null; pending = null; updateReply(); input.focus({ preventScroll: true }); });
   history.addEventListener('click', () => loadHistory('before'));
   down.addEventListener('click', goDown);
   retry.addEventListener('click', () => { blocked = false; start(); });
   searchToggle.addEventListener('click', () => {
     if (!ready) return;
     if (!searchPanel.hidden) { closeSearch({ focus: true }); return; }
-    searchPanel.hidden = false; searchToggle.setAttribute('aria-expanded', 'true'); searchInput.focus(); updateDown();
+    searchPanel.hidden = false; searchToggle.setAttribute('aria-expanded', 'true'); searchInput.focus({ preventScroll: true }); updateDown();
   });
   document.querySelector('#chat-search-close').addEventListener('click', () => closeSearch({ focus: true }));
   searchForm.addEventListener('submit', event => { event.preventDefault(); search(); });
@@ -435,9 +435,39 @@ if (!definition || params.getAll('room').length !== 1) {
   window.addEventListener('webpril:session-ended', () => {
     ended = true; suspend({ preserve: false }); draft.unbind({ purge: true }); draftBound = false; pending = null; restoreReplyId = null; savedPlace = null; status.textContent = '';
   });
+  const viewport = window.visualViewport;
+  const rootStyle = document.documentElement.style;
+  let viewportFrame = null, lastViewportHeight, keyboardOpen = false;
   function resize() {
-    document.documentElement.style.setProperty('--club-viewport-height', (window.visualViewport?.height || innerHeight) + 'px');
-    draft.resize(); updateDown(); scheduleRead();
+    viewportFrame = null;
+    // iOS can move the visible viewport as well as shrink it when focusing an input.
+    const viewportAtNormalScale = viewport && Math.abs(viewport.scale - 1) < 0.01;
+    const height = viewportAtNormalScale ? viewport.height : innerHeight;
+    const top = viewportAtNormalScale ? Math.max(0, viewport.offsetTop) : 0;
+    const editing = document.activeElement === input || document.activeElement === searchInput;
+    const nextKeyboardOpen = Boolean(editing && viewportAtNormalScale && innerHeight - height > 100);
+    rootStyle.setProperty('--club-viewport-top', top + 'px');
+    if (height === lastViewportHeight && nextKeyboardOpen === keyboardOpen) return;
+
+    const follow = ready && !hasAfter && view.atBottom();
+    lastViewportHeight = height;
+    keyboardOpen = nextKeyboardOpen;
+    rootStyle.setProperty('--club-viewport-height', height + 'px');
+    document.body.classList.toggle('chat-keyboard-open', keyboardOpen);
+    draft.resize();
+    if (follow) log.scrollTop = log.scrollHeight;
+    updateDown();
+    scheduleRead();
   }
-  window.visualViewport?.addEventListener('resize', resize); window.addEventListener('resize', resize); resize(); start();
+  function scheduleResize() {
+    if (viewportFrame === null) viewportFrame = requestAnimationFrame(resize);
+  }
+  viewport?.addEventListener('resize', scheduleResize);
+  viewport?.addEventListener('scroll', scheduleResize);
+  window.addEventListener('resize', scheduleResize);
+  window.addEventListener('pageshow', scheduleResize);
+  document.addEventListener('focusin', scheduleResize);
+  document.addEventListener('focusout', scheduleResize);
+  resize();
+  start();
 }

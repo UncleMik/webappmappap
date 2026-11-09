@@ -1,4 +1,15 @@
-.community-chat .app { position:relative; min-height:0; }
+.club-chat-viewport { overflow:hidden; }
+.community-chat .app {
+  position:fixed;
+  top:var(--club-viewport-top, 0px);
+  inset-inline:0;
+  margin-inline:auto;
+  width:min(100%, 500px);
+  min-height:0;
+  overflow:hidden;
+}
+.community-chat .discussion-messages { flex:1; }
+.community-chat.chat-keyboard-open .bottom-navigation { display:none; }
 .community-chat .discussion-header > div { flex:1; min-width:0; }
 .discussion-header .chat-search-toggle { display:grid; place-items:center; flex:none; width:44px; min-width:44px; height:44px; min-height:44px; border-radius:50%; background:transparent; color:#794aff; }
 .chat-search-toggle svg { width:22px; height:22px; }
