@@ -1,5 +1,6 @@
 (() => {
   const api = window.personalDataApi;
+  const chatIcon = `<svg class="helper-icon" viewBox="0 0 60 60" aria-hidden="true"><circle cx="30" cy="30" r="30" fill="#f3edff"/><path d="M43 29a13 11 0 0 1-13 11 16 16 0 0 1-5-.8L18 43l1.7-7A10 10 0 0 1 17 29a13 11 0 0 1 26 0Z" fill="none" stroke="#794aff" stroke-width="2.5" stroke-linejoin="round"/></svg>`;
   const dialog = document.createElement('dialog');
   dialog.className = 'helper-dialog';
   dialog.setAttribute('aria-labelledby', 'helper-title');
@@ -100,15 +101,22 @@
         <button class="helper" type="button" data-action="breathing"><span class="helper-icon breathing-icon sprite" aria-hidden="true"></span><span>Дыхание</span></button>
         <button class="helper" type="button" data-action="movements"><span class="helper-icon movements-icon sprite" aria-hidden="true"></span><span>Шевеления</span></button>
         `}
-        <a class="helper" href="club-chat.html?room=experts-birth">
-          <svg class="helper-icon" viewBox="0 0 60 60" aria-hidden="true"><circle cx="30" cy="30" r="30" fill="#f3edff"/><path d="M43 29a13 11 0 0 1-13 11 16 16 0 0 1-5-.8L18 43l1.7-7A10 10 0 0 1 17 29a13 11 0 0 1 26 0Z" fill="none" stroke="#794aff" stroke-width="2.5" stroke-linejoin="round"/></svg>
+        <button class="helper" type="button" data-action="expert-chats">
+          ${chatIcon}
           <span>Чат с экспертами</span>
-        </a>
+        </button>
         <a class="helper" href="my-courses.html">
           <svg class="helper-icon" viewBox="0 0 60 60" aria-hidden="true"><circle cx="30" cy="30" r="30" fill="#f3edff"/><path d="M30 22c-4-3-8-4-13-3v20c5-1 9 0 13 3 4-3 8-4 13-3V19c-5-1-9 0-13 3Zm0 0v20" fill="none" stroke="#794aff" stroke-width="2.5" stroke-linejoin="round"/></svg>
           <span>Мои курсы</span>
         </a>
       </div>`;
+    } else if (type === 'expert-chats') {
+      dialog.querySelector('h2').textContent = 'Чат с экспертами';
+      content.innerHTML = `<div class="helper-options">
+        <a class="helper" href="club-chat.html?room=experts-birth">${chatIcon}<span>По родам</span></a>
+        <a class="helper" href="club-chat.html?room=experts-motherhood">${chatIcon}<span>По материнству</span></a>
+      </div>`;
+      content.querySelector('a').focus();
     } else {
       dialog.querySelector('h2').textContent = 'Шевеления малыша';
       content.innerHTML = `<p>Нажмите, когда почувствуете шевеление: сохраним текущие дату и время.</p><button type="button" class="helper-save">Записать сейчас</button><p class="helper-feedback" role="status"></p><p class="helper-error" role="alert" hidden></p><h3>История записей</h3><ul class="movement-history"></ul><p class="helper-storage-note">Записи сохраняются в вашем аккаунте.</p>`;
@@ -118,7 +126,7 @@
   }
   document.addEventListener('click', event => {
     const control = event.target.closest('[data-action]');
-    if (!control || !['tools', 'more', 'movements'].includes(control.dataset.action)) return;
+    if (!control || !['tools', 'more', 'movements', 'expert-chats'].includes(control.dataset.action)) return;
     event.preventDefault();
     const trigger = dialog.contains(control) ? opener : control;
     open(control.dataset.action, trigger);
