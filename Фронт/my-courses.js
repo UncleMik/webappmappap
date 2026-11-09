@@ -75,6 +75,16 @@ async function loadTopicCourses(read) {
   return responses;
 }
 
+const subsectionArtwork = {
+  'pregnancy/screening': 'health',
+  'pregnancy/health': 'health',
+  'pregnancy/movement': 'exercise',
+  'birth/practice': 'exercise',
+  'birth/special': 'health',
+  'cesarean/feeding': 'feeding',
+  'recovery/training': 'exercise',
+};
+
 function renderProgram(data, owned) {
   const fragment = document.createDocumentFragment();
   const topic = topics.find(item => item.id === topicId);
@@ -93,7 +103,8 @@ function renderProgram(data, owned) {
       grid.append(link);
     }
     for (const item of topics) {
-      const link = node('a', 'course-topic-tile', item.title);
+      const link = node('a', 'course-topic-tile');
+      link.append(cover(item.id), node('span', '', item.title));
       link.dataset.topic = item.id;
       link.href = topicUrl(item.id);
       grid.append(link);
@@ -129,8 +140,11 @@ function renderProgram(data, owned) {
         const count = lessons.get(topic.id + '/' + id).length;
         const link = node('a', 'course-topic-product');
         link.href = topicUrl(topic.id, id);
-        link.append(node('h2', '', title));
-        link.append(node('span', 'course-label', lessonCount(count)));
+        link.classList.add('course-topic-subsection');
+        const copy = node('div', 'course-topic-subsection-copy');
+        copy.append(node('h2', '', title));
+        copy.append(node('span', 'course-label', lessonCount(count)));
+        link.append(cover(subsectionArtwork[topic.id + '/' + id] ?? topic.id), copy);
         fragment.append(link);
       }
     } else if (!subsection) {
@@ -196,14 +210,18 @@ function renderProducts(data) {
   list.setAttribute('aria-busy', 'false');
 }
 
-function moduleCard(section, count, number) {
+function moduleCard(section, count, number, parentTitle) {
   const card = node('a', 'course-module-card');
   card.href = courseUrl(productId, section.streamId, program);
   const copy = node('div', 'course-module-copy');
   copy.append(node('h3', '', section.title), node('span', '', lessonCount(count)));
   const index = node('span', 'course-module-index', String(number));
   index.setAttribute('aria-hidden', 'true');
-  card.append(index, copy);
+  const art = cover(String(section.streamId) === '935386962' || String(section.parentStreamId) === '935386962'
+    ? 'other'
+    : courseLessonTopic(section, parentTitle ? [parentTitle] : [], productId).split('/')[0]);
+  art.append(index);
+  card.append(art, copy);
   return card;
 }
 
@@ -277,7 +295,7 @@ function renderCourse(data) {
   }
   if (modules.length) {
     fragment.append(node('h2', 'course-list-title', 'Разделы'));
-    modules.forEach((child, index) => fragment.append(moduleCard(child, counts.get(String(child.streamId)), index + 1)));
+    modules.forEach((child, index) => fragment.append(moduleCard(child, counts.get(String(child.streamId)), index + 1, section?.title)));
   }
   if (directLessons.length) {
     fragment.append(node('h2', 'course-list-title', atRoot ? 'Уроки курса' : 'Уроки раздела'));
