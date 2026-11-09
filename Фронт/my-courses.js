@@ -224,7 +224,15 @@ function renderCourse(data) {
 
   const fragment = document.createDocumentFragment();
   if (atRoot) {
-    fragment.append(node('span', 'course-open-badge', 'Курс доступен'), node('h2', 'course-list-title', 'Программа курса'));
+    const accessEnd = typeof course.accessEndsAt === 'string' ? Date.parse(course.accessEndsAt) : NaN;
+    let accessLabel = 'Курс доступен';
+    if (Number.isFinite(accessEnd)) {
+      const date = new Intl.DateTimeFormat('ru-RU', {
+        timeZone: 'Europe/Moscow', day: '2-digit', month: '2-digit', year: 'numeric',
+      }).format(accessEnd);
+      accessLabel += ' до ' + date;
+    } else if (course.accessEndsAt === null) accessLabel += ' бессрочно';
+    fragment.append(node('span', 'course-open-badge', accessLabel), node('h2', 'course-list-title', 'Программа курса'));
     const first = productId === fullCourseId ? undefined : course.sections.find(item => item.lessons.length);
     if (first) {
       const banner = node('a', 'course-start-banner');

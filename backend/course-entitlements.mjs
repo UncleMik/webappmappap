@@ -93,6 +93,6 @@ export function activeCourseProducts(products, check, now = Date.now()) {
   return [...validProducts].flatMap(([productId, trainingId]) => {
     const end = ends.get(productId);
     return conflicts.has(productId) || !grantedTrainings.has(trainingId) || end === undefined
-      ? [] : [{ productId, validUntil: Math.min(expiresAt, end) }];
+      ? [] : [{ productId, validUntil: Math.min(expiresAt, end), accessEndsAt: Number.isFinite(end) ? end : null }];
   });
 }

@@ -158,7 +158,7 @@ export function createCourseMaterials({ db, courseChecks, clock = Date.now }) {
       return { checkedAt: check.checkedAt, expiresAt: check.expiresAt,
         validUntil: new Date(until).toISOString(), serverTime: new Date(sentAt).toISOString() };
     };
-    return { check, now, grants, available, answers, meta };
+    return { check, now, grants, active, available, answers, meta };
   }
   function pathsToRoot(streamId, root, visiting = new Set()) {
     if (streamId === root) return [[root]];
@@ -293,7 +293,9 @@ export function createCourseMaterials({ db, courseChecks, clock = Date.now }) {
       const ordered = parentId => (children.get(parentId) ?? [])
         .sort((a, b) => order(a) - order(b) || a.streamId - b.streamId)
         .flatMap(section => [section, ...ordered(section.streamId)]);
+      const { accessEndsAt } = ctx.active.find(grant => grant.productId === productId);
       return { course: { productId, title: product.title, rootStreamId: product.trainingId,
+        accessEndsAt: accessEndsAt === null ? null : new Date(accessEndsAt).toISOString(),
         sections: ordered(null) }, ...ctx.meta(validUntil) };
     },
     async lesson(userId, productId, lessonId) {
