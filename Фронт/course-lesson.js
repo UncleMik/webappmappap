@@ -3,7 +3,7 @@ import { courseVideoTopic } from './course-video-topics.js?v=20261027-topic-titl
 import { courseVideoDescription } from './course-video-description.js?v=20261028-descriptions';
 import { mountCourseVideo } from './course-video-player.js?v=20261027-subtopics';
 import { courseChapters } from './course-video-chapters.js?v=20261026-weekly-style';
-import { createCourseView, courseErrorText, positiveId, stopCourseMedia } from './course-views.js?v=20261026-course-layout';
+import { createCourseView, courseErrorText, positiveId, stopCourseMedia } from './course-views.js?v=20261109-silent-access';
 import { node, courseProgram, courseListUrl, courseUrl, lessonUrl, isFreeCourseLesson, validateCourse, primaryLink } from './course-ui.js?v=20261109-programs';
 
 const params = new URLSearchParams(location.search);

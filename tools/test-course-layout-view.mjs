@@ -27,7 +27,7 @@ function harness(replies) {
 test('lesson and navigation share the earliest deadline and no-store credentials', async () => {
   const h = harness([reply(80000, { lesson: { lessonId: 1 } }), reply(15000, { course: { title: 'Course' } })]);
   await flush();
-  assert.ok(h.timers.size === 1 && [...h.timers.values()][0].ms === 15000);
+  assert.deepEqual([...h.timers.values()].map(t => t.ms), [10000, 15000]);
   assert.equal(h.states.find(s => s[0] === 'render')[1].navigation.title, 'Course');
   assert.ok(h.calls.every(c => c.options.cache === 'no-store' && c.options.credentials === 'same-origin'));
   assert.equal(h.calls[0].options.signal, h.calls[1].options.signal);
@@ -52,4 +52,22 @@ test('late navigation cannot reveal a lesson after page is hidden', async () => 
   finish(reply(80000)); await flush();
   assert.ok(!h.states.some(s => s[0] === 'render'));
   assert.equal(h.calls[0].options.signal.aborted, true);
+});
+
+test('successful background refresh preserves the rendered lesson; denial clears it', async () => {
+  let finish;
+  const h = harness([reply(80000), reply(80000), reply(90000),
+    () => new Promise(resolve => { finish = resolve; }), { ok: false, status: 403 }, reply(80000)]);
+  await flush();
+  const before = h.states.length;
+  const renewal = h.context.view.refresh();
+  await flush();
+  assert.equal(h.context.view.isCurrent(), true);
+  assert.equal(h.states.length, before);
+  finish(reply(90000));
+  await renewal;
+  assert.equal(h.states.length, before);
+  await h.context.view.refresh();
+  assert.equal(h.context.view.isCurrent(), false);
+  assert.deepEqual(h.states.slice(before).map(state => Array.from(state)), [['clear', 'error'], ['error', 403]]);
 });

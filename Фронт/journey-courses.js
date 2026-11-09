@@ -1,4 +1,4 @@
-import { createCourseView, courseErrorText, positiveId } from './course-views.js';
+import { createCourseView, courseErrorText, positiveId } from './course-views.js?v=20261109-silent-access';
 import { applySchoolCourseBanner, schoolCourseBanners } from './course-banners.js?v=20261109-school-covers';
 
 const section = document.querySelector('[aria-labelledby="courses-title"]');

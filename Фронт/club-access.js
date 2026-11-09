@@ -4,13 +4,13 @@ import { clubRooms } from './club-rooms.js?v=20261105-rooms';
 const status = document.querySelector('#club-access-status');
 const retry = document.querySelector('#club-access-retry');
 const rows = new Map();
-let revision = 0, controller, timer, accountId, ended = false;
+let revision = 0, controller, timer, expiryTimer, accountId, ended = false;
 for (const room of clubRooms) {
   const row = document.createElement('a'); row.className = 'community-row club-entry'; row.dataset.room = room.id;
   const icon = document.createElement('span'); icon.className = 'community-icon people'; const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg'); const use = document.createElementNS('http://www.w3.org/2000/svg', 'use'); use.setAttribute('href', room.kind === 'experts' ? '#crown' : '#people'); svg.append(use); icon.append(svg); icon.setAttribute('aria-hidden', 'true');
   const copy = document.createElement('span'); copy.className = 'community-copy';
   const title = document.createElement('strong'); title.textContent = room.title;
-  const description = document.createElement('span'); description.textContent = 'Проверяем доступ…';
+  const description = document.createElement('span');
   const unread = document.createElement('span'); unread.className = 'unread'; unread.hidden = true;
   const lock = document.createElement('span'); lock.className = 'club-room-lock'; lock.hidden = true; lock.setAttribute('role', 'img'); lock.setAttribute('aria-label', 'Нужна покупка курса');
   const lockSvg = document.createElementNS('http://www.w3.org/2000/svg', 'svg'); const lockUse = document.createElementNS('http://www.w3.org/2000/svg', 'use'); lockUse.setAttribute('href', '#lock'); lockSvg.setAttribute('viewBox', '0 0 16 20'); lockSvg.setAttribute('aria-hidden', 'true'); lockSvg.append(lockUse); lock.append(lockSvg);
@@ -18,21 +18,27 @@ for (const room of clubRooms) {
   document.querySelector(room.kind === 'experts' ? '#club-expert-rooms' : room.id.startsWith('pregnancy-') ? '#club-pregnancy-rooms' : '#club-mother-rooms').append(row);
   rows.set(room.id, { row, description, lock, unread });
 }
-function clear() {
-  revision++; controller?.abort(); clearTimeout(timer);
+function clearRows() {
   for (const { row, lock, unread } of rows.values()) { lock.hidden = true; row.removeAttribute('href'); unread.hidden = true; unread.textContent = ''; }
 }
+function clear() {
+  revision++; controller?.abort(); controller = null;
+  clearTimeout(timer); clearTimeout(expiryTimer);
+  clearRows();
+}
 async function refresh() {
-  clear();
-  if (document.hidden || ended) return;
+  if (document.hidden || ended) { clear(); return; }
+  if (controller) return;
+  clearTimeout(timer);
   const current = revision; controller = new AbortController();
-  status.textContent = 'Проверяем доступ к чатам…'; retry.hidden = true;
   try {
     const data = await clubRequest('club', { accountId, signal: controller.signal });
     if (current !== revision) return;
     if (typeof data.accountId !== 'string' || !Array.isArray(data.rooms)) throw new Error('Не удалось проверить доступ к чатам.');
     accountId = data.accountId;
     let remaining = 15_000, failed = false;
+    clearTimeout(expiryTimer);
+    clearRows();
     for (const definition of clubRooms) {
       const { row, description, lock, unread } = rows.get(definition.id);
       const matches = data.rooms.filter(item => item.id === definition.id);
@@ -57,13 +63,18 @@ async function refresh() {
       }
     }
     status.textContent = failed ? 'Доступ к некоторым чатам пока не подтверждён.' : '';
-    retry.hidden = !failed; timer = setTimeout(refresh, remaining);
+    retry.hidden = !failed;
+    if (remaining > 2_000) timer = setTimeout(refresh, remaining - Math.min(1_000, remaining / 4));
+    expiryTimer = setTimeout(() => { clearRows(); refresh(); }, remaining);
   } catch (error) {
     if (current !== revision) return;
+    clearTimeout(expiryTimer); clearRows();
     status.textContent = error.message; retry.hidden = false;
     for (const { description } of rows.values()) description.textContent = 'Доступ пока не подтверждён';
     if (error.status === 401 || error.code === 'account_changed') window.webprilSessionGate?.end();
     else timer = setTimeout(refresh, 15_000);
+  } finally {
+    if (current === revision) controller = null;
   }
   document.dispatchEvent(new Event('club:entries-changed'));
 }

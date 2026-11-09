@@ -15,7 +15,7 @@
   <link rel="stylesheet" href="chat-reactions.css?v=20261031-chips">
   <link rel="stylesheet" href="club-chat-improvements.css?v=20261109-keyboard">
   <link rel="stylesheet" href="mobile-layout.css?v=20261007-darker-sides">
-  <script type="module" src="club-chat.js?v=20261109-activity"></script>
+  <script type="module" src="club-chat.js?v=20261109-silent-access"></script>
 </head>
 <body class="club-page community-chat"><div class="app">
   <header class="discussion-header"><a href="club.html#participants" aria-label="Назад в клуб">‹</a><div><h1>Чат</h1><p>Чаты участниц</p></div><button type="button" class="chat-search-toggle" id="chat-search-toggle" aria-label="Поиск по переписке" aria-expanded="false" aria-controls="chat-search-panel" disabled><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5"/><path d="m16 16 5 5"/></svg></button></header>
@@ -23,7 +23,7 @@
     <form id="chat-search-form"><label for="chat-search-text" class="visually-hidden">Текст сообщения</label><input id="chat-search-text" type="search" minlength="2" maxlength="100" placeholder="Найти в переписке" autocomplete="off"><button type="submit">Найти</button><button id="chat-search-close" type="button" aria-label="Закрыть поиск">×</button></form>
     <p id="chat-search-status" role="status"></p><ol id="chat-search-results"></ol><button type="button" class="chat-search-more" id="chat-search-more" hidden>Ещё результаты</button>
   </section>
-  <p class="chat-status" id="chat-status" role="status">Проверяем доступ к чату…</p>
+  <p class="chat-status" id="chat-status" role="status"></p>
   <div class="chat-actions"><button class="club-access-action" id="chat-retry" type="button" hidden>Повторить подключение</button><a class="club-access-action" id="chat-courses" href="courses.html" hidden>Посмотреть курсы</a></div>
   <button class="chat-history" id="chat-history" type="button" hidden>Ранние сообщения</button>
   <main class="discussion-messages" id="chat-messages" role="log" aria-label="Сообщения участниц" aria-live="polite" aria-relevant="additions"></main>

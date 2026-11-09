@@ -54,6 +54,9 @@ export function createCourseView({ url, relatedUrl, load, clear, loading, render
   let active = false;
   let requesting = false;
   let deadlineAt = null;
+  let refreshTimer = null;
+  let renderedKey = null;
+  let hasRendered = false;
 
   function invalidate(reason) {
     ++revision;
@@ -61,20 +64,22 @@ export function createCourseView({ url, relatedUrl, load, clear, loading, render
     controller = null;
     requesting = false;
     clearTimeout(expiryTimer);
-    expiryTimer = null;
+    clearTimeout(refreshTimer);
+    expiryTimer = refreshTimer = null;
+    renderedKey = null;
     deadlineAt = null;
     clear(reason);
   }
 
   async function refresh() {
     if (!active || document.visibilityState === 'hidden' || requesting) return;
-    invalidate('refresh');
+    clearTimeout(refreshTimer);
     const current = revision;
     requesting = true;
     controller = new AbortController();
     const requestController = controller;
     const requestTimeout = setTimeout(() => requestController.abort(), 15_000);
-    loading();
+    if (!hasRendered) loading();
     const started = performance.now();
     try {
       const read = async endpoint => {
@@ -94,17 +99,30 @@ export function createCourseView({ url, relatedUrl, load, clear, loading, render
       }));
       if (remaining <= 0) throw new Error('expired');
       const deadline = performance.now() + remaining;
-      clear('render');
+      const key = JSON.stringify(responses.map(({ serverTime, expiresAt, validUntil, ...content }) => content));
       deadlineAt = deadline;
-      render(load ? { ...data, courseTrees: responses.slice(1).map(result => result.course) }
-        : relatedUrl ? { ...data, navigation: responses[1].course } : data);
+      if (renderedKey !== key) {
+        clear('render');
+        render(load ? { ...data, courseTrees: responses.slice(1).map(result => result.course) }
+          : relatedUrl ? { ...data, navigation: responses[1].course } : data);
+        renderedKey = key;
+        hasRendered = true;
+      }
       if (current !== revision) return;
       const displayFor = deadline - performance.now();
       if (displayFor <= 0) throw new Error('expired');
-      expiryTimer = setTimeout(refresh, Math.min(displayFor, 2_147_483_647));
+      clearTimeout(expiryTimer);
+      // Renew ahead of expiry. A short remaining lease may be a fixed boundary.
+      if (displayFor > 10_000) refreshTimer = setTimeout(refresh, displayFor - 5_000);
+      expiryTimer = setTimeout(() => {
+        deadlineAt = null;
+        renderedKey = null;
+        clear('expired');
+        refresh();
+      }, displayFor);
     } catch (caught) {
       if (current !== revision) return;
-      clear('error');
+      invalidate('error');
       error(caught, refresh);
     } finally {
       requestController.abort();
@@ -128,7 +146,7 @@ export function createCourseView({ url, relatedUrl, load, clear, loading, render
       refresh();
     },
     refresh,
-    isCurrent: () => active && !requesting && document.visibilityState !== 'hidden'
+    isCurrent: () => active && document.visibilityState !== 'hidden'
       && deadlineAt !== null && performance.now() < deadlineAt,
   };
 }

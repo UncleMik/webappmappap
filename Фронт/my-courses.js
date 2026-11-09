@@ -1,4 +1,4 @@
-import { createCourseView, courseErrorText, positiveId } from './course-views.js?v=20261109-thematic-lessons';
+import { createCourseView, courseErrorText, positiveId } from './course-views.js?v=20261109-silent-access';
 import { node, cover, courseProgram, courseListUrl, courseUrl, lessonUrl, freeCourseLessonId, validateCourse, primaryLink } from './course-ui.js?v=20261109-available-program-videos';
 
 import { applySchoolCourseBanner, schoolCourseBanners } from './course-banners.js?v=20261109-school-covers';

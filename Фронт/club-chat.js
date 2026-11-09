@@ -248,7 +248,7 @@ if (!definition || params.getAll('room').length !== 1) {
   async function start() {
     if (ended || document.hidden || blocked) return;
     suspend();
-    const value = revision; controller = new AbortController(); status.textContent = retryAttempt ? 'Восстанавливаем соединение…' : 'Проверяем доступ к чату…';
+    const value = revision; controller = new AbortController();
     try {
       const reading = readEpoch, info = await clubRequest('club', options());
       if (!current(value)) return;
