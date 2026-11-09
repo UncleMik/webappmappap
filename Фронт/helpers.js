@@ -100,11 +100,9 @@
     if (type === 'tools' || more) {
       dialog.querySelector('h2').textContent = more ? 'Ещё' : 'Все инструменты';
       content.innerHTML = `<div class="helper-options">
-        ${more ? '' : `
         <button class="helper" type="button" data-helper-calendar><span class="helper-icon calendar-icon sprite" aria-hidden="true"></span><span>Календарь</span></button>
         <button class="helper" type="button" data-action="breathing"><span class="helper-icon breathing-icon sprite" aria-hidden="true"></span><span>Дыхание</span></button>
         <button class="helper" type="button" data-action="movements"><span class="helper-icon movements-icon sprite" aria-hidden="true"></span><span>Шевеления</span></button>
-        `}
         <button class="helper" type="button" data-action="expert-chats">
           ${chatIcon}
           <span>Чат с экспертами</span>
