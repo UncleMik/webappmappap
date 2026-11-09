@@ -10,6 +10,8 @@ const bannerSource = readFileSync(new URL('../Фронт/course-banners.js', imp
 const flush = async () => { for (let i = 0; i < 5; i++) await new Promise(resolve => setImmediate(resolve)); };
 class Element {
   constructor(tag) { this.tag = tag; this.children = []; this.attributes = {}; this.dataset = {}; }
+  get classList() { return { add: name => { this.className = [this.className, name].filter(Boolean).join(' '); } }; }
+  addEventListener() {}
   append(...nodes) { for (const n of nodes) this.children.push(...(n.tag === 'fragment' ? n.children : [n])); }
   replaceChildren(...nodes) { this.children = []; this.append(...nodes); }
   setAttribute(name, value) { this.attributes[name] = String(value); }
@@ -54,9 +56,9 @@ test('no demo locks or owned links while the server check is pending', async () 
   assert.equal(h.list.children[0].dataset.productId, 20);
   assert.equal(h.list.children[0].dataset.access, 'available');
   assert.equal(buttonOf(h.list.children[0]).href, 'my-courses.html?course=20');
-  assert.equal(h.list.children[0].children[0].children.length, 0);
+  assert.deepEqual(h.list.children[0].children[0].children.map(n => n.tag), ['img', 'h3']);
   assert.equal(buttonOf(h.list.children[1]).href, 'courses.html');
-  assert.equal(h.list.children[1].children[0].children[0].tag, 'svg');
+  assert.equal(h.list.children[1].children[0].children.at(-1).tag, 'svg');
   assert.ok(h.requests.every(r => r.options.cache === 'no-store' && r.options.credentials === 'same-origin'));
 });
 
@@ -105,7 +107,7 @@ test('old purchased products outside current offers remain usable', async () => 
   const h = harness([response(offers), response(payload([{ productId: 99, title: '<Old course>', lessonCount: 1 }]))]); await flush();
   assert.equal(h.list.children[0].dataset.productId, 99);
   assert.equal(buttonOf(h.list.children[0]).href, 'my-courses.html?course=99');
-  assert.equal(h.list.children[0].children[1].children[0].textContent, '<Old course>');
+  assert.equal(h.list.children[0].children[0].children[1].textContent, '<Old course>');
 });
 
 test('journey initial HTML has no fake course cards and all-courses opens the program catalog', () => {

@@ -18,10 +18,9 @@
 .owned-page .course-module-copy::after { content:'›'; position:absolute; right:14px; bottom:20px; display:grid; place-items:center; width:36px; height:36px; border-radius:50%; background:#fff; color:#794aff; font-size:30px; }
 .owned-page .course-module-copy h3 { font-size:20px; line-height:1.16; letter-spacing:-.3px; margin:0; overflow-wrap:anywhere; }
 .owned-page .course-module-copy > span { display:block; margin-top:7px; font-size:13px; }
-.owned-page .course-product-card { display:grid; grid-template-columns:90px minmax(0,1fr); gap:14px; padding:12px; border:1px solid #ece7f6; border-radius:12px; background:#fff; color:#10152f; text-decoration:none; }
-.owned-page .course-product-card > .course-cover { width:90px; border-radius:9px; min-height:105px; background-size:auto 100%; }
-.owned-page .owned-copy { display:grid; align-content:center; gap:7px; min-width:0; }
-.owned-page .owned-copy h2 { font-size:18px; line-height:1.2; margin:0; overflow-wrap:anywhere; }
+.owned-page .course-product-card { display:grid; grid-template-columns:minmax(0,1fr); gap:8px; padding:8px; border:1px solid #ece7f6; border-radius:12px; background:#fff; color:#10152f; text-decoration:none; }
+.owned-page .course-product-card > .course-cover { border-radius:9px; }
+.owned-page .owned-copy { display:flex; flex-wrap:wrap; align-items:center; gap:7px; min-width:0; padding:0 3px 2px; }
 .owned-page .owned-copy p { color:#666d88; font-size:13px; }
 .owned-page .course-label { justify-self:start; font-size:12px; color:#096d5b; background:#d5fbef; padding:3px 6px; border-radius:4px; }
 .owned-page .course-label-locked { color:#6530d3; background:#f0e8ff; }

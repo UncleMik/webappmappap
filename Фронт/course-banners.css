@@ -3,3 +3,14 @@
 .course-banner-image { position:absolute; inset:0; display:block; width:100%; height:100%; object-fit:contain; background:#f4f0f7; }
 .has-course-banner::before { display:none; }
 .has-course-banner .course-lock-icon { z-index:1; filter:drop-shadow(0 1px 2px white); }
+
+/* Keep text in the empty half of the 3:2 artwork, away from faces. */
+.school-course-banner { position:relative; isolation:isolate; container-type:inline-size; display:grid; grid-template-columns:minmax(0,1fr); align-content:center; align-self:start; width:100%; aspect-ratio:3 / 2; padding:5%; overflow:hidden; background:linear-gradient(90deg,#6c26d5,#bb8bfa); }
+.school-course-banner.course-cover { background:linear-gradient(90deg,#6c26d5,#bb8bfa); }
+.school-course-banner::before { content:none; }
+.school-course-banner > .course-banner-image { z-index:-1; object-fit:cover; background:transparent; }
+.school-course-banner .course-banner-title { justify-self:start; width:44%; margin:0; color:#fff; font-size:clamp(12px,6.8cqi,30px); font-weight:700; line-height:1.1; letter-spacing:normal; overflow-wrap:anywhere; text-wrap:balance; text-shadow:0 1px 3px #260658c9; }
+.school-course-banner .course-banner-title-long { font-size:clamp(11px,5.8cqi,25px); }
+.school-course-banner-right .course-banner-title { justify-self:end; color:#2c1151; text-shadow:none; }
+.school-course-banner .course-lock-icon { z-index:1; top:6%; left:auto; right:5%; width:1.8rem; height:2.1rem; transform:none; filter:drop-shadow(0 1px 2px white); }
+.school-course-banner-right .course-lock-icon { left:5%; right:auto; }

@@ -1,6 +1,8 @@
 import { createCourseView, courseErrorText, positiveId } from './course-views.js?v=20261026-course-layout';
 import { node, cover, courseProgram, courseListUrl, courseUrl, lessonUrl, validateCourse, primaryLink } from './course-ui.js?v=20261109-programs';
 
+import { applySchoolCourseBanner, schoolCourseBanners } from './course-banners.js?v=20261109-school-covers';
+
 const list = document.querySelector('.owned-list');
 const heading = document.querySelector('.owned-header h1');
 const back = document.querySelector('.owned-main > .course-back');
@@ -52,15 +54,18 @@ function renderProducts(data) {
   }
   const products = programProducts ?? owned;
   const fragment = document.createDocumentFragment();
+  const banners = schoolCourseBanners();
   for (const [id, course] of products) {
     const available = owned.get(id);
     const card = node('a', 'owned-course course-product-card');
     card.href = available ? courseUrl(course.productId, undefined, program) : 'courses.html';
     const copy = node('div', 'owned-copy');
     copy.append(node('span', available ? 'course-label' : 'course-label course-label-locked',
-      available ? 'Доступен' : 'Открыть доступ'), node('h2', '', available?.title ?? course.title));
+      available ? 'Доступен' : 'Открыть доступ'));
     if (available) copy.append(node('p', '', lessonCount(available.lessonCount)));
-    card.append(cover(course.title, course.productId), copy);
+    const photo = node('div', 'course-cover');
+    applySchoolCourseBanner(photo, banners.next().value, available?.title ?? course.title, 'h2');
+    card.append(photo, copy);
     fragment.append(card);
   }
   if (!products.size) fragment.append(paragraph('У вас пока нет доступных курсов.'), primaryLink('Посмотреть тарифы', 'courses.html'));

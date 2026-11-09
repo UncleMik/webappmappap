@@ -1,5 +1,5 @@
 import { createCourseView, courseErrorText, positiveId } from './course-views.js';
-import { applyCourseBanner } from './course-banners.js?v=20261027';
+import { applySchoolCourseBanner, schoolCourseBanners } from './course-banners.js?v=20261109-school-covers';
 
 const section = document.querySelector('[aria-labelledby="courses-title"]');
 const list = section.querySelector('.course-list');
@@ -68,24 +68,24 @@ function error(caught, again) {
 function render(data) {
   const cards = courseCards(catalog.offers, data.courses);
   const fragment = document.createDocumentFragment();
+  const banners = schoolCourseBanners();
   for (const course of cards) {
     const card = node('article', 'journey-content-card course-card');
     card.dataset.productId = course.productId;
     card.dataset.access = course.owned ? 'available' : 'locked';
-    const photo = node('span', 'course-photo journey-photo');
-    photo.setAttribute('style', '--x:282;--y:686;--w:123;--h:45');
-    photo.setAttribute('aria-hidden', 'true');
-    applyCourseBanner(photo, course.productId);
+    const photo = node('div', 'course-photo journey-photo');
+    applySchoolCourseBanner(photo, banners.next().value, course.title, 'h3');
     if (!course.owned) {
       const icon = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
       icon.setAttribute('class', 'course-lock-icon');
+      icon.setAttribute('aria-hidden', 'true');
       const use = document.createElementNS('http://www.w3.org/2000/svg', 'use');
       use.setAttribute('href', '#j-lock');
       icon.append(use);
       photo.append(icon);
     }
     const copy = node('div', 'course-copy');
-    copy.append(node('h3', '', course.title), node('p', '', course.owned ? 'Доступен по вашей покупке' : 'Входит в программу школы'));
+    copy.append(node('p', '', course.owned ? 'Доступен по вашей покупке' : 'Входит в программу школы'));
     const link = node('a', 'journey-primary', course.owned ? 'Открыть курс' : 'Открыть доступ');
     link.href = course.owned ? `my-courses.html?course=${encodeURIComponent(course.productId)}` : 'courses.html';
     link.setAttribute('aria-label', `${course.owned ? 'Открыть курс' : 'Открыть доступ'}: ${course.title}`);
