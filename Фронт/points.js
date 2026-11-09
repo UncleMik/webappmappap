@@ -8,7 +8,8 @@ const dialog = document.querySelector('#points-dialog');
 const balance = document.querySelector('#points-balance');
 const history = document.querySelector('#points-history');
 const status = dialog.querySelector('.points-status');
-const more = dialog.querySelector('.points-more');
+const details = dialog.querySelector('.points-details');
+const more = dialog.querySelector('.points-next');
 const formatNumber = new Intl.NumberFormat('ru-RU');
 const formatDate = new Intl.DateTimeFormat('ru-RU', {
   dateStyle: 'medium', timeStyle: 'short', timeZone: 'Europe/Moscow',
@@ -29,11 +30,19 @@ function clearBalance() {
   balance.hidden = true;
 }
 
+function setExpanded(expanded) {
+  history.classList.toggle('is-expanded', expanded);
+  details.setAttribute('aria-expanded', String(expanded));
+  details.textContent = expanded ? 'Свернуть' : 'Подробнее';
+  more.hidden = !expanded || nextCursor === null;
+}
+
 function clearHistory() {
   history.replaceChildren();
   seen.clear();
   nextCursor = null;
-  more.hidden = true;
+  details.hidden = true;
+  setExpanded(false);
 }
 
 function reset() {
@@ -67,7 +76,8 @@ function renderPage(data) {
     seen.add(row.id);
   }
   nextCursor = data.nextCursor;
-  more.hidden = nextCursor === null;
+  details.hidden = history.children.length <= 3 && nextCursor === null;
+  more.hidden = !history.classList.contains('is-expanded') || nextCursor === null;
   more.textContent = 'Показать ещё';
   status.textContent = history.children.length ? '' : 'Начислений пока нет.';
 }
@@ -129,6 +139,8 @@ function syncActivity() {
 
 trigger.addEventListener('click', () => {
   if (!active || ended || !enabled || dialog.open) return;
+  generation++;
+  pending = false;
   dialog.showModal();
   dialog.scrollTop = 0;
   void load();
@@ -137,7 +149,10 @@ dialog.querySelector('.points-close').addEventListener('click', () => dialog.clo
 dialog.addEventListener('click', event => {
   if (event.target !== dialog) return;
   const rect = dialog.getBoundingClientRect();
-  if (event.clientY < rect.top || event.clientX < rect.left || event.clientX > rect.right) dialog.close();
+  if (event.clientY < rect.top || event.clientY > rect.bottom || event.clientX < rect.left || event.clientX > rect.right) dialog.close();
+});
+details.addEventListener('click', () => {
+  setExpanded(!history.classList.contains('is-expanded'));
 });
 more.addEventListener('click', () => void load(nextCursor));
 window.addEventListener('webpril:session-ended', () => {

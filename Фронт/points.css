@@ -18,18 +18,25 @@
 .points-trigger strong { font-size: 14px; font-variant-numeric: tabular-nums; }
 .points-dialog {
   position: fixed;
-  inset: auto 0 0;
+  inset: 0 0 auto;
   width: min(100%, 500px);
   max-width: none;
   max-height: min(75dvh, 550px);
   margin: 0 auto;
-  padding: 16px 20px calc(20px + env(safe-area-inset-bottom, 0px));
+  padding: calc(16px + env(safe-area-inset-top, 0px)) 20px 20px;
   border: 0;
-  border-radius: 24px 24px 0 0;
+  border-radius: 0 0 24px 24px;
   background: #fcfbff;
   color: #121443;
-  box-shadow: 0 -8px 40px #15143515;
+  box-shadow: 0 8px 40px #15143515;
   overscroll-behavior: contain;
+}
+@media (prefers-reduced-motion: no-preference) {
+  .points-dialog[open] { animation: points-slide-down 220ms ease-out; }
+  @keyframes points-slide-down {
+    from { transform: translateY(-100%); }
+    to { transform: translateY(0); }
+  }
 }
 .points-dialog::backdrop { background: #1b183099; }
 .points-heading { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
@@ -57,6 +64,11 @@
 .points-status { color: #545576; font-size: 14px; }
 .points-status:empty { margin: 0; }
 .points-history { list-style: none; margin: 0; padding: 0; }
+.points-history:not(.is-expanded) li:nth-child(n+4) { display: none; }
+.points-guide { margin-top: 20px; padding-top: 4px; border-top: 1px solid #e9e4f7; font-size: 14px; line-height: 1.5; }
+.points-guide p { margin: 8px 0; }
+.points-guide ul { margin: 8px 0; padding-left: 20px; }
+.points-guide li + li { margin-top: 6px; }
 .points-history li {
   display: grid;
   grid-template-columns: minmax(0, 1fr) auto;

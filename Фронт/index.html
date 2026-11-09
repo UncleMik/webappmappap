@@ -20,7 +20,7 @@
   <link rel="stylesheet" href="mobile-layout.css?v=20261007-darker-sides">
   <link rel="stylesheet" href="helpers.css?v=20261109-tile-style">
   <link rel="stylesheet" href="account-ui.css?v=20261019-onboarding">
-  <link rel="stylesheet" href="points.css?v=20261109-header">
+  <link rel="stylesheet" href="points.css?v=20261109-summary">
   <link rel="stylesheet" href="notifications.css?v=20261109">
 </head>
 <body>
@@ -137,9 +137,22 @@
     <h3>История начислений</h3>
     <p class="points-status" role="status" aria-live="polite"></p>
     <ul class="points-history" id="points-history"></ul>
-    <button type="button" class="points-more" hidden>Показать ещё</button>
+    <button type="button" class="points-more points-details" aria-expanded="false" aria-controls="points-history" hidden>Подробнее</button>
+    <button type="button" class="points-more points-next" hidden>Показать ещё</button>
+    <section class="points-guide" aria-labelledby="points-guide-title">
+      <h3 id="points-guide-title">Инструкция</h3>
+      <p><strong>Как получить баллы</strong></p>
+      <ul>
+        <li>Клуб. 5 баллов за первое сообщение за день в любой доступной комнате.</li>
+        <li>Статьи. До 20 баллов за статью, один раз. Дочитайте до конца и проведите за активным чтением хотя бы половину указанного времени, минимум 30 секунд.</li>
+        <li>Бесплатные видео по неделям. До 30 баллов за ролик, один раз. Посмотрите хотя бы 80% ролика. Повтор одного фрагмента не увеличивает прогресс.</li>
+      </ul>
+      <p>Общий лимит — 60 баллов в день и 180 в неделю. День и неделя обновляются в полночь по Москве, новая неделя начинается в понедельник.</p>
+      <p><strong>Как потратить баллы</strong></p>
+      <p>Пока баллы можно только накапливать. Когда появятся способы их потратить, они будут описаны здесь.</p>
+    </section>
   </dialog>
-  <script type="module" src="points.js?v=20261109-video"></script>
+  <script type="module" src="points.js?v=20261109-summary"></script>
   <script src="article-read-state.js?v=20261027-personal"></script>
 <script src="articles-api.js?v=20261109-images"></script>
 <script src="weekly-content-api.js?v=20261008-weekly"></script>
