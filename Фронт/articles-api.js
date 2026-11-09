@@ -53,11 +53,16 @@ function renderWhenArticlesReady(list, render) {
   loading.className = 'article-load-status';
   loading.setAttribute('role', 'status');
   loading.textContent = 'Загружаем статьи…';
-  list.replaceChildren(loading);
+  const poll = list.querySelector('#weekly-poll-card');
+  list.replaceChildren(...(poll ? [poll] : []), loading);
   window.articlesReady.then(() => {
     if (pendingArticleLists.get(list) !== request) return;
     list.removeAttribute('aria-busy');
-    if (articleLoadingError) { window.showArticleLoadError(list); return; }
+    if (articleLoadingError) {
+      window.showArticleLoadError(list);
+      if (poll) list.prepend(poll);
+      return;
+    }
     window.articleReadState.bindList(list, render);
   });
 }
