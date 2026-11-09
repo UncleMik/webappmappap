@@ -91,12 +91,15 @@
     if (type === 'movements' && !api.isLoaded()) return;
     opener = trigger;
     mode = type;
-    dialog.querySelector('h2').textContent = type === 'tools' ? 'Все инструменты' : 'Шевеления малыша';
-    if (type === 'tools') {
+    const more = type === 'more';
+    if (type === 'tools' || more) {
+      dialog.querySelector('h2').textContent = more ? 'Ещё' : 'Все инструменты';
       content.innerHTML = `<div class="helper-options">
+        ${more ? '' : `
         <button class="helper" type="button" data-helper-calendar><span class="helper-icon calendar-icon sprite" aria-hidden="true"></span><span>Календарь</span></button>
         <button class="helper" type="button" data-action="breathing"><span class="helper-icon breathing-icon sprite" aria-hidden="true"></span><span>Дыхание</span></button>
         <button class="helper" type="button" data-action="movements"><span class="helper-icon movements-icon sprite" aria-hidden="true"></span><span>Шевеления</span></button>
+        `}
         <a class="helper" href="club-chat.html?room=experts-birth">
           <svg class="helper-icon" viewBox="0 0 60 60" aria-hidden="true"><circle cx="30" cy="30" r="30" fill="#f3edff"/><path d="M43 29a13 11 0 0 1-13 11 16 16 0 0 1-5-.8L18 43l1.7-7A10 10 0 0 1 17 29a13 11 0 0 1 26 0Z" fill="none" stroke="#794aff" stroke-width="2.5" stroke-linejoin="round"/></svg>
           <span>Чат с экспертами</span>
@@ -107,6 +110,7 @@
         </a>
       </div>`;
     } else {
+      dialog.querySelector('h2').textContent = 'Шевеления малыша';
       content.innerHTML = `<p>Нажмите, когда почувствуете шевеление: сохраним текущие дату и время.</p><button type="button" class="helper-save">Записать сейчас</button><p class="helper-feedback" role="status"></p><p class="helper-error" role="alert" hidden></p><h3>История записей</h3><ul class="movement-history"></ul><p class="helper-storage-note">Записи сохраняются в вашем аккаунте.</p>`;
       history();
     }
@@ -114,7 +118,7 @@
   }
   document.addEventListener('click', event => {
     const control = event.target.closest('[data-action]');
-    if (!control || !['tools', 'movements'].includes(control.dataset.action)) return;
+    if (!control || !['tools', 'more', 'movements'].includes(control.dataset.action)) return;
     event.preventDefault();
     const trigger = dialog.contains(control) ? opener : control;
     open(control.dataset.action, trigger);
