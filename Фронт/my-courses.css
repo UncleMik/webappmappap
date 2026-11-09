@@ -78,3 +78,9 @@
 .course-topic-product { display:grid; gap:8px; padding:14px; border:1px solid #ece7f6; border-radius:12px; color:#10152f; background:white; text-decoration:none; }
 .owned-page .course-topic-product h2 { font-size:17px; line-height:1.25; overflow-wrap:anywhere; }
 .course-topic-tile:focus-visible,.course-topic-product:focus-visible { outline:3px solid #794aff; outline-offset:2px; }
+
+.course-topic-illustration > svg { display:block; width:100%; height:100%; position:absolute; inset:0; }
+.course-topic-grid-original > .course-topic-tile:has(> .course-topic-illustration) { position:relative; isolation:isolate; overflow:hidden; }
+.course-topic-grid-original > .course-topic-tile > .course-topic-illustration {
+  position:absolute; right:8px; bottom:8px; width:55px; height:47px; border-radius:10px; z-index:-1;
+}

@@ -1,3 +1,4 @@
+import { topicIllustration } from './course-topic-illustrations.js?v=20261109';
 import { createCourseView, courseErrorText, positiveId } from './course-views.js?v=20261109-silent-access';
 import { node, cover, courseProgram, courseListUrl, courseUrl, lessonUrl, freeCourseLessonId, validateCourse, primaryLink } from './course-ui.js?v=20261109-available-program-videos';
 
@@ -78,15 +79,7 @@ async function loadTopicCourses(read) {
   return responses;
 }
 
-const subsectionArtwork = {
-  'pregnancy/screening': 'health',
-  'pregnancy/health': 'health',
-  'pregnancy/movement': 'exercise',
-  'birth/practice': 'exercise',
-  'birth/special': 'health',
-  'cesarean/feeding': 'feeding',
-  'recovery/training': 'exercise',
-};
+const photoTopics = new Set(['birth', 'feeding', 'recovery', 'sleep', 'exercise', 'baby-care', 'health']);
 
 function renderProgram(data, owned) {
   const fragment = document.createDocumentFragment();
@@ -105,9 +98,11 @@ function renderProgram(data, owned) {
       link.append(copy, arrow);
       grid.append(link);
     }
-    for (const item of topics) {
+    for (const [position, item] of topics.entries()) {
       const link = node('a', 'course-topic-tile', full ? item.title : undefined);
-      if (!full) link.append(cover(item.id), node('span', '', item.title));
+      if (!photoTopics.has(item.id)) link.append(topicIllustration(item.id, '', position));
+      else if (!full) link.append(cover(item.id));
+      if (!full) link.append(node('span', '', item.title));
       link.dataset.topic = item.id;
       link.href = topicUrl(item.id);
       grid.append(link);
@@ -136,7 +131,7 @@ function renderProgram(data, owned) {
         fragment.append(paragraph('В этой теме пока нет уроков, доступных по вашему тарифу.'));
         if ([...programProducts.keys()].some(id => !owned.has(id))) fragment.append(primaryLink('Посмотреть программы', 'courses.html'));
       }
-      for (const [id, title] of available) {
+      for (const [position, [id, title]] of available.entries()) {
         const count = lessons.get(topic.id + '/' + id).length;
         const link = node('a', 'course-topic-product');
         link.href = topicUrl(topic.id, id);
@@ -144,19 +139,22 @@ function renderProgram(data, owned) {
         const copy = node('div', 'course-topic-subsection-copy');
         copy.append(node('h2', '', title));
         copy.append(node('span', 'course-label', lessonCount(count)));
-        link.append(cover(subsectionArtwork[topic.id + '/' + id] ?? topic.id), copy);
+        link.append(topicIllustration(topic.id + '/' + id, '', position), copy);
         fragment.append(link);
       }
     } else if (!subsection) {
       fragment.append(paragraph('Такой подраздел не найден.'));
     } else {
       const entries = lessons.get(topic.id + '/' + subsectionId) ?? [];
-      for (const lesson of entries) {
+      for (const [position, lesson] of entries.entries()) {
         const link = node('a', 'course-topic-product');
         link.href = lessonUrl(lesson.productId, lesson.lessonId, lesson.sectionId, program)
           + '&topic=' + encodeURIComponent(topic.id) + '&sub=' + encodeURIComponent(subsectionId);
-        link.append(node('h2', '', lesson.title),
+        link.classList.add('course-topic-subsection');
+        const copy = node('div', 'course-topic-subsection-copy');
+        copy.append(node('h2', '', lesson.title),
           node('span', 'course-label', lesson.hasVideo ? 'Видеоурок' : lesson.hasText ? 'Текст урока' : 'Материалы урока'));
+        link.append(topicIllustration(topic.id + '/' + subsectionId, lesson.title, position), copy);
         fragment.append(link);
       }
       if (!entries.length) {
@@ -217,21 +215,20 @@ function moduleCard(section, count, number, parentTitle) {
   copy.append(node('h3', '', section.title), node('span', '', lessonCount(count)));
   const index = node('span', 'course-module-index', String(number));
   index.setAttribute('aria-hidden', 'true');
-  const art = cover(String(section.streamId) === '935386962' || String(section.parentStreamId) === '935386962'
-    ? 'other'
-    : courseLessonTopic(section, parentTitle ? [parentTitle] : [], productId).split('/')[0]);
+  const theme = courseLessonTopic(section, parentTitle ? [parentTitle] : [], productId);
+  const art = topicIllustration(theme, section.title, number - 1);
   art.append(index);
   card.append(art, copy);
   return card;
 }
 
-function lessonCard(lesson, section) {
+function lessonCard(lesson, section, position) {
   const link = node('a', 'course-lesson-link');
   link.href = lessonUrl(productId, lesson.lessonId, section.streamId, program);
   const copy = node('div', 'course-lesson-copy');
   copy.append(node('strong', '', lesson.title), node('span', '', lesson.hasVideo ? 'Видеоурок' : lesson.hasText ? 'Текст урока' : 'Материалы урока'));
-  const topic = courseLessonTopic(lesson, [section.title], productId).split('/')[0];
-  link.append(cover(topic), copy);
+  const topic = courseLessonTopic(lesson, [section.title], productId);
+  link.append(topicIllustration(topic, lesson.title, position), copy);
   return link;
 }
 
@@ -306,7 +303,7 @@ function renderCourse(data) {
   }
   if (directLessons.length) {
     fragment.append(node('h2', 'course-list-title', atRoot ? 'Уроки курса' : 'Уроки раздела'));
-    for (const lesson of directLessons) fragment.append(lessonCard(lesson, section));
+    directLessons.forEach((lesson, index) => fragment.append(lessonCard(lesson, section, modules.length + index)));
     if (!atRoot) fragment.append(primaryLink('Открыть первый урок', lessonUrl(productId, directLessons[0].lessonId, section.streamId, program)));
   }
   if (!modules.length && !directLessons.length) fragment.append(paragraph('Доступных уроков сейчас нет.'));
