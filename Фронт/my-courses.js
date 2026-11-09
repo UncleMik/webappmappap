@@ -12,6 +12,19 @@ const productId = params.get('course');
 const sectionId = params.get('section');
 const program = courseProgram(params.get('program'));
 const selected = productId !== null;
+const topicId = params.get('topic');
+const topics = [
+  { id: 'birth', title: 'Лёгкие роды', products: [4309095, 4302509, 4302543, 4302555] },
+  { id: 'feeding', title: 'Всё о ГВ', products: [4516226, 4302526, 4302546, 4302588] },
+  { id: 'recovery', title: 'После родов', products: [4302529, 4302535, 4302602] },
+  { id: 'sleep', title: 'Сон малыша', products: [4302520] },
+  { id: 'exercise', title: 'Упражнения', products: [4316498, 4302552, 4302557, 4302567, 4302570] },
+  { id: 'baby-care', title: 'Уход и развитие малыша', products: [4307012, 4307003, 4516222, 4302575, 4302584, 4302523, 4302532, 4302549] },
+  { id: 'health', title: 'Детское здоровье', products: [4302620, 4302598, 4302617] },
+];
+const otherTopic = { id: 'other', title: 'Другие курсы' };
+const topicByProduct = new Map(topics.flatMap(topic => topic.products.map(id => [String(id), topic.id])));
+
 const validId = (!selected || positiveId(productId)) && (sectionId === null || (selected && positiveId(sectionId)));
 const baseTitle = selected ? 'Курс' : program ? 'Курсы школы' : 'Мои курсы';
 const programOffers = { express: [8835218], full: [8835266, 8835331] };
@@ -43,6 +56,45 @@ function lessonCount(count) {
   return `${count} ${noun}`;
 }
 
+function renderProgram(owned) {
+  const groups = new Map([...topics, otherTopic].map(topic => [topic.id, { ...topic, courses: [] }]));
+  for (const [id, course] of programProducts) {
+    groups.get(topicByProduct.get(id) ?? otherTopic.id).courses.push(course);
+  }
+  const fragment = document.createDocumentFragment();
+  const topic = groups.get(topicId);
+  if (topicId !== null) {
+    if (!topic?.courses.length) {
+      fragment.append(paragraph('В этой программе такого раздела нет.'));
+    } else {
+      heading.textContent = topic.title;
+      document.title = topic.title;
+      for (const course of topic.courses) {
+        const available = owned.get(String(course.productId));
+        const link = node('a', 'course-topic-product');
+        link.href = available ? courseUrl(course.productId, undefined, program) : 'courses.html';
+        link.append(node('h2', '', available?.title ?? course.title),
+          node('span', available ? 'course-label' : 'course-label course-label-locked',
+            available ? lessonCount(available.lessonCount) : 'Открыть доступ'));
+        fragment.append(link);
+      }
+    }
+    setBack(courseListUrl(program), 'К курсам школы');
+  } else {
+    const grid = node('div', 'course-topic-grid');
+    for (const group of groups.values()) {
+      if (!group.courses.length) continue;
+      const link = node('a', 'course-topic-tile', group.title);
+      link.dataset.topic = group.id;
+      link.href = courseListUrl(program) + '&topic=' + group.id;
+      grid.append(link);
+    }
+    fragment.append(grid);
+  }
+  list.replaceChildren(fragment);
+  list.setAttribute('aria-busy', 'false');
+}
+
 function renderProducts(data) {
   if (!Array.isArray(data.courses)) throw new Error('invalid_response');
   const owned = new Map();
@@ -52,7 +104,8 @@ function renderProducts(data) {
       || !Number.isSafeInteger(course.lessonCount) || course.lessonCount < 0) throw new Error('invalid_response');
     owned.set(String(course.productId), course);
   }
-  const products = programProducts ?? owned;
+  if (programProducts) return renderProgram(owned);
+  const products = owned;
   const fragment = document.createDocumentFragment();
   const banners = schoolCourseBanners();
   for (const [id, course] of products) {

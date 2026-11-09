@@ -29,3 +29,15 @@
 .owned-page .course-state button { justify-self:start; min-height:44px; border-radius:9px; padding:10px 14px; background:#f0e8ff; color:#6530d3; font:inherit; cursor:pointer; }
 .owned-page .account-empty { color:#666d88; font-size:16px; line-height:1.45; }
 .owned-page .course-primary { margin-top:4px; }
+
+.course-topic-grid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:10px; }
+.course-topic-tile { --paper:#f1e6fa; --art:#d7bce9; display:block; min-height:128px; padding:14px 12px; border-radius:16px; color:#361437; font-size:clamp(16px,5vw,23px); font-weight:700; line-height:1.15; text-decoration:none; overflow-wrap:anywhere; background:radial-gradient(ellipse at 100% 100%,var(--art) 0 28%,transparent 29%),radial-gradient(ellipse at 100% 130%,#fff8 0 55%,transparent 56%),var(--paper); }
+.course-topic-tile[data-topic="feeding"] { --paper:#fff2e7; --art:#f1d7ba; }
+.course-topic-tile[data-topic="recovery"] { --paper:#fde8e6; --art:#f3c0b9; }
+.course-topic-tile[data-topic="sleep"] { --paper:#ede9ff; --art:#cac1f4; }
+.course-topic-tile[data-topic="exercise"] { --paper:#e6f2e7; --art:#bedac3; grid-column:1 / -1; min-height:94px; }
+.course-topic-tile[data-topic="baby-care"] { --paper:#eff4e4; --art:#d0dfb9; }
+.course-topic-tile[data-topic="health"] { --paper:#fae8f5; --art:#e6c5e5; }
+.course-topic-product { display:grid; gap:8px; padding:14px; border:1px solid #ece7f6; border-radius:12px; color:#10152f; background:white; text-decoration:none; }
+.owned-page .course-topic-product h2 { font-size:17px; line-height:1.25; overflow-wrap:anywhere; }
+.course-topic-tile:focus-visible,.course-topic-product:focus-visible { outline:3px solid #794aff; outline-offset:2px; }
