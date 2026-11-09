@@ -1,7 +1,9 @@
-import { createCourseView, courseErrorText, positiveId } from './course-views.js?v=20261026-course-layout';
+import { createCourseView, courseErrorText, positiveId } from './course-views.js?v=20261109-thematic-lessons';
 import { node, cover, courseProgram, courseListUrl, courseUrl, lessonUrl, validateCourse, primaryLink } from './course-ui.js?v=20261109-programs';
 
 import { applySchoolCourseBanner, schoolCourseBanners } from './course-banners.js?v=20261109-school-covers';
+
+import { topics, groupTopicLessons } from './course-topics.js?v=20261109';
 
 const list = document.querySelector('.owned-list');
 const heading = document.querySelector('.owned-header h1');
@@ -13,17 +15,7 @@ const sectionId = params.get('section');
 const program = courseProgram(params.get('program'));
 const selected = productId !== null;
 const topicId = params.get('topic');
-const topics = [
-  { id: 'birth', title: 'Лёгкие роды', products: [4309095, 4302509, 4302543, 4302555] },
-  { id: 'feeding', title: 'Всё о ГВ', products: [4516226, 4302526, 4302546, 4302588] },
-  { id: 'recovery', title: 'После родов', products: [4302529, 4302535, 4302602] },
-  { id: 'sleep', title: 'Сон малыша', products: [4302520] },
-  { id: 'exercise', title: 'Упражнения', products: [4316498, 4302552, 4302557, 4302567, 4302570] },
-  { id: 'baby-care', title: 'Уход и развитие малыша', products: [4307012, 4307003, 4516222, 4302575, 4302584, 4302523, 4302532, 4302549] },
-  { id: 'health', title: 'Детское здоровье', products: [4302620, 4302598, 4302617] },
-];
-const otherTopic = { id: 'other', title: 'Другие курсы' };
-const topicByProduct = new Map(topics.flatMap(topic => topic.products.map(id => [String(id), topic.id])));
+const subsectionId = params.get('sub');
 
 const validId = (!selected || positiveId(productId)) && (sectionId === null || (selected && positiveId(sectionId)));
 const baseTitle = selected ? 'Курс' : program ? 'Курсы школы' : 'Мои курсы';
@@ -56,40 +48,78 @@ function lessonCount(count) {
   return `${count} ${noun}`;
 }
 
-function renderProgram(owned) {
-  const groups = new Map([...topics, otherTopic].map(topic => [topic.id, { ...topic, courses: [] }]));
-  for (const [id, course] of programProducts) {
-    groups.get(topicByProduct.get(id) ?? otherTopic.id).courses.push(course);
+const topicUrl = (id, sub) => courseListUrl(program) + '&topic=' + encodeURIComponent(id)
+  + (sub ? '&sub=' + encodeURIComponent(sub) : '');
+
+async function loadTopicCourses(read) {
+  const owned = await read('/api/auth/courses');
+  if (!Array.isArray(owned.courses)) throw new Error('invalid_response');
+  const candidates = owned.courses.filter(course => positiveId(course?.productId)
+    && course.lessonCount > 0 && programProducts.has(String(course.productId)));
+  const responses = [owned];
+  // Bound concurrent reads and keep the program's order for duplicate lesson links.
+  const available = new Set(candidates.map(course => String(course.productId)));
+  const ids = [...programProducts.keys()].filter(id => available.has(id));
+  for (let offset = 0; offset < ids.length; offset += 4) {
+    const batch = await Promise.all(ids.slice(offset, offset + 4).map(async id => {
+      const result = await read('/api/auth/courses/' + id);
+      validateCourse(result.course, id);
+      return result;
+    }));
+    responses.push(...batch);
   }
+  return responses;
+}
+
+function renderProgram(data, owned) {
   const fragment = document.createDocumentFragment();
-  const topic = groups.get(topicId);
-  if (topicId !== null) {
-    if (!topic?.courses.length) {
-      fragment.append(paragraph('В этой программе такого раздела нет.'));
-    } else {
-      heading.textContent = topic.title;
-      document.title = topic.title;
-      for (const course of topic.courses) {
-        const available = owned.get(String(course.productId));
-        const link = node('a', 'course-topic-product');
-        link.href = available ? courseUrl(course.productId, undefined, program) : 'courses.html';
-        link.append(node('h2', '', available?.title ?? course.title),
-          node('span', available ? 'course-label' : 'course-label course-label-locked',
-            available ? lessonCount(available.lessonCount) : 'Открыть доступ'));
-        fragment.append(link);
-      }
-    }
-    setBack(courseListUrl(program), 'К курсам школы');
-  } else {
+  const topic = topics.find(item => item.id === topicId);
+  if (topicId === null) {
     const grid = node('div', 'course-topic-grid');
-    for (const group of groups.values()) {
-      if (!group.courses.length) continue;
-      const link = node('a', 'course-topic-tile', group.title);
-      link.dataset.topic = group.id;
-      link.href = courseListUrl(program) + '&topic=' + group.id;
+    for (const item of topics) {
+      const link = node('a', 'course-topic-tile', item.title);
+      link.dataset.topic = item.id;
+      link.href = topicUrl(item.id);
       grid.append(link);
     }
     fragment.append(grid);
+  } else if (!topic) {
+    fragment.append(paragraph('Такой раздел не найден.'));
+    setBack(courseListUrl(program), 'К курсам школы');
+  } else {
+    const lessons = groupTopicLessons(data.courseTrees ?? []);
+    const available = topic.sections.filter(([id]) => lessons.has(topic.id + '/' + id));
+    const subsection = topic.sections.find(([id]) => id === subsectionId);
+    heading.textContent = subsection?.[1] ?? topic.title;
+    document.title = heading.textContent;
+    setBack(subsectionId === null ? courseListUrl(program) : topicUrl(topic.id),
+      subsectionId === null ? 'К курсам школы' : topic.title);
+    if (subsectionId === null) {
+      for (const [id, title] of available.length ? available : topic.sections) {
+        const count = lessons.get(topic.id + '/' + id)?.length ?? 0;
+        const link = node('a', 'course-topic-product');
+        link.href = topicUrl(topic.id, id);
+        link.append(node('h2', '', title));
+        if (count) link.append(node('span', 'course-label', lessonCount(count)));
+        fragment.append(link);
+      }
+    } else if (!subsection) {
+      fragment.append(paragraph('Такой подраздел не найден.'));
+    } else {
+      const entries = lessons.get(topic.id + '/' + subsectionId) ?? [];
+      for (const lesson of entries) {
+        const link = node('a', 'course-topic-product');
+        link.href = lessonUrl(lesson.productId, lesson.lessonId, lesson.sectionId, program)
+          + '&topic=' + encodeURIComponent(topic.id) + '&sub=' + encodeURIComponent(subsectionId);
+        link.append(node('h2', '', lesson.title),
+          node('span', 'course-label', lesson.hasVideo ? 'Видеоурок' : lesson.hasText ? 'Текст урока' : 'Материалы урока'));
+        fragment.append(link);
+      }
+      if (!entries.length) {
+        fragment.append(paragraph('В этом подразделе пока нет доступных вам уроков.'));
+        if ([...programProducts.keys()].some(id => !owned.has(id))) fragment.append(primaryLink('Посмотреть программы', 'courses.html'));
+      }
+    }
   }
   list.replaceChildren(fragment);
   list.setAttribute('aria-busy', 'false');
@@ -104,7 +134,7 @@ function renderProducts(data) {
       || !Number.isSafeInteger(course.lessonCount) || course.lessonCount < 0) throw new Error('invalid_response');
     owned.set(String(course.productId), course);
   }
-  if (programProducts) return renderProgram(owned);
+  if (programProducts) return renderProgram(data, owned);
   const products = owned;
   const fragment = document.createDocumentFragment();
   const banners = schoolCourseBanners();
@@ -217,6 +247,7 @@ function loading() { list.replaceChildren(paragraph('Проверяем дост
 function startView() {
   createCourseView({
     url: selected ? `/api/auth/courses/${productId}` : '/api/auth/courses',
+    load: !selected && program && topics.some(topic => topic.id === topicId) ? loadTopicCourses : undefined,
     clear,
     loading,
     render: selected ? renderCourse : renderProducts,

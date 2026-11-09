@@ -47,7 +47,7 @@ export function queueCourseVideoRestore(player, url, isAllowed) {
 
 // A view owns only its current response. Materials disappear on expiry, an
 // inactive tab, a failed check, or a page restored from the back-forward cache.
-export function createCourseView({ url, relatedUrl, clear, loading, render, error }) {
+export function createCourseView({ url, relatedUrl, load, clear, loading, render, error }) {
   let revision = 0;
   let controller = null;
   let expiryTimer = null;
@@ -77,11 +77,12 @@ export function createCourseView({ url, relatedUrl, clear, loading, render, erro
     loading();
     const started = performance.now();
     try {
-      const responses = await Promise.all([url, ...(relatedUrl ? [relatedUrl] : [])].map(async endpoint => {
+      const read = async endpoint => {
         const response = await fetch(endpoint, { credentials: 'same-origin', cache: 'no-store', signal: requestController.signal });
         if (!response.ok) throw Object.assign(new Error('access_error'), { status: response.status });
         return response.json();
-      }));
+      };
+      const responses = await (load ? load(read) : Promise.all([url, ...(relatedUrl ? [relatedUrl] : [])].map(read)));
       if (current !== revision) return;
       const data = responses[0];
       const remaining = Math.min(...responses.map(result => {
@@ -95,7 +96,8 @@ export function createCourseView({ url, relatedUrl, clear, loading, render, erro
       const deadline = performance.now() + remaining;
       clear('render');
       deadlineAt = deadline;
-      render(relatedUrl ? { ...data, navigation: responses[1].course } : data);
+      render(load ? { ...data, courseTrees: responses.slice(1).map(result => result.course) }
+        : relatedUrl ? { ...data, navigation: responses[1].course } : data);
       if (current !== revision) return;
       const displayFor = deadline - performance.now();
       if (displayFor <= 0) throw new Error('expired');
@@ -105,6 +107,7 @@ export function createCourseView({ url, relatedUrl, clear, loading, render, erro
       clear('error');
       error(caught, refresh);
     } finally {
+      requestController.abort();
       clearTimeout(requestTimeout);
       if (current === revision) requesting = false;
     }

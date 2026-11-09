@@ -9,6 +9,10 @@ const params = new URLSearchParams(location.search);
 const productId = params.get('course');
 const lessonId = params.get('courseLesson');
 const program = courseProgram(params.get('program'));
+const topic = params.get('topic');
+const subsection = params.get('sub');
+const thematicBack = program && /^[a-z-]+$/.test(topic ?? '') && /^[a-z-]+$/.test(subsection ?? '')
+  ? courseListUrl(program) + '&topic=' + topic + '&sub=' + subsection : null;
 const freeLesson = params.get('from') !== 'course' && isFreeCourseLesson(productId, lessonId);
 const scroller = document.querySelector('.reader-scroll');
 const toolbar = document.querySelector('.reader-toolbar > span');
@@ -282,8 +286,8 @@ function renderLesson(data) {
   const { byVideo: lessonChapters, tableIndexes: chapterTableIndexes } = courseChapters(lesson.blocks);
 
   const atRoot = String(section.streamId) === String(course.rootStreamId);
-  const backText = freeLesson ? 'На главную' : atRoot ? 'К программе курса' : 'К урокам раздела';
-  back.href = freeLesson ? 'index.html' : courseUrl(productId, atRoot ? undefined : section.streamId, program);
+  const backText = thematicBack ? 'К урокам по теме' : freeLesson ? 'На главную' : atRoot ? 'К программе курса' : 'К урокам раздела';
+  back.href = thematicBack ?? (freeLesson ? 'index.html' : courseUrl(productId, atRoot ? undefined : section.streamId, program));
   back.setAttribute('aria-label', backText);
   const fragment = document.createDocumentFragment();
   const restoreJobs = [];
