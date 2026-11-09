@@ -126,12 +126,14 @@ function renderProducts(data) {
   list.setAttribute('aria-busy', 'false');
 }
 
-function moduleCard(section, count) {
+function moduleCard(section, count, number) {
   const card = node('a', 'course-module-card');
   card.href = courseUrl(productId, section.streamId, program);
   const copy = node('div', 'course-module-copy');
   copy.append(node('h3', '', section.title), node('span', '', lessonCount(count)));
-  card.append(cover(section.title, section.streamId, 'training'), copy);
+  const index = node('span', 'course-module-index', String(number));
+  index.setAttribute('aria-hidden', 'true');
+  card.append(index, copy);
   return card;
 }
 
@@ -180,11 +182,17 @@ function renderCourse(data) {
   if (atRoot) {
     fragment.append(node('span', 'course-open-badge', 'Курс доступен'), node('h2', 'course-list-title', 'Программа курса'));
     const first = course.sections.find(item => item.lessons.length);
-    if (first) fragment.append(primaryLink('Начать обучение', lessonUrl(productId, first.lessons[0].lessonId, first.streamId, program)));
+    if (first) {
+      const banner = node('a', 'course-start-banner');
+      banner.href = lessonUrl(productId, first.lessons[0].lessonId, first.streamId, program);
+      const caption = node('span', 'course-start-caption', 'Начать обучение');
+      banner.append(cover(course.title, productId), caption);
+      fragment.append(banner);
+    }
   }
   if (modules.length) {
     fragment.append(node('h2', 'course-list-title', 'Разделы'));
-    for (const child of modules) fragment.append(moduleCard(child, counts.get(String(child.streamId))));
+    modules.forEach((child, index) => fragment.append(moduleCard(child, counts.get(String(child.streamId)), index + 1)));
   }
   if (directLessons.length) {
     fragment.append(node('h2', 'course-list-title', atRoot ? 'Уроки курса' : 'Уроки раздела'));

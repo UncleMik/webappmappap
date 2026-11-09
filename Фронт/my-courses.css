@@ -11,13 +11,17 @@
 .owned-page .course-program-nav a:focus-visible { outline:2px solid #794aff; outline-offset:2px; }
 .owned-page .owned-list { display:grid; gap:12px; }
 .owned-page .course-list-title { font-size:20px; margin:5px 0 0; }
-.owned-page .course-module-card { position:relative; display:flex; align-items:flex-end; min-height:190px; overflow:hidden; border-radius:12px; text-decoration:none; background:#e9e2db; }
-.owned-page .course-module-card > .course-cover { position:absolute; inset:0; }
-.owned-page .course-module-card::after { content:''; position:absolute; inset:0; background:linear-gradient(180deg,transparent 25%,#151321b8); }
-.owned-page .course-module-copy { position:relative; z-index:1; padding:48px 58px 16px 15px; width:100%; color:#fff; }
-.owned-page .course-module-copy::after { content:'›'; position:absolute; right:14px; bottom:20px; display:grid; place-items:center; width:36px; height:36px; border-radius:50%; background:#fff; color:#794aff; font-size:30px; }
-.owned-page .course-module-copy h3 { font-size:20px; line-height:1.16; letter-spacing:-.3px; margin:0; overflow-wrap:anywhere; }
-.owned-page .course-module-copy > span { display:block; margin-top:7px; font-size:13px; }
+.owned-page .course-start-banner { display:block; position:relative; isolation:isolate; aspect-ratio:2.15; overflow:hidden; border-radius:12px; text-decoration:none; background:#eee7f7; }
+.owned-page .course-start-banner > .course-cover { position:absolute; inset:0; background-size:300% auto; }
+.owned-page .course-start-banner:focus-visible { outline:3px solid #794aff; outline-offset:3px; }
+.owned-page .course-start-caption { position:absolute; inset:auto 0 0; display:flex; justify-content:space-between; align-items:center; gap:8px; padding:20px 14px 12px; background:linear-gradient(transparent,#1a102bd9); color:#fff; font-size:16px; font-weight:700; }
+.owned-page .course-start-caption::after { content:'›'; font-size:24px; line-height:1; }
+.owned-page .course-module-card { display:grid; grid-template-columns:36px minmax(0,1fr) auto; align-items:center; gap:10px; min-height:60px; padding:9px 12px; border:1px solid #e9e0f1; border-radius:12px; color:#10152f; background:#fff; text-decoration:none; }
+.owned-page .course-module-card::after { content:'›'; color:#794aff; font-size:23px; line-height:1; }
+.owned-page .course-module-index { display:grid; place-items:center; width:36px; height:36px; border-radius:9px; color:#6530d3; background:#f0e8ff; font-size:14px; font-weight:700; }
+.owned-page .course-module-copy { display:grid; gap:3px; min-width:0; }
+.owned-page .course-module-copy h3 { font-size:15px; line-height:1.2; margin:0; overflow-wrap:anywhere; }
+.owned-page .course-module-copy > span { color:#666d88; font-size:12px; }
 .owned-page .course-product-card { display:grid; grid-template-columns:minmax(0,1fr); gap:8px; padding:8px; border:1px solid #ece7f6; border-radius:12px; background:#fff; color:#10152f; text-decoration:none; }
 .owned-page .course-product-card > .course-cover { border-radius:9px; }
 .owned-page .owned-copy { display:flex; flex-wrap:wrap; align-items:center; gap:7px; min-width:0; padding:0 3px 2px; }
