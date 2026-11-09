@@ -60,3 +60,5 @@
 .course-navigator-source summary:focus-visible { outline:2px solid #794aff; outline-offset:-2px; }
 .course-navigator-source > summary { color:#6530d3; padding-inline:0; }
 .course-navigator-source > .course-content-block { padding-inline:0; }
+
+.course-material-image { display: block; max-width: 100%; height: auto; }

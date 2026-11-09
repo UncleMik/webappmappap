@@ -1,9 +1,14 @@
 import { createServer } from 'node:http';
+import { readFile } from 'node:fs/promises';
 import { AuthError, normalizeEmail, readSessionCookie, sessionCookie } from './security.mjs';
 import { createWeeklyMedia, weeklyVideoPosition } from './weekly-videos.mjs';
 import { MAX_AI_BODY_BYTES } from './ai-attachment.mjs';
 import { MAX_AI_VOICE_BODY_BYTES } from './ai-voice.mjs';
 import { isPointsCursor } from './points.mjs';
+
+const courseImageFiles = new Map([
+  [347472351, ['1.png', '2.png', '3.png', '4.png', '5.png', '6.png', '7.jpg', '8.png']],
+]);
 
 async function readJson(request, maxSize = 4096, aiAttachment = false) {
   if ((request.headers['content-type'] || '').split(';')[0].trim() !== 'application/json') {
@@ -163,7 +168,7 @@ export function createAuthServer({ service, store, courseChecks, courseMaterials
         if (!user.profile?.completedAt) throw new AuthError(403, 'onboarding_required', 'Заполните профиль, чтобы продолжить.');
         const path = url.pathname.slice('/api/auth/courses'.length);
         const course = path.match(/^\/([1-9]\d*)$/);
-        const lesson = path.match(/^\/([1-9]\d*)\/lessons\/([1-9]\d*)$/);
+        const lesson = path.match(/^\/([1-9]\d*)\/lessons\/([1-9]\d*)(?:\/images\/([1-9]\d*))?$/);
         const match = course || lesson;
         if (path && (!match || !positiveId(match[1]) || (lesson && !positiveId(lesson[2])))) {
           send(404, { error: 'not_found' }); return;
@@ -172,6 +177,32 @@ export function createAuthServer({ service, store, courseChecks, courseMaterials
         try {
           const result = lesson ? await courseMaterials.lesson(user.id, Number(lesson[1]), Number(lesson[2]))
             : course ? await courseMaterials.course(user.id, Number(course[1])) : await courseMaterials.list(user.id);
+          const files = lesson && courseImageFiles.get(Number(lesson[2]));
+          if (files) {
+            const blocks = result.lesson.blocks;
+            const imageBlocks = blocks.filter(block => block.type === 'image');
+            const mapped = files.length === imageBlocks.length ? files : [];
+            if (lesson[3]) {
+              const file = mapped[Number(lesson[3]) - 1];
+              if (!file) { send(404, { error: 'not_found' }); return; }
+              const bytes = await readFile(new URL(`../../data/course-materials/${lesson[2]}/${file}`, import.meta.url))
+                .catch(error => { if (error.code !== 'ENOENT') throw error; return null; });
+              if (!bytes) { send(404, { error: 'not_found' }); return; }
+              response.writeHead(200, {
+                'Content-Type': file.endsWith('.png') ? 'image/png' : 'image/jpeg',
+                'Content-Length': bytes.length, 'Cache-Control': 'private, no-store',
+                'X-Content-Type-Options': 'nosniff', 'Cross-Origin-Resource-Policy': 'same-origin',
+              });
+              response.end(bytes); return;
+            }
+            if (mapped.length) {
+              let imageNumber = 0;
+              send(200, { ...result, lesson: { ...result.lesson, blocks: blocks.map(block => block.type === 'image'
+                ? { ...block, imageUrl: `/api/auth/courses${path}/images/${++imageNumber}` } : block) } });
+              return;
+            }
+          }
+          if (lesson?.[3]) { send(404, { error: 'not_found' }); return; }
           send(200, result); return;
         } catch (error) {
           if (error instanceof AuthError) throw error;

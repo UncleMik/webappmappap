@@ -8,7 +8,7 @@ if (params.has('courseLesson')) {
       link.removeAttribute('aria-current');
     });
   }
-  await import('./course-lesson.js?v=20261109-topic-covers');
+  await import('./course-lesson.js?v=20261109-lesson-images');
   return;
 }
 function showArticleNotFound() {

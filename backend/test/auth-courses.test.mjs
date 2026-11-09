@@ -112,3 +112,26 @@ test('malformed IDs never reach materials; foreign product and lesson IDs stay d
     assert.deepEqual(calls, [['course', user.id, 999], ['lesson', user.id, 123, 999]]);
   });
 });
+
+test('FAQ image URLs use the same lesson access check on every request', async () => {
+  const path = '/api/auth/courses/4302509/lessons/347472351';
+  let allowed = true;
+  const courseMaterials = {
+    async lesson(userId, productId, lessonId) {
+      assert.deepEqual([userId, productId, lessonId], [user.id, 4302509, 347472351]);
+      if (!allowed) throw new AuthError(403, 'course_access_required', 'Нет доступа.');
+      return { lesson: { blocks: Array.from({ length: 8 }, () => ({ type: 'image', text: '' })) } };
+    },
+  };
+  await withServer({ service: { session: async token => token ? user : null }, courseMaterials }, async get => {
+    const response = await get(path);
+    assert.equal(response.status, 200);
+    const { lesson } = await response.json();
+    assert.deepEqual(lesson.blocks.map(block => block.imageUrl),
+      Array.from({ length: 8 }, (_, index) => `${path}/images/${index + 1}`));
+    assert.equal((await get(lesson.blocks[0].imageUrl, false)).status, 401);
+    assert.equal((await get(path + '/images/9')).status, 404);
+    allowed = false;
+    assert.equal((await get(lesson.blocks[0].imageUrl)).status, 403);
+  });
+});

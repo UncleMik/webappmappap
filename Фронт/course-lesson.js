@@ -416,6 +416,18 @@ function renderLesson(data) {
         videoNodes.set(key, part);
         videoHero.append(part);
       }
+    } else if (block.type === 'image' && block.imageUrl) {
+      const image = document.createElement('img');
+      image.className = 'course-material-image';
+      image.alt = block.text || 'Иллюстрация к уроку';
+      image.loading = 'lazy';
+      image.addEventListener('error', () => {
+        const note = node('p', 'course-media-note');
+        note.textContent = 'Не удалось загрузить изображение.';
+        image.replaceWith(note);
+      }, { once: true });
+      image.src = block.imageUrl;
+      section.append(image);
     } else if (block.type === 'image' || block.type === 'attachment') {
       const text = document.createElement('p');
       text.className = 'course-media-note';
