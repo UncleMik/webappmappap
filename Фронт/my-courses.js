@@ -1,5 +1,5 @@
 import { createCourseView, courseErrorText, positiveId } from './course-views.js?v=20261109-thematic-lessons';
-import { node, cover, courseProgram, courseListUrl, courseUrl, lessonUrl, validateCourse, primaryLink } from './course-ui.js?v=20261109-topic-covers';
+import { node, cover, courseProgram, courseListUrl, courseUrl, lessonUrl, freeCourseLessonId, validateCourse, primaryLink } from './course-ui.js?v=20261109-available-program-videos';
 
 import { applySchoolCourseBanner, schoolCourseBanners } from './course-banners.js?v=20261109-school-covers';
 
@@ -20,8 +20,11 @@ const subsectionId = params.get('sub');
 const validId = (!selected || positiveId(productId)) && (sectionId === null || (selected && positiveId(sectionId)));
 const baseTitle = selected ? 'Курс' : program ? 'Курсы школы' : 'Мои курсы';
 const programOffers = { express: [8835218], full: [8835266, 8835331] };
-const fullCourseId = '4302509';
+const programCourseIds = { express: '4309095', full: '4302509' };
+const fullCourseId = programCourseIds.full;
+const otherProgram = program === 'express' ? 'full' : 'express';
 let programProducts = null;
+let otherProgramProducts = null;
 
 function setBack(href, text) {
   back.href = href;
@@ -101,6 +104,15 @@ function renderProgram(data, owned) {
     setBack(courseListUrl(program), 'К курсам школы');
   } else {
     const lessons = groupTopicLessons(data.courseTrees ?? []);
+    if (topic.id === 'exercise' || topic.id === 'pregnancy') {
+      const target = topic.id === 'exercise' ? 'exercise/pregnancy' : 'pregnancy/movement';
+      const courseId = programCourseIds[program];
+      const freeId = freeCourseLessonId(courseId);
+      const entries = lessons.get(target) ?? [];
+      if (freeId && !entries.some(lesson => String(lesson.lessonId) === freeId)) {
+        lessons.set(target, [...entries, { productId: courseId, lessonId: freeId, title: 'Диафрагмальное дыхание', hasVideo: true }]);
+      }
+    }
     const available = topic.sections.filter(([id]) => lessons.has(topic.id + '/' + id));
     const subsection = topic.sections.find(([id]) => id === subsectionId);
     heading.textContent = subsection?.[1] ?? topic.title;
@@ -108,12 +120,16 @@ function renderProgram(data, owned) {
     setBack(subsectionId === null ? courseListUrl(program) : topicUrl(topic.id),
       subsectionId === null ? 'К курсам школы' : topic.title);
     if (subsectionId === null) {
-      for (const [id, title] of available.length ? available : topic.sections) {
-        const count = lessons.get(topic.id + '/' + id)?.length ?? 0;
+      if (!available.length) {
+        fragment.append(paragraph('В этой теме пока нет уроков, доступных по вашему тарифу.'));
+        if ([...programProducts.keys()].some(id => !owned.has(id))) fragment.append(primaryLink('Посмотреть программы', 'courses.html'));
+      }
+      for (const [id, title] of available) {
+        const count = lessons.get(topic.id + '/' + id).length;
         const link = node('a', 'course-topic-product');
         link.href = topicUrl(topic.id, id);
         link.append(node('h2', '', title));
-        if (count) link.append(node('span', 'course-label', lessonCount(count)));
+        link.append(node('span', 'course-label', lessonCount(count)));
         fragment.append(link);
       }
     } else if (!subsection) {
@@ -147,7 +163,17 @@ function renderProducts(data) {
       || !Number.isSafeInteger(course.lessonCount) || course.lessonCount < 0) throw new Error('invalid_response');
     owned.set(String(course.productId), course);
   }
-  if (programProducts) return renderProgram(data, owned);
+  if (programProducts) {
+    const readable = [...owned].filter(([, course]) => course.lessonCount > 0);
+    if (otherProgramProducts && !readable.some(([id]) => programProducts.has(id))
+      && readable.some(([id]) => otherProgramProducts.has(id))) {
+      const query = new URLSearchParams(params);
+      query.set('program', otherProgram);
+      location.replace('my-courses.html?' + query);
+      return;
+    }
+    return renderProgram(data, owned);
+  }
   const products = owned;
   const fragment = document.createDocumentFragment();
   const banners = schoolCourseBanners();
@@ -283,6 +309,20 @@ function startView() {
   }).start();
 }
 
+function productsForProgram(offers, name) {
+  const products = new Map();
+  for (const offerId of programOffers[name]) {
+    const offer = offers.find(item => item?.offerId === offerId);
+    if (!Array.isArray(offer?.items)) return null;
+    for (const item of offer.items) {
+      if (!item || !positiveId(item.productId) || typeof item.title !== 'string' || !item.title.trim()
+        || !['training', 'groups'].includes(item.type)) return null;
+      if (item.type === 'training') products.set(String(item.productId), item);
+    }
+  }
+  return products.size ? products : null;
+}
+
 async function loadProgram() {
   clear();
   loading();
@@ -290,19 +330,10 @@ async function loadProgram() {
     const response = await fetch('/api/course-offers', { credentials: 'same-origin', cache: 'no-store', signal: AbortSignal.timeout(15000) });
     if (!response.ok) throw Object.assign(new Error('catalog_unavailable'), { status: response.status });
     const { offers } = await response.json();
-    const products = new Map();
     if (!Array.isArray(offers)) throw new Error('invalid_catalog');
-    for (const offerId of programOffers[program]) {
-      const offer = offers.find(item => item?.offerId === offerId);
-      if (!Array.isArray(offer?.items)) throw new Error('invalid_catalog');
-      for (const item of offer.items) {
-        if (!item || !positiveId(item.productId) || typeof item.title !== 'string' || !item.title.trim()
-          || !['training', 'groups'].includes(item.type)) throw new Error('invalid_catalog');
-        if (item.type === 'training') products.set(String(item.productId), item);
-      }
-    }
-    if (!products.size) throw new Error('invalid_catalog');
-    programProducts = products;
+    programProducts = productsForProgram(offers, program);
+    if (!programProducts) throw new Error('invalid_catalog');
+    otherProgramProducts = productsForProgram(offers, otherProgram);
     startView();
   } catch (error) {
     showError(error, loadProgram, error?.status === 401 ? undefined : 'Не удалось загрузить программу. Попробуйте ещё раз.');

@@ -24,14 +24,15 @@ export const courseUrl = (productId, sectionId, program) => `my-courses.html?cou
   + (sectionId === undefined ? '' : `&section=${encodeURIComponent(sectionId)}`)
   + programSuffix(program);
 
-export const isFreeCourseLesson = (productId, lessonId) =>
-  (String(productId) === '4302509' && String(lessonId) === '347472707')
-  || (String(productId) === '4309095' && String(lessonId) === '347531402');
+const freeCourseLessonIds = new Map([['4302509', '347472707'], ['4309095', '347531402']]);
+export const freeCourseLessonId = productId => freeCourseLessonIds.get(String(productId));
+export const isFreeCourseLesson = (productId, lessonId) => freeCourseLessonId(productId) === String(lessonId);
 
 export const lessonUrl = (productId, lessonId, sectionId, program) =>
-  `article.html?courseLesson=${encodeURIComponent(lessonId)}&course=${encodeURIComponent(productId)}&section=${encodeURIComponent(sectionId)}`
+  `article.html?courseLesson=${encodeURIComponent(lessonId)}&course=${encodeURIComponent(productId)}`
+  + (sectionId === undefined ? '' : `&section=${encodeURIComponent(sectionId)}`)
   + programSuffix(program)
-  + (isFreeCourseLesson(productId, lessonId) ? '&from=course' : '');
+  + (sectionId !== undefined && isFreeCourseLesson(productId, lessonId) ? '&from=course' : '');
 
 export function validateCourse(course, productId) {
   if (!course || !positiveId(course.productId) || String(course.productId) !== String(productId)
