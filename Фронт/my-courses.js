@@ -20,6 +20,7 @@ const subsectionId = params.get('sub');
 const validId = (!selected || positiveId(productId)) && (sectionId === null || (selected && positiveId(sectionId)));
 const baseTitle = selected ? 'Курс' : program ? 'Курсы школы' : 'Мои курсы';
 const programOffers = { express: [8835218], full: [8835266, 8835331] };
+const fullCourseId = '4302509';
 let programProducts = null;
 
 function setBack(href, text) {
@@ -76,6 +77,18 @@ function renderProgram(data, owned) {
   const topic = topics.find(item => item.id === topicId);
   if (topicId === null) {
     const grid = node('div', 'course-topic-grid');
+    if (program === 'full' && programProducts.has(fullCourseId)) {
+      const link = node('a', 'course-topic-tile course-program-tile');
+      const available = owned.has(fullCourseId);
+      link.href = available ? courseUrl(fullCourseId, undefined, program) : 'courses.html';
+      const copy = node('span', 'course-program-tile-copy');
+      copy.append(node('span', '', 'Полная программа курса'));
+      if (!available) copy.append(node('small', '', 'Посмотреть условия доступа'));
+      const arrow = node('span', 'course-program-tile-arrow', '›');
+      arrow.setAttribute('aria-hidden', 'true');
+      link.append(copy, arrow);
+      grid.append(link);
+    }
     for (const item of topics) {
       const link = node('a', 'course-topic-tile', item.title);
       link.dataset.topic = item.id;
