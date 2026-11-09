@@ -47,7 +47,14 @@ test('chat pilot credits one saved message per Moscow day and serves only the ac
       return { id, token };
     }
     const pilot = await account(1), other = await account(2);
-    const points = createPoints({ pool, userIds: [pilot.id], clock });
+    const reader = await account(3), daily = await account(4), weekly = await account(5), legacy = await account(6);
+    await pool.query('INSERT INTO auth_points_ledger(user_id,source_message_id,occurred_at,moscow_day,amount) VALUES($1,999,$2,$3,5)',
+      [legacy.id, new Date(now), '2026-11-08']);
+    const articleMigration = await readFile(new URL('../auth/points-article-migration.sql', import.meta.url), 'utf8');
+    await pool.query(articleMigration);
+    await pool.query(articleMigration);
+    const lookupArticle = id => /^pregnancy-0[01][0-9]$/.test(id) ? { id, minutes: 1 } : null;
+    const points = createPoints({ pool, userIds: [pilot.id, reader.id, daily.id, weekly.id, legacy.id], clock, lookupArticle });
     const clubChat = createClubChat({ pool, service, store, points, clock });
     const origin = 'https://points-test.example.invalid';
     server = createAuthServer({ store, service, points, clubChat, origin, enabled: true });
@@ -69,6 +76,16 @@ test('chat pilot credits one saved message per Moscow day and serves only the ac
     const send = (room, body, user = pilot) => request(`/club/messages?room=${room}`, user, body);
     const fresh = () => ({ requestId: randomUUID(), text: 'Тестовое сообщение' });
     const wallet = (before = '') => request('/points' + before, pilot);
+    const startReading = (user, articleId) => request('/points/articles', user, { articleId });
+    const pulse = (user, articleId, attemptId, reachedEnd) => request('/points/articles', user, { articleId, attemptId, reachedEnd });
+    async function readArticleToEnd(user, articleId) {
+      const start = (await startReading(user, articleId)).data;
+      assert.equal(start.status, 'reading');
+      now += 15_000;
+      assert.equal((await pulse(user, articleId, start.attemptId, false)).data.remainingMs, 15_000);
+      now += 15_000;
+      return (await pulse(user, articleId, start.attemptId, true)).data;
+    }
 
     await t.test('allowlist, session and account binding', async () => {
       const empty = await wallet();
@@ -143,6 +160,103 @@ test('chat pilot credits one saved message per Moscow day and serves only the ac
       assert.equal(result.history.length, 1);
       await assert.rejects(openPoints.read(other.token, pilot.id), { code: 'account_changed' });
       await assert.rejects(openPoints.read(pilot.token, pilot.id), { code: 'sign_in_required' });
+    });
+
+    await t.test('article credit requires both active time and the end and can only be earned once', async () => {
+      now = Date.parse('2026-11-09T09:00:00Z');
+      const id = 'pregnancy-001';
+      assert.equal((await request('/points/articles', null, { articleId: id })).status, 401);
+      assert.equal((await request('/points/articles', reader, { articleId: id }, other.id)).status, 409);
+      assert.equal((await startReading(other, id)).status, 403);
+      assert.equal((await startReading(reader, 'mom-week')).status, 404);
+      assert.equal((await request('/points/articles', reader, { articleId: id, amount: 20 })).status, 400);
+      const legacyHistory = (await request('/points', legacy)).data.history;
+      assert.equal(legacyHistory.length, 1);
+      assert.equal(legacyHistory[0].kind, 'club_message');
+      assert.equal(legacyHistory[0].amount, 5);
+
+      const started = await startReading(reader, id);
+      assert.equal(started.cache, 'private, no-store');
+      const { attemptId, availableAmount, remainingMs } = started.data;
+      assert.equal(availableAmount, 20);
+      assert.equal(remainingMs, 30_000);
+      assert.equal((await pulse(reader, id, attemptId, true)).data.remainingMs, 30_000);
+      now += 15_000;
+      assert.equal((await pulse(reader, id, attemptId, false)).data.remainingMs, 15_000);
+      now += 60_000;
+      assert.equal((await pulse(reader, id, attemptId, true)).data.remainingMs, 15_000);
+      const resumed = (await startReading(reader, id)).data;
+      assert.equal(resumed.attemptId, attemptId);
+      assert.equal(resumed.remainingMs, 15_000);
+      now += 15_000;
+      assert.equal((await pulse(reader, id, attemptId, false)).data.remainingMs, 0);
+      assert.equal((await request('/points', reader)).data.balance, 0);
+
+      const responses = await Promise.all([pulse(reader, id, attemptId, true), pulse(reader, id, attemptId, true)]);
+      for (const response of responses) assert.deepEqual(response.data, { status: 'earned', amount: 20 });
+      assert.deepEqual((await startReading(reader, id)).data, { status: 'already_earned' });
+      const result = (await request('/points', reader)).data;
+      assert.equal(result.balance, 20);
+      assert.equal(result.history.length, 1);
+      assert.equal(result.history[0].kind, 'article_read');
+    });
+
+    await t.test('chat and articles share the daily cap, and a zero result never turns into a later reward', async () => {
+      now = Date.parse('2026-11-09T19:00:00Z');
+      assert.equal((await readArticleToEnd(daily, 'pregnancy-001')).amount, 20);
+      assert.equal((await readArticleToEnd(daily, 'pregnancy-002')).amount, 20);
+      assert.equal((await send(room1, fresh(), daily)).status, 200);
+      const first = (await startReading(daily, 'pregnancy-003')).data;
+      const second = (await startReading(daily, 'pregnancy-004')).data;
+      assert.equal(first.availableAmount, 15);
+      now += 15_000;
+      await pulse(daily, 'pregnancy-003', first.attemptId, false);
+      await pulse(daily, 'pregnancy-004', second.attemptId, false);
+      now += 15_000;
+      assert.deepEqual((await pulse(daily, 'pregnancy-003', first.attemptId, true)).data, { status: 'earned', amount: 15 });
+      const zero = { status: 'limited', limitedBy: 'day' };
+      assert.deepEqual((await pulse(daily, 'pregnancy-004', second.attemptId, true)).data, zero);
+      assert.equal((await request('/points', daily)).data.balance, 60);
+      now = Date.parse('2026-11-09T21:00:00Z');
+      assert.deepEqual((await pulse(daily, 'pregnancy-004', second.attemptId, true)).data, zero);
+      assert.deepEqual((await startReading(daily, 'pregnancy-003')).data, { status: 'already_earned' });
+      assert.equal((await readArticleToEnd(daily, 'pregnancy-004')).amount, 20);
+      assert.equal((await request('/points', daily)).data.balance, 80);
+    });
+
+    await t.test('a concurrent chat and article share the remainder, and the week resets on Monday in Moscow', async () => {
+      now = Date.parse('2026-11-09T09:00:00Z');
+      const day = 86_400_000;
+      for (const id of ['pregnancy-001', 'pregnancy-002']) assert.equal((await readArticleToEnd(weekly, id)).amount, 20);
+      const { attemptId } = (await startReading(weekly, 'pregnancy-003')).data;
+      now += 15_000;
+      await pulse(weekly, 'pregnancy-003', attemptId, false);
+      now += 15_000;
+      const [message, article] = await Promise.all([
+        send(room1, fresh(), weekly), pulse(weekly, 'pregnancy-003', attemptId, true),
+      ]);
+      assert.equal(message.status, 200);
+      assert.ok([15, 20].includes(article.data.amount));
+      assert.equal((await request('/points', weekly)).data.balance, 60);
+
+      now += day;
+      for (const id of ['pregnancy-004', 'pregnancy-005', 'pregnancy-006']) {
+        assert.equal((await readArticleToEnd(weekly, id)).amount, 20);
+      }
+      now += day;
+      for (const id of ['pregnancy-007', 'pregnancy-008']) assert.equal((await readArticleToEnd(weekly, id)).amount, 20);
+      assert.equal((await send(room2, fresh(), weekly)).status, 200);
+      assert.equal((await request('/points', weekly)).data.balance, 165);
+
+      now += day;
+      assert.equal((await readArticleToEnd(weekly, 'pregnancy-009')).amount, 15);
+      now += day;
+      assert.deepEqual((await startReading(weekly, 'pregnancy-010')).data, { status: 'limited', limitedBy: 'week' });
+      assert.equal((await send(room1, fresh(), weekly)).status, 200);
+      assert.equal((await request('/points', weekly)).data.balance, 180);
+      now = Date.parse('2026-11-15T21:00:00Z');
+      assert.equal((await readArticleToEnd(weekly, 'pregnancy-010')).amount, 20);
+      assert.equal((await request('/points', weekly)).data.balance, 200);
     });
   } finally {
     if (server?.listening) await new Promise(resolve => server.close(resolve));

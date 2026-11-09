@@ -271,14 +271,16 @@ function createRoomChat({ pool, service, courseMaterials, store, points, ownerUs
           const { rows } = await client.query('SELECT id FROM club_messages WHERE room=$1 AND id=$2::bigint AND deleted_at IS NULL', [ROOM.id, replyTo]);
           if (!rows.length) throw new AuthError(400, 'reply_not_found', 'Сообщение для ответа удалено или не найдено.');
         }
-        const revision = await nextRevision(client);
         const eligibleForPoints = points?.includes(userId);
+        if (eligibleForPoints) await points.lockAccount(client, userId);
+        const createdAt = eligibleForPoints ? new Date(clock()) : null;
+        const revision = await nextRevision(client);
         await client.query(`INSERT INTO club_messages(room,author_id,request_id,body,reply_to_id,revision,request_digest,created_at)
           VALUES($1,$2,$3,$4,$5,$6,$7,COALESCE($8::timestamptz,now()))`,
-        [ROOM.id,userId,data.requestId,text,replyTo,revision,digest,eligibleForPoints ? new Date(clock()) : null]);
+        [ROOM.id,userId,data.requestId,text,replyTo,revision,digest,createdAt]);
         const { rows: [saved] } = await client.query(`SELECT ${columns} ${joins}
           WHERE m.room=$1 AND m.author_id=$2 AND m.request_id=$3`, [ROOM.id, userId, data.requestId]);
-        if (eligibleForPoints) await points.awardClubMessage(client, userId, saved.id);
+        if (eligibleForPoints) await points.awardClubMessage(client, userId, saved.id, createdAt);
         return { message: format(saved, owner), duplicate: false, reactions: await reactionStates(client,userId,[String(saved.id)]) };
       }, true);
     },

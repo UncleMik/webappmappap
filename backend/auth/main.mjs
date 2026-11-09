@@ -6,6 +6,7 @@ import { createAuthServer } from './http.mjs';
 import { createGetCourseTech } from '../getcourse-tech.mjs';
 import { createCourseChecks } from './course-checks.mjs';
 import { DatabaseSync } from 'node:sqlite';
+import { readArticle } from '../database.mjs';
 import { createCourseMaterials } from '../course-materials.mjs';
 import { createPersonalData } from './personal-data.mjs';
 import { createProfilePhoto } from './profile-photo.mjs';
@@ -33,22 +34,24 @@ const service = createAuthService({ store, sendMail, ensureGetCourse: async emai
 } });
 const courseChecks = config.getcourseTech
   ? createCourseChecks({ pool, tech: createGetCourseTech(config.getcourseTech) }) : null;
+const pointsEnabled = config.pointsForAll || config.pointsPilotUserIds.length > 0;
 let courseMaterials = null;
-if (courseChecks) {
-  try {
-    courseDb = new DatabaseSync(config.courseDatabasePath, { readOnly: true });
-    courseMaterials = createCourseMaterials({ db: courseDb, courseChecks });
-  } catch {
-    console.error('course_materials_unavailable');
-    closeCourseDb();
-  }
+if (courseChecks || pointsEnabled) {
+  try { courseDb = new DatabaseSync(config.courseDatabasePath, { readOnly: true }); }
+  catch { console.error('auth_catalog_unavailable'); }
+}
+if (courseChecks && courseDb) {
+  try { courseMaterials = createCourseMaterials({ db: courseDb, courseChecks }); }
+  catch { console.error('course_materials_unavailable'); }
 }
 if (config.laraWeb) await pool.query('SELECT id,title,title_expires_at,legacy,updated_at FROM ai_chat_conversations LIMIT 0');
 const aiChat = config.laraWeb && courseMaterials ? createAiChat({ pool, service, courseMaterials, ...config.laraWeb }) : null;
-if (config.pointsForAll || config.pointsPilotUserIds.length) {
-  await pool.query('SELECT id FROM auth_points_ledger LIMIT 0');
+if (pointsEnabled) {
+  await pool.query('SELECT article_id FROM auth_points_ledger LIMIT 0');
+  await pool.query('SELECT attempt_id FROM auth_points_article_reads LIMIT 0');
 }
-const points = createPoints({ pool, userIds: config.pointsPilotUserIds, forAll: config.pointsForAll });
+const points = createPoints({ pool, userIds: config.pointsPilotUserIds, forAll: config.pointsForAll,
+  lookupArticle: id => courseDb && readArticle(courseDb, id) });
 const server = createAuthServer({ ...config, service, store, courseChecks, courseMaterials, aiChat, points,
   personalData: createPersonalData(pool), profilePhoto: createProfilePhoto(pool),
   clubChat: createClubChat({ pool, service, courseMaterials, store, points, ownerUserId: config.clubOwnerUserId }), trustProxy: true });

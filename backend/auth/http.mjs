@@ -72,20 +72,22 @@ export function createAuthServer({ service, store, courseChecks, courseMaterials
     try {
       if (!enabled) throw new AuthError(503, 'auth_unavailable', 'Вход ещё не подключён. Попробуйте позже.');
       const url = new URL(request.url, origin);
-      isPoints = request.method === 'GET' && url.pathname === '/api/auth/points';
+      const pointsRead = request.method === 'GET' && url.pathname === '/api/auth/points';
+      const articleReading = request.method === 'POST' && url.pathname === '/api/auth/points/articles';
+      isPoints = pointsRead || articleReading;
       const photoVersion = url.pathname === '/api/auth/profile-photo' && request.method === 'GET' &&
         url.searchParams.size === 1 && /^[0-9a-f-]{36}$/i.test(url.searchParams.get('v') || '')
         ? url.searchParams.get('v') : null;
       const clubRoomQuery = (url.pathname === '/api/auth/club' || url.pathname.startsWith('/api/auth/club/')) && url.searchParams.size === 1 && url.searchParams.has('room');
       const clubRoom = clubRoomQuery ? url.searchParams.get('room') : undefined;
-      const pointsBefore = isPoints && url.searchParams.size === 1 && url.searchParams.get('before');
+      const pointsBefore = pointsRead && url.searchParams.size === 1 && url.searchParams.get('before');
       if (url.search && !photoVersion && !clubRoomQuery && !isPointsCursor(pointsBefore)) throw new AuthError(400, 'invalid_url', 'Неверный запрос.');
       if (request.method === 'GET' && url.pathname === '/api/auth/check') {
         const user = await service.session(readSessionCookie(request));
         if (!user) throw new AuthError(401, 'sign_in_required', 'Войдите в аккаунт.');
         send(204); return;
       }
-      if (isPoints) {
+      if (pointsRead) {
         if (!points) throw new AuthError(503, 'points_unavailable', 'Баллы временно недоступны.');
         send(200, await points.read(readSessionCookie(request), request.headers['x-webpril-account'], pointsBefore || undefined)); return;
       }
@@ -197,6 +199,10 @@ export function createAuthServer({ service, store, courseChecks, courseMaterials
       const proxy = trustProxy && ['127.0.0.1', '::1', '::ffff:127.0.0.1'].includes(peer);
       const ip = proxy ? String(request.headers['x-real-ip'] || peer) : peer;
       await store.rateLimit('request_ip', ip, 600);
+      if (articleReading) {
+        if (!points) throw new AuthError(503, 'points_unavailable', 'Баллы временно недоступны.');
+        send(200, await points.articleReading(readSessionCookie(request), request.headers['x-webpril-account'], data)); return;
+      }
       if (isAiVoice) {
         send(200, await aiChat.transcribe(readSessionCookie(request), request.headers['x-webpril-account'], data,
           userId => store.rateLimit('ai_voice_user', userId, 6))); return;

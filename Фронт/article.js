@@ -196,5 +196,10 @@ if (origin === 'journey' || origin === 'club-motherhood') {
 }
 updateProgress();
 document.querySelector('.reader-progress').hidden = false;
+if (article.pregnancy) {
+  import('./article-points.js?v=20261109-reading').then(({ trackArticlePoints }) => {
+    trackArticlePoints(scroller, article.id);
+  }).catch(() => {});
+}
 
 })();
