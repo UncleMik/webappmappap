@@ -3,7 +3,7 @@ import { node, cover, courseProgram, courseListUrl, courseUrl, lessonUrl, valida
 
 import { applySchoolCourseBanner, schoolCourseBanners } from './course-banners.js?v=20261109-school-covers';
 
-import { topics, groupTopicLessons, courseLessonTopic } from './course-topics.js?v=20261109-topic-covers';
+import { topics, groupTopicLessons, courseLessonTopic } from './course-topics.js?v=20261109-editorial-catalog';
 
 const list = document.querySelector('.owned-list');
 const heading = document.querySelector('.owned-header h1');

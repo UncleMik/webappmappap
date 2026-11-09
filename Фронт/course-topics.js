@@ -1,14 +1,35 @@
+import { reviewedDestinations, reviewedCrossLinks } from './course-topic-editorial.js?v=20261109';
+
 export const topics = [
-  ['pregnancy', 'Беременность', [['health', 'Здоровье и обследования'], ['nutrition', 'Питание и витамины']]],
-  ['birth', 'Подготовка к родам', [['preparation', 'Подготовка и настрой'], ['process', 'Схватки, потуги и роддом'], ['special', 'Особые ситуации и вмешательства']]],
-  ['cesarean', 'Кесарево сечение', [['preparation', 'Подготовка и операция'], ['recovery', 'Восстановление после КС']]],
+  ['pregnancy', 'Беременность', [
+    ['trimesters', 'Триместры'], ['screening', 'УЗИ, анализы и обследования'],
+    ['health', 'Самочувствие и здоровье'], ['nutrition', 'Питание и витамины'],
+    ['emotions', 'Эмоции и тревога'], ['movement', 'Движение и расслабление'],
+  ]],
+  ['birth', 'Подготовка к родам', [
+    ['preparation', 'Подготовка и настрой'], ['process', 'Схватки, потуги и роддом'],
+    ['practice', 'Дыхание, позы и массаж'], ['special', 'Особые ситуации и вмешательства'],
+  ]],
+  ['cesarean', 'Кесарево сечение', [
+    ['preparation', 'Подготовка и операция'], ['recovery', 'Восстановление после КС'],
+    ['feeding', 'Кормление после КС'],
+  ]],
   ['feeding', 'Кормление малыша', [['breast', 'Грудное вскармливание'], ['formula', 'Смесь и бутылочка'], ['solids', 'Прикорм'], ['weaning', 'Завершение ГВ']]],
   ['sleep', 'Сон малыша', [['routine', 'Безопасность и режим'], ['settling', 'Засыпание'], ['night', 'Ночной сон']]],
-  ['recovery', 'Восстановление после родов', [['body', 'Уход и восстановление тела'], ['wellbeing', 'Эмоции и ресурс мамы']]],
+  ['recovery', 'Восстановление после родов', [
+    ['body', 'Уход и восстановление тела'], ['wellbeing', 'Эмоции и ресурс мамы'],
+    ['training', 'Упражнения после родов'],
+  ]],
   ['exercise', 'Упражнения', [['pregnancy', 'Упражнения во время беременности'], ['recovery', 'Тренировки после родов']]],
-  ['baby-care', 'Уход за малышом', [['daily', 'Ежедневный уход'], ['water', 'Купание и плавание'], ['carrying', 'Ношение и слинг']]],
+  ['baby-care', 'Уход за малышом', [
+    ['newborn', 'Первые дни с малышом'], ['daily', 'Ежедневный уход'],
+    ['water', 'Купание и плавание'], ['carrying', 'Ношение и слинг'],
+  ]],
   ['development', 'Развитие малыша', [['early', 'От рождения до 6 месяцев'], ['later', 'От 6 месяцев до года'], ['play', 'Игры и развитие']]],
-  ['health', 'ОРВИ и детская вакцинация', [['prevention', 'Вакцинация и иммунитет'], ['illness', 'Болезни и самочувствие']]],
+  ['health', 'ОРВИ и детская вакцинация', [
+    ['respiratory', 'ОРВИ, насморк и кашель'], ['prevention', 'Вакцинация и иммунитет'],
+    ['illness', 'Другие вопросы о здоровье'],
+  ]],
   ['first-aid', 'Первая помощь', [['emergency', 'Первая помощь и безопасность']]],
   ['other', 'Онлайн-встречи и ответы на вопросы', [['course', 'Навигация, обратная связь и материалы курса'], ['meetings', 'Записи встреч и ответы на вопросы']]],
 ].map(([id, title, sections]) => ({ id, title, sections }));
@@ -95,7 +116,9 @@ const lessonRules = [
   [/кесарев|после кс|рубц[ае] после/, 'cesarean/preparation'],
   [/первая помощь|аптечк|подавилс|неотложных состояниях/, 'first-aid/emergency'],
   [/вакцинац|детский иммунитет/, 'health/prevention'],
-  [/орви|колики|газики/, 'health/illness'],
+  [/орви.*беременн/, 'pregnancy/health'],
+  [/орви|насморк и кашель/, 'health/respiratory'],
+  [/колики|газики/, 'health/illness'],
   [/купани|плавани/, 'baby-care/water'],
   [/как одеть ребенка|летние прогулки|путешестви.*малыш|уход за кожей|особенности развития и ухода|уход с первого месяца|покупки для ребенка/, 'baby-care/daily'],
   [/малыш[еау]? 0[–-]5|развитие ребенка от 0 до 3/, 'development/early'],
@@ -111,7 +134,9 @@ const lessonRules = [
   [/уход за (собой и ребенком|ребенком|младенцем|новорожденным)|пеленани|подгузник/, 'baby-care/daily'],
   [/схватк|потуг|роддом|воды отошли|как организм готовится к родам|дыхание в родах|партнерские роды|движение и позы в родах|гормоны в родах/, 'birth/process'],
   [/медицинск.*стимуляци|неожиданные состояния в родах|решения в родах/, 'birth/special'],
-  [/триместр|скрининг|плацент|шевелени.*утроб/, 'pregnancy/health'],
+  [/триместр/, 'pregnancy/trimesters'],
+  [/скрининг|узи|анализы во время беременности|мазок.*стрептококк/, 'pregnancy/screening'],
+  [/плацент|шевелени.*утроб/, 'pregnancy/health'],
   [/запись встречи/, 'other/meetings'],
 ];
 const find = (rules, text) => rules.find(([pattern]) => pattern.test(text))?.[1];
@@ -151,19 +176,22 @@ export function groupTopicLessons(courses) {
       for (const lesson of section.lessons) {
         if (seen.has(String(lesson.lessonId))) continue;
         seen.add(String(lesson.lessonId));
-        const key = courseLessonTopic(lesson, path, course.productId);
-        const keys = [key];
-        if (key !== 'exercise/pregnancy' && additionalPregnancyExercises.has(Number(lesson.lessonId))) {
-          keys.push('exercise/pregnancy');
-        }
+        const id = Number(lesson.lessonId);
+        const key = reviewedDestinations.get(id) ?? courseLessonTopic(lesson, path, course.productId);
+        const keys = new Set([key, ...(reviewedCrossLinks.get(id) ?? [])]);
+        if (additionalPregnancyExercises.has(id)) keys.add('exercise/pregnancy');
+        if (keys.has('exercise/pregnancy')) keys.add('pregnancy/movement');
+        if (keys.has('exercise/recovery')) keys.add('recovery/training');
         const title = normalize(lesson.title);
-        if (Number(lesson.lessonId) === 347472734) keys.push('sleep/routine');
-        if (Number(lesson.lessonId) === 347472412) keys.push('feeding/formula');
-        if (key === 'sleep/night' && /кормлен.*на сон/.test(title)) keys.push('feeding/weaning');
-        if (key === 'feeding/weaning' && /ночн.*кормлен/.test(title)) keys.push('sleep/night');
+        if (id === 347472734) keys.add('sleep/routine');
+        if (id === 347472412) keys.add('feeding/formula');
+        if (key === 'sleep/night' && /кормлен.*на сон/.test(title)) keys.add('feeding/weaning');
+        if (key === 'feeding/weaning' && /ночн.*кормлен/.test(title)) keys.add('sleep/night');
+        if (/^(?:запись\s+)?(?:встреч[аи]|вебинар)(?:\s|$)/.test(title)) keys.add('other/meetings');
+        const entry = { ...lesson, productId: course.productId, sectionId: section.streamId };
         for (const target of keys) {
           if (!groups.has(target)) groups.set(target, []);
-          groups.get(target).push({ ...lesson, productId: course.productId, sectionId: section.streamId });
+          groups.get(target).push(entry);
         }
       }
     }
