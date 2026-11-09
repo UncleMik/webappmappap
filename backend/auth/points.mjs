@@ -30,6 +30,7 @@ async function limits(client, userId, occurredAt) {
       COALESCE(sum(amount),0)::int AS weekly,
       COALESCE(bool_or(source_message_id IS NOT NULL AND moscow_day=period.day),false) AS chat_credited
     FROM period LEFT JOIN auth_points_ledger ON user_id=$1
+      AND poll_id IS NULL
       AND moscow_day >= date_trunc('week',period.day::timestamp)::date
       AND moscow_day < date_trunc('week',period.day::timestamp)::date + 7
     GROUP BY period.day`, [userId, occurredAt]);
@@ -159,16 +160,16 @@ export function createPoints({ pool, userIds, forAll = false, lookupArticle = ()
     async read(token, expectedAccountId, before) {
       return withAccount(token, expectedAccountId, async (client, userId) => {
         if (!includes(userId)) return { accountId: userId, enabled: false };
-        const { rows } = await client.query(`SELECT totals.balance,page.id,page.amount,page.occurred_at,page.article_id,page.video_id
+        const { rows } = await client.query(`SELECT totals.balance,page.id,page.amount,page.occurred_at,page.article_id,page.video_id,page.poll_id
           FROM (SELECT COALESCE(sum(amount),0) AS balance FROM auth_points_ledger WHERE user_id=$1) totals
           LEFT JOIN LATERAL (
-            SELECT id,amount,occurred_at,article_id,video_id FROM auth_points_ledger
+            SELECT id,amount,occurred_at,article_id,video_id,poll_id FROM auth_points_ledger
             WHERE user_id=$1 AND ($2::bigint IS NULL OR id<$2::bigint)
             ORDER BY id DESC LIMIT $3
           ) page ON true
           ORDER BY page.id DESC`, [userId, before ?? null, PAGE_SIZE + 1]);
         const history = rows.filter(row => row.id !== null).slice(0, PAGE_SIZE).map(row => ({
-          id: String(row.id), kind: row.video_id ? 'video_watch' : row.article_id ? 'article_read' : 'club_message',
+          id: String(row.id), kind: row.poll_id ? 'weekly_poll' : row.video_id ? 'video_watch' : row.article_id ? 'article_read' : 'club_message',
           amount: row.amount, occurredAt: row.occurred_at.toISOString(),
         }));
         return { accountId: userId, enabled: true, balance: Number(rows[0].balance), history,

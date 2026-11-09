@@ -1,7 +1,13 @@
 ALTER TABLE auth_points_ledger ADD COLUMN IF NOT EXISTS video_id text;
-ALTER TABLE auth_points_ledger DROP CONSTRAINT IF EXISTS auth_points_ledger_one_source;
-ALTER TABLE auth_points_ledger ADD CONSTRAINT auth_points_ledger_one_source
-  CHECK (num_nonnulls(source_message_id, article_id, video_id) = 1);
+DO $$
+BEGIN
+  IF NOT EXISTS (SELECT 1 FROM pg_attribute WHERE attrelid = 'auth_points_ledger'::regclass
+      AND attname = 'poll_id' AND NOT attisdropped) THEN
+    ALTER TABLE auth_points_ledger DROP CONSTRAINT IF EXISTS auth_points_ledger_one_source;
+    ALTER TABLE auth_points_ledger ADD CONSTRAINT auth_points_ledger_one_source
+      CHECK (num_nonnulls(source_message_id, article_id, video_id) = 1);
+  END IF;
+END $$;
 CREATE UNIQUE INDEX IF NOT EXISTS auth_points_ledger_video_once
   ON auth_points_ledger(user_id, video_id) WHERE video_id IS NOT NULL;
 CREATE TABLE IF NOT EXISTS auth_points_video_views (

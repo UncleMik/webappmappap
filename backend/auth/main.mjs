@@ -13,6 +13,7 @@ import { createProfilePhoto } from './profile-photo.mjs';
 import { createClubChat } from './club-chat.mjs';
 import { createAiChat } from './ai-chat.mjs';
 import { createPoints } from './points.mjs';
+import { createWeeklyPoll } from './weekly-poll.mjs';
 
 let pool, courseDb;
 function closeCourseDb() {
@@ -53,7 +54,8 @@ if (pointsEnabled) {
 }
 const points = createPoints({ pool, userIds: config.pointsPilotUserIds, forAll: config.pointsForAll,
   lookupArticle: id => courseDb && readArticle(courseDb, id) });
-const server = createAuthServer({ ...config, service, store, courseChecks, courseMaterials, aiChat, points,
+const weeklyPoll = createWeeklyPoll(pool);
+const server = createAuthServer({ ...config, service, store, courseChecks, courseMaterials, aiChat, points, weeklyPoll,
   personalData: createPersonalData(pool), profilePhoto: createProfilePhoto(pool),
   clubChat: createClubChat({ pool, service, courseMaterials, store, points, ownerUserId: config.clubOwnerUserId }), trustProxy: true });
 let working = false, stopping = false, lastCleanup = 0;
@@ -61,6 +63,7 @@ const worker = setInterval(async () => {
   if (working || stopping || !config.enabled) return;
   working = true;
   try {
+    try { await weeklyPoll.settle(); } catch { console.error('weekly_poll_settlement_failed'); }
     try { await service.processJob(); } catch { console.error('auth_worker_failed'); }
     if (Date.now() - lastCleanup > 60 * 60_000) {
       lastCleanup = Date.now();

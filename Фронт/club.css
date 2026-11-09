@@ -176,3 +176,15 @@
 
 .club-room-lock { flex:none; display:grid; place-items:center; width:24px; color:#a491bb; }
 .club-room-lock svg { width:14px; height:18px; }
+.weekly-poll { margin-bottom: 1.7rem; padding: 1.4rem; border: 1px solid #eee6fa; border-radius: 1.3rem; background: #f8f4ff; }
+.weekly-poll h2 { margin: 0 0 1rem; font-size: 1.65rem; }
+.weekly-poll fieldset { display: grid; gap: .7rem; border: 0; padding: 0; margin: 0 0 1rem; min-width: 0; }
+.weekly-poll label { display: flex; align-items: center; gap: .8rem; padding: 1rem; border: 1px solid #eee6fa; border-radius: 1rem; background: #fff; cursor: pointer; }
+.weekly-poll input { accent-color: #794aff; }
+.weekly-poll label:has(input:checked) { border-color: #794aff; }
+.weekly-poll button { width: 100%; min-height: 4rem; border: 0; border-radius: 1rem; background: #794aff; color: #fff; font: inherit; font-weight: 700; cursor: pointer; }
+.weekly-poll button:disabled { opacity: .55; cursor: default; }
+.weekly-poll p:empty { display: none; }
+
+.weekly-poll-results { padding-inline-start: 2rem; }
+.weekly-poll-results li + li { margin-top: .4rem; }

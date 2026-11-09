@@ -46,7 +46,7 @@ function limitQuota(error) {
 const materialsUnavailable = () => new AuthError(503, 'course_materials_unavailable',
   'Материалы курсов временно недоступны. Попробуйте ещё раз.');
 
-export function createAuthServer({ service, store, courseChecks, courseMaterials, personalData, profilePhoto, clubChat, aiChat, points, origin, enabled = false, trustProxy = false, mailPerMinute = 120, weeklyMedia = createWeeklyMedia() }) {
+export function createAuthServer({ service, store, courseChecks, courseMaterials, personalData, profilePhoto, clubChat, aiChat, points, weeklyPoll, origin, enabled = false, trustProxy = false, mailPerMinute = 120, weeklyMedia = createWeeklyMedia() }) {
   let largeAiInFlight = false;
   return createServer({ requestTimeout: 90_000, headersTimeout: 10_000, maxHeaderSize: 8192 }, async (request, response) => {
     let ownsLargeSlot = false;
@@ -132,6 +132,11 @@ export function createAuthServer({ service, store, courseChecks, courseMaterials
           'Cache-Control': 'private, no-store', 'X-Content-Type-Options': 'nosniff',
           'Content-Security-Policy': "default-src 'none'; frame-ancestors 'none'" });
         response.end(bytes); return;
+      }
+      if (request.method === 'GET' && url.pathname === '/api/auth/weekly-poll' && weeklyPoll) {
+        const user = await service.session(readSessionCookie(request));
+        if (!user) throw new AuthError(401, 'sign_in_required', 'Войдите в аккаунт.');
+        send(200, await weeklyPoll.read(user.id)); return;
       }
       if (request.method === 'GET' && url.pathname === '/api/auth/personal') {
         if (!personalData) throw new AuthError(503, 'personal_data_unavailable', 'Личные данные временно недоступны.');
@@ -246,6 +251,9 @@ export function createAuthServer({ service, store, courseChecks, courseMaterials
           send(200, await clubChat.deleteMessage(readSessionCookie(request), request.headers['x-webpril-account'], deleteMessage[1], data, clubRoom)); return;
         }
         send(200, await clubChat.send(readSessionCookie(request), request.headers['x-webpril-account'], data, clubRoom)); return;
+      }
+      if (url.pathname === '/api/auth/weekly-poll' && weeklyPoll) {
+        send(200, await weeklyPoll.vote(readSessionCookie(request), request.headers['x-webpril-account'], data)); return;
       }
       if (url.pathname === '/api/auth/personal') {
         if (!personalData) throw new AuthError(503, 'personal_data_unavailable', 'Личные данные временно недоступны.');

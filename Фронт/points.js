@@ -67,7 +67,7 @@ function renderPage(data) {
     const label = document.createElement('span');
     const time = document.createElement('time');
     const amount = document.createElement('strong');
-    label.textContent = row.kind === 'video_watch' ? 'Просмотр бесплатного видео' : row.kind === 'article_read' ? 'Прочтение статьи' : 'Первое сообщение в Клубе за день';
+    label.textContent = row.kind === 'weekly_poll' ? 'Голосование недели' : row.kind === 'video_watch' ? 'Просмотр бесплатного видео' : row.kind === 'article_read' ? 'Прочтение статьи' : 'Первое сообщение в Клубе за день';
     time.dateTime = row.occurredAt;
     time.textContent = formatDate.format(new Date(row.occurredAt)) + ' МСК';
     amount.textContent = '+' + formatNumber.format(row.amount);

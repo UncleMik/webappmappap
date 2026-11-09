@@ -11,8 +11,8 @@
   <link rel="preload" href="assets/fonts/Intro-Regular.woff" as="font" type="font/woff" crossorigin>
   <link rel="preload" href="assets/fonts/Intro-Bold.woff" as="font" type="font/woff" crossorigin>
   <link rel="stylesheet" href="styles.css?v=20261008-close">
-  <link rel="stylesheet" href="club.css?v=20261105-speaker-compact">
-  <script src="club.js?v=20261105-speaker-compact" defer></script>
+  <link rel="stylesheet" href="club.css?v=20261109-poll">
+  <script src="club.js?v=20261109-poll" defer></script>
   <link rel="stylesheet" href="club-chat-live.css?v=20261105-card">
   <script type="module" src="club-access.js?v=20261105-grouped"></script>
   <link rel="stylesheet" href="app-navigation.css?v=20261006-gotham">
@@ -66,7 +66,27 @@
 <section class="community-section"><div class="community-heading"><h2>Материалы школы</h2></div><a class="community-row club-entry" href="journey.html"><span class="community-icon calendar"><svg aria-hidden="true"><use href="#calendar"/></svg></span><span class="community-copy"><strong>Статьи и практики</strong><span>Материалы для вас</span></span><span class="community-meta">›</span></a>
 </section>
 </div>
-<div data-category="events" hidden></div>
+<div data-category="events" hidden>
+<section class="weekly-poll" id="weekly-poll" aria-labelledby="weekly-poll-question" hidden>
+  <span class="event-badge">Голосование недели</span>
+  <h2 id="weekly-poll-question" tabindex="-1"></h2>
+  <form>
+    <fieldset aria-labelledby="weekly-poll-question"></fieldset>
+    <button type="submit" disabled>Ответить</button>
+  </form>
+  <p role="status"></p>
+  <ol class="weekly-poll-results" hidden></ol>
+</section>
+<section class="weekly-poll" aria-labelledby="weekly-activity-title">
+  <h2 id="weekly-activity-title">Активности недели</h2>
+  <p><strong>Шаги за неделю</strong> · пока нет данных</p>
+</section>
+<section class="weekly-poll" aria-labelledby="weekly-points-title">
+  <h2 id="weekly-points-title">Как заработать баллы</h2>
+  <p>Проголосуйте один раз до воскресенья, 18:00 по Москве. Если ваш вариант набрал больше всего голосов, вы получите 100 баллов. За остальные варианты начисляется 50 баллов за участие. При равенстве лидирующих вариантов каждый из них приносит 100 баллов.</p>
+  <p id="weekly-poll-points" hidden></p>
+</section>
+</div>
 </div>
 <p id="club-access-status" class="chat-status" role="status">Проверяем доступ к чатам…</p><button class="club-access-action" id="club-access-retry" type="button" hidden>Повторить проверку</button>
 <p class="club-empty" role="status" hidden></p>
@@ -81,4 +101,5 @@
       </div>
     </nav>
 </div><script src="app.js?v=20261005-performance3"></script><script src="app-navigation.js?v=20261020-initial-content"></script><script src="resource-prefetch.js?v=20261009"></script>
+  <script defer src="weekly-poll.js"></script>
 </body></html>

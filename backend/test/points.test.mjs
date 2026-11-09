@@ -54,6 +54,7 @@ test('chat pilot credits one saved message per Moscow day and serves only the ac
     await pool.query(articleMigration);
     await pool.query(articleMigration);
     await pool.query(await readFile(new URL('../auth/points-video-migration.sql', import.meta.url), 'utf8'));
+    await pool.query(await readFile(new URL('../auth/weekly-poll.sql', import.meta.url), 'utf8'));
     const lookupArticle = id => /^pregnancy-0[01][0-9]$/.test(id) ? { id, minutes: 1 } : null;
     const points = createPoints({ pool, userIds: [pilot.id, reader.id, daily.id, weekly.id, legacy.id], clock, lookupArticle });
     const clubChat = createClubChat({ pool, service, store, points, clock });

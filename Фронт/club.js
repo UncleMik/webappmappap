@@ -65,7 +65,7 @@
     count += visible;
    });
   });
-  empty.hidden = count > 0;
+  empty.hidden = active === 'events' || count > 0;
   empty.textContent = text ? 'По этому запросу пока ничего нет. Попробуйте другой раздел.'
    : active === 'events' ? 'Событий пока нет.' : 'Чаты пока не подключены.';
  }

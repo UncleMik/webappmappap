@@ -122,7 +122,8 @@ const renderTodayArticles = () => renderWhenArticlesReady(todayArticles, () => {
   practiceCover.className = 'today-practice-cover today-material-cover';
   practiceCover.setAttribute('aria-hidden', 'true');
   practice.prepend(practiceCover);
-  todayArticles.replaceChildren(...cards, practice);
+  const poll = todayArticles.querySelector('#weekly-poll-card');
+  todayArticles.replaceChildren(...(poll ? [poll] : []), ...cards, practice);
 });
 renderTodayArticles();
 window.addEventListener('account:change', renderTodayArticles);
