@@ -19,6 +19,9 @@ test('points pilot is disabled with no account list or a malformed entry', () =>
   };
   const id = randomUUID();
   assert.deepEqual(readConfig(env).pointsPilotUserIds, []);
+  assert.equal(readConfig(env).pointsForAll, false);
+  assert.equal(readConfig({ ...env, AUTH_POINTS_FOR_ALL: '1' }).pointsForAll, false);
+  assert.equal(readConfig({ ...env, AUTH_POINTS_FOR_ALL: 'true' }).pointsForAll, true);
   assert.deepEqual(readConfig({ ...env, AUTH_POINTS_PILOT_USER_IDS: id + ',bad' }).pointsPilotUserIds, []);
   assert.deepEqual(readConfig({ ...env, AUTH_POINTS_PILOT_USER_IDS: ' ' + id.toUpperCase() + ' ' }).pointsPilotUserIds, [id]);
 });
@@ -127,6 +130,19 @@ test('chat pilot credits one saved message per Moscow day and serves only the ac
       assert.equal((await wallet('?before=9223372036854775808')).status, 400);
       await pool.query('UPDATE auth_sessions SET revoked_at=$2 WHERE user_id=$1', [pilot.id, new Date(now)]);
       assert.equal((await wallet()).status, 401);
+    });
+
+    await t.test('open mode credits a signed-in account outside the pilot list', async () => {
+      const openPoints = createPoints({ pool, userIds: [], forAll: true, clock });
+      const openChat = createClubChat({ pool, service, store, points: openPoints, clock });
+      assert.deepEqual(await openPoints.read(other.token, other.id),
+        { accountId: other.id, enabled: true, balance: 0, history: [], nextCursor: null });
+      await Promise.all([room1, room2].map(room => openChat.send(other.token, other.id, fresh(), room)));
+      const result = await openPoints.read(other.token, other.id);
+      assert.equal(result.balance, 5);
+      assert.equal(result.history.length, 1);
+      await assert.rejects(openPoints.read(other.token, pilot.id), { code: 'account_changed' });
+      await assert.rejects(openPoints.read(pilot.token, pilot.id), { code: 'sign_in_required' });
     });
   } finally {
     if (server?.listening) await new Promise(resolve => server.close(resolve));

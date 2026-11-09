@@ -7,9 +7,9 @@ const signedOut = () => new AuthError(401, 'sign_in_required', 'Войдите �
 export const isPointsCursor = value => typeof value === 'string' &&
   /^[1-9]\d{0,18}$/.test(value) && BigInt(value) <= 9223372036854775807n;
 
-export function createPoints({ pool, userIds, clock = Date.now }) {
+export function createPoints({ pool, userIds, forAll = false, clock = Date.now }) {
   const allowed = new Set(userIds);
-  const includes = userId => allowed.has(userId);
+  const includes = userId => forAll || allowed.has(userId);
   return {
     includes,
     async awardClubMessage(client, userId, messageId) {

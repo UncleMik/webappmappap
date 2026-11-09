@@ -45,8 +45,10 @@ if (courseChecks) {
 }
 if (config.laraWeb) await pool.query('SELECT id,title,title_expires_at,legacy,updated_at FROM ai_chat_conversations LIMIT 0');
 const aiChat = config.laraWeb && courseMaterials ? createAiChat({ pool, service, courseMaterials, ...config.laraWeb }) : null;
-if (config.pointsPilotUserIds.length) await pool.query('SELECT id FROM auth_points_ledger LIMIT 0');
-const points = createPoints({ pool, userIds: config.pointsPilotUserIds });
+if (config.pointsForAll || config.pointsPilotUserIds.length) {
+  await pool.query('SELECT id FROM auth_points_ledger LIMIT 0');
+}
+const points = createPoints({ pool, userIds: config.pointsPilotUserIds, forAll: config.pointsForAll });
 const server = createAuthServer({ ...config, service, store, courseChecks, courseMaterials, aiChat, points,
   personalData: createPersonalData(pool), profilePhoto: createProfilePhoto(pool),
   clubChat: createClubChat({ pool, service, courseMaterials, store, points, ownerUserId: config.clubOwnerUserId }), trustProxy: true });
