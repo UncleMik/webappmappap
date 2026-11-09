@@ -208,6 +208,9 @@ function renderCourse(data) {
   const modules = hasTree
     ? course.sections.filter(item => section && String(item.parentStreamId) === String(section.streamId))
     : atRoot ? course.sections : [];
+  if (productId === fullCourseId && String(currentId) === '935386962') {
+    modules.sort((a, b) => Number(b.title) - Number(a.title));
+  }
   let directLessons = section?.lessons ?? [];
   if (atRoot && productId === fullCourseId) {
     directLessons = directLessons.filter(lesson => String(lesson.lessonId) !== '347472344');
