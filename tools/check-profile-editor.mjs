@@ -110,10 +110,21 @@ try {
     ctx.fillStyle = '#ffffff'; ctx.beginPath(); ctx.arc(350, 350, 200, 0, 2 * Math.PI); ctx.fill();
     return canvas.toDataURL('image/png').split(',')[1];
   });
+  const today = await context.newPage();
+  await today.goto(origin + '/');
+  const avatar = today.getByRole('link', { name: 'Открыть профиль', exact: true });
+  await avatar.locator('svg').waitFor();
   for (let i = 0; i < 2; i++) {
     await open('photo'); await page.locator('[name=photo]').setInputFiles({ name: 'qa.png', mimeType: 'image/png', buffer: Buffer.from(image, 'base64') });
     await page.waitForFunction(() => !document.querySelector('.profile-editor [type=submit]').disabled);
-    await save(); assert.ok((await session()).profile.photoVersion); checks++;
+    await save();
+    const version = (await session()).profile.photoVersion;
+    assert.ok(version);
+    await today.waitForFunction(expected => {
+      const image = document.querySelector('#today .avatar img');
+      return image?.naturalWidth > 0 && new URL(image.src).searchParams.get('v') === expected;
+    }, version);
+    checks++;
   }
   await page.reload(); await page.locator('[data-profile-name]').filter({ hasText: 'Мария' }).waitFor();
   await page.waitForFunction(() => document.querySelector('[data-account-photo] img')?.naturalWidth > 0); checks++;
@@ -126,7 +137,10 @@ try {
   }
   await page.setViewportSize({ width: 390, height: 844 });
   await open('photo'); await page.locator('[data-remove-photo]').click(); await save();
-  assert.ok(!(await session()).profile.photoVersion); checks++;
+  assert.ok(!(await session()).profile.photoVersion);
+  await avatar.locator('svg').waitFor();
+  await today.close();
+  checks++;
   await open('email'); assert.match(await page.locator('.editor-body').textContent(), /поддержку/); await cancel(); checks++;
   await page.goto(origin + '/profile.html'); await page.locator('[data-account-name]').filter({ hasText: 'Мария' }).waitFor();
   await open('settings'); assert.match(await page.locator('.editor-body').textContent(), /Москва \(UTC\+3\)/);
