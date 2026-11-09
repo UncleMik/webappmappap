@@ -107,7 +107,7 @@
           ${chatIcon}
           <span>Чат с экспертами</span>
         </button>
-        <a class="helper" href="my-courses.html">
+        <a class="helper" href="my-courses.html${more ? '?program=full' : ''}">
           <svg class="helper-icon" viewBox="0 0 60 60" aria-hidden="true">
             <circle cx="30" cy="30" r="29" fill="#f1ecff"/>
             <path d="M28.5 20.5c-4-3-8.2-3.7-13-2.4a2 2 0 0 0-1.5 1.9v19a2 2 0 0 0 2.5 1.9c4.2-1 8.3-.2 12 2.6Zm3 0c4-3 8.2-3.7 13-2.4a2 2 0 0 1 1.5 1.9v19a2 2 0 0 1-2.5 1.9c-4.2-1-8.3-.2-12 2.6Z" fill="#8062eb"/>
