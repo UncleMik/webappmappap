@@ -34,6 +34,15 @@
 .owned-page .account-empty { color:#666d88; font-size:16px; line-height:1.45; }
 .owned-page .course-primary { margin-top:4px; }
 
+/* Keep the speakers' faces in view when the course cover is used as a short banner. */
+.owned-page .course-program-banner {
+  aspect-ratio:auto;
+  height:clamp(104px,34vw,145px);
+  border-radius:14px;
+}
+.owned-page .course-program-banner > .course-banner-image { object-position:center 12%; }
+.owned-page .course-program-banner .course-banner-title { font-size:clamp(17px,5.7cqi,27px); }
+
 .course-topic-grid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:10px; }
 .course-topic-tile { --paper:#f1e6fa; --art:#d7bce9; display:block; min-height:128px; padding:14px 12px; border-radius:16px; color:#361437; font-size:clamp(16px,5vw,23px); font-weight:700; line-height:1.15; text-decoration:none; overflow-wrap:anywhere; background:radial-gradient(ellipse at 100% 100%,var(--art) 0 28%,transparent 29%),radial-gradient(ellipse at 100% 130%,#fff8 0 55%,transparent 56%),var(--paper); }
 .course-program-tile { display:grid; grid-column:1 / -1; grid-template-columns:minmax(0,1fr) auto; align-items:center; gap:12px; min-height:86px; }

@@ -284,7 +284,14 @@ function renderCourse(data) {
       }).format(accessEnd);
       accessLabel += ' до ' + date;
     } else if (course.accessEndsAt === null) accessLabel += ' бессрочно';
-    fragment.append(node('span', 'course-open-badge', accessLabel), node('h2', 'course-list-title', 'Программа курса'));
+    fragment.append(node('span', 'course-open-badge', accessLabel));
+    if (productId === fullCourseId) {
+      const banner = node('div', 'course-program-banner');
+      applySchoolCourseBanner(banner, 1, 'Программа курса', 'h2');
+      fragment.append(banner);
+    } else {
+      fragment.append(node('h2', 'course-list-title', 'Программа курса'));
+    }
     const first = productId === fullCourseId ? undefined : course.sections.find(item => item.lessons.length);
     if (first) {
       const banner = node('a', 'course-start-banner');
