@@ -13,7 +13,7 @@ const purchase = (productId, id = productId) => ({ id, product_id: productId, us
   start_at: '2025-01-01 00:00:00', finish_at: '2027-01-01 00:00:00' });
 
 function fixture({ purchases = [purchase(10)], trainingIds = [100, 101, 102],
-  lessonStates = [], policyChange = () => {}, now = NOW, snapshotVersion = 2 } = {}) {
+  lessonStates = [], policyChange = () => {}, now = NOW, snapshotVersion = 2, nested = false } = {}) {
   const db = new DatabaseSync(':memory:');
   db.exec(`CREATE TABLE course_products(product_id INTEGER,title TEXT,type TEXT);
     CREATE TABLE course_program_drafts(family TEXT,inventory_json TEXT,sha256 TEXT);
@@ -26,6 +26,10 @@ function fixture({ purchases = [purchase(10)], trainingIds = [100, 101, 102],
     101: { id: 101, title: 'Inherited chapter', parents: [{ streamId: 100, order: 1 }], order: 1 },
     102: { id: 102, title: 'Separately purchased bonus', parents: [{ streamId: 100, order: 2 }], order: 2 },
   };
+  if (nested) {
+    streams[103] = { id: 103, title: 'Folder without direct lessons', parents: [{ streamId: 100, order: 1 }], order: 1 };
+    streams[101].parents = [{ streamId: 103, order: 1 }];
+  }
   const lessons = [
     [1001, 100, 1], [1002, 100, 2], [1003, 100, 3], [1004, 100, 4],
     [1005, 100, 5], [1006, 100, 6], [1011, 101, 1], [1021, 102, 1],
@@ -47,7 +51,7 @@ function fixture({ purchases = [purchase(10)], trainingIds = [100, 101, 102],
     db.prepare('INSERT INTO course_lesson_drafts VALUES(?,?,?,?,?)').run(lesson.id, lesson.parentId, `Lesson ${lesson.id}`, content, hash(content));
   }
   const policy = { schemaVersion: 1,
-    streams: Object.values(streams).map(s => ({ streamId: s.id, accessType: s.id === 102 ? 'none' : s.id === 101 ? 'parent' : 'none',
+    streams: Object.values(streams).map(s => ({ streamId: s.id, accessType: [100, 102].includes(s.id) ? 'none' : 'parent',
       noAccessMode: 'not_show', scheduleType: '0', hideUnavailable: true, disableCopy: false,
       disableCopyCurrent: false, reverseLessons: false })),
     lessons: lessons.map(l => ({ lessonId: l.id, visibility: '1', startAt: '', hidden: false,
@@ -81,6 +85,26 @@ test('grants require the exact active old product, not a tariff, group, or paren
     f.check.snapshot.purchases.push(purchase(20));
     assert.equal((await service.lesson(42, 20, 1021)).lesson.lessonId, 1021);
     assert.equal((await service.lesson(42, 10, 1021)).lesson.lessonId, 1021);
+  } finally { f.close(); }
+});
+
+test('course keeps authorized folders in order even when they have no direct lessons', async () => {
+  const f = fixture({ nested: true, trainingIds: [100, 101, 102, 103] });
+  try {
+    const service = f.make();
+    const { course } = await service.course(42, 10);
+    assert.equal(course.rootStreamId, 100);
+    assert.deepEqual(course.sections.map(s => [s.streamId, s.parentStreamId, s.lessons.map(l => l.lessonId)]), [
+      [100, null, [1001, 1002, 1003, 1004, 1005, 1006]], [103, 100, []], [101, 103, [1011]],
+    ]);
+    f.check.snapshot.purchases.push(purchase(20));
+    assert.deepEqual((await service.course(42, 10)).course.sections.map(s => s.streamId), [100, 103, 101, 102]);
+    const bonus = (await service.course(42, 20)).course;
+    assert.equal(bonus.rootStreamId, 102);
+    assert.deepEqual(bonus.sections.map(s => [s.streamId, s.parentStreamId]), [[102, null]]);
+    f.check.snapshot.trainingIds = [100, 101];
+    assert.deepEqual((await service.course(42, 10)).course.sections.map(s => s.streamId), [100]);
+    await denied(service.lesson(42, 10, 1011));
   } finally { f.close(); }
 });
 

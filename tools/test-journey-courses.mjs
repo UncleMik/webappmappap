@@ -108,10 +108,10 @@ test('old purchased products outside current offers remain usable', async () => 
   assert.equal(h.list.children[0].children[1].children[0].textContent, '<Old course>');
 });
 
-test('journey initial HTML has no fake course cards and all-courses opens owned list', () => {
+test('journey initial HTML has no fake course cards and all-courses opens the program catalog', () => {
   const html = readFileSync(new URL('../Фронт/journey.html', import.meta.url), 'utf8');
   const courses = html.split('aria-labelledby="courses-title"')[1].split('</section>')[0];
-  assert.match(courses, /href="my-courses.html">Все курсы/);
+  assert.match(courses, /href="my-courses\.html\?program=express">Все курсы/);
   assert.doesNotMatch(courses, /Подготовка к родам|Здоровая спина|course-lock-icon/);
   assert.match(html, /type="module" src="journey-courses.js\?v=/);
 });

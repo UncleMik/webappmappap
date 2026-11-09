@@ -3,13 +3,13 @@ import { courseVideoDescription } from './course-video-description.js?v=20261028
 import { mountCourseVideo } from './course-video-player.js?v=20261027-subtopics';
 import { courseChapters } from './course-video-chapters.js?v=20261026-weekly-style';
 import { createCourseView, courseErrorText, positiveId, stopCourseMedia } from './course-views.js?v=20261026-course-layout';
-import { node, courseUrl, lessonUrl, validateCourse, primaryLink } from './course-ui.js?v=20261026-course-layout';
+import { node, courseProgram, courseListUrl, courseUrl, lessonUrl, isFreeCourseLesson, validateCourse, primaryLink } from './course-ui.js?v=20261109-programs';
 
 const params = new URLSearchParams(location.search);
 const productId = params.get('course');
 const lessonId = params.get('courseLesson');
-const freeLesson = (productId === '4302509' && lessonId === '347472707')
-  || (productId === '4309095' && lessonId === '347531402');
+const program = courseProgram(params.get('program'));
+const freeLesson = params.get('from') !== 'course' && isFreeCourseLesson(productId, lessonId);
 const scroller = document.querySelector('.reader-scroll');
 const toolbar = document.querySelector('.reader-toolbar > span');
 const back = document.querySelector('[data-reader-return]');
@@ -22,7 +22,7 @@ document.querySelector('.reader-page').classList.add('course-lesson-mode');
 progress.hidden = true;
 toolbar.textContent = 'Урок';
 scroller.setAttribute('aria-label', 'Текст урока');
-back.href = positiveId(productId) ? `my-courses.html?course=${encodeURIComponent(productId)}` : 'my-courses.html';
+back.href = positiveId(productId) ? courseUrl(productId, undefined, program) : courseListUrl(program);
 back.setAttribute('aria-label', 'Вернуться к курсу');
 toolbar.textContent = 'К программе курса';
 toolbar.addEventListener('click', () => back.click());
@@ -199,7 +199,7 @@ function renderLesson(data) {
   const lessonIndex = ordered.findIndex(row => String(row.lessonId) === String(lessonId));
   const next = ordered[lessonIndex + 1];
   const previous = ordered[lessonIndex - 1];
-  const target = row => row ? { href: lessonUrl(productId, row.lessonId, row.sectionId), title: row.title } : null;
+  const target = row => row ? { href: lessonUrl(productId, row.lessonId, row.sectionId, program), title: row.title } : null;
   const videos = [];
   for (const [blockIndex, block] of lesson.blocks.entries()) {
     if (block?.type !== 'video' || !Array.isArray(block.videos)) continue;
@@ -229,8 +229,10 @@ function renderLesson(data) {
   const videoTarget = item => item ? { title: item.title, activate: () => selectVideo(item.key) } : null;
   const { byVideo: lessonChapters, tableIndexes: chapterTableIndexes } = courseChapters(lesson.blocks);
 
-  back.href = freeLesson ? 'index.html' : courseUrl(productId, section.streamId);
-  back.setAttribute('aria-label', freeLesson ? 'На главную' : 'К урокам раздела');
+  const atRoot = String(section.streamId) === String(course.rootStreamId);
+  const backText = freeLesson ? 'На главную' : atRoot ? 'К программе курса' : 'К урокам раздела';
+  back.href = freeLesson ? 'index.html' : courseUrl(productId, atRoot ? undefined : section.streamId, program);
+  back.setAttribute('aria-label', backText);
   const fragment = document.createDocumentFragment();
   const restoreJobs = [];
   const positions = pendingVideoPositions;
@@ -402,8 +404,8 @@ function renderLesson(data) {
   const navigation = node('section', 'reader-section course-lesson-navigation');
   if (next) {
     navigation.append(node('h2', '', 'Следующий урок'), node('p', '', next.title),
-      primaryLink('Следующий урок', lessonUrl(productId, next.lessonId, next.sectionId)));
-  } else navigation.append(primaryLink(freeLesson ? 'На главную' : 'К программе курса', freeLesson ? 'index.html' : courseUrl(productId)));
+      primaryLink('Следующий урок', lessonUrl(productId, next.lessonId, next.sectionId, program)));
+  } else navigation.append(primaryLink(freeLesson ? 'На главную' : 'К программе курса', freeLesson ? 'index.html' : courseUrl(productId, undefined, program)));
   fragment.append(navigation);
   stopCourseMedia(scroller);
   scroller.replaceChildren(fragment);
@@ -412,12 +414,12 @@ function renderLesson(data) {
   for (const restore of restoreJobs) restore();
   scroller.removeAttribute('aria-busy');
   scroller.classList.toggle('course-copy-disabled', lesson.contentCopyDisabled);
-  toolbar.textContent = freeLesson ? 'На главную' : 'К урокам раздела';
+  toolbar.textContent = backText;
   document.title = lesson.title;
 }
 
 if (!positiveId(productId) || !positiveId(lessonId)) {
-  showError({ status: 404 }, () => location.assign('my-courses.html'));
+  showError({ status: 404 }, () => location.assign(courseListUrl(program)));
 } else {
   courseView = createCourseView({
     url: `/api/auth/courses/${productId}/lessons/${lessonId}`,

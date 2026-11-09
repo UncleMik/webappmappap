@@ -258,20 +258,43 @@ export function createCourseMaterials({ db, courseChecks, clock = Date.now }) {
     },
     async course(userId, productId) {
       const ctx = await context(userId), product = owned(productId, ctx);
-      const sections = [];
+      const sections = new Map();
       let validUntil = ctx.grants.get(productId);
       for (const [sid, rows] of siblings) {
+        let path;
         const selected = rows.filter(l => {
           const access = readable(l, product, ctx);
-          if (access) validUntil = Math.min(validUntil, access.validUntil);
+          if (access) {
+            validUntil = Math.min(validUntil, access.validUntil);
+            path = access.sectionPath;
+          }
           return access;
         });
         if (!selected.length) continue;
+        // A folder with no direct lessons is visible only on an authorized lesson path.
+        for (const [index, streamId] of path.entries()) {
+          if (sections.has(streamId)) continue;
+          sections.set(streamId, { streamId, parentStreamId: path[index - 1] ?? null,
+            title: catalog.streams.get(streamId).title, lessons: [] });
+        }
         if (streamPolicies.get(sid).reverseLessons) selected.reverse();
-        sections.push({ streamId: sid, title: catalog.streams.get(sid).title,
-          lessons: selected.map(l => ({ lessonId: l.id, title: l.title, hasVideo: l.hasVideo, hasText: l.hasText })) });
+        sections.get(sid).lessons = selected.map(l => ({
+          lessonId: l.id, title: l.title, hasVideo: l.hasVideo, hasText: l.hasText,
+        }));
       }
-      return { course: { productId, title: product.title, sections }, ...ctx.meta(validUntil) };
+      const children = new Map();
+      for (const section of sections.values()) {
+        const parentId = section.parentStreamId;
+        if (!children.has(parentId)) children.set(parentId, []);
+        children.get(parentId).push(section);
+      }
+      const order = section => catalog.streams.get(section.streamId).parents
+        .find(parent => parent.id === section.parentStreamId)?.order ?? 0;
+      const ordered = parentId => (children.get(parentId) ?? [])
+        .sort((a, b) => order(a) - order(b) || a.streamId - b.streamId)
+        .flatMap(section => [section, ...ordered(section.streamId)]);
+      return { course: { productId, title: product.title, rootStreamId: product.trainingId,
+        sections: ordered(null) }, ...ctx.meta(validUntil) };
     },
     async lesson(userId, productId, lessonId) {
       // This exact lesson is free after the HTTP layer verifies sign-in and profile.

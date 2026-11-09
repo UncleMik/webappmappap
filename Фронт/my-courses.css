@@ -4,6 +4,10 @@
 .owned-page .course-back-arrow { color:#794aff; font-size:36px; line-height:1; }
 .owned-page .owned-header { padding:0; margin-bottom:16px; }
 .owned-page .owned-header h1 { font-size:27px; line-height:1.15; letter-spacing:-.5px; color:#10152f; overflow-wrap:anywhere; }
+.owned-page .course-program-nav:not([hidden]) { display:flex; flex-wrap:wrap; gap:6px; margin-bottom:14px; }
+.owned-page .course-program-nav a { display:inline-flex; align-items:center; justify-content:center; min-height:44px; padding:6px 9px; border:1px solid #ece7f6; border-radius:20px; background:#fff; color:#6530d3; font-size:13px; line-height:1.25; text-decoration:none; }
+.owned-page .course-program-nav a[aria-current="page"] { border-color:#794aff; background:#f0e8ff; }
+.owned-page .course-program-nav a:focus-visible { outline:2px solid #794aff; outline-offset:2px; }
 .owned-page .owned-list { display:grid; gap:12px; }
 .owned-page .course-list-title { font-size:20px; margin:5px 0 0; }
 .owned-page .course-module-card { position:relative; display:flex; align-items:flex-end; min-height:190px; overflow:hidden; border-radius:12px; text-decoration:none; background:#e9e2db; }
@@ -19,6 +23,7 @@
 .owned-page .owned-copy h2 { font-size:18px; line-height:1.2; margin:0; overflow-wrap:anywhere; }
 .owned-page .owned-copy p { color:#666d88; font-size:13px; }
 .owned-page .course-label { justify-self:start; font-size:12px; color:#096d5b; background:#d5fbef; padding:3px 6px; border-radius:4px; }
+.owned-page .course-label-locked { color:#6530d3; background:#f0e8ff; }
 .owned-page .course-lesson-copy { padding:10px 0; }
 .owned-page .course-state { display:grid; gap:12px; }
 .owned-page .course-state button { justify-self:start; min-height:44px; border-radius:9px; padding:10px 14px; background:#f0e8ff; color:#6530d3; font:inherit; cursor:pointer; }

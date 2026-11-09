@@ -8,7 +8,7 @@ if (params.has('courseLesson')) {
       link.removeAttribute('aria-current');
     });
   }
-  await import('./course-lesson.js?v=20261028-descriptions');
+  await import('./course-lesson.js?v=20261109-programs');
   return;
 }
 function showArticleNotFound() {
