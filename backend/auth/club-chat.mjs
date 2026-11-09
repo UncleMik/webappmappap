@@ -52,6 +52,8 @@ const format = (row, owner = false) => ({ id: String(row.id), text: row.deleted_
 const fingerprint = (text, replyTo, screenshot) => createHash('sha256')
   .update(JSON.stringify(screenshot ? [text, replyTo, screenshot] : [text, replyTo])).digest('hex');
 const cursorId = value => value === '0' || messageId(value);
+const linkScheme = /(?<![\p{L}\p{N}])(?:[a-z][a-z\d+.-]*:\/\/|(?:https?|ftp|mailto|tel|sms|tg|whatsapp):\S)/iu;
+const linkDomain = /(?<![\p{L}\p{N}_-])(?:[\p{L}\p{N}](?:[\p{L}\p{N}-]*[\p{L}\p{N}])?\.)+(?:[\p{L}]{2,63}|xn--[a-z\d-]{2,59})(?![\p{L}\p{N}_-])/iu;
 
 function createRoomChat({ pool, service, courseMaterials, store, points, ownerUserId = null, clock = Date.now }, ROOM) {
   const reactionStates = (client, userId, ids) => roomReactionStates(client, userId, ids, ROOM);
@@ -273,6 +275,10 @@ function createRoomChat({ pool, service, courseMaterials, store, points, ownerUs
           }
           return { message: format(existing, owner), duplicate: true,
             reactions: existing.deleted_at ? [] : await reactionStates(client,userId,[String(existing.id)]) };
+        }
+        const normalized = text.normalize('NFKC').replace(/\p{Cf}/gu, '').replace(/[。｡]/g, '.');
+        if (linkScheme.test(normalized) || linkDomain.test(normalized)) {
+          throw new AuthError(400, 'chat_links_forbidden', 'В чатах Клуба нельзя отправлять ссылки. Удалите ссылку и отправьте сообщение снова.');
         }
         if (replyTo !== null) {
           const { rows } = await client.query('SELECT id FROM club_messages WHERE room=$1 AND id=$2::bigint AND deleted_at IS NULL', [ROOM.id, replyTo]);

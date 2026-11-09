@@ -183,6 +183,9 @@ test('HTTP enforces session, same-origin writes, identity, cursor bounds and exi
       headers, body: JSON.stringify({ requestId: randomUUID(), text: 'Через HTTP' }), ...options });
     assert.equal((await post({ headers: { ...headers, origin: 'https://elsewhere.invalid' } })).status, 403);
     assert.equal((await post({ headers: { ...headers, 'x-webpril-account': students[1].id } })).status, 409);
+    const link = await post({ body: JSON.stringify({ requestId: randomUUID(), text: 'https://example.com' }) });
+    assert.equal(link.status, 400);
+    assert.equal((await link.json()).error, 'chat_links_forbidden');
     assert.equal((await post()).status, 200);
     const response = await fetch(base + '/api/auth/club/messages', { headers });
     assert.equal(response.status, 200); assert.equal(response.headers.get('cache-control'), 'no-store');
@@ -749,6 +752,7 @@ test('club rooms share images only with authorized members and remove them on de
   const [sender, reader] = students;
   for (const room of ['weekly-activity', ...CLUB_ROOMS.map(room => room.id)]) {
     const body = { requestId: randomUUID(), text: room === 'experts-birth' ? 'Фото с подписью' : '', screenshot: photo };
+    await assert.rejects(chat.raw.send(sender.token, sender.id, { ...body, text: 'Фото и ссылка t.me/channel' }, room), { code: 'chat_links_forbidden' });
     const saved = await chat.raw.send(sender.token, sender.id, body, room);
     assert.equal(saved.message.hasScreenshot, true);
     assert.equal((await chat.raw.send(sender.token, sender.id, body, room)).duplicate, true);
@@ -769,5 +773,16 @@ test('club rooms share images only with authorized members and remove them on de
     await assert.rejects(chat.raw.screenshot(reader.token, saved.message.id, room), { status: 404 });
     const { rows: [row] } = await pool.query('SELECT screenshot FROM club_messages WHERE id=$1', [saved.message.id]);
     assert.equal(row.screenshot, null);
+  }
+});
+
+test('new links are rejected in every Club room while ordinary text is accepted', async () => {
+  const [sender] = students;
+  for (const room of ['weekly-activity', ...CLUB_ROOMS.map(room => room.id)]) {
+    const post = text => chat.raw.send(sender.token, sender.id, { requestId: randomUUID(), text }, room);
+    for (const text of ['См. https://example.com/a', 'www.example.com', 't.me/chat', 'пример.рф', 'tg://resolve?domain=chat']) {
+      await assert.rejects(post(text), { code: 'chat_links_forbidden' });
+    }
+    assert.equal((await post('Встреча в 12.30, возьму фото и т.д.')).duplicate, false);
   }
 });
