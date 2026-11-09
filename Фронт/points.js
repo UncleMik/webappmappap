@@ -1,0 +1,156 @@
+import { authRequest } from './auth-client.js?v=20261109-pilot';
+
+const today = document.querySelector('#today');
+const frame = window.frameElement;
+const trigger = document.querySelector('#points-trigger');
+const triggerBalance = document.querySelector('#points-trigger-balance');
+const dialog = document.querySelector('#points-dialog');
+const balance = document.querySelector('#points-balance');
+const history = document.querySelector('#points-history');
+const status = dialog.querySelector('.points-status');
+const more = dialog.querySelector('.points-more');
+const formatNumber = new Intl.NumberFormat('ru-RU');
+const formatDate = new Intl.DateTimeFormat('ru-RU', {
+  dateStyle: 'medium', timeStyle: 'short', timeZone: 'Europe/Moscow',
+});
+
+let accountId;
+let enabled = false;
+let ended = false;
+let active = false;
+let generation = 0;
+let pending = false;
+let nextCursor = null;
+const seen = new Set();
+
+function clearBalance() {
+  triggerBalance.textContent = '';
+  balance.querySelector('strong').textContent = '';
+  balance.hidden = true;
+}
+
+function clearHistory() {
+  history.replaceChildren();
+  seen.clear();
+  nextCursor = null;
+  more.hidden = true;
+}
+
+function reset() {
+  generation++;
+  pending = false;
+  enabled = false;
+  if (dialog.open) dialog.close();
+  trigger.hidden = true;
+  clearBalance();
+  clearHistory();
+  status.textContent = '';
+}
+
+function renderPage(data) {
+  const value = formatNumber.format(data.balance);
+  triggerBalance.textContent = value;
+  balance.querySelector('strong').textContent = value;
+  balance.hidden = false;
+  for (const row of data.history) {
+    if (seen.has(row.id)) continue;
+    const item = document.createElement('li');
+    const label = document.createElement('span');
+    const time = document.createElement('time');
+    const amount = document.createElement('strong');
+    label.textContent = 'Первое сообщение в Клубе за день';
+    time.dateTime = row.occurredAt;
+    time.textContent = formatDate.format(new Date(row.occurredAt)) + ' МСК';
+    amount.textContent = '+' + formatNumber.format(row.amount);
+    item.append(label, time, amount);
+    history.append(item);
+    seen.add(row.id);
+  }
+  nextCursor = data.nextCursor;
+  more.hidden = nextCursor === null;
+  more.textContent = 'Показать ещё';
+  status.textContent = history.children.length ? '' : 'Начислений пока нет.';
+}
+
+function matchesSession(expected) {
+  const local = window.webprilSessionAccountId;
+  const parent = frame ? window.parent.webprilSessionAccountId : undefined;
+  return !!expected && (!local || local === expected) && (!parent || parent === expected);
+}
+
+async function load(before = null) {
+  if (!active || ended || pending) return;
+  const request = ++generation;
+  const current = () => request === generation && active && !ended;
+  pending = true;
+  if (before === null) {
+    clearHistory();
+    clearBalance();
+  }
+  more.disabled = true;
+  status.textContent = before === null ? 'Загружаем баланс и историю…' : 'Загружаем ещё начисления…';
+  try {
+    const sessionAccount = window.webprilSessionAccountId;
+    const expected = accountId || sessionAccount || (await authRequest('session')).user?.id;
+    if (!current()) return;
+    if (!matchesSession(expected)) { reset(); return; }
+    accountId = expected;
+    const query = before === null ? '' : '?' + new URLSearchParams({ before });
+    const data = await authRequest('points' + query, undefined, { headers: { 'X-Webpril-Account': expected } });
+    if (!current()) return;
+    if (data.accountId !== expected || !matchesSession(expected)) { reset(); return; }
+    if (data.enabled !== true) { reset(); return; }
+    renderPage(data);
+    enabled = true;
+    trigger.hidden = false;
+  } catch (error) {
+    if (!current()) return;
+    if (error.status === 401 || error.status === 403 || error.code === 'account_changed') { reset(); return; }
+    status.textContent = before === null
+      ? 'Не удалось загрузить баланс и историю.'
+      : 'Не удалось загрузить следующие начисления.';
+    more.hidden = !enabled;
+    more.textContent = 'Повторить';
+  } finally {
+    if (current()) {
+      pending = false;
+      more.disabled = false;
+    }
+  }
+}
+
+function syncActivity() {
+  const visible = !document.hidden && !today.hidden && !frame?.hidden;
+  if (active === visible) return;
+  active = visible;
+  if (active) void load();
+  else reset();
+}
+
+trigger.addEventListener('click', () => {
+  if (!active || ended || !enabled || dialog.open) return;
+  dialog.showModal();
+  dialog.scrollTop = 0;
+  void load();
+});
+dialog.querySelector('.points-close').addEventListener('click', () => dialog.close());
+dialog.addEventListener('click', event => {
+  if (event.target !== dialog) return;
+  const rect = dialog.getBoundingClientRect();
+  if (event.clientY < rect.top || event.clientX < rect.left || event.clientX > rect.right) dialog.close();
+});
+more.addEventListener('click', () => void load(nextCursor));
+window.addEventListener('webpril:session-ended', () => {
+  ended = true;
+  reset();
+});
+window.addEventListener('pagehide', () => {
+  active = false;
+  reset();
+});
+window.addEventListener('pageshow', syncActivity);
+document.addEventListener('visibilitychange', syncActivity);
+const observer = new MutationObserver(syncActivity);
+observer.observe(today, { attributes: true, attributeFilter: ['hidden'] });
+if (frame) observer.observe(frame, { attributes: true, attributeFilter: ['hidden'] });
+syncActivity();

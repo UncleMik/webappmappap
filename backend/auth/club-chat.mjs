@@ -1,5 +1,5 @@
 import { createHash } from 'node:crypto';
-import { AuthError, hashToken } from './security.mjs';
+import { AuthError, hashToken, isUuid as uuid } from './security.mjs';
 import { transaction } from './store.mjs';
 
 export const CLUB_ROOMS = Object.freeze([
@@ -9,7 +9,6 @@ export const CLUB_ROOMS = Object.freeze([
   Object.freeze({ id: 'experts-birth', title: 'По родам', kind: 'experts' }),
   Object.freeze({ id: 'experts-motherhood', title: 'По материнству', kind: 'experts' }),
 ]);
-const uuid = value => typeof value === 'string' && /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(value);
 const messageId = value => typeof value === 'string' && /^[1-9]\d{0,18}$/.test(value) && BigInt(value) <= 9223372036854775807n;
 const bad = () => new AuthError(400, 'invalid_chat_message', 'Проверьте сообщение.');
 const signedOut = () => new AuthError(401, 'sign_in_required', 'Войдите в аккаунт.');
@@ -50,7 +49,7 @@ const format = (row, owner = false) => ({ id: String(row.id), text: row.deleted_
 const fingerprint = (text, replyTo) => createHash('sha256').update(JSON.stringify([text, replyTo])).digest('hex');
 const cursorId = value => value === '0' || messageId(value);
 
-function createRoomChat({ pool, service, courseMaterials, store, ownerUserId = null, clock = Date.now }, ROOM) {
+function createRoomChat({ pool, service, courseMaterials, store, points, ownerUserId = null, clock = Date.now }, ROOM) {
   const reactionStates = (client, userId, ids) => roomReactionStates(client, userId, ids, ROOM);
   if (ownerUserId !== null && !uuid(ownerUserId)) throw new Error('Invalid Club owner');
   async function access(token, expectedAccountId, required, action, sending = false) {
@@ -273,10 +272,13 @@ function createRoomChat({ pool, service, courseMaterials, store, ownerUserId = n
           if (!rows.length) throw new AuthError(400, 'reply_not_found', 'Сообщение для ответа удалено или не найдено.');
         }
         const revision = await nextRevision(client);
-        await client.query(`INSERT INTO club_messages(room,author_id,request_id,body,reply_to_id,revision,request_digest)
-          VALUES($1,$2,$3,$4,$5,$6,$7)`, [ROOM.id,userId,data.requestId,text,replyTo,revision,digest]);
+        const eligibleForPoints = points?.includes(userId);
+        await client.query(`INSERT INTO club_messages(room,author_id,request_id,body,reply_to_id,revision,request_digest,created_at)
+          VALUES($1,$2,$3,$4,$5,$6,$7,COALESCE($8::timestamptz,now()))`,
+        [ROOM.id,userId,data.requestId,text,replyTo,revision,digest,eligibleForPoints ? new Date(clock()) : null]);
         const { rows: [saved] } = await client.query(`SELECT ${columns} ${joins}
           WHERE m.room=$1 AND m.author_id=$2 AND m.request_id=$3`, [ROOM.id, userId, data.requestId]);
+        if (eligibleForPoints) await points.awardClubMessage(client, userId, saved.id);
         return { message: format(saved, owner), duplicate: false, reactions: await reactionStates(client,userId,[String(saved.id)]) };
       }, true);
     },

@@ -1,5 +1,6 @@
 import pg from 'pg';
 import { resolve } from 'node:path';
+import { isUuid } from './security.mjs';
 
 export function readConfig(env = process.env) {
   const required = ['AUTH_DATABASE_URL', 'AUTH_HMAC_SECRET', 'UNISENDER_API_KEY', 'UNISENDER_TEMPLATE_ID', 'GETCOURSE_IMPORT_KEY'];
@@ -19,6 +20,8 @@ export function readConfig(env = process.env) {
   if (clubOwnerUserId && !/^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(clubOwnerUserId)) {
     throw new Error('Invalid CLUB_OWNER_USER_ID');
   }
+  const pilotIds = (env.AUTH_POINTS_PILOT_USER_IDS || '').split(',').map(id => id.trim().toLowerCase());
+  const pointsPilotUserIds = pilotIds.every(isUuid) ? pilotIds : [];
   const positive = (name, fallback, maximum) => {
     const value = Number(env[name] || fallback);
     if (!Number.isInteger(value) || value < 1 || value > maximum) throw new Error(`Invalid ${name}`);
@@ -31,7 +34,7 @@ export function readConfig(env = process.env) {
     poolSize: positive('AUTH_DB_POOL_SIZE', 10, 30),
     port: positive('AUTH_PORT', 3001, 65535),
     databaseUrl: env.AUTH_DATABASE_URL,
-    clubOwnerUserId: clubOwnerUserId?.toLowerCase() || null,
+    clubOwnerUserId: clubOwnerUserId?.toLowerCase() || null, pointsPilotUserIds,
     laraWeb: env.LARA_WEB_URL ? { url: env.LARA_WEB_URL, secret: env.LARA_WEB_SECRET,
       sourceMapPath: resolve(env.LARA_WEB_SOURCE_MAP || resolve(import.meta.dirname, '../lara-source-map.json')) } : null,
     courseDatabasePath: resolve(env.COURSE_DATABASE_PATH || resolve(import.meta.dirname, '../../data/articles.sqlite')),

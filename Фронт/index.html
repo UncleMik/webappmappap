@@ -20,6 +20,7 @@
   <link rel="stylesheet" href="mobile-layout.css?v=20261007-darker-sides">
   <link rel="stylesheet" href="helpers.css?v=20261008-tools-grid">
   <link rel="stylesheet" href="account-ui.css?v=20261019-onboarding">
+  <link rel="stylesheet" href="points.css?v=20261109-pilot">
 </head>
 <body>
   <div class="app" id="today">
@@ -35,6 +36,9 @@
     </header>
 
     <main>
+      <button type="button" class="points-trigger" id="points-trigger" aria-haspopup="dialog" aria-controls="points-dialog" hidden>
+        <span>Баллы</span><strong id="points-trigger-balance"></strong>
+      </button>
       <section class="account-access" data-profile-banner hidden><strong data-account-stage></strong><p data-account-summary></p></section>
       <a class="feature-card baby-card" href="baby.html" aria-labelledby="baby-title">
         <img class="feature-art baby-art" alt="" width="400" height="400">
@@ -110,6 +114,18 @@
       <footer class="calendar-footer"><button class="calendar-go-current" type="button">Перейти к материалам недели</button></footer>
     </div>
   </dialog>
+  <dialog class="points-dialog" id="points-dialog" aria-labelledby="points-title">
+    <div class="points-heading">
+      <h2 id="points-title">Баллы</h2>
+      <button type="button" class="points-close" aria-label="Закрыть" autofocus>×</button>
+    </div>
+    <p class="points-balance" id="points-balance" hidden>Ваш баланс <strong></strong></p>
+    <h3>История начислений</h3>
+    <p class="points-status" role="status" aria-live="polite"></p>
+    <ul class="points-history" id="points-history"></ul>
+    <button type="button" class="points-more" hidden>Показать ещё</button>
+  </dialog>
+  <script type="module" src="points.js?v=20261109-pilot"></script>
   <script src="article-read-state.js?v=20261027-personal"></script>
 <script src="articles-api.js?v=20261019-onboarding"></script>
 <script src="weekly-content-api.js?v=20261008-weekly"></script>

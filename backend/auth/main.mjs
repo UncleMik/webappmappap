@@ -11,6 +11,7 @@ import { createPersonalData } from './personal-data.mjs';
 import { createProfilePhoto } from './profile-photo.mjs';
 import { createClubChat } from './club-chat.mjs';
 import { createAiChat } from './ai-chat.mjs';
+import { createPoints } from './points.mjs';
 
 let pool, courseDb;
 function closeCourseDb() {
@@ -44,9 +45,11 @@ if (courseChecks) {
 }
 if (config.laraWeb) await pool.query('SELECT id,title,title_expires_at,legacy,updated_at FROM ai_chat_conversations LIMIT 0');
 const aiChat = config.laraWeb && courseMaterials ? createAiChat({ pool, service, courseMaterials, ...config.laraWeb }) : null;
-const server = createAuthServer({ ...config, service, store, courseChecks, courseMaterials, aiChat,
+if (config.pointsPilotUserIds.length) await pool.query('SELECT id FROM auth_points_ledger LIMIT 0');
+const points = createPoints({ pool, userIds: config.pointsPilotUserIds });
+const server = createAuthServer({ ...config, service, store, courseChecks, courseMaterials, aiChat, points,
   personalData: createPersonalData(pool), profilePhoto: createProfilePhoto(pool),
-  clubChat: createClubChat({ pool, service, courseMaterials, store, ownerUserId: config.clubOwnerUserId }), trustProxy: true });
+  clubChat: createClubChat({ pool, service, courseMaterials, store, points, ownerUserId: config.clubOwnerUserId }), trustProxy: true });
 let working = false, stopping = false, lastCleanup = 0;
 const worker = setInterval(async () => {
   if (working || stopping || !config.enabled) return;

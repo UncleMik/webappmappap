@@ -23,6 +23,7 @@ export function normalizeEmail(value) {
   // GetCourse email identity: case insensitive; do not remove +tags or Gmail dots.
   return `${parts[0].toLowerCase()}@${domain}`;
 }
+export const isUuid = value => typeof value === 'string' && /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(value);
 export const randomToken = () => randomBytes(32).toString('base64url');
 export const generateCode = () => String(randomInt(1_000_000)).padStart(6, '0');
 export const hashToken = value => createHash('sha256').update(value).digest('hex');

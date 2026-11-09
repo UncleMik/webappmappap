@@ -3,6 +3,7 @@ import { AuthError, normalizeEmail, readSessionCookie, sessionCookie } from './s
 import { createWeeklyMedia, weeklyVideoPosition } from './weekly-videos.mjs';
 import { MAX_AI_BODY_BYTES } from './ai-attachment.mjs';
 import { MAX_AI_VOICE_BODY_BYTES } from './ai-voice.mjs';
+import { isPointsCursor } from './points.mjs';
 
 async function readJson(request, maxSize = 4096, aiAttachment = false) {
   if ((request.headers['content-type'] || '').split(';')[0].trim() !== 'application/json') {
@@ -45,7 +46,7 @@ function limitQuota(error) {
 const materialsUnavailable = () => new AuthError(503, 'course_materials_unavailable',
   'Материалы курсов временно недоступны. Попробуйте ещё раз.');
 
-export function createAuthServer({ service, store, courseChecks, courseMaterials, personalData, profilePhoto, clubChat, aiChat, origin, enabled = false, trustProxy = false, mailPerMinute = 120, weeklyMedia = createWeeklyMedia() }) {
+export function createAuthServer({ service, store, courseChecks, courseMaterials, personalData, profilePhoto, clubChat, aiChat, points, origin, enabled = false, trustProxy = false, mailPerMinute = 120, weeklyMedia = createWeeklyMedia() }) {
   let largeAiInFlight = false;
   return createServer({ requestTimeout: 90_000, headersTimeout: 10_000, maxHeaderSize: 8192 }, async (request, response) => {
     let ownsLargeSlot = false;
@@ -57,10 +58,11 @@ export function createAuthServer({ service, store, courseChecks, courseMaterials
     const clearReceiveTimer = () => clearTimeout(receiveTimer);
     request.once('end', clearReceiveTimer);
     request.once('close', clearReceiveTimer);
+    let isPoints = false;
     const send = (status, body, headers = {}) => {
       if (response.destroyed) return;
       response.writeHead(status, {
-        'Content-Type': 'application/json; charset=utf-8', 'Cache-Control': 'no-store',
+        'Content-Type': 'application/json; charset=utf-8', 'Cache-Control': isPoints ? 'private, no-store' : 'no-store',
         'X-Content-Type-Options': 'nosniff', 'Referrer-Policy': 'no-referrer',
           'Content-Security-Policy': "default-src 'none'; frame-ancestors 'none'",
           ...(!request.complete ? { Connection: 'close' } : {}), ...headers,
@@ -70,16 +72,22 @@ export function createAuthServer({ service, store, courseChecks, courseMaterials
     try {
       if (!enabled) throw new AuthError(503, 'auth_unavailable', 'Вход ещё не подключён. Попробуйте позже.');
       const url = new URL(request.url, origin);
+      isPoints = request.method === 'GET' && url.pathname === '/api/auth/points';
       const photoVersion = url.pathname === '/api/auth/profile-photo' && request.method === 'GET' &&
         url.searchParams.size === 1 && /^[0-9a-f-]{36}$/i.test(url.searchParams.get('v') || '')
         ? url.searchParams.get('v') : null;
       const clubRoomQuery = (url.pathname === '/api/auth/club' || url.pathname.startsWith('/api/auth/club/')) && url.searchParams.size === 1 && url.searchParams.has('room');
       const clubRoom = clubRoomQuery ? url.searchParams.get('room') : undefined;
-      if (url.search && !photoVersion && !clubRoomQuery) throw new AuthError(400, 'invalid_url', 'Неверный запрос.');
+      const pointsBefore = isPoints && url.searchParams.size === 1 && url.searchParams.get('before');
+      if (url.search && !photoVersion && !clubRoomQuery && !isPointsCursor(pointsBefore)) throw new AuthError(400, 'invalid_url', 'Неверный запрос.');
       if (request.method === 'GET' && url.pathname === '/api/auth/check') {
         const user = await service.session(readSessionCookie(request));
         if (!user) throw new AuthError(401, 'sign_in_required', 'Войдите в аккаунт.');
         send(204); return;
+      }
+      if (isPoints) {
+        if (!points) throw new AuthError(503, 'points_unavailable', 'Баллы временно недоступны.');
+        send(200, await points.read(readSessionCookie(request), request.headers['x-webpril-account'], pointsBefore || undefined)); return;
       }
       if (request.method === 'GET' && url.pathname === '/api/auth/session') {
         send(200, await service.sessionState(readSessionCookie(request))); return;
