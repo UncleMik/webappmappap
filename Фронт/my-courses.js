@@ -224,7 +224,7 @@ function renderCourse(data) {
   const fragment = document.createDocumentFragment();
   if (atRoot) {
     fragment.append(node('span', 'course-open-badge', 'Курс доступен'), node('h2', 'course-list-title', 'Программа курса'));
-    const first = course.sections.find(item => item.lessons.length);
+    const first = productId === fullCourseId ? undefined : course.sections.find(item => item.lessons.length);
     if (first) {
       const banner = node('a', 'course-start-banner');
       banner.href = lessonUrl(productId, first.lessons[0].lessonId, first.streamId, program);
