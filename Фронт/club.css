@@ -186,5 +186,15 @@
 .weekly-poll button:disabled { opacity: .55; cursor: default; }
 .weekly-poll p:empty { display: none; }
 
-.weekly-poll-results { padding-inline-start: 2rem; }
-.weekly-poll-results li + li { margin-top: .4rem; }
+.weekly-poll-results { margin: 1rem 0; padding: 0; list-style: none; }
+.weekly-poll-results li + li { margin-top: .9rem; }
+.weekly-poll-result-row { display: flex; justify-content: space-between; align-items: baseline; gap: .8rem; font-size: 1.3rem; }
+.weekly-poll-result-row strong { color: #6340cc; white-space: nowrap; }
+.weekly-poll-vote-mark { color: #6340cc; font-weight: 700; }
+.weekly-poll-results progress { display: block; width: 100%; height: .45rem; margin-top: .4rem; appearance: none; border: 0; border-radius: 1rem; background: #e9def8; overflow: hidden; }
+.weekly-poll-results progress::-webkit-progress-bar { background: #e9def8; }
+.weekly-poll-results progress::-webkit-progress-value { background: #ad93f0; border-radius: 1rem; }
+.weekly-poll-results progress::-moz-progress-bar { background: #ad93f0; border-radius: 1rem; }
+.weekly-poll-results .is-own-vote progress::-webkit-progress-value { background: #794aff; }
+.weekly-poll-results .is-own-vote progress::-moz-progress-bar { background: #794aff; }
+.weekly-poll-total { color: #606589; font-size: 1.2rem; }

@@ -1,18 +1,21 @@
 import { AuthError, hashToken } from './security.mjs';
 import { transaction } from './store.mjs';
 
+const countVotes = `ARRAY(
+  SELECT count(w.choice)::integer
+  FROM generate_subscripts(p.options, 1) AS option
+  LEFT JOIN weekly_poll_votes w ON w.poll_id = p.id AND w.choice = option - 1
+  GROUP BY option ORDER BY option
+  )`;
+
 export function createWeeklyPoll(pool) {
   return {
     async read(userId) {
       const { rows: [poll] } = await pool.query(`
         SELECT p.id, p.question, p.options, p.closes_at AS "closesAt",
                p.closes_at > now() AS open, v.choice, v.points,
-               CASE WHEN p.settled_at IS NOT NULL THEN ARRAY(
-                 SELECT count(w.choice)::integer
-                 FROM generate_subscripts(p.options, 1) AS option
-                 LEFT JOIN weekly_poll_votes w ON w.poll_id = p.id AND w.choice = option - 1
-                 GROUP BY option ORDER BY option
-               ) END AS counts
+               p.settled_at IS NOT NULL AS settled,
+               CASE WHEN p.settled_at IS NOT NULL OR v.choice IS NOT NULL THEN ${countVotes} END AS counts
         FROM weekly_polls p
         LEFT JOIN weekly_poll_votes v ON v.poll_id = p.id AND v.user_id = $1
         WHERE p.opens_at <= now()
@@ -50,7 +53,9 @@ export function createWeeklyPoll(pool) {
           ON CONFLICT (poll_id, user_id) DO NOTHING
         `, [pollId, session.user_id, choice]);
         const { rows: [vote] } = await client.query(`
-          SELECT choice FROM weekly_poll_votes WHERE poll_id = $1 AND user_id = $2
+          SELECT v.choice, ${countVotes} AS counts
+          FROM weekly_polls p JOIN weekly_poll_votes v ON v.poll_id = p.id
+          WHERE p.id = $1 AND v.user_id = $2
         `, [pollId, session.user_id]);
         if (!vote) throw new AuthError(409, 'poll_closed', 'Голосование уже завершилось.');
         return vote;

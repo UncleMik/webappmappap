@@ -2,6 +2,9 @@
   const card = document.querySelector('#weekly-poll-card');
   const section = document.querySelector('#weekly-poll');
   const url = '/api/auth/weekly-poll';
+  const voteForms = { one: 'голос', few: 'голоса', many: 'голосов' };
+  const plural = new Intl.PluralRules('ru');
+  const numbers = new Intl.NumberFormat('ru');
   let refreshTimer;
   let requestedFocus = new URLSearchParams(location.search).has('poll');
 
@@ -37,15 +40,39 @@
     const results = section.querySelector('ol');
     form.hidden = !poll.open || poll.choice !== null;
     submit.disabled = true;
-    results.hidden = !poll.counts;
-    results.replaceChildren(...(poll.counts || []).map((count, index) => {
+    const counts = poll.counts || [];
+    const total = counts.reduce((sum, count) => sum + count, 0);
+    const totalLabel = section.querySelector('.weekly-poll-total');
+    totalLabel.hidden = results.hidden = !poll.counts;
+    totalLabel.textContent = numbers.format(total) + ' ' + voteForms[plural.select(total)];
+    results.replaceChildren(...counts.map((count, index) => {
       const item = document.createElement('li');
-      item.textContent = poll.options[index] + ' — ' + count;
+      const row = document.createElement('div');
+      row.className = 'weekly-poll-result-row';
+      const option = document.createElement('span');
+      option.textContent = poll.options[index];
+      if (index === poll.choice) {
+        item.classList.add('is-own-vote');
+        const mark = document.createElement('span');
+        mark.className = 'weekly-poll-vote-mark';
+        mark.setAttribute('aria-hidden', 'true');
+        mark.textContent = '✓';
+        option.append(' ', mark);
+      }
+      const share = total ? count / total * 100 : 0;
+      const percent = document.createElement('strong');
+      percent.textContent = Math.round(share) + '%';
+      const bar = document.createElement('progress');
+      bar.max = 100;
+      bar.value = share;
+      bar.setAttribute('aria-hidden', 'true');
+      row.append(option, percent);
+      item.append(row, bar);
       return item;
     }));
     status.textContent = poll.open
       ? (poll.choice === null ? '' : 'Ответ принят: ' + poll.options[poll.choice])
-      : poll.counts
+      : poll.settled
         ? (poll.points === null ? 'Голосование завершено.' : 'Начислено баллов: ' + poll.points)
         : 'Голосование завершено. Подводим итоги.';
     fieldset.disabled = false;
@@ -72,7 +99,7 @@
           headers: { 'Content-Type': 'application/json', 'X-Webpril-Account': accountId },
           body: JSON.stringify({ pollId: poll.id, choice: Number(selected) })
         });
-        render({ poll: { ...poll, choice: vote.choice }, points, accountId });
+        render({ poll: { ...poll, choice: vote.choice, counts: vote.counts }, points, accountId });
       } catch (error) {
         status.textContent = error.message;
         submit.disabled = false;
@@ -89,7 +116,7 @@
       if (data.poll?.open) {
         const delay = new Date(data.poll.closesAt).getTime() - Date.now();
         refreshTimer = setTimeout(load, Math.max(1000, Math.min(delay, 2_147_000_000)));
-      } else if (data.poll && !data.poll.counts) {
+      } else if (data.poll && !data.poll.settled) {
         refreshTimer = setTimeout(load, 3000);
       }
     } catch {
