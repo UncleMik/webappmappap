@@ -251,7 +251,6 @@ function createRoomChat({ pool, service, courseMaterials, store, points, ownerUs
       if (!uuid(expectedAccountId)) throw changed();
       if (!data || typeof data !== 'object' || Array.isArray(data)
         || Object.keys(data).some(key => !['requestId', 'text', 'replyTo', 'screenshot'].includes(key))
-        || (data.screenshot !== undefined && ROOM !== activityRoom)
         || !uuid(data.requestId) || typeof data.text !== 'string'
         || /[\u0000-\u0008\u000b\u000c\u000e-\u001f\u007f]/u.test(data.text)) throw bad();
       const text = data.text.replace(/\r\n?/g, '\n').trim(), replyTo = data.replyTo ?? null;
@@ -285,7 +284,7 @@ function createRoomChat({ pool, service, courseMaterials, store, points, ownerUs
         const revision = await nextRevision(client);
         await client.query(`INSERT INTO club_messages(room,author_id,request_id,body,reply_to_id,revision,request_digest,created_at,screenshot)
           VALUES($1,$2,$3,$4,$5,$6,$7,COALESCE($8::timestamptz,now()),$9)`,
-        [ROOM.id,userId,data.requestId,text || 'Скриншот активности',replyTo,revision,digest,createdAt,screenshot]);
+        [ROOM.id,userId,data.requestId,text || (ROOM === activityRoom ? 'Скриншот активности' : 'Изображение'),replyTo,revision,digest,createdAt,screenshot]);
         const { rows: [saved] } = await client.query(`SELECT ${columns} ${joins}
           WHERE m.room=$1 AND m.author_id=$2 AND m.request_id=$3`, [ROOM.id, userId, data.requestId]);
         if (eligibleForPoints) await points.awardClubMessage(client, userId, saved.id, createdAt);
@@ -309,7 +308,7 @@ function createRoomChat({ pool, service, courseMaterials, store, points, ownerUs
       });
     },
     async screenshot(token, id) {
-      if (ROOM !== activityRoom || !messageId(id)) throw missing();
+      if (!messageId(id)) throw missing();
       const { bytes } = await access(token, undefined, true, async client => {
         const { rows: [message] } = await client.query(
           'SELECT screenshot FROM club_messages WHERE room=$1 AND id=$2 AND deleted_at IS NULL', [ROOM.id, id]);

@@ -9,7 +9,7 @@ function dayLabel(date) {
   return new Intl.DateTimeFormat('ru', { day: 'numeric', month: 'long', ...(date.getFullYear() !== today.getFullYear() ? { year: 'numeric' } : {}) }).format(date);
 }
 
-export function createChatTimeline({ log, messages, deletedIds, reactions, actions, canSend, onReply, onJump }) {
+export function createChatTimeline({ room, log, messages, deletedIds, reactions, actions, canSend, onReply, onJump }) {
   let unreadStart = null, highlightTimer;
   const articles = () => [...log.querySelectorAll(':scope > article[data-id]')];
   const find = id => articles().find(article => article.dataset.id === id);
@@ -73,11 +73,11 @@ export function createChatTimeline({ log, messages, deletedIds, reactions, actio
       if (message.hasScreenshot) {
         const link = document.createElement('a');
         link.className = 'club-message-screenshot';
-        link.href = '/api/auth/club/messages/' + encodeURIComponent(message.id) + '/screenshot?room=weekly-activity';
+        link.href = '/api/auth/club/messages/' + encodeURIComponent(message.id) + '/screenshot?room=' + encodeURIComponent(room);
         link.target = '_blank';
         link.rel = 'noopener noreferrer';
         const image = document.createElement('img');
-        image.alt = 'Скриншот активности';
+        image.alt = 'Прикреплённое изображение';
         image.src = link.href;
         link.append(image);
         bubble.append(link);

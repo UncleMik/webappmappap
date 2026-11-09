@@ -2,7 +2,7 @@ import { activityRoom, clubRooms } from './club-rooms.js?v=20261109-activity';
 import { createReactionControls } from './chat-reactions.js?v=20261031-chips';
 import { createMessageActions } from './club-message-actions.js?v=20261103-chat';
 import { createDraftStore, copyMessageText } from './club-chat-tools.js?v=20261105-rooms';
-import { createChatTimeline } from './club-chat-timeline.js?v=20261109-activity';
+import { createChatTimeline } from './club-chat-timeline.js?v=20261109-attachments';
 import { clubRequest, chatLease } from './club-api.js?v=20261105-rooms';
 
 const params = new URLSearchParams(location.search);
@@ -31,8 +31,6 @@ if (!definition || params.getAll('room').length !== 1) {
   const screenshotClear = document.querySelector('#chat-screenshot-clear');
   let screenshot = null, preparingScreenshot = false, screenshotGeneration = 0;
   if (definition === activityRoom) {
-    screenshotButton.hidden = false;
-    input.required = false;
     input.placeholder = 'Расскажите о своей активности…';
   }
   const reactionControls = createReactionControls({ root: log, onSelect: setReaction });
@@ -58,7 +56,7 @@ if (!definition || params.getAll('room').length !== 1) {
       try { await copyMessageText(message.text); if (ready) status.textContent = 'Текст скопирован.'; }
       catch (error) { if (ready) status.textContent = error.message; }
     } });
-  const view = createChatTimeline({ log, messages, deletedIds, reactions: reactionControls, actions,
+  const view = createChatTimeline({ room, log, messages, deletedIds, reactions: reactionControls, actions,
     canSend: () => canSend && ready, onReply: chooseReply, onJump: jumpToMessage });
 
   function persistDraft() { draft.save({ replyTo: reply?.id || restoreReplyId || null, pending: pending?.body.screenshot ? null : pending }); }

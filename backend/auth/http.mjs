@@ -238,7 +238,7 @@ export function createAuthServer({ service, store, courseChecks, courseMaterials
       }
       const data = await readJson(request, isAiVoice ? MAX_AI_VOICE_BODY_BYTES : isAiSend ? MAX_AI_BODY_BYTES : url.pathname === '/api/auth/personal' ? 1_000_000
         : url.pathname === '/api/auth/profile-photo' ? 512_000
-          : url.pathname === '/api/auth/club/messages' ? (clubRoom === 'weekly-activity' ? 512_000 : 16_000) : 4096, isAiSend);
+          : url.pathname === '/api/auth/club/messages' ? 512_000 : 4096, isAiSend);
       const peer = request.socket.remoteAddress;
       const proxy = trustProxy && ['127.0.0.1', '::1', '::ffff:127.0.0.1'].includes(peer);
       const ip = proxy ? String(request.headers['x-real-ip'] || peer) : peer;
