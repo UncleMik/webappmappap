@@ -62,3 +62,4 @@
 .course-navigator-source > .course-content-block { padding-inline:0; }
 
 .course-material-image { display: block; max-width: 100%; height: auto; }
+.course-speaker-photo { margin: 8px 0 12px; border-radius: 12px; }

@@ -404,6 +404,22 @@ function renderLesson(data) {
     if (!block || typeof block.type !== 'string' || typeof block.text !== 'string') throw new Error('invalid_response');
     const section = document.createElement('section');
     section.className = 'reader-section course-content-block';
+    if (block.imageUrl) {
+      const image = document.createElement('img');
+      image.className = 'course-material-image';
+      image.alt = block.imageAlt || block.text || 'Иллюстрация к уроку';
+      image.loading = 'lazy';
+      if (block.imageAlt) {
+        image.classList.add('course-speaker-photo');
+        image.width = image.height = 200;
+      }
+      image.addEventListener('error', () => {
+        const note = node('p', 'course-media-note', 'Не удалось загрузить изображение.');
+        image.replaceWith(note);
+      }, { once: true });
+      image.src = block.imageUrl;
+      section.append(image);
+    }
     if (['text', 'list', 'table'].includes(block.type)) {
       const rich = safeFragment(block.html);
       if (rich) section.append(rich);
@@ -447,19 +463,7 @@ function renderLesson(data) {
         videoNodes.set(key, part);
         videoHero.append(part);
       }
-    } else if (block.type === 'image' && block.imageUrl) {
-      const image = document.createElement('img');
-      image.className = 'course-material-image';
-      image.alt = block.text || 'Иллюстрация к уроку';
-      image.loading = 'lazy';
-      image.addEventListener('error', () => {
-        const note = node('p', 'course-media-note');
-        note.textContent = 'Не удалось загрузить изображение.';
-        image.replaceWith(note);
-      }, { once: true });
-      image.src = block.imageUrl;
-      section.append(image);
-    } else if (block.type === 'image' || block.type === 'attachment') {
+    } else if ((block.type === 'image' && !block.imageUrl) || block.type === 'attachment') {
       const text = document.createElement('p');
       text.className = 'course-media-note';
       text.textContent = block.text || (block.type === 'image' ? 'Изображение пока недоступно.' : 'Вложение пока недоступно.');
@@ -470,7 +474,7 @@ function renderLesson(data) {
         status.textContent = block.type === 'image' ? 'Изображение пока недоступно.' : 'Вложение пока недоступно.';
         section.append(status);
       }
-    } else if (block.text) {
+    } else if (block.type !== 'image' && block.text) {
       const text = document.createElement('p');
       text.textContent = block.text;
       section.append(text);

@@ -9,6 +9,26 @@ import { isPointsCursor } from './points.mjs';
 const courseImageFiles = new Map([
   [347472351, ['1.png', '2.png', '3.png', '4.png', '5.png', '6.png', '7.jpg', '8.png']],
 ]);
+const introPortraits = [
+  ['yulia.png', 'Юлия Сулейманова'],
+  ['svetlana.png', 'Светлана Курканина'],
+  ['anastasia.png', 'Анастасия Сафина'],
+  ['lyubov.png', 'Любовь Климова'],
+  ['ekaterina.png', 'Екатерина Новикова'],
+];
+
+function lessonImages(lessonId, blocks) {
+  if (lessonId === 347472347) {
+    return introPortraits.map(([file, alt]) => ({
+      file, alt,
+      block: blocks.find(block => block.type === 'text' && block.text.trim().split('\n', 1)[0].trim() === alt),
+    }));
+  }
+  const files = courseImageFiles.get(lessonId);
+  if (!files) return [];
+  const imageBlocks = blocks.filter(block => block.type === 'image');
+  return files.length === imageBlocks.length ? files.map((file, index) => ({ file, block: imageBlocks[index] })) : [];
+}
 
 async function readJson(request, maxSize = 4096, aiAttachment = false) {
   if ((request.headers['content-type'] || '').split(';')[0].trim() !== 'application/json') {
@@ -177,14 +197,13 @@ export function createAuthServer({ service, store, courseChecks, courseMaterials
         try {
           const result = lesson ? await courseMaterials.lesson(user.id, Number(lesson[1]), Number(lesson[2]))
             : course ? await courseMaterials.course(user.id, Number(course[1])) : await courseMaterials.list(user.id);
-          const files = lesson && courseImageFiles.get(Number(lesson[2]));
-          if (files) {
+          if (lesson) {
             const blocks = result.lesson.blocks;
-            const imageBlocks = blocks.filter(block => block.type === 'image');
-            const mapped = files.length === imageBlocks.length ? files : [];
+            const images = lessonImages(Number(lesson[2]), blocks);
             if (lesson[3]) {
-              const file = mapped[Number(lesson[3]) - 1];
-              if (!file) { send(404, { error: 'not_found' }); return; }
+              const image = images[Number(lesson[3]) - 1];
+              if (!image?.block) { send(404, { error: 'not_found' }); return; }
+              const { file } = image;
               const bytes = await readFile(new URL(`../../data/course-materials/${lesson[2]}/${file}`, import.meta.url))
                 .catch(error => { if (error.code !== 'ENOENT') throw error; return null; });
               if (!bytes) { send(404, { error: 'not_found' }); return; }
@@ -195,14 +214,19 @@ export function createAuthServer({ service, store, courseChecks, courseMaterials
               });
               response.end(bytes); return;
             }
-            if (mapped.length) {
-              let imageNumber = 0;
-              send(200, { ...result, lesson: { ...result.lesson, blocks: blocks.map(block => block.type === 'image'
-                ? { ...block, imageUrl: `/api/auth/courses${path}/images/${++imageNumber}` } : block) } });
+            const byBlock = new Map();
+            images.forEach(({ block, alt }, index) => {
+              if (block) byBlock.set(block, {
+                imageUrl: `/api/auth/courses${path}/images/${index + 1}`,
+                ...(alt ? { imageAlt: alt } : {}),
+              });
+            });
+            if (byBlock.size) {
+              send(200, { ...result, lesson: { ...result.lesson, blocks: blocks.map(block => byBlock.has(block)
+                ? { ...block, ...byBlock.get(block) } : block) } });
               return;
             }
           }
-          if (lesson?.[3]) { send(404, { error: 'not_found' }); return; }
           send(200, result); return;
         } catch (error) {
           if (error instanceof AuthError) throw error;

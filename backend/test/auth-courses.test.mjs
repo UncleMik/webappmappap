@@ -135,3 +135,34 @@ test('FAQ image URLs use the same lesson access check on every request', async (
     assert.equal((await get(lesson.blocks[0].imageUrl)).status, 403);
   });
 });
+
+test('intro portraits follow the matching bios and require lesson access', async () => {
+  const path = '/api/auth/courses/4302509/lessons/347472347';
+  const blocks = [
+    { type: 'text', text: 'Светлана Курканина\n✅ Врач гинеколог' },
+    { type: 'text', text: 'Давайте знакомиться!' },
+    { type: 'text', text: 'Юлия Сулейманова\n✅ Врач акушер-гинеколог' },
+  ];
+  let allowed = true;
+  const courseMaterials = {
+    async lesson(userId, productId, lessonId) {
+      assert.deepEqual([userId, productId, lessonId], [user.id, 4302509, 347472347]);
+      if (!allowed) throw new AuthError(403, 'course_access_required', 'Нет доступа.');
+      return { lesson: { blocks } };
+    },
+  };
+  await withServer({ service: { session: async token => token ? user : null }, courseMaterials }, async get => {
+    const response = await get(path);
+    assert.equal(response.status, 200);
+    const { lesson } = await response.json();
+    assert.deepEqual(lesson.blocks, [
+      { ...blocks[0], imageUrl: path + '/images/2', imageAlt: 'Светлана Курканина' },
+      blocks[1],
+      { ...blocks[2], imageUrl: path + '/images/1', imageAlt: 'Юлия Сулейманова' },
+    ]);
+    assert.equal((await get(path + '/images/1', false)).status, 401);
+    assert.equal((await get(path + '/images/3')).status, 404);
+    allowed = false;
+    assert.equal((await get(path + '/images/1')).status, 403);
+  });
+});
