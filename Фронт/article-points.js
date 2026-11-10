@@ -3,6 +3,7 @@ import { authRequest } from './auth-client.js?v=20261109-pilot';
 const PULSE_MS = 15_000;
 const plural = new Intl.PluralRules('ru');
 const pointsText = amount => amount + ' ' + { one: 'балл', few: 'балла', many: 'баллов', other: 'балла' }[plural.select(amount)];
+const secondsText = seconds => seconds + ' ' + { one: 'секунда', few: 'секунды', many: 'секунд', other: 'секунды' }[plural.select(seconds)];
 
 export function trackArticlePoints(scroller, articleId) {
   const frame = window.frameElement;
@@ -15,7 +16,7 @@ export function trackArticlePoints(scroller, articleId) {
   scroller.querySelector('.reader-reading-time').after(hint);
   scroller.querySelector('.reader-finish p').after(status);
 
-  let accountId, attemptId, timer;
+  let accountId, attemptId, availableAmount, timer;
   let active = false, pending = false, done = false, suspended = false, reachedEnd = false, generation = 0;
   const pageVisible = () => !document.hidden && !frame?.hidden && !suspended;
   const isAtEnd = () => scroller.clientHeight > 0 && scroller.scrollTop + scroller.clientHeight >= scroller.scrollHeight - 2;
@@ -66,9 +67,16 @@ export function trackArticlePoints(scroller, articleId) {
       if (start) {
         if (attemptId && result.attemptId !== attemptId) reachedEnd = isAtEnd();
         attemptId = result.attemptId;
-        show(hint, 'За чтение сейчас доступно +' + pointsText(result.availableAmount) + '.');
-        show(status, 'Баллы начисляются после прочтения до конца и проверки времени чтения.');
+        availableAmount = result.availableAmount;
       }
+      const reward = '+' + pointsText(availableAmount);
+      const seconds = Math.ceil(result.remainingMs / 1000);
+      const time = seconds > 0 ? 'Осталось ≈ ' + secondsText(seconds) + ' активного чтения.' : '';
+      const message = reachedEnd
+        ? time || 'Проверяем начисление баллов…'
+        : 'Дочитайте до конца. ' + (time || 'Время чтения уже засчитано.');
+      show(hint, 'За чтение доступно ' + reward + '. ' + message);
+      show(status, message);
       nextStarts = false;
       if (result.remainingMs > 0) wait = Math.min(PULSE_MS, result.remainingMs);
       else if (reachedEnd) wait = 0;
