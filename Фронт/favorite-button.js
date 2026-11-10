@@ -1,21 +1,24 @@
 (() => {
   const api = window.personalDataApi;
-  window.bindFavoriteButton = (button, status) => {
+  window.bindFavoriteButton = (controls, status) => {
+    const buttons = Array.isArray(controls) ? controls : [controls];
     let material = null;
     let saving = false;
     const render = () => {
-      button.hidden = !material;
-      button.disabled = saving || !api.isLoaded();
       const selected = !!material && api.get().favorites.includes(material.id);
-      button.setAttribute('aria-pressed', String(selected));
-      button.setAttribute('aria-label', selected ? 'Удалить из избранного' : 'Добавить в избранное');
+      for (const button of buttons) {
+        button.hidden = !material;
+        button.disabled = saving || !api.isLoaded();
+        button.setAttribute('aria-pressed', String(selected));
+        button.setAttribute('aria-label', selected ? 'Удалить из избранного' : 'Добавить в избранное');
+      }
     };
     api.subscribe(render);
     function showError(message) {
       status.textContent = message;
       status.hidden = false;
     }
-    button.addEventListener('click', async () => {
+    async function toggleFavorite() {
       if (!material || saving || !api.isLoaded()) return;
       const current = material;
       const { id, title } = current;
@@ -31,7 +34,8 @@
         saving = false;
         render();
       }
-    });
+    }
+    for (const button of buttons) button.addEventListener('click', toggleFavorite);
     return next => {
       if (material?.id === next?.id) return;
       material = next;

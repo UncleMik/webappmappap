@@ -10,7 +10,7 @@
   <link rel="preload" href="assets/fonts/Intro-Regular.woff" as="font" type="font/woff" crossorigin>
   <link rel="preload" href="assets/fonts/Intro-Bold.woff" as="font" type="font/woff" crossorigin>
   <link rel="stylesheet" href="styles.css?v=20261008-close">
-  <link rel="stylesheet" href="article.css?v=20261110-favorites">
+  <link rel="stylesheet" href="article.css?v=20261110-article-favorites">
   <link rel="stylesheet" href="video.css?v=20261110-favorites">
   <link rel="stylesheet" href="course-player.css?v=20261109-topic-covers">
   <link rel="stylesheet" href="course-reader.css?v=20261109-lesson-images">
@@ -21,7 +21,7 @@
 <div class="app reader-page">
   <header class="reader-header">
     <div class="reader-toolbar"><a class="reader-back" href="index.html#recommendations-title" data-reader-return aria-label="Вернуться к разделу"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m14 5-7 7 7 7"/></svg></a><span></span></div>
-    <button class="video-favorite" type="button" aria-label="Добавить в избранное" aria-pressed="false" hidden disabled><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21 3 12C-3 4 8 0 12 7 16 0 27 4 21 12Z"/></svg></button>
+    <button class="video-favorite" type="button" aria-label="Добавить в избранное" aria-pressed="false" data-article-favorite hidden disabled><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21 3 12C-3 4 8 0 12 7 16 0 27 4 21 12Z"/></svg><span class="reader-favorite-label">В избранном</span></button>
     <p class="favorite-status" role="status" hidden></p>
     <div class="reader-progress" hidden><progress aria-label="Прогресс чтения статьи"></progress><output aria-label="Текущий блок"></output></div>
   </header>
@@ -32,6 +32,7 @@
       <h2 id="finish-title">Вы разобрались!</h2>
       <p>Вы дочитали статью. Можно перейти к следующему материалу или вернуться к подборке.</p>
       <div class="reader-actions"><a class="reader-button reader-next" data-reader-next>Читать следующую статью →</a><a class="reader-button" data-reader-return>Вернуться к разделу</a></div>
+      <button class="video-favorite reader-favorite-end" type="button" aria-label="Добавить в избранное" aria-pressed="false" data-article-favorite hidden disabled><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21 3 12C-3 4 8 0 12 7 16 0 27 4 21 12Z"/></svg><span class="reader-favorite-add">Добавить в избранное</span><span class="reader-favorite-label">В избранном</span></button>
     </section>
   </template>
   <!-- Shared navigation is copied from index.html. -->
@@ -48,7 +49,7 @@
 <script src="article-read-state.js?v=20261027-personal"></script>
 <script src="weekly-content-api.js?v=20261008-weekly"></script>
 <script src="articles-api.js?v=20261109-reader-entry"></script>
-<script src="favorite-button.js?v=20261110"></script>
-<script src="article.js?v=20261110-favorites"></script>
+<script src="favorite-button.js?v=20261110-article-favorites"></script>
+<script src="article.js?v=20261110-article-favorites"></script>
 <script src="app.js?v=20261006-week-samples"></script></body>
 </html>

@@ -151,7 +151,7 @@ const counter = document.querySelector('.reader-progress output');
 progress.max = sections.length;
 let scheduled = false;
 const readArticleId = article.pregnancy ? article.id : articleId === 'mom-week' ? `mom-week-${momWeek}` : articleId;
-window.bindFavoriteButton(document.querySelector('.video-favorite'), document.querySelector('.favorite-status'))({
+window.bindFavoriteButton([...document.querySelectorAll('[data-article-favorite]')], document.querySelector('.favorite-status'))({
   id: articleId === 'mom-week' ? 'mom-week:' + momWeek : 'article:' + readArticleId,
   title: article.title.trim().slice(0, 500),
 });
