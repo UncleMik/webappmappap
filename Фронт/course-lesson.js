@@ -26,6 +26,12 @@ const setFavorite = window.bindFavoriteButton(
 );
 const requestedVideo = params.get('video');
 const fromFavorites = params.get('from') === 'favorites';
+const fromMom = params.get('from') === 'mom';
+const sourceBack = fromFavorites ? { href: 'favorites.html', text: 'В избранное' }
+  : fromMom ? { href: 'mom.html#mom-tools-title', text: 'Назад к разделу «Мама»' }
+  : thematicBack ? { href: thematicBack, text: 'К урокам по теме' }
+  : freeLesson ? { href: 'index.html', text: 'На главную' }
+  : null;
 let courseView = null;
 let pendingVideoPositions = new Map();
 let selectedTab = 'about';
@@ -33,14 +39,16 @@ let selectedVideoKey;
 document.querySelector('.reader-page').classList.add('course-lesson-mode');
 progress.hidden = true;
 scroller.setAttribute('aria-label', 'Содержание урока');
-const initialBackText = fromFavorites ? 'В избранное' : thematicBack ? 'К урокам по теме' : freeLesson ? 'На главную' : 'К программе курса';
-back.href = fromFavorites ? 'favorites.html' : thematicBack ?? (freeLesson ? 'index.html'
-  : positiveId(productId) ? courseUrl(productId, undefined, program) : courseListUrl(program));
-back.setAttribute('aria-label', initialBackText);
-toolbar.textContent = initialBackText;
+function setBack(href, text) {
+  back.href = sourceBack?.href ?? href;
+  const label = sourceBack?.text ?? text;
+  back.setAttribute('aria-label', label);
+  toolbar.textContent = label;
+}
+setBack(positiveId(productId) ? courseUrl(productId, undefined, program) : courseListUrl(program), 'К программе курса');
 toolbar.addEventListener('click', () => back.click());
 document.querySelectorAll('.nav-item').forEach(link => {
-  const selected = params.get('from') !== 'index-breathing' && link.getAttribute('href') === 'journey.html';
+  const selected = params.get('from') !== 'index-breathing' && link.getAttribute('href') === (fromMom ? 'index.html' : 'journey.html');
   link.classList.toggle('active', selected);
   if (selected) link.setAttribute('aria-current', 'page');
   else link.removeAttribute('aria-current');
@@ -312,9 +320,7 @@ function renderLesson(data) {
   const { byVideo: lessonChapters, tableIndexes: chapterTableIndexes } = courseChapters(lesson.blocks);
 
   const atRoot = String(section.streamId) === String(course.rootStreamId);
-  const backText = fromFavorites ? 'В избранное' : thematicBack ? 'К урокам по теме' : freeLesson ? 'На главную' : atRoot ? 'К программе курса' : 'К урокам раздела';
-  back.href = fromFavorites ? 'favorites.html' : thematicBack ?? (freeLesson ? 'index.html' : courseUrl(productId, atRoot ? undefined : section.streamId, program));
-  back.setAttribute('aria-label', backText);
+  setBack(courseUrl(productId, atRoot ? undefined : section.streamId, program), atRoot ? 'К программе курса' : 'К урокам раздела');
   const fragment = document.createDocumentFragment();
   const restoreJobs = [];
   const positions = pendingVideoPositions;
@@ -521,7 +527,6 @@ function renderLesson(data) {
   for (const restore of restoreJobs) restore();
   scroller.removeAttribute('aria-busy');
   scroller.classList.toggle('course-copy-disabled', lesson.contentCopyDisabled);
-  toolbar.textContent = backText;
   document.title = lesson.title;
 }
 

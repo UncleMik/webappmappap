@@ -81,6 +81,7 @@ export async function mountSchoolVideo(id) {
       const destination = new URL(result.href, location.href);
       const from = new URLSearchParams(location.search).get('from');
       if (from === 'favorites') destination.searchParams.set('from', 'favorites');
+      else if (id === 'back-practice' && from === 'mom') destination.searchParams.set('from', 'mom');
       else if (id === 'breathing' && from === 'index') destination.searchParams.set('from', 'index-breathing');
       location.replace(destination.href);
       return;
