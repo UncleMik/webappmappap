@@ -46,14 +46,13 @@ codeCells.forEach((cell,index) => {
   });
 });
 const status = document.querySelector('#login-status'), title = document.querySelector('#login-title');
-const intro = document.querySelector('#login-intro'), signedIn = document.querySelector('#signed-in');
+const intro = document.querySelector('#login-intro'), loginFlow = title.closest('.login-flow');
 const resend = document.querySelector('#resend-code'), verify = document.querySelector('#verify-button');
 let challenge, sentEmail, busy = false, retryAt = 0, completeRetryAt = 0, pending = false;
 const nextPage = location.hash.startsWith('#next=') ? location.hash.slice(6) : new URLSearchParams(location.search).get('next');
-signedIn.querySelector('a').href = returnPage(nextPage);
 function cooldown(seconds) { retryAt = Math.max(retryAt, Date.now() + seconds * 1000); refresh(); }
 function refresh() {
-  document.querySelectorAll('form button, #logout').forEach(button => { button.disabled = busy; });
+  document.querySelectorAll('form button').forEach(button => { button.disabled = busy; });
   const remaining = Math.max(0, Math.ceil((retryAt - Date.now()) / 1000));
   resend.disabled = busy || remaining > 0;
   resend.textContent = remaining > 0 ? `Новый код через ${remaining} с` : 'Отправить код ещё раз';
@@ -82,6 +81,7 @@ async function task(run) {
   finally { busy = false; refresh(); if (focusCodeAfterTask && !pending && !codeForm.hidden) { focusCodeAfterTask = false; focusCode(); } }
 }
 function authenticated(user) {
+  loginFlow.hidden = true;
   clearCode(); challenge = undefined; pending = false;
   if (!user.profile?.completedAt) {
     const onboarding = new URL('onboarding.html', location.href);
@@ -89,17 +89,12 @@ function authenticated(user) {
     window.top.location.replace(onboarding.href); return;
   }
   window.top.location.replace(returnPage(nextPage));
-
-  emailForm.hidden = true; codeForm.hidden = true; signedIn.hidden = false;
-  document.querySelector('#account-email').textContent = user.email;
-  title.textContent = 'Вы вошли'; intro.textContent = 'Вход сохранён на этом устройстве до 30 дней. На чужом устройстве выйдите после работы.';
-  status.textContent = ''; title.focus();
 }
 async function requestCode() {
   const address = email.value.trim();
   const result = await authRequest('request', { email: address });
   challenge = result.challenge; sentEmail = address; pending = false;
-  emailForm.hidden = true; codeForm.hidden = false; signedIn.hidden = true;
+  emailForm.hidden = true; codeForm.hidden = false;
   title.textContent = 'Проверьте почту'; intro.textContent = 'Введите код из письма, чтобы продолжить.';
   document.querySelector('#sent-email').textContent = sentEmail;
   cooldown(result.retryAfter); clearCode(); focusCodeAfterTask = true;
@@ -122,9 +117,6 @@ codeForm.addEventListener('submit', event => {
     authenticated(result.user);
   });
 });
-document.querySelector('#logout').addEventListener('click', () => task(async () => {
-  await authRequest('logout', {}); location.reload();
-}));
 let timer;
 function startTimer() {
   refresh();
@@ -134,6 +126,7 @@ startTimer();
 addEventListener('pagehide', () => { clearInterval(timer); timer = undefined; });
 addEventListener('pageshow', startTimer);
 if (location.hostname === 'unclemik.github.io') {
+  loginFlow.hidden = false;
   emailForm.hidden = true;
   intro.textContent = 'Вход и регистрация работают на основном сайте приложения.';
   const link = document.createElement('a'); link.href = 'https://app.legkie-rody.ru/login.html';
@@ -141,9 +134,12 @@ if (location.hostname === 'unclemik.github.io') {
 } else {
   task(async () => {
     const session = await authRequest('session');
-    if (session.authenticated) authenticated(session.user);
-    else if (session.reason === 'session_replaced' || new URLSearchParams(location.search).get('reason') === 'session_replaced') {
+    if (session.authenticated) { authenticated(session.user); return; }
+    loginFlow.hidden = false;
+    if (session.reason === 'session_replaced' || new URLSearchParams(location.search).get('reason') === 'session_replaced') {
       status.textContent = 'Выполнен вход в другом браузере или на другом устройстве. Войдите заново.';
     }
+  }).then(() => {
+    if (status.textContent) loginFlow.hidden = false;
   });
 }

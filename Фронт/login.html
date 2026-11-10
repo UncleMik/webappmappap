@@ -10,15 +10,15 @@
   <link rel="preload" href="assets/fonts/Intro-Regular.woff" as="font" type="font/woff" crossorigin>
   <link rel="preload" href="assets/fonts/Intro-Bold.woff" as="font" type="font/woff" crossorigin>
   <link rel="stylesheet" href="auth.css">
-  <link rel="stylesheet" href="login.css?v=20261106-code-cells">
-  <script type="module" src="login.js?v=20261106-code-cells"></script>
+  <link rel="stylesheet" href="login.css?v=20261110-session">
+  <script type="module" src="login.js?v=20261110-session"></script>
 </head>
 <body class="login-page">
   <div class="auth-shell">
     <header class="auth-brand">Лёгкие роды <span class="auth-brand-heart" aria-hidden="true">♥</span></header>
     <main class="auth-main auth-main--login">
       <img class="auth-illustration" src="assets/auth-mother-v1.webp" alt="Мама обнимает малыша" width="270" height="240">
-      <section class="login-flow" aria-labelledby="login-title">
+      <section class="login-flow" aria-labelledby="login-title" hidden>
         <h1 class="auth-title" id="login-title" tabindex="-1">Рады видеть вас</h1>
         <p class="auth-subtitle" id="login-intro">Войдите или создайте аккаунт по электронной почте. Пароль не нужен.</p>
         <form class="auth-form" id="email-form">
@@ -45,11 +45,10 @@
           <button class="login-secondary" id="resend-code" type="button">Отправить код ещё раз</button>
           <button class="login-secondary" id="change-email" type="button">Изменить почту</button>
         </form>
-        <div id="signed-in" hidden><p class="login-recipient">Вы вошли как <strong id="account-email"></strong></p><a class="auth-button login-primary" href="index.html">Перейти в приложение</a><button class="login-secondary" id="logout" type="button">Выйти из аккаунта</button></div>
         <p id="login-status" role="status" aria-live="polite"></p>
         <p class="login-privacy">О том, как школа использует ваши данные, — в <a href="/privacy.html" target="_blank" rel="noopener noreferrer">политике обработки персональных данных</a>. <a href="/terms.html" target="_blank" rel="noopener noreferrer">Условия использования</a>.</p>
-        <noscript><p>Для входа включите JavaScript в браузере.</p></noscript>
       </section>
+      <noscript><p>Для входа включите JavaScript в браузере.</p></noscript>
     </main>
   </div>
 </body>
