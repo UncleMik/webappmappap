@@ -157,7 +157,6 @@
 .composer-field:focus-within { outline:2px solid #bb9beb; }
 .discussion-composer .discussion-send { color:#fff; background:linear-gradient(140deg,#b071ff,#7934ff); border-radius:50%; font-size:2rem; }
 .discussion-composer .discussion-send svg { width:40px; height:40px; display:block; fill:currentColor; stroke:none; }
-.community-chat .bottom-navigation { position:relative; margin-top:0; }
 .visually-hidden { position:absolute; width:1px; height:1px; overflow:hidden; clip-path:inset(50%); }
 .discussion-header svg,.discussion-composer svg,.pinned-message svg { width:22px; height:22px; }
 .member-avatar { width:4rem; height:4rem; background-image:url('assets/community-reference.jpg'); background-size:137.4rem 103.7rem; background-position:-73.7rem -24rem; }

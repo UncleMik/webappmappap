@@ -1,7 +1,6 @@
 .ai-page { background: #fff; overflow: hidden; }
 .ai-page .app { background: #fff; height: var(--chat-viewport-height, 100dvh); min-height: 0; overflow: hidden; }
 .ai-header, .assistant-card, .chat-controls { flex-shrink: 0; }
-.ai-page .bottom-navigation { position: relative; bottom: auto; margin-top: 0; }
 .ai-header { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: calc(12px + env(safe-area-inset-top, 0px)) 20px 8px; }
 .ai-header h1 { font-size: 20px; line-height: 1.25; letter-spacing: -.45px; }
 .ai-page svg { width: 20px; height: 20px; fill: none; stroke: currentColor; stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; flex-shrink: 0; }

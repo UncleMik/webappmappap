@@ -66,12 +66,16 @@ import('./account-profile.js?v=20261020-initial-content').catch(() => {});
   status.textContent = 'Открываем раздел…';
   document.body.append(status);
   const updateHeight = () => {
-    const height = window.visualViewport?.height ?? innerHeight;
-    document.documentElement.style.setProperty('--section-nav-height', `${nav.getBoundingClientRect().height}px`);
-    document.documentElement.style.setProperty('--section-viewport-height', `${height}px`);
-    document.documentElement.style.setProperty('--section-viewport-bottom', `${Math.max(0, innerHeight - height - (window.visualViewport?.offsetTop ?? 0))}px`);
+    const viewport = window.visualViewport;
+    const visibleBottom = viewport && Math.abs(viewport.scale - 1) < 0.01
+      ? viewport.offsetTop + viewport.height
+      : innerHeight;
+    // Shrink the section for the keyboard without moving the navigation bar.
+    const contentHeight = Math.min(visibleBottom, nav.getBoundingClientRect().top);
+    document.documentElement.style.setProperty('--section-content-height', `${Math.max(0, contentHeight)}px`);
   };
   window.visualViewport?.addEventListener('resize', updateHeight);
+  window.visualViewport?.addEventListener('scroll', updateHeight);
   window.addEventListener('resize', updateHeight);
   new ResizeObserver(updateHeight).observe(nav);
   updateHeight();

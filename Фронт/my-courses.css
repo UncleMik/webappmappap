@@ -1,6 +1,5 @@
 .owned-page { height:100vh; height:100svh; height:100dvh; min-height:0; overflow:hidden; background:#fcfcff; }
 .owned-page .owned-main { flex:1; min-height:0; overflow-y:auto; overscroll-behavior-y:contain; padding:12px 18px 20px; }
-.owned-page > .bottom-navigation { position:static; margin-top:0; }
 .owned-page .course-back { display:flex; align-items:center; gap:10px; width:fit-content; min-height:44px; margin:0 0 12px; color:#666d88; font-size:14px; line-height:1.3; }
 .owned-page .course-back-arrow { color:#794aff; font-size:36px; line-height:1; }
 .owned-page .owned-header { padding:0; margin-bottom:16px; }

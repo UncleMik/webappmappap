@@ -73,7 +73,6 @@ blockquote.reader-callout { display: flex; gap: 16px; font-size: 15px; font-styl
 .material-link div { padding: 16px; }
 .material-link h2 { font-size: 20px; line-height: 1.2; margin-bottom: 10px; }
 .material-link p { font-size: 13px; color: #827193; }
-.reader-page > .bottom-navigation { margin-top: 0; }
 .dating-article { text-decoration: none; color: inherit; background: #f3ebff; grid-column: 1 / -1; }
 .dating-article::after { content: ''; position: absolute; inset: 0; background: linear-gradient(90deg, #fffaf5e6, #fffaf5b3 65%, #fffaf566); }
 .dating-article .article-title { font-size: 1.6rem; line-height: 1.9rem; padding-right: 3rem; }

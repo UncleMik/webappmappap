@@ -1,6 +1,5 @@
 /* Keep the mobile composition on wide screens, including fixed panels. */
 body { width: min(100%, 500px); margin-inline: auto; }
-.app-shell > .bottom-navigation,
 .app-section-frame,
 .section-loading {
   left: max(0px, calc((100% - 500px) / 2));
