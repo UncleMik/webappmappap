@@ -11,9 +11,9 @@
   <link rel="preload" href="assets/fonts/Intro-Regular.woff" as="font" type="font/woff" crossorigin>
   <link rel="preload" href="assets/fonts/Intro-Bold.woff" as="font" type="font/woff" crossorigin>
   <link rel="stylesheet" href="styles.css?v=20261008-close">
-  <link rel="stylesheet" href="video.css?v=20261028-descriptions">
+  <link rel="stylesheet" href="video.css?v=20261110-access-note">
   <script src="weekly-videos.js?v=20261108-free-weekly" defer></script>
-  <script src="video.js?v=20261109-reader-entry" defer></script>
+  <script src="video.js?v=20261110-access-note" defer></script>
   <script src="video-fullscreen.js?v=20261020-natural-ratio" defer></script>
   <link rel="stylesheet" href="mobile-layout.css?v=20261007-darker-sides">
 </head>
@@ -46,7 +46,7 @@
           <button id="video-next" class="skip-button" type="button" aria-label="Следующий раздел"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M16 5h3v14h-3zM5 5l11 7-11 7Z"/></svg></button>
         </div>
         <div class="step-copy" aria-live="polite"><p class="step-count"></p><h2 id="step-title"></h2><p class="step-description"></p></div>
-        <aside class="video-note" hidden><span aria-hidden="true">i</span><p></p></aside>
+        <aside class="video-note"><span aria-hidden="true">i</span><p role="status"></p></aside>
         <p id="player-status" role="status" hidden></p>
         <details class="video-chapters"><summary>Видео <span></span></summary><ol id="chapter-list"></ol></details>
       </section>

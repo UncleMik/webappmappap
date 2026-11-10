@@ -23,8 +23,6 @@ export function mountWeeklyVideo(id) {
     description.classList.add('weekly-video-description');
     stage.before(description);
   } else description.remove();
-  document.querySelector('.video-note p').textContent = 'Видео школы доступно бесплатно после входа.';
-  document.querySelector('.video-note').hidden = false;
   cover.classList.add('weekly-cover');
   cover.querySelector('img').src = item.image;
   cover.querySelector('img').alt = item.title;
@@ -139,9 +137,7 @@ export function mountWeeklyVideo(id) {
   video.addEventListener('pause', () => playing(false));
   video.addEventListener('timeupdate', update);
   video.addEventListener('error', () => { if (video.getAttribute('src')) error(); });
-  const pointsNote = document.createElement('p');
-  pointsNote.setAttribute('role', 'status');
-  document.querySelector('.video-note').append(pointsNote);
+  const pointsNote = document.querySelector('.video-note p');
   const finishPoints = trackVideoPoints(video, id, pointsNote);
   video.addEventListener('ended', async () => {
     await finishPoints();
