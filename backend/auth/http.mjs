@@ -76,7 +76,7 @@ function limitQuota(error) {
 const materialsUnavailable = () => new AuthError(503, 'course_materials_unavailable',
   'Материалы курсов временно недоступны. Попробуйте ещё раз.');
 
-export function createAuthServer({ service, store, courseChecks, courseMaterials, personalData, profilePhoto, clubChat, aiChat, points, weeklyPoll, origin, enabled = false, trustProxy = false, mailPerMinute = 120, weeklyMedia = createWeeklyMedia() }) {
+export function createAuthServer({ service, store, courseChecks, courseMaterials, personalData, profilePhoto, clubChat, aiChat, points, weeklyPoll, adminHttp, admin, origin, enabled = false, trustProxy = false, mailPerMinute = 120, weeklyMedia = createWeeklyMedia() }) {
   let largeAiInFlight = false;
   return createServer({ requestTimeout: 90_000, headersTimeout: 10_000, maxHeaderSize: 8192 }, async (request, response) => {
     let ownsLargeSlot = false;
@@ -102,6 +102,11 @@ export function createAuthServer({ service, store, courseChecks, courseMaterials
     try {
       if (!enabled) throw new AuthError(503, 'auth_unavailable', 'Вход ещё не подключён. Попробуйте позже.');
       const url = new URL(request.url, origin);
+      if (url.pathname === '/admin' || url.pathname.startsWith('/admin/') || url.pathname.startsWith('/api/admin/')) {
+        if (adminHttp) await adminHttp(request, response, url, send, readJson);
+        else send(404, { error: 'not_found' });
+        return;
+      }
       const pointsRead = request.method === 'GET' && url.pathname === '/api/auth/points';
       const articleReading = request.method === 'POST' && url.pathname === '/api/auth/points/articles';
       const videoWatching = request.method === 'POST' && url.pathname === '/api/auth/points/videos';
@@ -124,6 +129,12 @@ export function createAuthServer({ service, store, courseChecks, courseMaterials
       }
       if (request.method === 'GET' && url.pathname === '/api/auth/session') {
         send(200, await service.sessionState(readSessionCookie(request))); return;
+      }
+      if (request.method === 'GET' && url.pathname === '/api/auth/announcements') {
+        const user = await service.session(readSessionCookie(request));
+        if (!user) throw new AuthError(401, 'sign_in_required', 'Войдите в аккаунт.');
+        if (!admin) throw new AuthError(503, 'announcements_unavailable', 'Объявления временно недоступны.');
+        send(200, await admin.publicAnnouncements(user, request.headers['x-webpril-account'])); return;
       }
       if (request.method === 'GET' && url.pathname === '/api/auth/ai/conversations') {
         if (!aiChat) throw new AuthError(503, 'ai_unavailable', 'Лара временно недоступна.');

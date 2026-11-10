@@ -14,8 +14,11 @@ import { createClubChat } from './club-chat.mjs';
 import { createAiChat } from './ai-chat.mjs';
 import { createPoints } from './points.mjs';
 import { createWeeklyPoll } from './weekly-poll.mjs';
+import { createAdmin } from './admin.mjs';
+import { openAdminArticles } from './admin-articles.mjs';
+import { createAdminHttp } from './admin-http.mjs';
 
-let pool, courseDb;
+let pool, courseDb, adminArticles;
 function closeCourseDb() {
   try { courseDb?.close(); } catch { console.error('course_materials_close_failed'); }
   courseDb = null;
@@ -55,7 +58,19 @@ if (pointsEnabled) {
 const points = createPoints({ pool, userIds: config.pointsPilotUserIds, forAll: config.pointsForAll,
   lookupArticle: id => courseDb && readArticle(courseDb, id) });
 const weeklyPoll = createWeeklyPoll(pool);
-const server = createAuthServer({ ...config, service, store, courseChecks, courseMaterials, aiChat, points, weeklyPoll,
+let admin, adminHttp;
+if (config.admin) {
+  try {
+    await pool.query('SELECT user_id FROM admin_editors LIMIT 0');
+    adminArticles = openAdminArticles(config.admin.database, config.admin.uploads);
+    admin = createAdmin({ pool, articles: adminArticles, ownerEmail: config.admin.ownerEmail, appOrigin: config.origin });
+    adminHttp = await createAdminHttp({ admin, service, store, ...config.admin, mailPerMinute: config.mailPerMinute });
+  } catch {
+    console.error('admin_start_failed');
+    adminArticles?.close(); adminArticles = null; admin = null;
+  }
+}
+const server = createAuthServer({ ...config, service, store, courseChecks, courseMaterials, aiChat, points, weeklyPoll, admin, adminHttp,
   personalData: createPersonalData(pool), profilePhoto: createProfilePhoto(pool),
   clubChat: createClubChat({ pool, service, courseMaterials, store, points, ownerUserId: config.clubOwnerUserId }), trustProxy: true });
 let working = false, stopping = false, lastCleanup = 0;
@@ -78,6 +93,7 @@ async function stop() {
   stopping = true; clearInterval(worker);
   await new Promise(resolve => server.close(resolve));
   while (working) await new Promise(resolve => setTimeout(resolve, 50));
+  adminArticles?.close();
   closeCourseDb();
   await pool.end();
 }

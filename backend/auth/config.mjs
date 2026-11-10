@@ -1,6 +1,6 @@
 import pg from 'pg';
 import { resolve } from 'node:path';
-import { isUuid } from './security.mjs';
+import { isUuid, normalizeEmail } from './security.mjs';
 
 export function readConfig(env = process.env) {
   const required = ['AUTH_DATABASE_URL', 'AUTH_HMAC_SECRET', 'UNISENDER_API_KEY', 'UNISENDER_TEMPLATE_ID', 'GETCOURSE_IMPORT_KEY'];
@@ -8,6 +8,10 @@ export function readConfig(env = process.env) {
   if (Buffer.byteLength(env.AUTH_HMAC_SECRET) < 32) throw new Error('AUTH_HMAC_SECRET must contain at least 32 bytes');
   const origin = new URL(env.AUTH_ORIGIN || 'https://app.legkie-rody.ru').origin;
   if (!origin.startsWith('https://')) throw new Error('AUTH_ORIGIN must use HTTPS');
+  const adminOrigin = env.ADMIN_ORIGIN ? new URL(env.ADMIN_ORIGIN).origin : null;
+  if (adminOrigin && (!adminOrigin.startsWith('https://') || adminOrigin === origin || !env.ADMIN_OWNER_EMAIL)) {
+    throw new Error('Invalid admin origin or missing owner email');
+  }
   let db;
   try { db = new URL(env.AUTH_DATABASE_URL); } catch { throw new Error('Invalid AUTH_DATABASE_URL'); }
   if (!['postgres:', 'postgresql:'].includes(db.protocol) || !['localhost', '127.0.0.1', '[::1]'].includes(db.hostname)) {
@@ -36,6 +40,11 @@ export function readConfig(env = process.env) {
     databaseUrl: env.AUTH_DATABASE_URL,
     clubOwnerUserId: clubOwnerUserId?.toLowerCase() || null,
     pointsPilotUserIds, pointsForAll: env.AUTH_POINTS_FOR_ALL === 'true',
+    admin: adminOrigin ? { origin: adminOrigin, ownerEmail: normalizeEmail(env.ADMIN_OWNER_EMAIL),
+      frontend: resolve(env.ADMIN_FRONTEND_DIR || '/opt/wep_pril/admin-frontend'),
+      uploads: resolve(env.ADMIN_ARTICLE_UPLOADS || '/opt/wep_pril/uploads/articles'),
+      database: resolve(env.ADMIN_ARTICLES_PATH || '/opt/wep_pril/data/articles.sqlite'),
+    } : null,
     laraWeb: env.LARA_WEB_URL ? { url: env.LARA_WEB_URL, secret: env.LARA_WEB_SECRET,
       sourceMapPath: resolve(env.LARA_WEB_SOURCE_MAP || resolve(import.meta.dirname, '../lara-source-map.json')) } : null,
     courseDatabasePath: resolve(env.COURSE_DATABASE_PATH || resolve(import.meta.dirname, '../../data/articles.sqlite')),

@@ -58,6 +58,8 @@
 }
 .notifications-content li a { display: block; width: 100%; color: inherit; text-decoration: none; }
 .notifications-content li a strong { color: #5430aa; }
+.notification-announcement-body { margin: 5px 0; white-space: pre-wrap; }
+#notification-announcements li a { display: inline-block; margin-top: 5px; color: #5430aa; text-decoration: underline; }
 .notifications-content li time,
 .notifications-content li a span { display: block; margin-top: 4px; color: var(--muted); font-size: 13px; }
 .notifications-status { color: var(--muted); font-size: 14px; }

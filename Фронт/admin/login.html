@@ -1,0 +1,31 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Вход в админку · Лёгкие роды</title>
+  <link rel="stylesheet" href="/admin/ui.css">
+  <script src="/admin/login.js" defer></script>
+</head>
+<body>
+  <main class="shell login">
+    <p class="eyebrow">Школа «Лёгкие роды»</p>
+    <h1>Вход в админку</h1>
+    <form id="email-form" class="surface">
+      <label>Email аккаунта
+        <input name="email" type="email" maxlength="254" autocomplete="email" required>
+      </label>
+      <button type="submit" class="primary">Получить код</button>
+    </form>
+    <form id="code-form" class="surface" hidden>
+      <p>Введите шесть цифр из письма.</p>
+      <label>Код входа
+        <input name="code" inputmode="numeric" autocomplete="one-time-code" minlength="6" maxlength="6" pattern="[0-9]{6}" required>
+      </label>
+      <button type="submit" class="primary">Войти</button>
+      <button id="edit-email" type="button">Ввести email заново</button>
+    </form>
+    <p id="login-status" class="status" role="status" aria-live="polite"></p>
+  </main>
+</body>
+</html>

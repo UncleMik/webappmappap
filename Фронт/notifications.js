@@ -18,6 +18,10 @@ dialog.innerHTML = `
   </header>
   <div class="notifications-content">
     <p class="notifications-status" role="status"></p>
+    <section aria-labelledby="notification-announcements-title" hidden>
+      <h3 id="notification-announcements-title">Объявления школы</h3>
+      <ul id="notification-announcements"></ul>
+    </section>
     <section aria-labelledby="notification-messages-title" hidden>
       <h3 id="notification-messages-title">Новые сообщения</h3>
       <ul id="notification-messages"></ul>
@@ -31,6 +35,7 @@ dialog.innerHTML = `
 document.body.append(dialog);
 
 const status = dialog.querySelector('.notifications-status');
+const announcements = dialog.querySelector('#notification-announcements');
 const messages = dialog.querySelector('#notification-messages');
 const points = dialog.querySelector('#notification-points');
 const retry = dialog.querySelector('.notifications-retry');
@@ -59,6 +64,7 @@ function reset() {
   clearTimeout(expiry);
   setItems(messages, []);
   setItems(points, []);
+  setItems(announcements, []);
   status.textContent = '';
   retry.hidden = true;
 }
@@ -97,6 +103,28 @@ function messageItem(room, count) {
   return item;
 }
 
+function announcementItem(row) {
+  const item = document.createElement('li');
+  const copy = document.createElement('div');
+  const time = element('time', dates.format(new Date(row.publishedAt)) + ' МСК');
+  time.dateTime = row.publishedAt;
+  const body = element('p', row.body);
+  body.className = 'notification-announcement-body';
+  copy.append(element('strong', row.title), body, time);
+  if (row.link) {
+    try {
+      const url = new URL(row.link, location.origin);
+      if (url.protocol === 'https:' && !url.username && !url.password) {
+        const link = element('a', 'Открыть ссылку');
+        link.href = url.href;
+        copy.append(link);
+      }
+    } catch { /* An invalid link does not hide the announcement. */ }
+  }
+  item.append(copy);
+  return item;
+}
+
 async function load() {
   reset();
   const request = generation;
@@ -108,19 +136,25 @@ async function load() {
     if (!current()) return;
     if (!session || !sameAccount(session)) { dismiss(); return; }
     const started = performance.now();
-    const [wallet, club] = await Promise.allSettled([
+    const [wallet, club, school] = await Promise.allSettled([
       authRequest('points', undefined, { headers: { 'X-Webpril-Account': session } }),
       clubRequest('club', { accountId: session, signal: controller.signal }),
+      authRequest('announcements', undefined, { headers: { 'X-Webpril-Account': session } }),
     ]);
     if (!current()) return;
-    if (!sameAccount(session) || wallet.status === 'fulfilled' && wallet.value?.accountId !== session ||
-        [wallet, club].some(result => result.status === 'rejected' && lostSession(result.reason))) {
+    if (!sameAccount(session) || [wallet, school].some(result => result.status === 'fulfilled' && result.value?.accountId !== session) ||
+        [wallet, club, school].some(result => result.status === 'rejected' && lostSession(result.reason))) {
       dismiss();
       return;
     }
 
     const history = wallet.value?.history;
     const walletFailed = wallet.status === 'rejected' || wallet.value?.enabled === true && !Array.isArray(history);
+    const schoolRows = school.value?.announcements;
+    const schoolFailed = !Array.isArray(schoolRows);
+    setItems(announcements, (Array.isArray(schoolRows) ? schoolRows : [])
+      .filter(row => typeof row?.title === 'string' && typeof row?.body === 'string' && Number.isFinite(Date.parse(row.publishedAt)))
+      .map(announcementItem));
     setItems(points, (Array.isArray(history) ? history : [])
       .filter(row => Number.isSafeInteger(row?.amount) && row.amount > 0 && Number.isFinite(Date.parse(row.occurredAt)))
       .map(pointItem));
@@ -141,10 +175,10 @@ async function load() {
       } catch { clubFailed = true; }
     }
     setItems(messages, items);
-    const failed = walletFailed || clubFailed;
-    status.textContent = walletFailed && clubFailed ? 'Не удалось загрузить уведомления.' :
+    const failed = walletFailed || clubFailed || schoolFailed;
+    status.textContent = walletFailed && clubFailed && schoolFailed ? 'Не удалось загрузить уведомления.' :
       failed ? 'Часть уведомлений пока недоступна.' :
-      points.children.length || items.length ? '' : 'Пока нет уведомлений.';
+      points.children.length || items.length || announcements.children.length ? '' : 'Пока нет уведомлений.';
     retry.hidden = !failed;
     if (Number.isFinite(remaining)) expiry = setTimeout(() => {
       if (!current()) return;

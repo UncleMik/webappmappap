@@ -1,0 +1,109 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Админка · Лёгкие роды</title>
+  <link rel="stylesheet" href="/admin/ui.css">
+  <script src="/admin/panel.js" defer></script>
+</head>
+<body>
+  <main class="shell">
+    <header class="page-header">
+      <div>
+        <p class="eyebrow">Школа «Лёгкие роды»</p>
+        <h1>Админка</h1>
+        <p id="identity" class="muted"></p>
+      </div>
+      <button id="logout" type="button" hidden>Выйти</button>
+    </header>
+    <p id="status" class="status" role="status" aria-live="polite">Проверяем доступ…</p>
+    <div id="workspace" hidden>
+      <nav aria-label="Разделы админки">
+        <button type="button" data-tab="articles" aria-current="page">Статьи</button>
+        <button type="button" data-tab="announcements">Объявления</button>
+        <button type="button" data-tab="polls">Голосования недели</button>
+        <button type="button" data-tab="staff" hidden>Сотрудники</button>
+        <button type="button" data-tab="history">Журнал</button>
+      </nav>
+
+      <section id="articles">
+        <h2>Статьи по неделям</h2>
+        <div class="toolbar">
+          <label>Неделя <select id="article-filter"></select></label>
+          <button id="new-article" type="button" class="primary">Новая статья</button>
+        </div>
+        <form id="article-form" class="surface" hidden>
+          <h3 id="article-editor-title">Новая статья</h3>
+          <label>Неделя <select name="week" required></select></label>
+          <label>Заголовок <input name="title" maxlength="200" required></label>
+          <label>Обложка <input id="article-cover" type="file" accept="image/webp,image/jpeg,image/png"></label>
+          <img id="cover-preview" class="cover" alt="Предпросмотр обложки" hidden>
+          <button id="remove-cover" type="button" hidden>Убрать обложку</button>
+          <div id="article-blocks"></div>
+          <button id="add-block" type="button">Добавить блок</button>
+          <div class="actions">
+            <button type="submit" class="primary">Предпросмотр</button>
+            <button id="close-article" type="button">Закрыть редактор</button>
+          </div>
+        </form>
+        <ul id="article-list" class="list"></ul>
+      </section>
+
+      <section id="announcements" hidden>
+        <h2>Объявления</h2>
+        <p class="muted">Объявление появится в колокольчике у всех учениц с аккаунтом.</p>
+        <form id="announcement-form" class="surface">
+          <label>Заголовок <input name="title" maxlength="140" required></label>
+          <label>Текст <textarea name="body" maxlength="3000" rows="4" required></textarea></label>
+          <label>Ссылка (необязательно) <input name="link" maxlength="700" placeholder="/club.html или https://…"></label>
+          <button type="submit" class="primary">Предпросмотр</button>
+        </form>
+        <ul id="announcement-list" class="list"></ul>
+      </section>
+
+      <section id="polls" hidden>
+        <h2>Голосования недели</h2>
+        <p class="muted">Голосование откроется в понедельник в 00:00 и закроется в воскресенье в 18:00 по Москве.</p>
+        <form id="poll-form" class="surface">
+          <h3 id="poll-editor-title">Новое голосование</h3>
+          <label>Дата понедельника <input name="week" type="date" required></label>
+          <label>Вопрос <input name="question" maxlength="250" required></label>
+          <div id="poll-options"></div>
+          <button id="add-option" type="button">Добавить вариант</button>
+          <div class="actions">
+            <button type="submit" class="primary">Запланировать</button>
+            <button id="reset-poll" type="button" hidden>Новое голосование</button>
+          </div>
+        </form>
+        <ul id="poll-list" class="list"></ul>
+      </section>
+
+      <section id="staff" hidden>
+        <h2>Сотрудники</h2>
+        <p class="muted">Выдайте доступ по email существующего аккаунта.</p>
+        <form id="staff-form" class="surface">
+          <label>Email сотрудника <input name="email" type="email" maxlength="254" required></label>
+          <button type="submit" class="primary">Выдать доступ</button>
+        </form>
+        <ul id="staff-list" class="list"></ul>
+      </section>
+
+      <section id="history" hidden>
+        <h2>Журнал</h2>
+        <ul id="history-list" class="list"></ul>
+      </section>
+    </div>
+  </main>
+
+  <dialog id="preview" aria-labelledby="preview-title">
+    <h2 id="preview-title">Предпросмотр</h2>
+    <div id="preview-copy"></div>
+    <p id="preview-status" class="status" role="status" aria-live="polite"></p>
+    <div class="actions">
+      <button id="confirm-preview" type="button" class="primary">Опубликовать</button>
+      <button id="close-preview" type="button">Закрыть</button>
+    </div>
+  </dialog>
+</body>
+</html>

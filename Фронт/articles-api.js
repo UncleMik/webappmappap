@@ -76,7 +76,7 @@ function articleCover(article, className) {
   image.alt = '';
   image.loading = 'lazy';
   image.decoding = 'async';
-  const cardImage = article.image.replace(/^\/uploads\/articles\/([a-z0-9-]+\.webp)$/, '/uploads/article-cards/$1');
+  const cardImage = article.image.replace(/^\/uploads\/articles\/((?!admin-)[a-z0-9-]+\.webp)$/, '/uploads/article-cards/$1');
   image.src = window.articleImageUrl(cardImage);
   return image;
 }

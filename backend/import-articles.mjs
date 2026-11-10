@@ -14,8 +14,10 @@ for (const article of articles) {
   if (article.image && (!/^\/uploads\/articles\/[a-z0-9-]+\.webp$/.test(article.image) || !existsSync(resolve(uploads, article.image.slice('/uploads/'.length))))) throw new Error(`Missing image ${article.id}`);
 }
 const db = openDatabase(database, false);
+const preserveEdits = db.prepare('PRAGMA table_info(articles)').all().some(column => column.name === 'editor_revision')
+  ? ' WHERE articles.editor_revision=0' : '';
 const insert = db.prepare(`INSERT INTO articles(id,number,week,title,image,minutes,blocks) VALUES(?,?,?,?,?,?,?)
-  ON CONFLICT(id) DO UPDATE SET number=excluded.number,week=excluded.week,title=excluded.title,image=excluded.image,minutes=excluded.minutes,blocks=excluded.blocks`);
+  ON CONFLICT(id) DO UPDATE SET number=excluded.number,week=excluded.week,title=excluded.title,image=excluded.image,minutes=excluded.minutes,blocks=excluded.blocks${preserveEdits}`);
 db.exec('BEGIN');
 try {
   for (const article of articles) insert.run(article.id, article.number, article.week, article.title, article.image || null, Math.max(1, Math.ceil(article.blocks.map(block => block.text).join(' ').split(/\s+/).length / 180)), JSON.stringify(article.blocks));
