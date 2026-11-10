@@ -6,6 +6,7 @@
 #today .mom-card { height: auto; min-height: 15.9rem; }
 #today .helpers { margin-top: 1.8rem; }
 #today .recommendations { margin-top: 2.4rem; }
+#today .weekly-materials-heading { margin: 1rem 0 0; }
 #today .section-description { display: block; margin-top: .5rem; }
 #today .pregnancy-summary { height: auto; margin-top: 1rem; padding: 1.3rem 1.6rem; }
 #today .summary-row { height: auto; min-height: 2.8rem; gap: 1rem; }
