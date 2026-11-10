@@ -31,6 +31,28 @@ const productsByLesson = {
   348997994: [4302509],
 };
 
+const videoOrigins = {
+  index: { href: 'index.html', text: 'На главную', tab: 'index.html' },
+  'index-breathing': { href: 'index.html', text: 'На главную', tab: null },
+  mom: { href: 'mom.html#mom-tools-title', text: 'Назад к разделу «Мама»', tab: 'index.html' },
+  baby: { href: 'baby.html', text: 'Назад к разделу «Малыш»', tab: 'index.html' },
+  journey: { href: 'journey.html', text: 'В «Мой путь»', tab: 'journey.html' },
+  'my-courses': { href: 'my-courses.html', text: 'К моим курсам', tab: 'journey.html' },
+  club: { href: 'club.html#events', text: 'В Клуб', tab: 'club.html' },
+  articles: { href: 'articles.html', text: 'К материалам', tab: 'index.html' },
+  favorites: { href: 'favorites.html', text: 'В избранное', tab: 'journey.html' },
+};
+
+export function schoolVideoReturn(params) {
+  const from = params.get('from');
+  if (!Object.hasOwn(videoOrigins, from)) return null;
+  const origin = videoOrigins[from];
+  const week = Number(params.get('week'));
+  return from === 'journey' && Number.isInteger(week) && week >= 1 && week <= 42
+    ? { ...origin, week, href: `journey.html?week=${week}#videos-title` }
+    : origin;
+}
+
 export async function resolveSchoolVideo(id, request = requestCourse) {
   const route = Object.hasOwn(schoolVideoRoutes, id) ? schoolVideoRoutes[id] : null;
   if (!route || !route.lessons.length) return { state: 'missing', route };
@@ -61,6 +83,10 @@ export async function resolveSchoolVideo(id, request = requestCourse) {
 
 export async function mountSchoolVideo(id) {
   const route = Object.hasOwn(schoolVideoRoutes, id) ? schoolVideoRoutes[id] : null;
+  const source = new URLSearchParams(location.search);
+  const from = source.get('from');
+  const returnLink = schoolVideoReturn(source);
+  if (returnLink) document.querySelector('.video-back').href = returnLink.href;
   document.title = route?.title || 'Видео не найдено';
   document.querySelector('#video-title').textContent = document.title;
   document.querySelector('.video-header p').textContent = 'Видео школы';
@@ -79,10 +105,10 @@ export async function mountSchoolVideo(id) {
     const result = await resolveSchoolVideo(id);
     if (result.state === 'available') {
       const destination = new URL(result.href, location.href);
-      const from = new URLSearchParams(location.search).get('from');
-      if (from === 'favorites') destination.searchParams.set('from', 'favorites');
-      else if (id === 'back-practice' && from === 'mom') destination.searchParams.set('from', 'mom');
-      else if (id === 'breathing' && from === 'index') destination.searchParams.set('from', 'index-breathing');
+      if (returnLink) {
+        destination.searchParams.set('from', id === 'breathing' && from === 'index' ? 'index-breathing' : from);
+        if (returnLink.week) destination.searchParams.set('week', returnLink.week);
+      }
       location.replace(destination.href);
       return;
     }

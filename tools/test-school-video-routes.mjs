@@ -3,9 +3,25 @@ import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 
 const source = readFileSync(new URL('../Фронт/school-video-routes.js', import.meta.url), 'utf8');
-const { resolveSchoolVideo, schoolVideoRoutes } = await import('data:text/javascript;base64,' + Buffer.from(source).toString('base64'));
+const { resolveSchoolVideo, schoolVideoRoutes, schoolVideoReturn } = await import('data:text/javascript;base64,' + Buffer.from(source).toString('base64'));
 const course = (productId, lessonId) => ({ course: { productId, sections: [{ streamId: 123,
   lessons: [{ lessonId, hasVideo: true }] }] } });
+
+test('lessons return to supported entry screens and keep a valid journey week', () => {
+  const targets = {
+    index: 'index.html', 'index-breathing': 'index.html', mom: 'mom.html#mom-tools-title',
+    baby: 'baby.html', journey: 'journey.html?week=12#videos-title', 'my-courses': 'my-courses.html',
+    club: 'club.html#events', articles: 'articles.html', favorites: 'favorites.html',
+  };
+  for (const [from, href] of Object.entries(targets)) {
+    assert.equal(schoolVideoReturn(new URLSearchParams({ from, week: '12' })).href, href);
+  }
+  assert.equal(schoolVideoReturn(new URLSearchParams('from=index-breathing')).tab, null);
+  assert.equal(schoolVideoReturn(new URLSearchParams('from=journey&week=43')).href, 'journey.html');
+  for (const from of ['course', '__proto__', 'https://example.test']) {
+    assert.equal(schoolVideoReturn(new URLSearchParams({ from })), null);
+  }
+});
 
 test('each matched topic opens the exact purchased lesson, with both course versions supported', async () => {
   // Product provenance checked against the live private inventory on 27 October.

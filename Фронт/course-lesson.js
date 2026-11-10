@@ -5,6 +5,7 @@ import { mountCourseVideo } from './course-video-player.js?v=20261027-subtopics'
 import { courseChapters } from './course-video-chapters.js?v=20261026-weekly-style';
 import { createCourseView, courseErrorText, positiveId, stopCourseMedia } from './course-views.js?v=20261109-silent-access';
 import { node, courseProgram, courseListUrl, courseUrl, lessonUrl, isFreeCourseLesson, validateCourse, primaryLink } from './course-ui.js?v=20261109-programs';
+import { schoolVideoReturn } from './school-video-routes.js';
 
 const params = new URLSearchParams(location.search);
 const productId = params.get('course');
@@ -25,13 +26,10 @@ const setFavorite = window.bindFavoriteButton(
   [document.querySelector('.video-favorite'), favoriteEnd], document.querySelector('.favorite-status'),
 );
 const requestedVideo = params.get('video');
-const fromFavorites = params.get('from') === 'favorites';
-const fromMom = params.get('from') === 'mom';
-const sourceBack = fromFavorites ? { href: 'favorites.html', text: 'В избранное' }
-  : fromMom ? { href: 'mom.html#mom-tools-title', text: 'Назад к разделу «Мама»' }
-  : thematicBack ? { href: thematicBack, text: 'К урокам по теме' }
+const videoOrigin = schoolVideoReturn(params);
+const sourceBack = videoOrigin ?? (thematicBack ? { href: thematicBack, text: 'К урокам по теме' }
   : freeLesson ? { href: 'index.html', text: 'На главную' }
-  : null;
+  : null);
 let courseView = null;
 let pendingVideoPositions = new Map();
 let selectedTab = 'about';
@@ -47,8 +45,9 @@ function setBack(href, text) {
 }
 setBack(positiveId(productId) ? courseUrl(productId, undefined, program) : courseListUrl(program), 'К программе курса');
 toolbar.addEventListener('click', () => back.click());
+const activeTab = videoOrigin ? videoOrigin.tab : 'journey.html';
 document.querySelectorAll('.nav-item').forEach(link => {
-  const selected = params.get('from') !== 'index-breathing' && link.getAttribute('href') === (fromMom ? 'index.html' : 'journey.html');
+  const selected = link.getAttribute('href') === activeTab;
   link.classList.toggle('active', selected);
   if (selected) link.setAttribute('aria-current', 'page');
   else link.removeAttribute('aria-current');
@@ -517,7 +516,9 @@ function renderLesson(data) {
   if (next) {
     navigation.append(node('h2', '', 'Следующий урок'), node('p', '', next.title),
       primaryLink('Следующий урок', lessonUrl(productId, next.lessonId, next.sectionId, program)));
-  } else navigation.append(primaryLink(freeLesson ? 'На главную' : 'К программе курса', freeLesson ? 'index.html' : courseUrl(productId, undefined, program)));
+  } else {
+    navigation.append(primaryLink(sourceBack?.text ?? 'К программе курса', sourceBack?.href ?? courseUrl(productId, undefined, program)));
+  }
   fragment.append(navigation, favoriteEnd);
   stopCourseMedia(scroller);
   scroller.replaceChildren(fragment);
