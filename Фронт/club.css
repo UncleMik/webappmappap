@@ -30,10 +30,6 @@
 .club-header { padding:2rem 2rem 0; min-height:9.6rem; gap:1rem; }
 .club-header h1 { font-size:3.5rem; line-height:4rem; }
 .club-header p { color:#727eb6; font-size:1.65rem; line-height:2.2rem; letter-spacing:-.035rem; }
-.club-header .header-actions { gap:1.7rem; padding-top:.3rem; }
-.club-tool { display:grid; place-items:center; width:4.5rem; height:4.5rem; border-radius:50%; background:#f8f7fb; color:#454f94; }
-.club-tool svg { width:2.4rem; height:2.4rem; }
-.club-tool[aria-expanded=true] { background:#eee7ff; color:var(--purple); }
 .club-main { padding:0 1.1rem 2rem; }
 .club-tabs { display:flex; margin:0 .7rem 1.3rem; padding:.2rem; border-radius:1.8rem; background:#f6f5fa; }
 .club-tabs button { width:50%; display:flex; align-items:center; justify-content:center; gap:1.1rem; height:4.8rem; background:transparent; border:1px solid transparent; border-radius:1.5rem; color:#6674aa; font-size:1.65rem; font-weight: 700; }
@@ -94,9 +90,7 @@
 .access-button { position:absolute; right:1.1rem; top:50%; transform:translateY(-50%); padding:1.1rem 1.4rem; border-radius:1.5rem; background:linear-gradient(115deg,#8d5bff,#6b32ff); color:white; font-size:1.2rem; line-height:1.4rem; white-space:nowrap; }
 .paid-event:last-child .event-copy strong { padding-right:0; }
 .paid-event:last-child .access-button { top:65%; }
-.club-search, .club-filters { margin:1rem .7rem 1.5rem; padding:1.2rem; border:1px solid #e7ddff; border-radius:1.3rem; background:white; color:var(--muted); font-size:1.4rem; }
-.club-search label { display:block; margin-bottom:.7rem; }
-.club-search input { width:100%; border:1px solid #ded6f4; border-radius:.8rem; padding:1rem; font:inherit; font-size:1.6rem; color:var(--ink); background:white; }
+.club-filters { margin:1rem .7rem 1.5rem; padding:1.2rem; border:1px solid #e7ddff; border-radius:1.3rem; background:white; color:var(--muted); font-size:1.4rem; }
 .club-filters label { margin-right:1.4rem; white-space:nowrap; display:inline-flex; align-items:center; gap:.4rem; }
 .club-filters input { accent-color:var(--purple); }
 .club-empty { margin:3rem 2rem; font-size:1.6rem; line-height:2.3rem; text-align:center; color:var(--muted); }
@@ -108,7 +102,6 @@
 .club-page .app { background:#fff; }
 .club-header { padding:2rem 2rem 1.2rem; min-height:8rem; align-items:center; }
 .club-header p { color:var(--muted); font-size:1.5rem; }
-.club-header .header-actions { gap:.8rem; }
 .club-main { padding:0 1.8rem 2rem; }
 .community-tabs { display:flex; gap:.6rem; margin:1.3rem 0 1rem; }
 .community-tabs button { flex:1; min-width:0; white-space:normal; min-height:44px; padding:.7rem .5rem; text-align:center; border-radius:3rem; background:#f7f5fa; font-size:1.5rem; }

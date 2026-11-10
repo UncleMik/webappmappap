@@ -11,8 +11,8 @@
   <link rel="preload" href="assets/fonts/Intro-Regular.woff" as="font" type="font/woff" crossorigin>
   <link rel="preload" href="assets/fonts/Intro-Bold.woff" as="font" type="font/woff" crossorigin>
   <link rel="stylesheet" href="styles.css?v=20261008-close">
-  <link rel="stylesheet" href="club.css?v=20261109-activity">
-  <script src="club.js?v=20261109-poll" defer></script>
+  <link rel="stylesheet" href="club.css?v=20261110-no-search">
+  <script src="club.js?v=20261110-no-search" defer></script>
   <link rel="stylesheet" href="club-chat-live.css?v=20261105-card">
   <script type="module" src="club-access.js?v=20261109-silent-access"></script>
   <link rel="stylesheet" href="app-navigation.css?v=20261006-gotham">
@@ -20,7 +20,6 @@
 </head>
 <body class="club-page">
   <svg class="svg-definitions" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><defs>
-    <symbol id="search" viewBox="0 0 24 24"><circle cx="10.5" cy="10.5" r="7.5"/><path d="m16 16 5 5"/></symbol>
     <symbol id="filter" viewBox="0 0 24 24"><path d="M3 7h7m5 0h6M3 17h3m5 0h10"/><circle cx="12.5" cy="7" r="2.5"/><circle cx="8.5" cy="17" r="2.5"/></symbol>
     <symbol id="calendar" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M7 2v6m10-6v6M3 11h18"/></symbol>
     <symbol id="globe" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><ellipse cx="12" cy="12" rx="4.5" ry="9"/><path d="M4 8h16M3 12h18M4 16h16"/></symbol>
@@ -31,7 +30,7 @@
     <symbol id="people" viewBox="0 0 30 30"><circle cx="15" cy="9" r="4"/><path d="M8 25v-3a7 7 0 0 1 14 0v3Z" fill="currentColor" stroke="none"/><path d="M7 7a4 4 0 0 0 0 8M23 7a4 4 0 0 1 0 8M7 18a5 5 0 0 0-5 5v2h3M23 18a5 5 0 0 1 5 5v2h-3"/></symbol>
   <symbol id="bell" viewBox="0 0 24 24"><path d="M5 17h14l-2-3V9a5 5 0 0 0-10 0v5Zm5 4h4"/></symbol><symbol id="video" viewBox="0 0 24 24"><rect x="3" y="5" width="12" height="14" rx="3"/><path d="m15 9 6-3v12l-6-3"/></symbol><symbol id="baby" viewBox="0 0 24 24"><circle cx="12" cy="13" r="8"/><path d="M12 5c4-5-3-6-2-1M8 12h.1M16 12h.1M9 16q3 3 6 0"/></symbol></defs></svg>
   <div class="app">
-    <header class="page-header club-header"><div><h1>Клуб</h1><p>Поддержка по сроку, этапу и теме</p></div><div class="header-actions"><button class="club-tool" id="search-toggle" type="button" aria-label="Поиск в клубе" aria-expanded="false" aria-controls="club-search"><svg aria-hidden="true"><use href="#search"/></svg></button></div></header>
+    <header class="page-header club-header"><div><h1>Клуб</h1><p>Поддержка по сроку, этапу и теме</p></div></header>
 <main class="club-main">
 <section class="speaker-carousel" aria-label="Спикеры школы" aria-roledescription="карусель">
  <div class="speaker-slides">
@@ -56,7 +55,6 @@
 <div class="speaker-full-bio" id="speaker-bio-1" hidden><p class="speaker-full-role">Врач акушер-гинеколог</p><ul><li>Ведёт беременности и роды разной степени сложности</li><li>Проводит оперативные роды</li><li>Приняла более 2000 родов</li><li>Выпускница «БГМУ»</li><li>Проходила стажировку в Хорватии в акушерско-гинекологическом отделении</li><li>С 2017 г. работает в Клиническом госпитале «Мать и дитя» в г. Уфа</li></ul></div>
 <div class="speaker-full-bio" id="speaker-bio-2" hidden><p class="speaker-full-role">Врач-неонатолог</p><ul><li>Опыт работы более 10 лет</li><li>Ведёт врачебную деятельность в одном из топовых родильных отделений Уфы — клиническом госпитале «Мать и дитя»</li><li>Мама двух детей</li><li>Закончила Башкирский медуниверситет, неоднократно проходила повышение квалификации в Санкт-Петербурге. Имеет диплом педиатра</li><li>Более 5 лет проводит «Завтрак с неонатологом», где помогает мамам разобраться с проблемами в развитии малышей</li><li>Максимально придерживается принципов доказательной медицины, но убеждена: в каждом деле важен индивидуальный подход</li></ul></div>
 </section>
-<div class="club-search" id="club-search" hidden><label for="club-query">Поиск по названию и описанию</label><input id="club-query" type="search" placeholder="Найти в клубе" autocomplete="off"></div>
 <div class="community-tabs" role="tablist" aria-label="Разделы клуба"><button role="tab" id="participants-tab" data-tab="participants" aria-selected="true" aria-controls="community-content" tabindex="0">Чаты участниц</button><button role="tab" id="events-tab" data-tab="events" aria-selected="false" aria-controls="community-content" tabindex="-1">События</button></div>
 <div id="community-content" role="tabpanel" aria-labelledby="participants-tab">
 <div data-category="participants">

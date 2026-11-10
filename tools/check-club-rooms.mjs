@@ -112,11 +112,10 @@ async (page) => {
   check(await disclosure.getAttribute('aria-expanded')==='false'&&await disclosure.getAttribute('aria-controls')==='speaker-bio-1'&&await page.locator('.speaker-full-bio:visible').count()===0,'Manual switch retained previous biography');
   await page.emulateMedia({reducedMotion:'no-preference'});
   await page.getByRole('tab',{name:'События',exact:true}).click();
-  await page.getByText('Событий пока нет.',{exact:true}).waitFor();
+  await page.getByRole('link',{name:/Активности недели/}).waitFor();
   await page.getByRole('tab',{name:'Чаты участниц',exact:true}).click();
-  await page.locator('#search-toggle').click();await page.locator('#club-query').fill('По родам');
-  check(await page.locator('[data-room]:visible').count()===1,'Search across main groups');
-  await page.locator('#search-toggle').click();
+  check(await page.locator('#search-toggle, #club-search').count()===0,'Club landing search still present');
+  check(await page.locator('[data-room]:visible').count()===rooms.length,'Returning to chats did not show every room');
   await page.setViewportSize({width:390,height:844});
   purchaseFailure = true; await page.reload();
   await page.locator('#club-access-retry').waitFor();
@@ -198,8 +197,8 @@ async (page) => {
   check(await page.locator('[data-speaker="2"]').getAttribute('aria-current')==='true','Old DOM auto carousel broke');
   await page.getByRole('tab',{name:'События',exact:true}).click();
   check(await page.getByRole('tab',{name:'События',exact:true}).getAttribute('aria-selected')==='true','Old DOM tabs broke');
-  await page.getByRole('tab',{name:'Чаты участниц',exact:true}).click();await page.locator('#search-toggle').click();
-  check(await page.locator('#club-search').isVisible(),'Old DOM search broke');
+  await page.getByRole('tab',{name:'Чаты участниц',exact:true}).click();
+  check(await page.getByRole('tab',{name:'Чаты участниц',exact:true}).getAttribute('aria-selected')==='true','Old DOM participants tab broke');
   check(!errors.length, 'Browser errors: ' + errors.join(';'));
   check(requests.filter(r => r.path !== 'club').every(r => roomIds.includes(r.id)), 'Endpoint without room');
   return { groupedMainList: true, freePaidExpiredErrorLoadingLogout: true, carouselMetrics: bannerMetrics, carouselDotsAutoAndReducedMotionCss: true, fullBiographiesExact: true, missingDisclosureDomCompatibility: true, disclosureKeyboardAndAria: true, autoPauseReadingAndResume: true, manualSwitchCollapses: true, collapseFocusVisible: true, rooms: 7, freeRoomsDuringPurchaseFailure: 5, paidExperts: 2, widths: [320,390,500,1440], legacyRedirect: true, roomAccountDraftIsolation: true, searchRoom: true, delayedRoomSearch: true, reactions: true, deletion: true, replyPendingUuidRetry: true, sessionWipe: true, mismatchedResponseRejected: true, requests: requests.length, errors };

@@ -46,28 +46,20 @@
   schedule();
  }
  const tabs = [...document.querySelectorAll('[data-tab]')];
- const query = document.querySelector('#club-query');
  const empty = document.querySelector('.club-empty');
  let active = 'participants';
- function filter() {
-  const text = query.value.trim().toLocaleLowerCase('ru');
-  let count = 0;
+ function updatePanels() {
+  let hasEntries = false;
   document.querySelectorAll('[data-category]').forEach(panel => {
    panel.hidden = panel.dataset.category !== active;
    if (panel.hidden) return;
    panel.querySelectorAll('.community-section, .club-section').forEach(section => {
-    let visible = 0;
-    section.querySelectorAll('.club-entry').forEach(row => {
-     row.hidden = !row.textContent.toLocaleLowerCase('ru').includes(text);
-     if (!row.hidden) visible++;
-    });
-    section.hidden = !visible;
-    count += visible;
+    section.hidden = !section.querySelector('.club-entry');
+    hasEntries ||= !section.hidden;
    });
   });
-  empty.hidden = active === 'events' || count > 0;
-  empty.textContent = text ? 'По этому запросу пока ничего нет. Попробуйте другой раздел.'
-   : active === 'events' ? 'Событий пока нет.' : 'Чаты пока не подключены.';
+  empty.hidden = active === 'events' || hasEntries;
+  empty.textContent = 'Чаты пока не подключены.';
  }
  function select(name) {
   active = tabs.some(tab => tab.dataset.tab === name) ? name : 'participants';
@@ -77,7 +69,7 @@
    tab.tabIndex = selected ? 0 : -1;
   });
   document.querySelector('#community-content').setAttribute('aria-labelledby', active + '-tab');
-  filter();
+  updatePanels();
  }
  tabs.forEach((tab, i) => {
   tab.addEventListener('click', () => { history.pushState(null, '', '#' + tab.dataset.tab);
@@ -91,22 +83,8 @@
    select(tabs[index].dataset.tab);
   });
  });
- const search = document.querySelector('#search-toggle');
- search.addEventListener('click', () => {
-  const panel = document.querySelector('#club-search');
-  panel.hidden = !panel.hidden;
-  search.setAttribute('aria-expanded', !panel.hidden);
-  if (!panel.hidden) query.focus();
-  else { query.value = ''; filter(); }
- });
- query.addEventListener('input', filter);
- document.addEventListener('keydown', event => {
-  if (event.key === 'Escape') {
-   if (search.getAttribute('aria-expanded') === 'true') { search.click(); search.focus(); }
-  }
- });
  window.addEventListener('hashchange', () => select(location.hash.slice(1)));
  window.addEventListener('popstate', () => select(location.hash.slice(1)));
- document.addEventListener('club:entries-changed', filter);
+ document.addEventListener('club:entries-changed', updatePanels);
  select(location.hash.slice(1));
 })();
