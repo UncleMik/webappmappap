@@ -283,8 +283,8 @@ function renderLesson(data) {
     const item = videos[index];
     if (!item?.playable || !item.favoriteId) { setFavorite(null); return; }
     const title = videos.filter(video => video.title === item.title).length > 1
-      ? \`${item.title.slice(0, 480)} · Видео ${index + 1}\` : item.title.slice(0, 500);
-    setFavorite({ id: \`course:${productId}:${lessonId}:${item.favoriteId}\`, title });
+      ? `${item.title.slice(0, 480)} · Видео ${index + 1}` : item.title.slice(0, 500);
+    setFavorite({ id: `course:${productId}:${lessonId}:${item.favoriteId}`, title });
   }
   function selectVideo(key) {
     if (!courseView?.isCurrent()) { courseView?.refresh(); return; }
