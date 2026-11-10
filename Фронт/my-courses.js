@@ -100,9 +100,10 @@ function renderProgram(data, owned) {
     }
     for (const [position, item] of topics.entries()) {
       const link = node('a', 'course-topic-tile', full ? item.title : undefined);
-      if (!photoTopics.has(item.id)) link.append(topicIllustration(item.id, '', position));
-      else if (!full) link.append(cover(item.id));
-      if (!full) link.append(node('span', '', item.title));
+      if (!full) {
+        link.append(photoTopics.has(item.id) ? cover(item.id) : topicIllustration(item.id, '', position),
+          node('span', '', item.title));
+      }
       link.dataset.topic = item.id;
       link.href = topicUrl(item.id);
       grid.append(link);
