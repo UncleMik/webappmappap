@@ -47,6 +47,33 @@ const pointLabels = new Map([
   ['video_watch', 'Просмотр бесплатного видео'],
 ]);
 
+const bell = today?.querySelector('[data-notifications-trigger]');
+const seenInMemory = new Map();
+const unread = { announcements: false, points: false, messages: false };
+let badgeAccount;
+
+function paintBadge() {
+  const active = Object.values(unread).some(Boolean);
+  bell?.toggleAttribute('data-unread', active);
+  bell?.setAttribute('aria-label', active ? 'Уведомления, есть новые' : 'Уведомления');
+}
+
+function updateUnread(account, source, rows, markSeen) {
+  const key = 'webpril:notifications:seen:' + account + ':' + source;
+  const ids = rows.map(row => String(row.id));
+  let seen = seenInMemory.get(key) || [];
+  try {
+    const saved = JSON.parse(localStorage.getItem(key));
+    if (Array.isArray(saved)) seen = saved;
+  } catch { /* Use the in-memory state if storage is unavailable. */ }
+  if (markSeen) {
+    seen = ids;
+    seenInMemory.set(key, seen);
+    try { localStorage.setItem(key, JSON.stringify(seen)); } catch { /* The current page still remembers. */ }
+  }
+  unread[source] = ids.some(id => !seen.includes(id));
+}
+
 let generation = 0, controller, expiry, ended = false;
 const visible = () => !document.hidden && !frame?.hidden && !today?.hidden;
 const sameAccount = id => [window.webprilSessionAccountId, frame && window.parent.webprilSessionAccountId]
@@ -125,16 +152,20 @@ function announcementItem(row) {
   return item;
 }
 
-async function load() {
+async function load(panel = dialog.open) {
   reset();
   const request = generation;
-  const current = () => request === generation && dialog.open && visible() && !ended;
+  const current = () => request === generation && dialog.open === panel && visible() && !ended;
   controller = new AbortController();
-  status.textContent = 'Загружаем уведомления…';
+  if (panel) status.textContent = 'Загружаем уведомления…';
   try {
     const session = window.webprilSessionAccountId || (await authRequest('session')).user?.id;
     if (!current()) return;
-    if (!session || !sameAccount(session)) { dismiss(); return; }
+    if (!session || !sameAccount(session)) { clearBadge(); dismiss(); return; }
+    if (badgeAccount !== session) {
+      clearBadge();
+      badgeAccount = session;
+    }
     const started = performance.now();
     const [wallet, club, school] = await Promise.allSettled([
       authRequest('points', undefined, { headers: { 'X-Webpril-Account': session } }),
@@ -144,6 +175,7 @@ async function load() {
     if (!current()) return;
     if (!sameAccount(session) || [wallet, school].some(result => result.status === 'fulfilled' && result.value?.accountId !== session) ||
         [wallet, club, school].some(result => result.status === 'rejected' && lostSession(result.reason))) {
+      clearBadge();
       dismiss();
       return;
     }
@@ -152,12 +184,12 @@ async function load() {
     const walletFailed = wallet.status === 'rejected' || wallet.value?.enabled === true && !Array.isArray(history);
     const schoolRows = school.value?.announcements;
     const schoolFailed = !Array.isArray(schoolRows);
-    setItems(announcements, (Array.isArray(schoolRows) ? schoolRows : [])
-      .filter(row => typeof row?.title === 'string' && typeof row?.body === 'string' && Number.isFinite(Date.parse(row.publishedAt)))
-      .map(announcementItem));
-    setItems(points, (Array.isArray(history) ? history : [])
-      .filter(row => Number.isSafeInteger(row?.amount) && row.amount > 0 && Number.isFinite(Date.parse(row.occurredAt)))
-      .map(pointItem));
+    const announcementRows = (Array.isArray(schoolRows) ? schoolRows : [])
+      .filter(row => typeof row?.title === 'string' && typeof row?.body === 'string' && Number.isFinite(Date.parse(row.publishedAt)));
+    const pointRows = (Array.isArray(history) ? history : [])
+      .filter(row => Number.isSafeInteger(row?.amount) && row.amount > 0 && Number.isFinite(Date.parse(row.occurredAt)));
+    if (!schoolFailed) updateUnread(session, 'announcements', announcementRows, panel);
+    if (!walletFailed) updateUnread(session, 'points', pointRows, panel);
 
     const rooms = club.value?.rooms;
     const items = [];
@@ -171,10 +203,15 @@ async function load() {
       try {
         const lease = chatLease({ ...room, accountId: session, responseAgeMs: performance.now() - started }, session);
         remaining = Math.min(remaining, lease);
-        items.push(messageItem(definition, count));
+        items.push({ definition, count });
       } catch { clubFailed = true; }
     }
-    setItems(messages, items);
+    if (!clubFailed || items.length) unread.messages = items.length > 0;
+    paintBadge();
+    if (!panel) return;
+    setItems(announcements, announcementRows.map(announcementItem));
+    setItems(points, pointRows.map(pointItem));
+    setItems(messages, items.map(({ definition, count }) => messageItem(definition, count)));
     const failed = walletFailed || clubFailed || schoolFailed;
     status.textContent = walletFailed && clubFailed && schoolFailed ? 'Не удалось загрузить уведомления.' :
       failed ? 'Часть уведомлений пока недоступна.' :
@@ -186,8 +223,10 @@ async function load() {
       status.textContent = 'Обновите уведомления, чтобы проверить новые сообщения.';
       retry.hidden = false;
     }, remaining);
-  } catch {
+  } catch (error) {
     if (!current()) return;
+    if (!sameAccount(badgeAccount) || lostSession(error)) clearBadge();
+    if (!panel) return;
     status.textContent = 'Не удалось загрузить уведомления.';
     retry.hidden = false;
   }
@@ -206,11 +245,30 @@ dialog.addEventListener('click', event => {
   const rect = dialog.getBoundingClientRect();
   if (event.clientY < rect.top || event.clientX < rect.left || event.clientX > rect.right) dismiss();
 });
-retry.addEventListener('click', load);
-addEventListener('webpril:session-ended', () => { ended = true; dismiss(); });
+retry.addEventListener('click', () => void load());
+function clearBadge() {
+  badgeAccount = undefined;
+  unread.announcements = unread.points = unread.messages = false;
+  paintBadge();
+}
+
+function refreshBadge() {
+  if (bell && visible() && !dialog.open && !ended) void load(false);
+}
+
+addEventListener('webpril:session-ended', () => { ended = true; clearBadge(); dismiss(); });
 addEventListener('pagehide', dismiss);
-const closeIfHidden = () => { if (!visible()) dismiss(); };
-document.addEventListener('visibilitychange', closeIfHidden);
-const observer = new MutationObserver(closeIfHidden);
+addEventListener('pageshow', refreshBadge);
+addEventListener('storage', event => {
+  if (event.key?.startsWith('webpril:notifications:seen:')) refreshBadge();
+});
+const updateVisibility = () => {
+  if (visible()) refreshBadge();
+  else dismiss();
+};
+document.addEventListener('visibilitychange', updateVisibility);
+const observer = new MutationObserver(updateVisibility);
 if (today) observer.observe(today, { attributes: true, attributeFilter: ['hidden'] });
 if (frame) observer.observe(frame, { attributes: true, attributeFilter: ['hidden'] });
+
+if (bell) setInterval(refreshBadge, 60_000);

@@ -1,4 +1,5 @@
 #today .notification[data-notifications-trigger] {
+  position: relative;
   display: grid;
   place-items: center;
   flex: none;
@@ -6,6 +7,18 @@
   height: 44px;
 }
 #today .notification[data-notifications-trigger] svg { width: 28px; height: 28px; }
+#today .notification[data-unread]::after {
+  content: '';
+  position: absolute;
+  top: 7px;
+  right: 8px;
+  width: 10px;
+  height: 10px;
+  border: 2px solid #fcfaf7;
+  border-radius: 50%;
+  background: #794aff;
+  pointer-events: none;
+}
 
 .notifications-dialog {
   position: fixed;
