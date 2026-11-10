@@ -317,7 +317,6 @@ function clear() {
   list.setAttribute('aria-busy', 'true');
   document.title = baseTitle;
   heading.textContent = baseTitle;
-  setBack(selected ? courseListUrl(program) : 'journey.html', selected ? program ? 'К курсам школы' : 'Мои курсы' : 'Мой путь');
 }
 
 function loading() {
@@ -375,6 +374,13 @@ if (!selected) {
   }
   list.setAttribute('aria-label', program ? 'Курсы программы' : 'Ваши курсы');
 } else list.setAttribute('aria-label', 'Разделы и уроки');
+
+// Navigation stays available while the protected course content is cleared.
+if (validId && sectionId !== null) {
+  setBack(courseUrl(productId, undefined, program), 'К программе курса');
+} else {
+  setBack(selected ? courseListUrl(program) : 'journey.html', selected ? program ? 'К курсам школы' : 'Мои курсы' : 'Мой путь');
+}
 
 if (!validId) {
   clear();
