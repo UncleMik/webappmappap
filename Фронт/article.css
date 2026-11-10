@@ -1,7 +1,9 @@
 .reader-page { height: 100svh; height: 100dvh; min-height: 0; overflow: hidden; background: #fffcfb; }
 .reader-header { flex: none; padding: calc(10px + env(safe-area-inset-top, 0px)) 20px 12px; background: #fffcfb; z-index: 2; }
 .reader-toolbar { position: relative; display: flex; align-items: center; justify-content: center; min-height: 44px; }
-.reader-toolbar > span { font-size: 15px; font-weight: 700; }
+.reader-toolbar > span { font-size: 15px; font-weight: 700; margin-inline: 44px; text-align: center; }
+.reader-toolbar .video-favorite { position: absolute; right: 0; }
+.course-lesson-mode .reader-toolbar > span { margin-inline: 0 48px; text-align: start; }
 .reader-back { position: absolute; left: -10px; display: grid; place-items: center; width: 44px; height: 44px; color: #26324d; }
 .reader-back svg { width: 22px; height: 22px; }
 .reader-progress { display: flex; align-items: center; gap: 14px; height: 22px; }

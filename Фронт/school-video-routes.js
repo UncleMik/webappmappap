@@ -79,9 +79,9 @@ export async function mountSchoolVideo(id) {
     const result = await resolveSchoolVideo(id);
     if (result.state === 'available') {
       const destination = new URL(result.href, location.href);
-      if (id === 'breathing' && new URLSearchParams(location.search).get('from') === 'index') {
-        destination.searchParams.set('from', 'index-breathing');
-      }
+      const from = new URLSearchParams(location.search).get('from');
+      if (from === 'favorites') destination.searchParams.set('from', 'favorites');
+      else if (id === 'breathing' && from === 'index') destination.searchParams.set('from', 'index-breathing');
       location.replace(destination.href);
       return;
     }

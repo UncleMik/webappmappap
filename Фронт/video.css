@@ -8,6 +8,9 @@
 .video-back svg { width: 2.4rem; height: 2.4rem; fill: none; stroke: currentColor; stroke-width: 1.8; }
 .video-favorite { background: #fcebf3; color: #e696bd; }
 .video-favorite[aria-pressed="true"] { color: #fa5ba5; background: #fde3ef; }
+.video-favorite[hidden], .favorite-status[hidden] { display: none; }
+.video-favorite:focus-visible { outline: 2px solid #794aff; outline-offset: 2px; }
+.favorite-status { margin: 4px 20px 8px; color: #852d50; font-size: 13px; }
 .video-favorite svg { width: 2.2rem; height: 2.2rem; fill: currentColor; }
 .breathing-navigation .video-main { flex: 1; }
 .video-main { padding: 0 1rem; display: flex; flex-direction: column; }

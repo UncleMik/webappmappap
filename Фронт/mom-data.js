@@ -138,41 +138,4 @@
     if (api.isLoaded()) loadStatus.remove();
   });
   api.load().catch(() => { loadStatus.textContent = 'Не удалось загрузить личные записи. Обновите страницу.'; });
-  const favoriteButton = document.querySelector('[data-action="favorites"]');
-  if (favoriteButton) {
-    const titles = {
-      'back-practice': 'Расслабление спины', breathing: 'Дыхательная практика',
-      'practice-article': 'Расслабление тазового дна', 'birth-course': 'Подготовка к родам',
-      'back-course': 'Здоровая спина', 'confidence-course': 'Эмоциональная уверенность',
-      'baby-course': 'Уход за малышом', 'baby-birth-lesson': 'Как малыш проходит через родовые пути',
-      'contractions-lesson': 'Витамины и дефициты во время беременности',
-      'back-relief-video': 'Самомассаж головы и расслабление',
-      'birth-breathing-video': 'Практика поддержки и уверенности в себе', webinars: 'Запись вебинара',
-    };
-    const favoritesDialog = document.createElement('dialog');
-    favoritesDialog.className = 'mom-data-dialog';
-    favoritesDialog.setAttribute('aria-label', 'Избранное');
-    const heading = document.createElement('h2'); heading.textContent = 'Избранное';
-    const close = document.createElement('button'); close.type = 'button'; close.textContent = 'Закрыть';
-    const list = document.createElement('div');
-    favoritesDialog.append(heading, list, close); document.body.append(favoritesDialog);
-    const showFavorites = () => {
-      list.replaceChildren();
-      const ids = api.get().favorites;
-      if (!ids.length) { const empty = document.createElement('p'); empty.textContent = 'В избранном пока нет видео.'; list.append(empty); return; }
-      for (const id of ids) {
-        const link = document.createElement('a');
-        link.href = `video.html?id=${encodeURIComponent(id)}&from=mom`;
-        link.textContent = titles[id] || id;
-        link.style.cssText = 'display:block;padding:14px 0;color:#794aff';
-        list.append(link);
-      }
-    };
-    favoriteButton.addEventListener('click', () => {
-      if (!api.isLoaded()) return;
-      showFavorites(); favoritesDialog.showModal();
-    });
-    close.addEventListener('click', () => favoritesDialog.close());
-    api.subscribe(() => { favoriteButton.disabled = !api.isLoaded(); if (favoritesDialog.open) showFavorites(); });
-  }
 })();

@@ -53,7 +53,7 @@ function movement(value) {
 }
 const legacyId = (kind, value, index) => createHash('sha256').update(`${kind}\0${index}\0${JSON.stringify(value)}`).digest('hex');
 function buildOperations(data) {
-  only(data, ['operation','id','value','recordedAt','systolic','diastolic','state','comment','week','heartRate','ultrasoundDate','ultrasoundWeek','position','read','favorite','confirmed','data']);
+  only(data, ['operation','id','value','recordedAt','systolic','diastolic','state','comment','week','heartRate','ultrasoundDate','ultrasoundWeek','position','read','favorite','title','confirmed','data']);
   const op = data.operation;
   if (op === 'import') {
     only(data, ['operation', 'confirmed', 'data']);
@@ -102,16 +102,22 @@ function buildOperations(data) {
     return [['baby', String(data.week), baby({ heartRate: data.heartRate, ultrasoundDate: data.ultrasoundDate,
       ultrasoundWeek: data.ultrasoundWeek, position: data.position }), true]];
   }
-  if (op === 'setArticleRead' || op === 'setFavorite') {
-    only(data, ['operation','id', op === 'setFavorite' ? 'favorite' : 'read']);
-    const selected = op === 'setFavorite' ? data.favorite : data.read;
-    if (typeof selected !== 'boolean') throw bad();
-    return [[op === 'setFavorite' ? 'favorite' : 'article', requireId(data.id), selected ? { selected: true } : null, true]];
+  if (op === 'setArticleRead') {
+    only(data, ['operation', 'id', 'read']);
+    if (typeof data.read !== 'boolean') throw bad();
+    return [['article', requireId(data.id), data.read ? { selected: true } : null, true]];
+  }
+  if (op === 'setFavorite') {
+    only(data, ['operation', 'id', 'favorite', 'title']);
+    if (typeof data.favorite !== 'boolean' || (data.title !== undefined &&
+        (!data.favorite || typeof data.title !== 'string' || !data.title.trim() || data.title.length > 500))) throw bad();
+    const value = data.favorite ? { selected: true, ...(data.title === undefined ? {} : { title: data.title.trim() }) } : null;
+    return [['favorite', requireId(data.id), value, true]];
   }
   throw bad();
 }
 function snapshot(rows) {
-  const result = { weights: [], pressure: [], wellbeing: [], baby: {}, movements: [], readArticles: [], favorites: [] };
+  const result = { weights: [], pressure: [], wellbeing: [], baby: {}, movements: [], readArticles: [], favorites: [], favoriteTitles: Object.create(null) };
   for (const row of rows) {
     const value = row.value;
     if (row.kind === 'weight') result.weights.push({ id: row.record_id, ...value, _createdAt: row.created_at });
@@ -120,7 +126,10 @@ function snapshot(rows) {
     if (row.kind === 'movement') result.movements.push({ id: row.record_id, ...value, _createdAt: row.created_at });
     if (row.kind === 'baby') result.baby[row.record_id] = value;
     if (row.kind === 'article') result.readArticles.push(row.record_id);
-    if (row.kind === 'favorite') result.favorites.push(row.record_id);
+    if (row.kind === 'favorite') {
+      result.favorites.push(row.record_id);
+      if (typeof value.title === 'string') result.favoriteTitles[row.record_id] = value.title;
+    }
   }
   for (const key of ['weights','pressure','wellbeing','movements']) result[key].sort((a,b) =>
     (a.recordedAt === null && b.recordedAt === null ? 0

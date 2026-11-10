@@ -126,10 +126,13 @@ function publicBlocks(content, lessonId, contentHash, links) {
       if (!match || !allowedTags.has(match[1].toLowerCase())) throw unavailable();
     }
     if (block.type === 'video') return { type: 'video', text,
-      videos: videoReferences(block).map((ref, index) =>
-        ['getcourse', 'youtube', 'rutube'].includes(ref?.provider)
-          ? { provider: ref.provider, url: videoLink(links, lessonId, block.blockId, index, contentHash) }
-          : { provider: 'unknown', url: null }) };
+      videos: videoReferences(block).map((ref, index) => {
+        if (!['getcourse', 'youtube', 'rutube'].includes(ref?.provider)) return { provider: 'unknown', url: null };
+        const url = videoLink(links, lessonId, block.blockId, index, contentHash);
+        if (!url) return { provider: ref.provider, url: null };
+        const favoriteId = digest(JSON.stringify([block.blockId, index, ref.provider, ref.videoId, ref.getcourseFileId]));
+        return { provider: ref.provider, url, favoriteId };
+      }) };
     return ['image', 'attachment'].includes(block.type) ? { type: block.type, text }
       : { type: block.type, text, ...(html ? { html } : {}) };
   });

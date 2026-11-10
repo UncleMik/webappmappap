@@ -115,6 +115,13 @@
           </svg>
           <span>Мои курсы</span>
         </a>
+        <a class="helper" href="favorites.html">
+          <svg class="helper-icon" viewBox="0 0 60 60" aria-hidden="true">
+            <circle cx="30" cy="30" r="29" fill="#f1ecff"/>
+            <path d="M30 44 17 31c-8-9 6-19 13-9 7-10 21 0 13 9Z" fill="#8062eb"/>
+          </svg>
+          <span>Избранное</span>
+        </a>
       </div>`;
     } else if (type === 'expert-chats') {
       dialog.querySelector('h2').textContent = 'Чат с экспертами';

@@ -19,15 +19,18 @@ const scroller = document.querySelector('.reader-scroll');
 const toolbar = document.querySelector('.reader-toolbar > span');
 const back = document.querySelector('[data-reader-return]');
 const progress = document.querySelector('.reader-progress');
+const setFavorite = window.bindFavoriteButton(document.querySelector('.video-favorite'), document.querySelector('.favorite-status'));
+const requestedVideo = params.get('video');
+const fromFavorites = params.get('from') === 'favorites';
 let courseView = null;
 let pendingVideoPositions = new Map();
 let selectedTab = 'about';
-let selectedVideoKey = null;
+let selectedVideoKey;
 document.querySelector('.reader-page').classList.add('course-lesson-mode');
 progress.hidden = true;
 scroller.setAttribute('aria-label', 'Содержание урока');
-const initialBackText = thematicBack ? 'К урокам по теме' : freeLesson ? 'На главную' : 'К программе курса';
-back.href = thematicBack ?? (freeLesson ? 'index.html'
+const initialBackText = fromFavorites ? 'В избранное' : thematicBack ? 'К урокам по теме' : freeLesson ? 'На главную' : 'К программе курса';
+back.href = fromFavorites ? 'favorites.html' : thematicBack ?? (freeLesson ? 'index.html'
   : positiveId(productId) ? courseUrl(productId, undefined, program) : courseListUrl(program));
 back.setAttribute('aria-label', initialBackText);
 toolbar.textContent = initialBackText;
@@ -263,16 +266,31 @@ function renderLesson(data) {
   const videos = [];
   for (const [blockIndex, block] of lesson.blocks.entries()) {
     if (block?.type !== 'video' || !Array.isArray(block.videos)) continue;
-    for (const [index] of block.videos.entries()) {
+    for (const [index, video] of block.videos.entries()) {
       const key = JSON.stringify([blockIndex, block.text, index]);
-      videos.push({ key, title: courseVideoTopic(lesson.blocks, blockIndex, lesson.title) });
+      const favoriteId = /^[a-f0-9]{64}$/.test(video?.favoriteId) ? video.favoriteId : null;
+      const title = courseVideoTopic(lesson.blocks, blockIndex, lesson.title);
+      videos.push({ key, title, favoriteId, playable: playableVideo(video, lesson.videoAvailable) });
     }
   }
-  if (!videos.some(item => item.key === selectedVideoKey)) selectedVideoKey = videos[0]?.key ?? null;
+  if (selectedVideoKey === undefined || (selectedVideoKey !== null && !videos.some(item => item.key === selectedVideoKey))) {
+    selectedVideoKey = (requestedVideo === null ? videos[0] : videos.find(item => item.favoriteId === requestedVideo))?.key ?? null;
+  }
+  const unavailableVideo = mediaNote('Сохранённое видео больше недоступно.');
   const videoNodes = new Map(), topicButtons = new Map();
+  function updateFavorite() {
+    const index = videos.findIndex(item => item.key === selectedVideoKey);
+    const item = videos[index];
+    if (!item?.playable || !item.favoriteId) { setFavorite(null); return; }
+    const title = videos.filter(video => video.title === item.title).length > 1
+      ? \`${item.title.slice(0, 480)} · Видео ${index + 1}\` : item.title.slice(0, 500);
+    setFavorite({ id: \`course:${productId}:${lessonId}:${item.favoriteId}\`, title });
+  }
   function selectVideo(key) {
     if (!courseView?.isCurrent()) { courseView?.refresh(); return; }
     selectedVideoKey = key;
+    unavailableVideo.remove();
+    updateFavorite();
     for (const [id, section] of videoNodes) {
       const active = id === key;
       if (!active) {
@@ -290,8 +308,8 @@ function renderLesson(data) {
   const { byVideo: lessonChapters, tableIndexes: chapterTableIndexes } = courseChapters(lesson.blocks);
 
   const atRoot = String(section.streamId) === String(course.rootStreamId);
-  const backText = thematicBack ? 'К урокам по теме' : freeLesson ? 'На главную' : atRoot ? 'К программе курса' : 'К урокам раздела';
-  back.href = thematicBack ?? (freeLesson ? 'index.html' : courseUrl(productId, atRoot ? undefined : section.streamId, program));
+  const backText = fromFavorites ? 'В избранное' : thematicBack ? 'К урокам по теме' : freeLesson ? 'На главную' : atRoot ? 'К программе курса' : 'К урокам раздела';
+  back.href = fromFavorites ? 'favorites.html' : thematicBack ?? (freeLesson ? 'index.html' : courseUrl(productId, atRoot ? undefined : section.streamId, program));
   back.setAttribute('aria-label', backText);
   const fragment = document.createDocumentFragment();
   const restoreJobs = [];
@@ -354,7 +372,10 @@ function renderLesson(data) {
   });
   const topics = node('section', 'reader-section course-subtopics');
   topics.setAttribute('aria-label', 'Подтемы урока');
-  if (videos.length > 1) {
+  const savedVideoMissing = requestedVideo !== null && selectedVideoKey === null;
+  const showTopics = videos.length > 1 || (savedVideoMissing && videos.length > 0);
+  if (savedVideoMissing) videoHero.append(unavailableVideo);
+  if (showTopics) {
     topics.append(node('h2', '', 'Подтемы урока'));
     const list = node('ol', 'course-subtopic-list');
     for (const [index, item] of videos.entries()) {
@@ -475,7 +496,7 @@ function renderLesson(data) {
     about.append(courseNavigator, source);
   }
   fragment.append(videoHero);
-  if (videos.length > 1) fragment.append(topics);
+  if (showTopics) fragment.append(topics);
   if (courseNavigator && !hasMaterials) {
     about.removeAttribute('role');
     about.removeAttribute('aria-labelledby');
@@ -491,6 +512,7 @@ function renderLesson(data) {
   stopCourseMedia(scroller);
   scroller.replaceChildren(fragment);
   selectTab(selectedTab);
+  updateFavorite();
   pendingVideoPositions = new Map();
   for (const restore of restoreJobs) restore();
   scroller.removeAttribute('aria-busy');
@@ -506,6 +528,7 @@ if (!positiveId(productId) || !positiveId(lessonId)) {
     url: `/api/auth/courses/${productId}/lessons/${lessonId}`,
     relatedUrl: freeLesson ? null : `/api/auth/courses/${productId}`,
     clear: reason => {
+      setFavorite(null);
       if (reason === 'refresh' && document.visibilityState === 'visible') pendingVideoPositions = currentVideoPositions();
       else if (reason !== 'render') pendingVideoPositions = new Map();
       stopCourseMedia(scroller);

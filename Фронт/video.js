@@ -11,7 +11,7 @@
   const requestedId = params.get('id');
   const weeklyItem = window.webprilWeeklyVideos?.find(item => item.id === requestedId);
   const id = weeklyItem?.id ?? (Object.hasOwn(titles, requestedId) ? requestedId : null);
-  const origins = { index: 'index.html', mom: 'mom.html', baby: 'baby.html', journey: 'journey.html', 'my-courses': 'my-courses.html', club: 'club.html#events', articles: 'journey.html' };
+  const origins = { index: 'index.html', mom: 'mom.html', baby: 'baby.html', journey: 'journey.html', 'my-courses': 'my-courses.html', club: 'club.html#events', articles: 'journey.html', favorites: 'favorites.html' };
   const revealPlayer = () => document.querySelector('.video-app').removeAttribute('data-video-pending');
   document.querySelector('.video-back').href = Object.hasOwn(origins, params.get('from')) ? origins[params.get('from')] : 'mom.html';
   if (params.get('from') === 'journey') {
@@ -19,7 +19,7 @@
     document.querySelector('.video-back').href = `journey.html?week=${Number.isInteger(week) && week >= 1 && week <= 42 ? week : weeklyItem?.week ?? 27}#videos-title`;
   }
   if (!weeklyItem) {
-    import('./school-video-routes.js?v=20261109-reader-entry').then(module => module.mountSchoolVideo(id)).catch(() => {
+    import('./school-video-routes.js?v=20261110-favorites').then(module => module.mountSchoolVideo(id)).catch(() => {
       document.querySelector('.video-stage').hidden = true;
       document.querySelector('.video-panel').hidden = true;
       document.querySelector('.video-header p').hidden = true;
@@ -32,28 +32,7 @@
     });
     return;
   }
-  const favorite = document.querySelector('.video-favorite');
-  const personal = window.personalDataApi;
-  function setFavorite(value) {
-    favorite.setAttribute('aria-pressed', String(value));
-    favorite.setAttribute('aria-label', value ? 'Удалить из избранного' : 'Добавить в избранное');
-  }
-  favorite.disabled = true;
-  personal.subscribe(data => { setFavorite(data.favorites.includes(id)); favorite.disabled = !personal.isLoaded(); });
-  personal.load().catch(() => {
-    favorite.disabled = true;
-    const status = document.querySelector('#player-status');
-    status.hidden = false; status.textContent = 'Не удалось загрузить избранное. Обновите страницу.';
-  });
-  favorite.addEventListener('click', async () => {
-    const value = favorite.getAttribute('aria-pressed') !== 'true';
-    favorite.disabled = true;
-    try { await personal.write({ operation: 'setFavorite', id, favorite: value }); }
-    catch (failure) {
-      const status = document.querySelector('#player-status');
-      status.hidden = false; status.textContent = failure.message;
-    } finally { favorite.disabled = false; }
-  });
+  window.bindFavoriteButton(document.querySelector('.video-favorite'), document.querySelector('.favorite-status'))({ id });
 
   // Reveal only the selected lesson's image after it has loaded. An eager demo
   // image can otherwise stay painted while the weekly cover is downloading.

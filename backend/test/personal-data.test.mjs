@@ -41,6 +41,14 @@ test('personal records belong to the session owner, reject revoked sessions, and
     assert.equal(once.baby['27'].position, 'head');
     assert.deepEqual(once.readArticles, ['pregnancy-082']);
     assert.deepEqual(once.favorites, ['back-practice']);
+    const articleFavorite = { operation: 'setFavorite', id: 'article:pregnancy-082', favorite: true, title: 'Моя статья' };
+    await records.write(tokenA, articleFavorite);
+    const withArticle = await records.read(tokenA);
+    assert.deepEqual(withArticle.favorites, ['article:pregnancy-082', 'back-practice']);
+    assert.equal(withArticle.favoriteTitles[articleFavorite.id], articleFavorite.title);
+    assert.equal((await records.read(tokenB)).favoriteTitles[articleFavorite.id], undefined);
+    await records.write(tokenA, { operation: 'setFavorite', id: articleFavorite.id, favorite: false });
+    assert.equal((await records.read(tokenA)).favoriteTitles[articleFavorite.id], undefined);
     assert.equal((await records.read(tokenB)).movements.length, 0);
     for (const [operation, values] of [
       ['addPressure', { systolic: 121, diastolic: 80 }],

@@ -311,7 +311,15 @@ test('private video registry preserves order, partial links, and exact access ga
     assert.deepEqual(importCourseVideoLinks(f.db, { schemaVersion: 1, rows: [videoRows[1], videoRows[0]] }), { links: 2 });
     const service = f.make();
     const result = await service.lesson(42, 10, 1001);
-    assert.deepEqual(result.lesson.blocks[1].videos, [
+    const videos = result.lesson.blocks[1].videos;
+    const favoriteIds = videos.map(video => video.favoriteId);
+    assert.match(favoriteIds[0], /^[a-f0-9]{64}$/);
+    assert.match(favoriteIds[1], /^[a-f0-9]{64}$/);
+    assert.notEqual(favoriteIds[0], favoriteIds[1]);
+    assert.equal(favoriteIds[2], undefined);
+    const reopened = await service.lesson(42, 10, 1001);
+    assert.deepEqual(reopened.lesson.blocks[1].videos.map(video => video.favoriteId), favoriteIds);
+    assert.deepEqual(videos.map(({ favoriteId, ...video }) => video), [
       { provider: 'getcourse', url: gcUrl },
       { provider: 'youtube', url: videoRows[1].url },
       { provider: 'rutube', url: null },
@@ -397,7 +405,7 @@ test('unknown provider keeps its original video position closed', async () => {
       videoRows[0], { ...videoRows[1], videoIndex: 2 }, { ...videoRows[2], videoIndex: 3 },
     ] });
     const videos = (await f.make().lesson(42, 10, 1001)).lesson.blocks[1].videos;
-    assert.deepEqual(videos, [
+    assert.deepEqual(videos.map(({ favoriteId, ...video }) => video), [
       { provider: 'getcourse', url: gcUrl }, { provider: 'unknown', url: null },
       { provider: 'youtube', url: videoRows[1].url }, { provider: 'rutube', url: videoRows[2].url },
     ]);

@@ -6,7 +6,7 @@ if (params.has('courseLesson')) {
   document.title = toolbar.textContent = 'Урок';
   scroller.setAttribute('aria-label', 'Содержание урока');
   try {
-    await import('./course-lesson.js?v=20261109-reader-entry');
+    await import('./course-lesson.js?v=20261110-favorites');
   } catch {
     window.showArticleLoadError(scroller, 'Не удалось открыть урок. Попробуйте ещё раз.');
   }
@@ -35,7 +35,8 @@ function showArticleNotFound() {
   link.textContent = 'Вернуться к списку статей';
   section.append(heading, message, link);
   scroller.replaceChildren(section);
-  document.querySelector('[data-reader-return]').href = 'journey.html';
+  if (from === 'favorites') { link.href = 'favorites.html'; link.textContent = 'Вернуться в избранное'; }
+  document.querySelector('[data-reader-return]').href = link.getAttribute('href');
 }
 scroller.setAttribute('aria-busy', 'true');
 const loadingMessage = document.createElement('p');
@@ -150,6 +151,10 @@ const counter = document.querySelector('.reader-progress output');
 progress.max = sections.length;
 let scheduled = false;
 const readArticleId = article.pregnancy ? article.id : articleId === 'mom-week' ? `mom-week-${momWeek}` : articleId;
+window.bindFavoriteButton(document.querySelector('.video-favorite'), document.querySelector('.favorite-status'))({
+  id: articleId === 'mom-week' ? 'mom-week:' + momWeek : 'article:' + readArticleId,
+  title: article.title.trim().slice(0, 500),
+});
 function updateProgress() {
   const top = scroller.getBoundingClientRect().top;
   const position = top + scroller.clientHeight * .45;
@@ -180,7 +185,7 @@ scroller.addEventListener('scroll', () => {
 }, { passive: true });
 window.articleReadState.ready.then(markReadAtEnd).catch(() => {});
 new ResizeObserver(updateProgress).observe(scroller);
-const origins = { index: 'index.html#recommendations-title', journey: 'journey.html#weekly-articles-title', baby: 'baby.html#learn-title', mom: 'mom.html#mom-recommendations-title', articles: 'journey.html', 'club-motherhood': 'club.html#motherhood' };
+const origins = { index: 'index.html#recommendations-title', journey: 'journey.html#weekly-articles-title', baby: 'baby.html#learn-title', mom: 'mom.html#mom-recommendations-title', articles: 'journey.html', 'club-motherhood': 'club.html#motherhood', favorites: 'favorites.html' };
 const origin = Object.hasOwn(origins, params.get('from')) ? params.get('from') : 'index';
 const returnWeek = article.pregnancy ? article.week : momWeek;
 const returnUrl = (origin === 'journey' || article.supplied && ['mom', 'baby'].includes(origin)) ? `${origin}.html?week=${returnWeek}#${origin === 'mom' ? 'mom-changes-title' : origin === 'baby' ? 'learn-title' : 'weekly-articles-title'}` : origins[origin];
