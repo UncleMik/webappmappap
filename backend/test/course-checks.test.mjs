@@ -23,7 +23,7 @@ before(async () => {
 });
 after(async () => { await db?.close(); });
 beforeEach(async () => {
-  await pool.query('TRUNCATE course_access_checks,auth_sessions,auth_users');
+  await pool.query('TRUNCATE course_access_checks,auth_sessions,auth_multi_session_users,auth_users');
   await pool.query('INSERT INTO auth_users(id,email,getcourse_id,profile) VALUES($1,$2,123,$3),($4,$5,456,$3)',
     [user, 'one@example.org', JSON.stringify({ completedAt: '2026-10-22T12:00:00Z' }), other, 'two@example.org']);
   now = initial; calls = []; fail = false; purchases = [purchase(123)]; trainings = [{ id: 935397478, title: 'Private course' }];

@@ -13,7 +13,7 @@ const secret = 'test-only-secret-with-more-than-32-bytes';
 before(async () => { database = await testPool(); pool = database.pool; });
 after(async () => { await database?.close(); });
 beforeEach(async () => {
-  await pool.query('TRUNCATE auth_sessions,auth_users,auth_challenges,auth_email_state,auth_mail_events,auth_gc_jobs,auth_rate_limits');
+  await pool.query('TRUNCATE auth_sessions,auth_multi_session_users,auth_users,auth_challenges,auth_email_state,auth_mail_events,auth_gc_jobs,auth_rate_limits');
   now = Date.now(); emails = []; gcCalls = []; gcFails = false; mailFails = false;
   store = createStore(pool, { secret, clock: () => now });
   service = createAuthService({ store,

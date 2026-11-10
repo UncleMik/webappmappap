@@ -115,11 +115,13 @@ export function createStore(pool, { secret, clock = Date.now }) {
             [randomUUID(), challenge.email, job.getcourse_id, date()]));
         }
         await client.query('UPDATE auth_challenges SET consumed_at=$2 WHERE token_hash=$1', [hashToken(token), date()]);
-        // lockEmail serializes completion for this account. Revoke and insert commit together;
-        // the partial unique index also enforces one current session at the database level.
-        await client.query('UPDATE auth_sessions SET revoked_at=$2 WHERE user_id=$1 AND revoked_at IS NULL', [user.id, date()]);
-        await client.query('INSERT INTO auth_sessions(token_hash,user_id,expires_at,created_at) VALUES($1,$2,$3,$4)',
-          [hashToken(sessionToken), user.id, new Date(clock() + SESSION_TTL_MS), date()]);
+        const { rows: [exception] } = await client.query('SELECT user_id FROM auth_multi_session_users WHERE user_id=$1', [user.id]);
+        // lockEmail serializes completion. For standard accounts, revoke and insert commit together.
+        if (!exception) {
+          await client.query('UPDATE auth_sessions SET revoked_at=$2 WHERE user_id=$1 AND revoked_at IS NULL', [user.id, date()]);
+        }
+        await client.query('INSERT INTO auth_sessions(token_hash,user_id,expires_at,created_at,multi_session_user_id) VALUES($1,$2,$3,$4,$5)',
+          [hashToken(sessionToken), user.id, new Date(clock() + SESSION_TTL_MS), date(), exception?.user_id ?? null]);
         return { user: { id: user.id, email: user.email, profile: user.profile ?? null } };
       }));
     },

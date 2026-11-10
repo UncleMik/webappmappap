@@ -26,7 +26,7 @@ before(async () => {
 });
 after(async () => { await db?.close(); await rm(folder, { recursive: true, force: true }); });
 async function setup() {
-  await pool.query('TRUNCATE ai_chat_requests,ai_chat_conversations,ai_chat_daily_usage,auth_sessions,auth_users,auth_rate_limits');
+  await pool.query('TRUNCATE ai_chat_requests,ai_chat_conversations,ai_chat_daily_usage,auth_sessions,auth_multi_session_users,auth_users,auth_rate_limits');
   now = Date.parse('2026-11-04T20:59:00Z'); user = randomUUID(); token = randomToken(); calls = 0;
   await pool.query('INSERT INTO auth_users(id,email,getcourse_id,profile) VALUES($1,$2,$3,$4)',
     [user, 'ai@example.invalid', 11, JSON.stringify({ stage: 'pregnancy', dueDate: '2027-03-01', completedAt: new Date(now).toISOString() })]);

@@ -13,7 +13,7 @@ let db, pool, store, service, now, mail;
 before(async () => { db = await testPool(); pool = db.pool; });
 after(async () => { await db?.close(); });
 beforeEach(async () => {
-  await pool.query('TRUNCATE auth_sessions,auth_users,auth_challenges,auth_email_state,auth_mail_events,auth_gc_jobs,auth_rate_limits');
+  await pool.query('TRUNCATE auth_sessions,auth_multi_session_users,auth_users,auth_challenges,auth_email_state,auth_mail_events,auth_gc_jobs,auth_rate_limits');
   now = Date.now(); mail = new Map();
   store = createStore(pool, { secret: 'single-session-test-secret-over-32-bytes', clock: () => now });
   service = createAuthService({ store, makeCode: () => '123456',
@@ -49,6 +49,34 @@ test('requesting or mistyping a code does not revoke the existing login', async 
   assert.ok(await service.session(first.sessionToken));
   await assert.rejects(service.complete(challenge));
   assert.ok(await service.session(first.sessionToken));
+});
+
+test('only the allowed account keeps multiple sessions and can log out on one device', async () => {
+  const first = await login();
+  const regular = await login('other@example.ru');
+  // An upgrade from the previous schema starts with one global unique index.
+  await pool.query('CREATE UNIQUE INDEX auth_sessions_one_active_user ON auth_sessions(user_id) WHERE revoked_at IS NULL');
+  const migration = await readFile(new URL('../auth/single-session-migration.sql', import.meta.url), 'utf8');
+  await transaction(pool, client => client.query(migration));
+  await pool.query('INSERT INTO auth_multi_session_users(user_id) VALUES($1)', [first.user.id]);
+  now += 61_000;
+  const second = await login();
+  const regularLatest = await login('other@example.ru');
+  now += 61_000;
+  const third = await login();
+  // Running the migration again must not revoke any valid exempt session.
+  await transaction(pool, client => client.query(migration));
+  for (const result of [first, second, third]) assert.equal((await service.session(result.sessionToken)).id, first.user.id);
+  assert.equal(await service.session(regular.sessionToken), null);
+  assert.ok(await service.session(regularLatest.sessionToken));
+  for (const [wrongId, code] of [[first.user.id, '23514'], [regular.user.id, '23503']]) {
+    await assert.rejects(pool.query('INSERT INTO auth_sessions(token_hash,user_id,expires_at,multi_session_user_id) VALUES($1,$2,$3,$4)',
+      [hashToken(randomToken()), regular.user.id, new Date(now + 60_000), wrongId]), error => error.code === code);
+  }
+  await service.logout(second.sessionToken);
+  assert.equal(await service.session(second.sessionToken), null);
+  assert.ok(await service.session(first.sessionToken));
+  assert.ok(await service.session(third.sessionToken));
 });
 
 test('failed session replacement rolls back both revocation and code consumption', async () => {
@@ -118,7 +146,7 @@ test('independently verified concurrent logins serialize and only the last commi
 test('migration keeps latest valid session per account, handles ties and is idempotent', async () => {
   const legacy = await testPool();
   try {
-    await legacy.pool.query('DROP INDEX IF EXISTS auth_sessions_one_active_user');
+    await legacy.pool.query('DROP INDEX IF EXISTS auth_sessions_one_active_standard_user');
     await legacy.pool.query('ALTER TABLE auth_sessions DROP COLUMN IF EXISTS revoked_at');
     const id = randomUUID(), otherId = randomUUID(), expiredId = randomUUID();
     await legacy.pool.query('INSERT INTO auth_users(id,email,getcourse_id) VALUES($1,$2,1),($3,$4,2)', [id, 'legacy@example.ru', otherId, 'other@example.ru']);

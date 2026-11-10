@@ -61,7 +61,7 @@ function snapshot(productId = 4302509, trainingId = 935386893) {
       finish_at: new Date(now + 86_400_000).toISOString() }], trainingIds: [trainingId] } };
 }
 beforeEach(async () => {
-  await pool.query('TRUNCATE club_reading,club_message_reactions,club_messages,auth_sessions,auth_users,auth_rate_limits');
+  await pool.query('TRUNCATE club_reading,club_message_reactions,club_messages,auth_sessions,auth_multi_session_users,auth_users,auth_rate_limits');
   now = Date.now();
   store = createStore(pool, { secret: 'club-test-secret-longer-than-32-bytes', clock: () => now });
   service = { session: token => store.session(token) };
