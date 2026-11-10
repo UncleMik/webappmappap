@@ -60,13 +60,13 @@ async (page) => {
   check(!(await page.locator('body').innerText()).includes('Чат участниц курса'), 'Legacy card remains');
   check(JSON.stringify(await page.locator('.speaker-full-bio').evaluateAll(bios => bios.map(bio => [...bio.querySelectorAll('li')].map(li => li.textContent))))===JSON.stringify(originalBios),'Original complete biographies changed');
   check(JSON.stringify(await page.locator('.speaker-full-role').allTextContents())===JSON.stringify(originalRoles),'Original full roles changed');
-  check(await page.locator('link[href="club.css?v=20261105-speaker-compact"]').count()===1,'Compact stylesheet cache version missing');
+  check(await page.locator('link[href="club.css?v=20261110-speaker-portraits"]').count()===1,'Speaker portrait stylesheet cache version missing');
   check(await page.getByRole('tab').count() === 2, 'Expert tab remains');
   check(await page.locator('[data-category="participants"] [data-room]').count() === 7, 'Rooms not in main tab');
   const ordered = await page.locator('[data-category="participants"] [data-room]').evaluateAll(rows => rows.map(row => row.dataset.room));
   check(ordered.join('|') === [...roomIds.slice(5),...roomIds.slice(0,5)].join('|'), 'Room group order');
   check(await page.locator('#club-expert-rooms .club-room-lock:visible').count() === 2, 'Purchase-required locks missing');
-  for (const [width,height] of [[320,568],[390,844],[500,900],[1440,900]]) {
+  for (const [width,height] of [[320,568],[390,844],[435,707],[500,900],[1440,900]]) {
     await page.setViewportSize({ width, height }); await page.waitForTimeout(200);
     for (let slide=0;slide<3;slide++) {
       await page.locator('[data-speaker="'+slide+'"]').click();
@@ -74,9 +74,11 @@ async (page) => {
         const banner=document.querySelector('.speaker-carousel'), active=banner.querySelector('.is-active');
         const box=banner.getBoundingClientRect(), image=active.querySelector('img'), imageBox=image.getBoundingClientRect(), description=active.querySelector('.speaker-description').getBoundingClientRect();
         const name=active.querySelector('h2'),role=active.querySelector('.speaker-role');
-        return {width:innerWidth,height:innerHeight,bannerHeight:box.height,ratio:box.height/innerHeight,overflow:document.documentElement.scrollWidth>innerWidth,bioInside:description.bottom<=box.bottom,photoContained:getComputedStyle(image).objectFit==='contain'&&imageBox.top>=box.top&&imageBox.bottom<=box.bottom,nameFont:parseFloat(getComputedStyle(name).fontSize),roleFont:parseFloat(getComputedStyle(role).fontSize),previewFacts:[...active.querySelectorAll('.speaker-description li')].filter(li=>li.getBoundingClientRect().height>0).length,toggleHeight:banner.querySelector('#speaker-toggle').getBoundingClientRect().height,font:parseFloat(getComputedStyle(active.querySelector('.speaker-description')).fontSize)};
+        const imageStyle=getComputedStyle(image);
+        const photoCropped=imageStyle.objectFit==='cover' && imageStyle.objectPosition==='50% 0%' && imageBox.width*image.naturalHeight>imageBox.height*image.naturalWidth;
+        return {width:innerWidth,height:innerHeight,bannerHeight:box.height,ratio:box.height/innerHeight,overflow:document.documentElement.scrollWidth>innerWidth,bioInside:description.bottom<=box.bottom,photoCropped,photoContained:imageBox.top>=box.top&&imageBox.bottom<=box.bottom,nameFont:parseFloat(getComputedStyle(name).fontSize),roleFont:parseFloat(getComputedStyle(role).fontSize),previewFacts:[...active.querySelectorAll('.speaker-description li')].filter(li=>li.getBoundingClientRect().height>0).length,toggleHeight:banner.querySelector('#speaker-toggle').getBoundingClientRect().height,font:parseFloat(getComputedStyle(active.querySelector('.speaker-description')).fontSize)};
       });
-      bannerMetrics.push(metric);check(!metric.overflow && metric.bioInside && metric.photoContained && metric.font>=12 && metric.nameFont>=17 && metric.roleFont>=12 && metric.previewFacts===1 && metric.toggleHeight>=44, 'Compact carousel clipping '+JSON.stringify(metric));
+      bannerMetrics.push(metric);check(!metric.overflow && metric.bioInside && metric.photoCropped && metric.photoContained && metric.font>=12 && metric.nameFont>=17 && metric.roleFont>=12 && metric.previewFacts===1 && metric.toggleHeight>=44, 'Compact carousel layout '+JSON.stringify(metric));
       const previousHeight=width===320?181.75:width===390?270.08:288;
       check(metric.bannerHeight<=175 && metric.bannerHeight<previousHeight,'Closed carousel remains too tall '+JSON.stringify(metric));
       await page.screenshot({path:'output/playwright/club-grouped-'+width+'-slide-'+slide+'.png'});
@@ -86,6 +88,7 @@ async (page) => {
       check(await toggle.innerText()==='Свернуть' && await toggle.getAttribute('aria-expanded')==='true','Expand label/aria');
       const full=page.locator('#speaker-bio-'+slide);await full.waitFor();
       check(await full.locator('li').count()===6 && await page.locator('.speaker-full-bio:visible').count()===1,'Full bio content/speaker mismatch');
+      check(await page.locator('.speaker-slide.is-active img').evaluate(image => getComputedStyle(image).objectFit==='contain'),'Expanded portrait was cropped');
       const opened=await full.evaluate(bio => {const box=bio.getBoundingClientRect(),card=bio.closest('.speaker-carousel').getBoundingClientRect();return {inside:box.bottom<=card.bottom,unclipped:bio.scrollHeight<=bio.clientHeight,overflow:document.documentElement.scrollWidth>innerWidth};});
       check(opened.inside&&opened.unclipped&&!opened.overflow,'Expanded biography clipped '+width+' slide '+slide);
       check(await page.locator('.speaker-slide.is-active .speaker-description').isHidden(),'Preview duplicated full biography');
