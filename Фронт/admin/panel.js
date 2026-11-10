@@ -87,6 +87,8 @@
   const articlePreview = articleForm.querySelector('[type=submit]');
   const typeLabels = { paragraph: 'Абзац', heading: 'Подзаголовок', 'list-item': 'Пункт списка' };
   let articles = [], article, cover, coverUrl, removeCover = false, coverChange = 0;
+  const articlesPerPage = 10;
+  let articlePage = 1;
   filter.add(new Option('Все недели', 'all'));
   for (let week = 1; week <= 42; week++) {
     filter.add(new Option(String(week), String(week)));
@@ -207,7 +209,14 @@
   });
   function renderArticles() {
     const rows = articles.filter(item => filter.value === 'all' || String(item.week) === filter.value);
-    setList('#article-list', rows, item => {
+    const pageCount = Math.max(1, Math.ceil(rows.length / articlesPerPage));
+    articlePage = Math.min(Math.max(1, articlePage), pageCount);
+    const start = (articlePage - 1) * articlesPerPage;
+    $('#article-pages').hidden = pageCount === 1;
+    $('#articles-prev').disabled = articlePage === 1;
+    $('#articles-next').disabled = articlePage === pageCount;
+    $('#articles-page').textContent = 'Страница ' + articlePage + ' из ' + pageCount;
+    setList('#article-list', rows.slice(start, start + articlesPerPage), item => {
       const row = node('li'), actions = node('div', undefined, 'actions'), visible = item.status === 'published';
       actions.append(button('Редактировать', event => void act(event.currentTarget, async () => openArticle(await api('articles/' + item.id)))),
         button(visible ? 'Скрыть' : 'Вернуть', () => {
@@ -224,7 +233,9 @@
       return row;
     }, 'На этой неделе пока нет статей.');
   }
-  filter.addEventListener('change', renderArticles);
+  filter.addEventListener('change', () => { articlePage = 1; renderArticles(); });
+  $('#articles-prev').addEventListener('click', () => { articlePage--; renderArticles(); });
+  $('#articles-next').addEventListener('click', () => { articlePage++; renderArticles(); });
 
   const announcementForm = $('#announcement-form');
   announcementForm.addEventListener('submit', event => {
