@@ -1,3 +1,4 @@
+import { containsClubLink, maskClubProfanity } from './club-message-filter.mjs';
 import { createHash } from 'node:crypto';
 import { AuthError, hashToken, isUuid as uuid } from './security.mjs';
 import { transaction } from './store.mjs';
@@ -42,18 +43,16 @@ const columns = `m.id, m.body, m.created_at,m.deleted_at,m.revision, m.screensho
 const joins = `FROM club_messages m JOIN auth_users u ON u.id=m.author_id
   LEFT JOIN club_messages r ON r.room=m.room AND r.id=m.reply_to_id
   LEFT JOIN auth_users ru ON ru.id=r.author_id`;
-const format = (row, owner = false) => ({ id: String(row.id), text: row.deleted_at == null ? row.body : null,
+const format = (row, owner = false) => ({ id: String(row.id), text: row.deleted_at == null ? maskClubProfanity(row.body) : null,
   ...(row.has_screenshot && !row.deleted_at ? { hasScreenshot: true } : {}),
   revision: String(row.revision), deleted: row.deleted_at != null,
   createdAt: new Date(row.created_at).toISOString(), own: row.own,
   canDelete: row.deleted_at == null && (row.own || owner), author: { name: row.author_name },
   reply: row.reply_id == null ? null : { id: String(row.reply_id),
-    text: row.reply_deleted_at == null ? row.reply_body : null, deleted: row.reply_deleted_at != null, authorName: row.reply_author } });
+    text: row.reply_deleted_at == null ? maskClubProfanity(row.reply_body) : null, deleted: row.reply_deleted_at != null, authorName: row.reply_author } });
 const fingerprint = (text, replyTo, screenshot) => createHash('sha256')
   .update(JSON.stringify(screenshot ? [text, replyTo, screenshot] : [text, replyTo])).digest('hex');
 const cursorId = value => value === '0' || messageId(value);
-const linkScheme = /(?<![\p{L}\p{N}])(?:[a-z][a-z\d+.-]*:\/\/|(?:https?|ftp|mailto|tel|sms|tg|whatsapp):\S)/iu;
-const linkDomain = /(?<![\p{L}\p{N}_-])(?:[\p{L}\p{N}](?:[\p{L}\p{N}-]*[\p{L}\p{N}])?\.)+(?:[\p{L}]{2,63}|xn--[a-z\d-]{2,59})(?![\p{L}\p{N}_-])/iu;
 
 function createRoomChat({ pool, service, courseMaterials, store, points, ownerUserId = null, clock = Date.now }, ROOM) {
   const reactionStates = (client, userId, ids) => roomReactionStates(client, userId, ids, ROOM);
@@ -276,8 +275,7 @@ function createRoomChat({ pool, service, courseMaterials, store, points, ownerUs
           return { message: format(existing, owner), duplicate: true,
             reactions: existing.deleted_at ? [] : await reactionStates(client,userId,[String(existing.id)]) };
         }
-        const normalized = text.normalize('NFKC').replace(/\p{Cf}/gu, '').replace(/[。｡]/g, '.');
-        if (linkScheme.test(normalized) || linkDomain.test(normalized)) {
+        if (containsClubLink(text)) {
           throw new AuthError(400, 'chat_links_forbidden', 'В чатах Клуба нельзя отправлять ссылки. Удалите ссылку и отправьте сообщение снова.');
         }
         if (replyTo !== null) {
@@ -290,7 +288,7 @@ function createRoomChat({ pool, service, courseMaterials, store, points, ownerUs
         const revision = await nextRevision(client);
         await client.query(`INSERT INTO club_messages(room,author_id,request_id,body,reply_to_id,revision,request_digest,created_at,screenshot)
           VALUES($1,$2,$3,$4,$5,$6,$7,COALESCE($8::timestamptz,now()),$9)`,
-        [ROOM.id,userId,data.requestId,text || (ROOM === activityRoom ? 'Скриншот активности' : 'Изображение'),replyTo,revision,digest,createdAt,screenshot]);
+        [ROOM.id,userId,data.requestId,maskClubProfanity(text) || (ROOM === activityRoom ? 'Скриншот активности' : 'Изображение'),replyTo,revision,digest,createdAt,screenshot]);
         const { rows: [saved] } = await client.query(`SELECT ${columns} ${joins}
           WHERE m.room=$1 AND m.author_id=$2 AND m.request_id=$3`, [ROOM.id, userId, data.requestId]);
         if (eligibleForPoints) await points.awardClubMessage(client, userId, saved.id, createdAt);

@@ -780,9 +780,28 @@ test('new links are rejected in every Club room while ordinary text is accepted'
   const [sender] = students;
   for (const room of ['weekly-activity', ...CLUB_ROOMS.map(room => room.id)]) {
     const post = text => chat.raw.send(sender.token, sender.id, { requestId: randomUUID(), text }, room);
-    for (const text of ['См. https://example.com/a', 'www.example.com', 't.me/chat', 'пример.рф', 'tg://resolve?domain=chat']) {
+    for (const text of ['См. https://example.com/a', 'www.example.com', 't.me/chat', 'пример.рф', 'tg://resolve?domain=chat', 'ht tps: //legkie-rodi. com/rody_inst1', 'legkie-rodi .com/rody_inst1', 't [.] me', 'приходи на example. org']) {
       await assert.rejects(post(text), { code: 'chat_links_forbidden' });
     }
-    assert.equal((await post('Встреча в 12.30, возьму фото и т.д.')).duplicate, false);
+    assert.equal((await post('Встреча в 12.30, возьму фото и т.д. Добрый день . Спасибо!')).duplicate, false);
   }
+});
+
+test('Club masks profanity in stored messages, old history, quotes, and search', async () => {
+  const requestId = randomUUID();
+  const text = 'СУКА, блядь! Какой мудак. Застрахуй себя и возьми греблю.';
+  const masked = '*****, *****! Какой *****. Застрахуй себя и возьми греблю.';
+  const first = await send(text, students[0], { requestId });
+  assert.equal(first.message.text, masked);
+  assert.equal((await send(text, students[0], { requestId })).duplicate, true);
+  const { rows: [saved] } = await pool.query('SELECT body FROM club_messages WHERE id=$1', [first.message.id]);
+  assert.equal(saved.body, masked);
+
+  // Simulate a message stored before profanity filtering was added.
+  await pool.query('UPDATE club_messages SET body=$1 WHERE id=$2', [text, first.message.id]);
+  const reply = await send('Ответ без брани', students[1], { replyTo: first.message.id });
+  assert.equal(reply.message.reply.text, masked);
+  assert.equal((await read(students[1])).messages.find(message => message.id === first.message.id).text, masked);
+  const results = await chat.search(students[1].token, students[1].id, { query: 'Застрахуй' });
+  assert.equal(results.messages[0].text, masked);
 });
