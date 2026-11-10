@@ -6,7 +6,7 @@ if (params.has('courseLesson')) {
   document.title = toolbar.textContent = 'Урок';
   scroller.setAttribute('aria-label', 'Содержание урока');
   try {
-    await import('./course-lesson.js?v=20261110-speaker-photos');
+    await import('./course-lesson.js?v=20261110-community-lesson');
   } catch {
     window.showArticleLoadError(scroller, 'Не удалось открыть урок. Попробуйте ещё раз.');
   }

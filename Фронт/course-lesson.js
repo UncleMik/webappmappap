@@ -266,6 +266,8 @@ function renderLesson(data) {
   const course = validateCourse(data.navigation, productId);
   const section = course.sections.find(item => item.lessons.some(row => String(row.lessonId) === String(lessonId)));
   if (!section) throw Object.assign(new Error('lesson_not_in_course'), { status: 403 });
+  const communityLesson = lessonId === '347472350' || lessonId === '347529679';
+  const blocks = communityLesson ? [] : lesson.blocks;
   const courseNavigator = productId === '4302509' && lessonId === '347472344'
     ? buildCourseNavigator(course, lessonId, program) : null;
   const coverTopic = courseLessonTopic(lesson, [section.title], productId).split('/')[0];
@@ -275,12 +277,12 @@ function renderLesson(data) {
   const previous = ordered[lessonIndex - 1];
   const target = row => row ? { href: lessonUrl(productId, row.lessonId, row.sectionId, program), title: row.title } : null;
   const videos = [];
-  for (const [blockIndex, block] of lesson.blocks.entries()) {
+  for (const [blockIndex, block] of blocks.entries()) {
     if (block?.type !== 'video' || !Array.isArray(block.videos)) continue;
     for (const [index, video] of block.videos.entries()) {
       const key = JSON.stringify([blockIndex, block.text, index]);
       const favoriteId = /^[a-f0-9]{64}$/.test(video?.favoriteId) ? video.favoriteId : null;
-      const title = courseVideoTopic(lesson.blocks, blockIndex, lesson.title);
+      const title = courseVideoTopic(blocks, blockIndex, lesson.title);
       videos.push({ key, title, favoriteId, playable: playableVideo(video, lesson.videoAvailable) });
     }
   }
@@ -316,7 +318,7 @@ function renderLesson(data) {
     }
   }
   const videoTarget = item => item ? { title: item.title, activate: () => selectVideo(item.key) } : null;
-  const { byVideo: lessonChapters, tableIndexes: chapterTableIndexes } = courseChapters(lesson.blocks);
+  const { byVideo: lessonChapters, tableIndexes: chapterTableIndexes } = courseChapters(blocks);
 
   const atRoot = String(section.streamId) === String(course.rootStreamId);
   setBack(courseUrl(productId, atRoot ? undefined : section.streamId, program), atRoot ? 'К программе курса' : 'К урокам раздела');
@@ -338,7 +340,7 @@ function renderLesson(data) {
   const tabs = node('div', 'course-tabs');
   tabs.setAttribute('role', 'tablist');
   tabs.setAttribute('aria-label', 'Содержание урока');
-  const hasMaterials = lesson.blocks.some(block => block?.type === 'image' || block?.type === 'attachment');
+  const hasMaterials = blocks.some(block => block?.type === 'image' || block?.type === 'attachment');
   const tabItems = [['about', 'Об уроке', about]];
   if (hasMaterials) tabItems.push(['materials', 'Материалы', materials]);
   if (!hasMaterials) selectedTab = 'about';
@@ -399,7 +401,7 @@ function renderLesson(data) {
     }
     topics.append(list);
   }
-  for (const [blockIndex, block] of lesson.blocks.entries()) {
+  for (const [blockIndex, block] of blocks.entries()) {
     if (chapterTableIndexes.has(blockIndex)) continue;
     if (!block || typeof block.type !== 'string' || typeof block.text !== 'string') throw new Error('invalid_response');
     const section = document.createElement('section');
@@ -451,7 +453,7 @@ function renderLesson(data) {
         part.setAttribute('aria-label', item.title);
         part.append(node('p', 'course-video-caption', item.title));
         part.append(node('p', 'course-video-description', courseVideoDescription({
-          blocks: lesson.blocks, blockIndex, title: item.title, lessonTitle: lesson.title,
+          blocks, blockIndex, title: item.title, lessonTitle: lesson.title,
           chapters: lessonChapters.get(blockIndex) || [],
         })));
         const playerNavigation = {
@@ -485,7 +487,21 @@ function renderLesson(data) {
       else about.append(section);
     }
   }
-  if (!lesson.blocks.length) {
+  if (communityLesson) {
+    const participants = node('section', 'reader-section course-content-block');
+    participants.append(
+      node('h2', '', 'Бесплатные чаты участниц'),
+      node('p', '', 'Общайтесь с другими будущими мамами и мамами, делитесь опытом и поддерживайте друг друга. Выберите чат по триместру или возрасту малыша. Покупка курса не нужна.'),
+      primaryLink('Открыть чаты участниц', 'club.html#club-pregnancy-rooms'),
+    );
+    const experts = node('section', 'reader-section course-content-block');
+    experts.append(
+      node('h2', '', 'Чаты с экспертами'),
+      node('p', '', 'Задавайте вопросы экспертам школы по родам и материнству. Чтобы писать в этих чатах, нужна действующая покупка курса. Если у вас ещё нет курса, нажмите на закрытый чат, чтобы перейти к выбору курса.'),
+      primaryLink('Открыть чаты с экспертами', 'club.html#club-expert-rooms'),
+    );
+    about.append(participants, experts);
+  } else if (!blocks.length) {
     const section = document.createElement('section');
     section.className = 'reader-section';
     const message = document.createElement('p');
@@ -493,7 +509,7 @@ function renderLesson(data) {
     section.append(message);
     about.append(section);
   }
-  if (lesson.hasAssignment && !lesson.assignmentAvailable) {
+  if (!communityLesson && lesson.hasAssignment && !lesson.assignmentAvailable) {
     const section = document.createElement('section');
     section.className = 'reader-section';
     const message = document.createElement('p');
