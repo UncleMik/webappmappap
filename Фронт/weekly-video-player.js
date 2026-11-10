@@ -18,11 +18,9 @@ export function mountWeeklyVideo(id) {
   document.querySelector('.step-count').textContent = `${index + 1} из ${items.length}`;
   document.querySelector('#step-title').textContent = item.title;
   const description = document.querySelector('.step-description');
-  if (item.description) {
-    description.textContent = item.description;
-    description.classList.add('weekly-video-description');
-    stage.before(description);
-  } else description.remove();
+  description.textContent = ['В этом видео мы рассмотрим:', ...item.topics.map(topic => '— ' + topic)].join('\n');
+  description.classList.add('weekly-video-description');
+  stage.before(description);
   cover.classList.add('weekly-cover');
   cover.querySelector('img').src = item.image;
   cover.querySelector('img').alt = item.title;
