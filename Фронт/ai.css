@@ -83,11 +83,6 @@
 #conversation-title:focus { outline:none; }
 #history-more { flex-shrink:0; align-self:center; min-height:44px; margin:0; }
 #history-more[hidden] { display:none; }
-.conversation-empty { margin:auto 10px; padding:14px 0 26px; text-align:center; }
-.conversation-empty h2 { font-size:22px; line-height:29px; letter-spacing:-.5px; }
-.conversation-empty > p { font-size:14px; line-height:21px; color:#837493; max-width:270px; margin:10px auto 20px; }
-.conversation-empty-prompts { display:grid; gap:8px; }
-.conversation-empty-prompts button { min-height:48px; padding:12px 14px; border:1px solid #ece3fc; border-radius:14px; color:#6e4b9c; background:#fcfaff; font-size:13px; line-height:20px; text-align:left; }
 .conversations-dialog { position:fixed; top:0; bottom:auto; left:max(0px,calc((100vw - 500px)/2)); margin:0; width:min(86vw,340px); height:var(--chat-viewport-height,100dvh); max-height:none; max-width:none; padding:calc(14px + env(safe-area-inset-top,0px)) 14px calc(22px + env(safe-area-inset-bottom,0px)); border:0; border-right:1px solid #eee6f7; border-radius:0 22px 22px 0; background:#fdfbff; color:#171333; box-shadow:8px 0 32px #21173518; overflow-y:auto; }
 .conversations-dialog::backdrop { background:#21173563; }
 .conversations-header { display:flex; align-items:center; gap:4px; margin-bottom:14px; padding-left:7px; }

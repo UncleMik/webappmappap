@@ -158,16 +158,18 @@ async function initializeConversations() {
   } catch (error) { if (current === revision && !validateIdentity(error)) notice(errorMessage(error)); }
   finally { if (current === revision) { busy = false; updateControls(); } }
 }
-function emptyConversation() {
-  const welcome = document.createElement('div'); welcome.className = 'conversation-empty';
-  const heading = document.createElement('h2'); heading.textContent = 'Начнём новый разговор?';
-  const text = document.createElement('p'); text.textContent = 'Напишите вопрос Ларе или выберите подсказку';
-  const prompts = document.createElement('div'); prompts.className = 'conversation-empty-prompts';
-  for (const value of ['Помоги найти материалы курса', 'Какие темы есть в курсе', 'Помоги подготовить вопросы врачу']) {
-    const button = document.createElement('button'); button.type = 'button'; button.textContent = value;
-    button.addEventListener('click', () => { if (!input.disabled) { input.value = value; updateControls(); input.focus(); } }); prompts.append(button);
-  }
-  welcome.append(heading, text, prompts); return welcome;
+function welcomeMessage() {
+  const account = window.webprilAccount;
+  const week = account?.user?.id === accountId && account.profile?.stage === 'pregnancy' ? account.week : null;
+  const introduction = 'Привет! Я Лара из школы «Лёгкие роды». Рада знакомству 🤍';
+  const timing = Number.isInteger(week) && week > 0 ? `У тебя сейчас ${week}-я неделя беременности. ` : '';
+  return messageNode({
+    id: 'welcome',
+    role: 'assistant',
+    content: `${introduction}
+
+${timing}Как твои дела, как настроение? С чем пришла, о чём хочется поговорить или спросить?`,
+  });
 }
 
 function resizeChat() { document.documentElement.style.setProperty('--chat-viewport-height', `${window.visualViewport?.height ?? window.innerHeight}px`); }
@@ -215,7 +217,10 @@ window.addEventListener('account:change', event => {
   const id = event.detail?.user?.id;
   if (accountId && id && id !== accountId) { sessionEnded(); window.webprilSessionGate?.end('session_replaced'); }
   else if (!ended && id && !accountId) start(id);
-  if (!ended) profileSummary(event.detail);
+  if (!ended) {
+    profileSummary(event.detail);
+    if (ready && !messages.length && !pending) render();
+  }
 });
 
 function profileSummary(detail) {
@@ -384,7 +389,7 @@ function render() {
   if (ready && replyWaiting && pending && !messages.some(message => message.role === 'assistant' && message.requestId === pending.requestId)) {
     nodes.push(messageNode({ id: `waiting:${pending.requestId}`, role: 'assistant', content: 'Лара готовит ответ…', waiting: true }));
   }
-  if (ready && !nodes.length) nodes.push(emptyConversation());
+  if (ready && !nodes.length) nodes.push(welcomeMessage());
   conversation.replaceChildren(...nodes); historyMore.hidden = !ready || !hasMore;
 }
 
