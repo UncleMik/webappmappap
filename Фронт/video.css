@@ -8,6 +8,8 @@
 .video-back svg { width: 2.4rem; height: 2.4rem; fill: none; stroke: currentColor; stroke-width: 1.8; }
 .video-favorite { background: #fcebf3; color: #e696bd; }
 .video-favorite[aria-pressed="true"] { color: #fa5ba5; background: #fde3ef; }
+.video-header, .reader-header:has(.video-favorite) { position: relative; }
+.video-header .video-favorite, .reader-header .video-favorite { position: absolute; top: calc(2rem + env(safe-area-inset-top, 0px)); right: 2rem; }
 .video-favorite[hidden], .favorite-status[hidden] { display: none; }
 .video-favorite:focus-visible { outline: 2px solid #794aff; outline-offset: 2px; }
 .favorite-status { margin: 4px 20px 8px; color: #852d50; font-size: 13px; }
