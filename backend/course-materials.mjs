@@ -350,7 +350,7 @@ export function createCourseMaterials({ db, courseChecks, clock = Date.now }) {
       const blocks = webAppFaqLessonIds.has(lessonId)
         ? [{ type: 'text', text: '', html: webAppFaqHtml },
           ...sourceBlocks.filter(block => block.type === 'video'
-            || (lessonId !== 347472351 && ['image', 'attachment'].includes(block.type)))]
+            || (block.type === 'attachment' && lessonId !== 347472351))]
         : sourceBlocks;
       return { lesson: { lessonId, title: lesson.title, productId, blocks, contentCopyDisabled: access.contentCopyDisabled,
         videoAvailable: blocks.some(block => block.videos?.some(video => video.url !== null)),

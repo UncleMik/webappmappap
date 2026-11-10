@@ -6,9 +6,6 @@ import { MAX_AI_BODY_BYTES } from './ai-attachment.mjs';
 import { MAX_AI_VOICE_BODY_BYTES } from './ai-voice.mjs';
 import { isPointsCursor } from './points.mjs';
 
-const courseImageFiles = new Map([
-  [347472351, ['1.png', '2.png', '3.png', '4.png', '5.png', '6.png', '7.jpg', '8.png']],
-]);
 const introPortraits = [
   ['yulia.png', 'Юлия Сулейманова'],
   ['svetlana.png', 'Светлана Курканина'],
@@ -17,17 +14,25 @@ const introPortraits = [
   ['ekaterina.png', 'Екатерина Новикова'],
 ];
 
-function lessonImages(lessonId, blocks) {
+async function lessonImages(lessonId, blocks) {
   if (lessonId === 347472347) {
     return introPortraits.map(([file, alt]) => ({
       file, alt,
       block: blocks.find(block => block.type === 'text' && block.text.trim().split('\n', 1)[0].trim() === alt),
     }));
   }
-  const files = courseImageFiles.get(lessonId);
-  if (!files) return [];
+  const directory = new URL(`../../data/course-materials/${lessonId}/`, import.meta.url);
+  const manifest = await readFile(new URL('images.json', directory), 'utf8')
+    .catch(error => { if (error.code !== 'ENOENT') throw error; return null; });
+  if (manifest === null) return [];
+  let files;
+  try { files = JSON.parse(manifest); }
+  catch (error) { if (error instanceof SyntaxError) return []; throw error; }
   const imageBlocks = blocks.filter(block => block.type === 'image');
-  return files.length === imageBlocks.length ? files.map((file, index) => ({ file, block: imageBlocks[index] })) : [];
+  if (!Array.isArray(files) || files.length !== imageBlocks.length
+    || !files.every((file, index) => typeof file === 'string'
+      && new RegExp(`^${index + 1}[.](png|jpe?g|webp)$`).test(file))) return [];
+  return files.map((file, index) => ({ file, block: imageBlocks[index] }));
 }
 
 async function readJson(request, maxSize = 4096, aiAttachment = false) {
@@ -199,7 +204,7 @@ export function createAuthServer({ service, store, courseChecks, courseMaterials
             : course ? await courseMaterials.course(user.id, Number(course[1])) : await courseMaterials.list(user.id);
           if (lesson) {
             const blocks = result.lesson.blocks;
-            const images = lessonImages(Number(lesson[2]), blocks);
+            const images = await lessonImages(Number(lesson[2]), blocks);
             if (lesson[3]) {
               const image = images[Number(lesson[3]) - 1];
               if (!image?.block) { send(404, { error: 'not_found' }); return; }
@@ -208,7 +213,7 @@ export function createAuthServer({ service, store, courseChecks, courseMaterials
                 .catch(error => { if (error.code !== 'ENOENT') throw error; return null; });
               if (!bytes) { send(404, { error: 'not_found' }); return; }
               response.writeHead(200, {
-                'Content-Type': file.endsWith('.png') ? 'image/png' : 'image/jpeg',
+                'Content-Type': file.endsWith('.png') ? 'image/png' : file.endsWith('.webp') ? 'image/webp' : 'image/jpeg',
                 'Content-Length': bytes.length, 'Cache-Control': 'private, no-store',
                 'X-Content-Type-Options': 'nosniff', 'Cross-Origin-Resource-Policy': 'same-origin',
               });

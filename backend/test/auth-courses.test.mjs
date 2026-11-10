@@ -113,7 +113,7 @@ test('malformed IDs never reach materials; foreign product and lesson IDs stay d
   });
 });
 
-test('FAQ image URLs use the same lesson access check on every request', async () => {
+test('unmapped course images stay unavailable and require lesson access', async () => {
   const path = '/api/auth/courses/4302509/lessons/347472351';
   let allowed = true;
   const courseMaterials = {
@@ -127,12 +127,11 @@ test('FAQ image URLs use the same lesson access check on every request', async (
     const response = await get(path);
     assert.equal(response.status, 200);
     const { lesson } = await response.json();
-    assert.deepEqual(lesson.blocks.map(block => block.imageUrl),
-      Array.from({ length: 8 }, (_, index) => `${path}/images/${index + 1}`));
-    assert.equal((await get(lesson.blocks[0].imageUrl, false)).status, 401);
-    assert.equal((await get(path + '/images/9')).status, 404);
+    assert.ok(lesson.blocks.every(block => !block.imageUrl));
+    assert.equal((await get(path + '/images/1', false)).status, 401);
+    assert.equal((await get(path + '/images/1')).status, 404);
     allowed = false;
-    assert.equal((await get(lesson.blocks[0].imageUrl)).status, 403);
+    assert.equal((await get(path + '/images/1')).status, 403);
   });
 });
 
