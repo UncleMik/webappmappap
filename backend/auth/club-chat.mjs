@@ -63,7 +63,8 @@ function createRoomChat({ pool, service, courseMaterials, store, points, ownerUs
     if (expectedAccountId !== undefined && (!uuid(expectedAccountId) || expectedAccountId !== user.id)) throw changed();
     if (!user.profile?.completedAt) throw new AuthError(403, 'onboarding_required', 'Заполните профиль, чтобы открыть чат.');
     const owner = ownerUserId !== null && user.id === ownerUserId.toLowerCase();
-    const free = ROOM.kind === 'participants';
+    const pollRoom = ROOM.kind === 'poll';
+    const free = pollRoom || ROOM.kind === 'participants';
     let check = { checkedAt: new Date(clock()).toISOString(), expiresAt: new Date(clock() + 60_000).toISOString() };
     let canSend = free, validUntil = Date.parse(check.expiresAt);
     if (!free) {
@@ -95,12 +96,31 @@ function createRoomChat({ pool, service, courseMaterials, store, points, ownerUs
       if (!session) throw signedOut();
       if (session.user_id !== user.id) throw changed();
       if (!session.profile?.completedAt) throw new AuthError(403, 'onboarding_required', 'Заполните профиль, чтобы открыть чат.');
+      let room = ROOM;
+      if (pollRoom) {
+        const { rows: [poll] } = await client.query(`
+          SELECT p.question, p.closes_at, v.user_id IS NOT NULL AS voted
+          FROM weekly_polls p
+          LEFT JOIN weekly_poll_votes v ON v.poll_id = p.id AND v.user_id = $2
+          WHERE p.id = $1 AND p.opens_at <= clock_timestamp() AND p.closes_at > clock_timestamp()
+          FOR SHARE OF p
+        `, [ROOM.pollId, user.id]);
+        if (!poll) throw new AuthError(410, 'poll_chat_closed', 'Обсуждение завершилось.');
+        if (!poll.voted) throw new AuthError(403, 'poll_vote_required', 'Проголосуйте, чтобы открыть обсуждение.');
+        validUntil = Math.min(validUntil, +new Date(poll.closes_at));
+        room = { id: ROOM.id, kind: ROOM.kind, title: poll.question };
+        await client.query(`
+          INSERT INTO club_state(room, revision)
+          SELECT $1, 0 WHERE NOT EXISTS (SELECT 1 FROM club_state WHERE room = $1)
+          ON CONFLICT (room) DO NOTHING
+        `, [ROOM.id]);
+      }
       validUntil = Math.min(validUntil, +new Date(session.expires_at));
       if (clock() >= validUntil) throw unavailable();
       const result = await action(client, user.id, allowed, owner);
       if (clock() >= +new Date(session.expires_at)) throw signedOut();
       if (clock() >= validUntil) throw unavailable();
-      return { ...result, room: ROOM, accountId: user.id, serverTime: new Date(clock()).toISOString(),
+      return { ...result, room, accountId: user.id, serverTime: new Date(clock()).toISOString(),
         checkedAt: check.checkedAt, validUntil: new Date(validUntil).toISOString(), canSend, canModerate: owner };
     });
   }
@@ -346,8 +366,10 @@ export function createClubChat(options) {
   const rooms = new Map([...CLUB_ROOMS, activityRoom].map(room => [room.id, createRoomChat(options, room)]));
   const selected = id => {
     const room = rooms.get(id);
-    if (!room) throw new AuthError(404, 'club_room_not_found', 'Чат не найден.');
-    return room;
+    if (room) return room;
+    const poll = typeof id === 'string' && /^weekly-poll:([a-zA-Z0-9_-]+)$/.exec(id);
+    if (poll) return createRoomChat(options, { id, kind: 'poll', pollId: poll[1] });
+    throw new AuthError(404, 'club_room_not_found', 'Чат не найден.');
   };
   const methods = {};
   const arity = { messages: 4, markRead: 3, around: 3, search: 3, reactions: 3, react: 3, send: 3, changes: 3, screenshot: 2, deleteMessage: 4 };

@@ -7,14 +7,16 @@ import { clubRequest, chatLease } from './club-api.js?v=20261105-rooms';
 
 const params = new URLSearchParams(location.search);
 const room = params.get('room');
-const definition = [activityRoom, ...clubRooms].find(item => item.id === room);
+const pollRoom = /^weekly-poll:[a-zA-Z0-9_-]+$/.test(room || '');
+const definition = pollRoom ? { title: 'Обсуждение голосования', kind: 'poll' }
+  : [activityRoom, ...clubRooms].find(item => item.id === room);
 if (!definition || params.getAll('room').length !== 1) {
   location.replace('club.html#participants');
 } else {
   document.title = definition.title + ' — Клуб';
   document.querySelector('.discussion-header h1').textContent = definition.title;
   document.querySelector('.discussion-header p').textContent = definition.kind === 'experts' ? 'Экспертный чат' : 'Чат участниц';
-  document.querySelector('.discussion-header > a').href = 'club.html#' + (definition === activityRoom ? 'events' : definition.kind);
+  document.querySelector('.discussion-header > a').href = 'club.html#' + (definition === activityRoom || pollRoom ? 'events' : definition.kind);
   const log = document.querySelector('#chat-messages'), status = document.querySelector('#chat-status');
   const controls = document.querySelector('#chat-controls'), form = document.querySelector('#chat-form');
   const input = document.querySelector('#chat-text'), sendButton = document.querySelector('#chat-send');
@@ -144,6 +146,8 @@ if (!definition || params.getAll('room').length !== 1) {
     if (error.status === 401 || error.code === 'account_changed') {
       ended = true; clearScreenshot(); draft.unbind({ purge: true }); draftBound = false; pending = null; restoreReplyId = null; savedPlace = null;
       window.webprilSessionGate?.end();
+    } else if (error.code === 'poll_chat_closed' || error.code === 'poll_vote_required') {
+      ended = true; draft.unbind(); location.replace('club.html?poll=1#events');
     } else if (error.code === 'club_course_required' || error.code === 'onboarding_required') {
       blocked = true; clearScreenshot(); courses.hidden = false; draft.unbind(); draftBound = false; pending = null; restoreReplyId = null; savedPlace = null;
     } else {
@@ -251,6 +255,10 @@ if (!definition || params.getAll('room').length !== 1) {
       const reading = readEpoch, info = await clubRequest('club', options());
       if (!current(value)) return;
       meta(info, reading);
+      if (pollRoom) {
+        document.title = info.room.title + ' — Клуб';
+        document.querySelector('.discussion-header h1').textContent = info.room.title;
+      }
       if (info.access !== 'available') throw Object.assign(new Error('Экспертный чат доступен при действующей покупке курса школы.'), { code: 'club_course_required' });
       unreadStart ||= readState.firstUnreadId; view.setUnread(unreadStart);
       const anchor = savedPlace?.messageId || (readState.initialized && readState.lastReadId !== '0' ? readState.lastReadId : readState.firstUnreadId);
@@ -324,7 +332,7 @@ if (!definition || params.getAll('room').length !== 1) {
     } catch (error) {
       if (!current(value)) return false;
       if (deletedIds.has(id)) return true;
-      if (error.status === 401 || error.code === 'account_changed' || error.code === 'club_course_required') { failure(error); return false; }
+      if (error.status === 401 || error.code === 'account_changed' || error.code === 'club_course_required' || error.code === 'poll_chat_closed' || error.code === 'poll_vote_required') { failure(error); return false; }
       throw error;
     }
   }

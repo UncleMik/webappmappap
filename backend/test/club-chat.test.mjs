@@ -6,6 +6,7 @@ import { once } from 'node:events';
 import { testPool } from './auth-pool.mjs';
 import { createStore } from '../auth/store.mjs';
 import { createClubChat as createRooms, CLUB_ROOMS } from '../auth/club-chat.mjs';
+import { createWeeklyPoll } from '../auth/weekly-poll.mjs';
 import { createAuthServer } from '../auth/http.mjs';
 import { activeCourseProducts } from '../course-entitlements.mjs';
 import { AuthError, hashToken, randomToken } from '../auth/security.mjs';
@@ -804,4 +805,33 @@ test('Club masks profanity in stored messages, old history, quotes, and search',
   assert.equal((await read(students[1])).messages.find(message => message.id === first.message.id).text, masked);
   const results = await chat.search(students[1].token, students[1].id, { query: 'Застрахуй' });
   assert.equal(results.messages[0].text, masked);
+});
+
+test('poll discussions require that poll’s vote, close with the poll, and start empty for the next one', async () => {
+  for (const migration of ['points-migration.sql', 'points-article-migration.sql', 'points-video-migration.sql', 'weekly-poll.sql']) {
+    await pool.query(await readFile(new URL('../auth/' + migration, import.meta.url), 'utf8'));
+  }
+  const polls = createWeeklyPoll(pool);
+  const [voter, other] = students;
+  const first = 'weekly-poll:first-test', next = 'weekly-poll:next-test';
+  await pool.query(`INSERT INTO weekly_polls(id, question, options, opens_at, closes_at)
+    VALUES ('first-test', 'Первый вопрос', ARRAY['Да','Нет'], now()-interval '1 minute', now()+interval '20 seconds'),
+           ('next-test', 'Второй вопрос', ARRAY['Да','Нет'], now()-interval '1 second', now()+interval '1 minute')`);
+  const post = room => chat.raw.send(voter.token, voter.id, { requestId: randomUUID(), text: 'Мой ответ' }, room);
+  const history = room => chat.raw.messages(voter.token, voter.id, undefined, undefined, room);
+  await assert.rejects(post(first), { code: 'poll_vote_required' });
+  await polls.vote(voter.token, voter.id, { pollId: 'first-test', choice: 0 });
+  const info = await chat.raw.info(voter.token, voter.id, first);
+  assert.equal(info.room.title, 'Первый вопрос');
+  assert.ok(Date.parse(info.validUntil) - now < 25_000);
+  await post(first);
+  assert.equal((await history(first)).messages.length, 1);
+  await assert.rejects(chat.raw.info(other.token, other.id, first), { code: 'poll_vote_required' });
+  await assert.rejects(history(next), { code: 'poll_vote_required' });
+  await pool.query("UPDATE weekly_polls SET closes_at=clock_timestamp() WHERE id='first-test'");
+  await assert.rejects(history(first), { code: 'poll_chat_closed' });
+  await assert.rejects(post(first), { code: 'poll_chat_closed' });
+  await polls.vote(voter.token, voter.id, { pollId: 'next-test', choice: 1 });
+  assert.deepEqual((await history(next)).messages, []);
+  await pool.query(await readFile(new URL('../auth/club-rooms-migration.sql', import.meta.url), 'utf8'));
 });

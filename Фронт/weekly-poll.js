@@ -2,6 +2,7 @@
   const card = document.querySelector('#weekly-poll-card');
   const section = document.querySelector('#weekly-poll');
   const url = '/api/auth/weekly-poll';
+  const discussion = document.querySelector('#weekly-poll-discussion');
   const voteForms = { one: 'голос', few: 'голоса', many: 'голосов' };
   const plural = new Intl.PluralRules('ru');
   const numbers = new Intl.NumberFormat('ru');
@@ -22,6 +23,9 @@
     }
     if (!section) return;
     section.hidden = !poll;
+    discussion.hidden = !poll?.open || poll.choice === null;
+    if (discussion.hidden) discussion.removeAttribute('href');
+    else discussion.href = 'club-chat.html?room=' + encodeURIComponent('weekly-poll:' + poll.id);
     if (!poll) return;
 
     const question = section.querySelector('h2');
@@ -97,6 +101,10 @@
           body: JSON.stringify({ pollId: poll.id, choice: Number(selected) })
         });
         render({ poll: { ...poll, choice: vote.choice, counts: vote.counts }, accountId });
+        if (!discussion.hidden) {
+          if (window.navigateApp) window.navigateApp(discussion.href);
+          else location.assign(discussion.href);
+        }
       } catch (error) {
         status.textContent = error.message;
         submit.disabled = false;
@@ -112,13 +120,18 @@
       render(data);
       if (data.poll?.open) {
         const delay = new Date(data.poll.closesAt).getTime() - Date.now();
-        refreshTimer = setTimeout(load, Math.max(1000, Math.min(delay, 2_147_000_000)));
+        refreshTimer = setTimeout(() => {
+          if (discussion && Date.now() >= new Date(data.poll.closesAt).getTime()) discussion.hidden = true;
+          load();
+        }, Math.max(1000, Math.min(delay, 2_147_000_000)));
       } else if (data.poll && !data.poll.settled) {
         refreshTimer = setTimeout(load, 3000);
       }
     } catch {
       if (card) card.hidden = true;
+      if (discussion) discussion.hidden = true;
     }
   }
+  window.addEventListener('pageshow', event => { if (event.persisted) load(); });
   load();
 })();
