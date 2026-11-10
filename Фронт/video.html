@@ -11,10 +11,10 @@
   <link rel="preload" href="assets/fonts/Intro-Regular.woff" as="font" type="font/woff" crossorigin>
   <link rel="preload" href="assets/fonts/Intro-Bold.woff" as="font" type="font/woff" crossorigin>
   <link rel="stylesheet" href="styles.css?v=20261008-close">
-  <link rel="stylesheet" href="video.css?v=20261110-favorites">
+  <link rel="stylesheet" href="video.css?v=20261110-video-favorites">
   <script src="weekly-videos.js?v=20261108-free-weekly" defer></script>
-  <script src="favorite-button.js?v=20261110" defer></script>
-  <script src="video.js?v=20261110-favorites" defer></script>
+  <script src="favorite-button.js?v=20261110-article-favorites" defer></script>
+  <script src="video.js?v=20261110-video-favorites" defer></script>
   <script src="video-fullscreen.js?v=20261020-natural-ratio" defer></script>
   <link rel="stylesheet" href="mobile-layout.css?v=20261007-darker-sides">
 </head>
@@ -23,7 +23,7 @@
     <header class="video-header">
       <a class="video-back" href="mom.html" aria-label="Вернуться назад"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m15 5-7 7 7 7"/></svg></a>
       <div><h1 id="video-title">Видео</h1><p>Видео · <span id="video-duration"></span></p></div>
-      <button class="video-favorite" type="button" aria-label="Добавить в избранное" aria-pressed="false" disabled><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21 3 12C-3 4 8 0 12 7 16 0 27 4 21 12Z"/></svg></button>
+      <button class="video-favorite" type="button" aria-label="Добавить в избранное" aria-pressed="false" hidden disabled><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21 3 12C-3 4 8 0 12 7 16 0 27 4 21 12Z"/></svg><span class="reader-favorite-label">В избранном</span></button>
     </header>
     <p class="favorite-status" role="status" hidden></p>
     <main class="video-main">
@@ -52,6 +52,7 @@
         <p id="player-status" role="status" hidden></p>
         <details class="video-chapters"><summary>Видео <span></span></summary><ol id="chapter-list"></ol></details>
       </section>
+      <button class="video-favorite reader-favorite-end" type="button" aria-label="Добавить в избранное" aria-pressed="false" hidden disabled><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21 3 12C-3 4 8 0 12 7 16 0 27 4 21 12Z"/></svg><span class="reader-favorite-add">Добавить в избранное</span><span class="reader-favorite-label">В избранном</span></button>
     </main>
     <nav class="bottom-navigation" hidden aria-label="Основная навигация">
       <div class="navigation-items">

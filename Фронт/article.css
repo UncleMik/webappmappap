@@ -3,10 +3,8 @@
 .reader-toolbar { position: relative; display: flex; align-items: center; justify-content: center; min-height: 44px; }
 .reader-toolbar > span { font-size: 15px; font-weight: 700; margin-inline: 44px; text-align: center; }
 .course-lesson-mode .reader-toolbar > span { margin-inline: 0 48px; text-align: start; }
-.reader-favorite-label { display: none; }
-.reader-page:not(.course-lesson-mode) .video-favorite[aria-pressed="true"] .reader-favorite-label { display: inline; }
 .reader-page:not(.course-lesson-mode) .reader-header:has(.video-favorite[aria-pressed="true"]) .reader-toolbar > span { margin-inline: 94px; }
-.reader-header .reader-favorite-label { position: absolute; right: 100%; padding-right: 6px; white-space: nowrap; color: #853b69; font-size: 12px; font-weight: 700; }
+.course-lesson-mode .reader-header:has(.video-favorite[aria-pressed="true"]) .reader-toolbar > span { margin-inline-end: 112px; }
 .reader-back { position: absolute; left: -10px; display: grid; place-items: center; width: 44px; height: 44px; color: #26324d; }
 .reader-back svg { width: 22px; height: 22px; }
 .reader-progress { display: flex; align-items: center; gap: 14px; height: 22px; }
@@ -51,8 +49,6 @@ blockquote.reader-callout { display: flex; gap: 16px; font-size: 15px; font-styl
 .reader-checklist li { position: relative; padding-left: 30px; margin-top: 9px; }
 .reader-checklist li::before { content: '✓'; position: absolute; left: 0; top: 0; width: 19px; height: 19px; border-radius: 50%; text-align: center; color: white; background: linear-gradient(130deg,#c5aaf9,#9165ec); }
 .reader-finish { display: flex; flex-direction: column; justify-content: center; gap: 20px; padding-top: 24px; padding-bottom: 30px; }
-.reader-finish .reader-favorite-end { display: flex; align-self: center; gap: 8px; width: auto; height: auto; min-height: 44px; padding: 8px 16px; border-radius: 22px; color: #853b69; font-size: 14px; font-weight: 700; }
-.reader-favorite-end[aria-pressed="true"] .reader-favorite-add { display: none; }
 .reader-finish h2 { text-align: center; margin: 0; }
 .reader-heart { width: 130px; height: 112px; align-self: center; color: #9570ed; }
 .reader-actions { display: grid; gap: 14px; margin-top: 6px; }

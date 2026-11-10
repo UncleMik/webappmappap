@@ -32,7 +32,7 @@
     });
     return;
   }
-  window.bindFavoriteButton(document.querySelector('.video-favorite'), document.querySelector('.favorite-status'))({ id });
+  window.bindFavoriteButton([...document.querySelectorAll('.video-favorite')], document.querySelector('.favorite-status'))({ id });
 
   // Reveal only the selected lesson's image after it has loaded. An eager demo
   // image can otherwise stay painted while the weekly cover is downloading.

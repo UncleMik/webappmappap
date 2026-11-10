@@ -1,6 +1,7 @@
 .video-page { background: #faf9ff; }
 .video-app { background: radial-gradient(ellipse at 50% 5%, #fff, #faf9ff 75%); }
 .video-header { display: grid; grid-template-columns: 4.4rem 1fr 4.4rem; align-items: center; gap: 1rem; padding: calc(2rem + env(safe-area-inset-top, 0px)) 2rem 1.8rem; text-align: center; }
+.video-header:has(.video-favorite[aria-pressed="true"]) { grid-template-columns: 4.4rem minmax(0, 1fr) calc(4.4rem + 90px); }
 .video-header h1 { font-size: 2.3rem; line-height: 1.2; letter-spacing: -.06rem; }
 .video-header p { margin-top: .5rem; color: #7281a4; font-size: 1.6rem; }
 .video-back, .video-favorite { display: grid; place-items: center; width: 4.4rem; height: 4.4rem; border-radius: 50%; }
@@ -12,6 +13,12 @@
 .video-header .video-favorite, .reader-header .video-favorite { position: absolute; top: calc(2rem + env(safe-area-inset-top, 0px)); right: 2rem; }
 .video-favorite[hidden], .favorite-status[hidden] { display: none; }
 .video-favorite:focus-visible { outline: 2px solid #794aff; outline-offset: 2px; }
+.reader-favorite-label { display: none; }
+.video-favorite[aria-pressed="true"] .reader-favorite-label { display: inline; }
+.video-header .reader-favorite-label, .reader-header .reader-favorite-label { position: absolute; right: 100%; padding-right: 6px; white-space: nowrap; color: #853b69; font-size: 12px; font-weight: 700; }
+.video-favorite.reader-favorite-end:not([hidden]) { display: flex; align-self: center; gap: 8px; width: fit-content; height: auto; min-height: 44px; padding: 8px 16px; border-radius: 22px; color: #853b69; font-size: 14px; font-weight: 700; }
+.reader-favorite-end[aria-pressed="true"] .reader-favorite-add { display: none; }
+.video-main > .reader-favorite-end, .course-lesson-mode .reader-scroll > .reader-favorite-end { margin: 20px auto 24px; }
 .favorite-status { margin: 4px 20px 8px; color: #852d50; font-size: 13px; }
 .video-favorite svg { width: 2.2rem; height: 2.2rem; fill: currentColor; }
 .breathing-navigation .video-main { flex: 1; }

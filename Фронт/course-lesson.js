@@ -19,7 +19,11 @@ const scroller = document.querySelector('.reader-scroll');
 const toolbar = document.querySelector('.reader-toolbar > span');
 const back = document.querySelector('[data-reader-return]');
 const progress = document.querySelector('.reader-progress');
-const setFavorite = window.bindFavoriteButton(document.querySelector('.video-favorite'), document.querySelector('.favorite-status'));
+const favoriteEnd = document.querySelector('#article-finish').content.querySelector('.reader-favorite-end').cloneNode(true);
+favoriteEnd.removeAttribute('data-article-favorite');
+const setFavorite = window.bindFavoriteButton(
+  [document.querySelector('.video-favorite'), favoriteEnd], document.querySelector('.favorite-status'),
+);
 const requestedVideo = params.get('video');
 const fromFavorites = params.get('from') === 'favorites';
 let courseView = null;
@@ -508,7 +512,7 @@ function renderLesson(data) {
     navigation.append(node('h2', '', 'Следующий урок'), node('p', '', next.title),
       primaryLink('Следующий урок', lessonUrl(productId, next.lessonId, next.sectionId, program)));
   } else navigation.append(primaryLink(freeLesson ? 'На главную' : 'К программе курса', freeLesson ? 'index.html' : courseUrl(productId, undefined, program)));
-  fragment.append(navigation);
+  fragment.append(navigation, favoriteEnd);
   stopCourseMedia(scroller);
   scroller.replaceChildren(fragment);
   selectTab(selectedTab);
