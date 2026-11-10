@@ -8,6 +8,7 @@ const ARTICLE_POINTS = 20;
 const DAILY_LIMIT = 60;
 const WEEKLY_LIMIT = 180;
 const POINTS_LOCK_NAMESPACE = 0x504f494e;
+const ARTICLE_READING_MS = 30_000;
 const MAX_READING_GAP_MS = 25_000;
 const ATTEMPT_IDLE_MS = 30 * 60_000;
 const PAGE_SIZE = 20;
@@ -49,7 +50,6 @@ export function createPoints({ pool, userIds, forAll = false, lookupArticle = ()
     if (article?.id !== id || !Number.isInteger(article.minutes) || article.minutes < 1) {
       throw new AuthError(404, 'points_article_not_found', 'Статья недоступна для начисления баллов.');
     }
-    return article;
   }
 
   async function withAccount(token, expectedAccountId, run) {
@@ -72,14 +72,14 @@ export function createPoints({ pool, userIds, forAll = false, lookupArticle = ()
   }
 
   async function startArticle(client, userId, sessionHash, articleId, now) {
-    const article = eligibleArticle(articleId);
+    eligibleArticle(articleId);
     const { rows: [earned] } = await client.query(
       'SELECT 1 FROM auth_points_ledger WHERE user_id=$1 AND article_id=$2', [userId, articleId]);
     if (earned) return { status: 'already_earned' };
     const quota = await limits(client, userId, now);
     if (!quota.available) return { status: 'limited', limitedBy: quota.limitedBy };
 
-    const required = Math.max(30_000, article.minutes * 30_000);
+    const required = ARTICLE_READING_MS;
     const { rows: [previous] } = await client.query(`SELECT attempt_id,active_ms,last_seen_at
       FROM auth_points_article_reads
       WHERE user_id=$1 AND article_id=$2 AND session_hash=$3 AND awarded_amount IS NULL`,
@@ -99,7 +99,7 @@ export function createPoints({ pool, userIds, forAll = false, lookupArticle = ()
   }
 
   async function advanceArticle(client, userId, sessionHash, { articleId, attemptId, reachedEnd }, now) {
-    const { rows: [attempt] } = await client.query(`SELECT last_seen_at,required_ms,active_ms,awarded_amount,limited_by
+    const { rows: [attempt] } = await client.query(`SELECT last_seen_at,active_ms,awarded_amount,limited_by
       FROM auth_points_article_reads WHERE user_id=$1 AND article_id=$2 AND session_hash=$3 AND attempt_id=$4`,
     [userId, articleId, sessionHash, attemptId]);
     if (!attempt) throw attemptExpired();
@@ -110,11 +110,11 @@ export function createPoints({ pool, userIds, forAll = false, lookupArticle = ()
     const gap = +now - +attempt.last_seen_at;
     if (gap > ATTEMPT_IDLE_MS) throw attemptExpired();
     const elapsed = gap > 0 && gap <= MAX_READING_GAP_MS ? gap : 0;
-    const active = Math.min(attempt.required_ms, attempt.active_ms + elapsed);
-    if (!reachedEnd || active < attempt.required_ms) {
+    const active = Math.min(ARTICLE_READING_MS, attempt.active_ms + elapsed);
+    if (!reachedEnd || active < ARTICLE_READING_MS) {
       await client.query(`UPDATE auth_points_article_reads SET active_ms=$3,last_seen_at=$4
         WHERE user_id=$1 AND article_id=$2`, [userId, articleId, active, now]);
-      return { status: 'reading', remainingMs: attempt.required_ms - active };
+      return { status: 'reading', remainingMs: ARTICLE_READING_MS - active };
     }
 
     eligibleArticle(articleId);

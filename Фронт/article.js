@@ -205,7 +205,7 @@ if (article.pregnancy) {
 updateProgress();
 document.querySelector('.reader-progress').hidden = false;
 if (article.pregnancy) {
-  import('./article-points.js?v=20261110-reading-hint').then(({ trackArticlePoints }) => {
+  import('./article-points.js?v=20261110-reading-30').then(({ trackArticlePoints }) => {
     trackArticlePoints(scroller, article.id);
   }).catch(() => {});
 }
