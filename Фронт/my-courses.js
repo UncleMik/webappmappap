@@ -79,13 +79,10 @@ async function loadTopicCourses(read) {
   return responses;
 }
 
-const photoTopics = new Set(['birth', 'feeding', 'recovery', 'sleep', 'exercise', 'baby-care', 'health']);
-
 function renderProgram(data, owned) {
   const fragment = document.createDocumentFragment();
   if (topicId === null) {
-    const full = program === 'full';
-    const grid = node('div', full ? 'course-topic-grid course-topic-grid-original' : 'course-topic-grid');
+    const grid = node('div', 'course-topic-grid');
     if (program === 'full' && programProducts.has(fullCourseId)) {
       const link = node('a', 'course-topic-tile course-program-tile');
       const available = owned.has(fullCourseId);
@@ -98,12 +95,8 @@ function renderProgram(data, owned) {
       link.append(copy, arrow);
       grid.append(link);
     }
-    for (const [position, item] of topics.entries()) {
-      const link = node('a', 'course-topic-tile', full ? item.title : undefined);
-      if (!full) {
-        link.append(photoTopics.has(item.id) ? cover(item.id) : topicIllustration(item.id, '', position),
-          node('span', '', item.title));
-      }
+    for (const item of topics) {
+      const link = node('a', 'course-topic-tile', item.title);
       link.dataset.topic = item.id;
       link.href = topicUrl(item.id);
       grid.append(link);

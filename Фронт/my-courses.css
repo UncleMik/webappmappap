@@ -49,24 +49,21 @@
 .course-program-tile-copy { display:grid; gap:5px; min-width:0; }
 .course-program-tile-copy small { font-size:13px; font-weight:500; }
 .course-program-tile-arrow { display:grid; place-items:center; width:32px; height:32px; border-radius:50%; color:#6530d3; background:#fff; font-size:24px; }
-.course-topic-grid:not(.course-topic-grid-original) > .course-topic-tile[data-topic] { display:grid; align-content:start; gap:9px; padding:0 0 12px; background:var(--paper); overflow:hidden; font-size:clamp(16px,4.4vw,20px); }
-.course-topic-grid:not(.course-topic-grid-original) > .course-topic-tile[data-topic] > .course-cover { width:100%; aspect-ratio:2 / 1; }
-.course-topic-grid:not(.course-topic-grid-original) > .course-topic-tile[data-topic] > span:last-child { padding:0 12px; }
 /* The artwork sheet has four rows, with one full-width panel in the third row. */
-.course-topic-grid-original > .course-topic-tile:is([data-topic="birth"], [data-topic="feeding"], [data-topic="recovery"],
+.course-topic-grid > .course-topic-tile:is([data-topic="birth"], [data-topic="feeding"], [data-topic="recovery"],
   [data-topic="sleep"], [data-topic="exercise"], [data-topic="baby-care"], [data-topic="health"]) {
   background:var(--paper) url('assets/course-topic-art.webp') var(--art-x,0%) var(--art-y,0%) / var(--art-width,200%) 400% no-repeat;
 }
-.course-topic-grid-original > .course-topic-tile[data-topic="feeding"] { --paper:#fff2e7; --art-x:100%; }
-.course-topic-grid-original > .course-topic-tile[data-topic="recovery"] { --paper:#fde8e6; --art-y:33.3333%; }
-.course-topic-grid-original > .course-topic-tile[data-topic="sleep"] { --paper:#ede9ff; --art-x:100%; --art-y:33.3333%; }
-.course-topic-grid-original > .course-topic-tile[data-topic="exercise"] { --paper:#e6f2e7; --art-width:100%; --art-y:66.6667%; grid-column:1 / -1; min-height:94px; }
-.course-topic-grid-original > .course-topic-tile[data-topic="baby-care"] { --paper:#eff4e4; --art-y:100%; }
-.course-topic-grid-original > .course-topic-tile[data-topic="health"] { --paper:#fae8f5; --art-x:100%; --art-y:100%; }
-.course-topic-grid-original > .course-topic-tile[data-topic="pregnancy"] { --paper:#eef3fd; --art:#c6d5ee; }
-.course-topic-grid-original > .course-topic-tile[data-topic="cesarean"] { --paper:#fceee6; --art:#eecdbd; }
-.course-topic-grid-original > .course-topic-tile[data-topic="development"] { --paper:#e7f4ed; --art:#badbcf; }
-.course-topic-grid-original > .course-topic-tile[data-topic="first-aid"] { --paper:#fce8ee; --art:#efbfce; }
+.course-topic-grid > .course-topic-tile[data-topic="feeding"] { --paper:#fff2e7; --art-x:100%; }
+.course-topic-grid > .course-topic-tile[data-topic="recovery"] { --paper:#fde8e6; --art-y:33.3333%; }
+.course-topic-grid > .course-topic-tile[data-topic="sleep"] { --paper:#ede9ff; --art-x:100%; --art-y:33.3333%; }
+.course-topic-grid > .course-topic-tile[data-topic="exercise"] { --paper:#e6f2e7; --art-width:100%; --art-y:66.6667%; grid-column:1 / -1; min-height:94px; }
+.course-topic-grid > .course-topic-tile[data-topic="baby-care"] { --paper:#eff4e4; --art-y:100%; }
+.course-topic-grid > .course-topic-tile[data-topic="health"] { --paper:#fae8f5; --art-x:100%; --art-y:100%; }
+.course-topic-grid > .course-topic-tile[data-topic="pregnancy"] { --paper:#eef3fd; --art:#c6d5ee; }
+.course-topic-grid > .course-topic-tile[data-topic="cesarean"] { --paper:#fceee6; --art:#eecdbd; }
+.course-topic-grid > .course-topic-tile[data-topic="development"] { --paper:#e7f4ed; --art:#badbcf; }
+.course-topic-grid > .course-topic-tile[data-topic="first-aid"] { --paper:#fce8ee; --art:#efbfce; }
 .owned-page .course-module-card,
 .owned-page .course-topic-subsection { grid-template-columns:72px minmax(0,1fr) auto; align-items:center; gap:12px; padding:8px 12px 8px 8px; }
 .owned-page .course-topic-product.course-topic-subsection { grid-template-columns:72px minmax(0,1fr); padding:8px 12px 8px 8px; gap:12px; }
