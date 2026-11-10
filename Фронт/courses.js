@@ -1,8 +1,9 @@
-(() => {
-  const plans = document.querySelector('.plans');
-  const status = document.querySelector('.selection-status');
-  const retry = document.querySelector('.offers-retry');
-  const dialog = document.querySelector('.offer-dialog');
+export function mountCourseOffers(container) {
+  const plans = container.querySelector('.plans');
+  const status = container.querySelector('.selection-status');
+  const retry = container.querySelector('.offers-retry');
+  const programs = container.querySelector('.offer-programs');
+  const programList = programs.querySelector('.offer-program-list');
   const plural = new Intl.PluralRules('ru');
   const price = new Intl.NumberFormat('ru-RU', { style: 'currency', currency: 'RUB', maximumFractionDigits: 0 });
   const days = value => `${value} ${{ one: 'день', few: 'дня', many: 'дней', other: 'дня' }[plural.select(value)]}`;
@@ -13,15 +14,20 @@
     if (text !== undefined) node.textContent = text;
     return node;
   }
-  function showOffer(offer) {
-    dialog.querySelector('h2').textContent = `Тариф «${offer.displayName}»`;
-    dialog.querySelector('.offer-summary').textContent = price.format(offer.price);
-    dialog.querySelector('.offer-items').replaceChildren(...offer.items.map(item => {
+  function createProgram(offer) {
+    const program = element('section', 'offer-program');
+    program.id = `program-${offer.offerId}`;
+    const title = element('h3', '', offer.displayName);
+    title.id = `${program.id}-title`;
+    program.setAttribute('aria-labelledby', title.id);
+    const items = element('ul', 'offer-items');
+    for (const item of offer.items) {
       const row = element('li');
       row.append(element('span', '', item.title), element('small', '', `Доступ — ${days(item.accessDays)}`));
-      return row;
-    }));
-    dialog.showModal();
+      items.append(row);
+    }
+    program.append(title, items);
+    return program;
   }
   function createPlan(offer, index) {
     const card = element('article', `plan ${['basic', 'optimal', 'premium'][index] || ''}`);
@@ -35,11 +41,12 @@
       const title = item.productId === 3317400 ? 'Онлайн-встречи' : item.productId === 3317398 ? 'Telegram-чат' : item.title;
       list.append(element('li', '', `${title} — ${days(item.accessDays)}`));
     }
-    const button = element('button', 'choose-plan', 'Состав тарифа');
-    button.type = 'button';
-    button.setAttribute('aria-label', `Состав тарифа «${offer.displayName}»`);
-    button.addEventListener('click', () => showOffer(offer));
-    card.append(list, button);
+    const link = element('a', 'choose-plan', 'Программа');
+    link.href = `#program-${offer.offerId}`;
+    link.setAttribute('aria-label', `Программа тарифа «${offer.displayName}»`);
+    const purchase = element('a', 'choose-plan offer-purchase', 'Купить на сайте школы');
+    purchase.href = 'https://legkie-rody.ru/tarif';
+    card.append(list, link, purchase);
     return card;
   }
   function validOffers(value) {
@@ -54,6 +61,8 @@
     if (pending) return;
     pending = true;
     plans.replaceChildren();
+    programs.hidden = true;
+    programList.replaceChildren();
     plans.setAttribute('aria-busy', 'true');
     status.hidden = false;
     status.textContent = 'Загружаем тарифы…';
@@ -64,6 +73,8 @@
       const data = await response.json();
       if (!validOffers(data.offers)) throw new Error('invalid_catalog');
       plans.replaceChildren(...data.offers.map(createPlan));
+      programList.replaceChildren(...data.offers.map(createProgram));
+      programs.hidden = false;
       status.textContent = '';
       status.hidden = true;
     } catch {
@@ -75,13 +86,12 @@
     }
   }
   retry.addEventListener('click', load);
-  dialog.querySelector('.payment-cancel').addEventListener('click', () => dialog.close());
-  dialog.addEventListener('click', event => {
-    if (event.target !== dialog) return;
-    const rect = dialog.getBoundingClientRect();
-    if (event.clientX < rect.left || event.clientX > rect.right || event.clientY < rect.top || event.clientY > rect.bottom) dialog.close();
-  });
-  window.addEventListener('pagehide', () => { if (dialog.open) dialog.close(); });
-  window.addEventListener('pageshow', event => { if (event.persisted) load(); });
   load();
-})();
+  return load;
+}
+
+const standalone = document.querySelector('.courses-main');
+if (standalone) {
+  const reload = mountCourseOffers(standalone);
+  window.addEventListener('pageshow', event => { if (event.persisted) reload(); });
+}

@@ -1,3 +1,4 @@
+import { mountCourseOffers } from './courses.js?v=20261110-programs';
 import { topicIllustration } from './course-topic-illustrations.js?v=20261109';
 import { createCourseView, courseErrorText, positiveId } from './course-views.js?v=20261109-silent-access';
 import { node, cover, courseProgram, courseListUrl, courseUrl, lessonUrl, freeCourseLessonId, validateCourse, primaryLink } from './course-ui.js?v=20261109-available-program-videos';
@@ -170,6 +171,14 @@ function renderProducts(data) {
       || !Number.isSafeInteger(course.lessonCount) || course.lessonCount < 0) throw new Error('invalid_response');
     owned.set(String(course.productId), course);
   }
+  if (!owned.size) {
+    const catalog = node('div', 'course-offers');
+    catalog.append(document.querySelector('#course-offers-template').content.cloneNode(true));
+    mountCourseOffers(catalog);
+    list.replaceChildren(catalog);
+    list.setAttribute('aria-busy', 'false');
+    return;
+  }
   if (programProducts) {
     const readable = [...owned].filter(([, course]) => course.lessonCount > 0);
     if (otherProgramProducts && !readable.some(([id]) => programProducts.has(id))
@@ -197,7 +206,6 @@ function renderProducts(data) {
     card.append(photo, copy);
     fragment.append(card);
   }
-  if (!products.size) fragment.append(paragraph('У вас пока нет доступных курсов.'), primaryLink('Посмотреть тарифы', 'courses.html'));
   list.replaceChildren(fragment);
   list.setAttribute('aria-busy', 'false');
 }

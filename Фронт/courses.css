@@ -66,3 +66,11 @@
 .offer-items { padding-left:1.4rem; margin:1rem 0; }
 .offer-items li { margin:0 0 1rem; overflow-wrap:anywhere; font-size:1rem; line-height:1.4; }
 .offer-items small { display:block; color:var(--muted); font-size:.9rem; margin-top:.2rem; }
+
+.offer-programs { margin-top: 2rem; }
+.offer-program { margin-top: 1rem; padding: 1rem; border-radius: 1rem; background: #fff; scroll-margin-top: 1rem; }
+.offer-program .offer-items { margin-bottom: 0; }
+.plans a.choose-plan { text-decoration: none; }
+.course-offers { min-width: 0; }
+
+.plan .offer-purchase { margin-top: .5rem; }
