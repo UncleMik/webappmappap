@@ -349,7 +349,8 @@ export function createCourseMaterials({ db, courseChecks, clock = Date.now }) {
       const sourceBlocks = publicBlocks(JSON.parse(record.content_json), lessonId, record.sha256, videoLinks);
       const blocks = webAppFaqLessonIds.has(lessonId)
         ? [{ type: 'text', text: '', html: webAppFaqHtml },
-          ...sourceBlocks.filter(block => !['text', 'list', 'table'].includes(block.type))]
+          ...sourceBlocks.filter(block => block.type === 'video'
+            || (lessonId !== 347472351 && ['image', 'attachment'].includes(block.type)))]
         : sourceBlocks;
       return { lesson: { lessonId, title: lesson.title, productId, blocks, contentCopyDisabled: access.contentCopyDisabled,
         videoAvailable: blocks.some(block => block.videos?.some(video => video.url !== null)),
