@@ -117,8 +117,8 @@
         </a>
         <a class="helper" href="favorites.html">
           <svg class="helper-icon" viewBox="0 0 60 60" aria-hidden="true">
-            <circle cx="30" cy="30" r="29" fill="#f1ecff"/>
-            <path d="M30 44 17 31c-8-9 6-19 13-9 7-10 21 0 13 9Z" fill="#8062eb"/>
+            <circle cx="30" cy="30" r="29" fill="#fee4e8"/>
+            <path d="M30 44 17 31c-8-9 6-19 13-9 7-10 21 0 13 9Z" fill="#fe789a"/>
           </svg>
           <span>Избранное</span>
         </a>
