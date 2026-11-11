@@ -23,7 +23,8 @@ export function mountCourseOffers(container) {
     const items = element('ul', 'offer-items');
     for (const item of offer.items) {
       const row = element('li');
-      row.append(element('span', '', item.title), element('small', '', `Доступ — ${days(item.accessDays)}`));
+      const title = item.title.replace(/\s*\b2\.0\b/g, '').trim();
+      row.append(element('span', '', title), element('small', '', `Доступ — ${days(item.accessDays)}`));
       items.append(row);
     }
     program.append(title, items);
