@@ -158,7 +158,8 @@ def postgres_check(baseline, payload, stage):
                         ignore=lambda directory, names: [n for n in names if
                             (Path(directory) / n).is_symlink() or n in ('node_modules', 'seed', 'env', '.git')
                             or n.startswith('.') or ((Path(directory) / n).is_file()
-                            and Path(n).suffix not in ('.mjs', '.sql') and n != 'package.json')])
+                            and Path(n).suffix not in ('.mjs', '.sql')
+                            and n not in ('package.json', 'weekly-video-durations.json'))])
         for name, data in {**baseline, **payload}.items():
             path = scratch / name
             path.parent.mkdir(parents=True, exist_ok=True)
@@ -172,7 +173,7 @@ def postgres_check(baseline, payload, stage):
         run(admin + [f'CREATE DATABASE {database}'], stage, 'qa-create')
         created = True
         run(admin + [f"COMMENT ON DATABASE {database} IS '{marker}'"], stage, 'qa-marker')
-        env = {'PATH': '/usr/local/bin:/usr/bin:/bin', 'HOME': str(scratch),
+        env = {'PATH': '/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin', 'HOME': str(scratch),
                'AUTH_TEST_DATABASE_URL': 'postgresql://postgres@localhost/' + database + '?host=%2Fvar%2Frun%2Fpostgresql'}
         run(['runuser', '-u', 'postgres', '--', 'node', '--test', *TESTS], stage,
             'postgres-check', cwd=scratch / 'backend', env=env, timeout=300)
