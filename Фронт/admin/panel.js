@@ -82,7 +82,7 @@
   preview.addEventListener('cancel', event => { if ($('#confirm-preview').disabled) event.preventDefault(); });
   preview.addEventListener('close', () => { previewAction = undefined; });
 
-  const filter = $('#article-filter'), articleForm = $('#article-form'), coverInput = $('#article-cover');
+  const filter = $('#article-filter'), sort = $('#article-sort'), articleForm = $('#article-form'), coverInput = $('#article-cover');
   const blockContainer = $('#article-blocks'), coverPreview = $('#cover-preview');
   const articlePreview = articleForm.querySelector('[type=submit]');
   const typeLabels = { paragraph: 'Абзац', heading: 'Подзаголовок', 'list-item': 'Пункт списка' };
@@ -209,6 +209,8 @@
   });
   function renderArticles() {
     const rows = articles.filter(item => filter.value === 'all' || String(item.week) === filter.value);
+    // Article numbers increase with each new article, independently of its week or edits.
+    rows.sort((a, b) => sort.value === 'oldest' ? a.number - b.number : b.number - a.number);
     const pageCount = Math.max(1, Math.ceil(rows.length / articlesPerPage));
     articlePage = Math.min(Math.max(1, articlePage), pageCount);
     const start = (articlePage - 1) * articlesPerPage;
@@ -234,6 +236,7 @@
     }, 'На этой неделе пока нет статей.');
   }
   filter.addEventListener('change', () => { articlePage = 1; renderArticles(); });
+  sort.addEventListener('change', () => { articlePage = 1; renderArticles(); });
   $('#articles-prev').addEventListener('click', () => { articlePage--; renderArticles(); });
   $('#articles-next').addEventListener('click', () => { articlePage++; renderArticles(); });
 
