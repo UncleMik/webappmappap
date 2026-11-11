@@ -14,24 +14,27 @@
 
   function startCountdown(poll) {
     clearInterval(countdownTimer);
-    const countdown = section?.querySelector('.weekly-poll-countdown');
-    if (!countdown) return;
+    const countdowns = document.querySelectorAll('.weekly-poll-countdown');
+    if (!countdowns.length) return;
     const closesAt = new Date(poll?.closesAt).getTime();
-    countdown.hidden = !poll?.open || !Number.isFinite(closesAt);
-    if (countdown.hidden) return;
+    const hidden = !poll?.open || !Number.isFinite(closesAt);
+    countdowns.forEach(countdown => { countdown.hidden = hidden; });
+    if (hidden) return;
     const update = () => {
       const remaining = Math.max(0, Math.ceil((closesAt - Date.now()) / 1000));
       const days = Math.floor(remaining / 86400);
       const hours = Math.floor(remaining % 86400 / 3600);
       const minutes = Math.floor(remaining % 3600 / 60);
       const seconds = remaining % 60;
-      countdown.textContent = remaining
+      const text = remaining
         ? 'До конца голосования: ' + (days ? days + ' д. ' : '')
           + [hours, minutes, seconds].map(value => String(value).padStart(2, '0')).join(':')
         : 'Голосование завершено';
+      countdowns.forEach(countdown => { countdown.textContent = text; });
       if (!remaining) {
         clearInterval(countdownTimer);
-        section.querySelector('form').hidden = true;
+        const form = section?.querySelector('form');
+        if (form) form.hidden = true;
         if (discussion) discussion.hidden = true;
       }
     };
@@ -52,7 +55,7 @@
       card.hidden = !poll;
       if (!card.hidden) card.querySelector('.article-title').textContent = poll.question;
     }
-    if (!section) return;
+    if (!section) { startCountdown(poll); return; }
     section.hidden = !poll;
     discussion.hidden = !poll?.open || poll.choice === null;
     if (discussion.hidden) discussion.removeAttribute('href');

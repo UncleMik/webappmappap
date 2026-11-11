@@ -41,5 +41,7 @@
 
 .today-material-card.today-poll-card { background: linear-gradient(115deg, #faf7ff, #eee5ff); }
 .today-poll-card .article-meta { color: #6240b8; background: #f0e7ff; }
+.today-poll-card .weekly-poll-countdown { display: block; margin-top: .8rem; color: #6240b8; font-size: 1.2rem; font-variant-numeric: tabular-nums; }
+.today-poll-card .weekly-poll-countdown[hidden] { display: none; }
 
 .today-poll-card[hidden], .today-poll-card + .today-material-card:not(.practice-article) { display: none; }
