@@ -198,6 +198,19 @@ export function createAuthServer({ service, store, courseChecks, courseMaterials
         const { checkedAt, expiresAt } = await courseChecks.requireCurrent(user.id);
         send(200, { verification: 'current', checkedAt, expiresAt }); return;
       }
+      if (request.method === 'GET' && url.pathname.startsWith('/api/auth/course-programs/')) {
+        const user = await service.session(readSessionCookie(request));
+        if (!user) throw new AuthError(401, 'sign_in_required', 'Войдите, чтобы посмотреть программу.');
+        if (!user.profile?.completedAt) throw new AuthError(403, 'onboarding_required', 'Заполните профиль, чтобы продолжить.');
+        const productId = url.pathname.slice('/api/auth/course-programs/'.length);
+        if (!positiveId(productId)) { send(404, { error: 'not_found' }); return; }
+        if (!courseChecks || !courseMaterials?.program) throw materialsUnavailable();
+        try { send(200, await courseMaterials.program(user.id, Number(productId))); return; }
+        catch (error) {
+          if (error instanceof AuthError) throw error;
+          throw materialsUnavailable();
+        }
+      }
       if (request.method === 'GET' && (url.pathname === '/api/auth/courses' || url.pathname.startsWith('/api/auth/courses/'))) {
         const user = await service.session(readSessionCookie(request));
         if (!user) throw new AuthError(401, 'sign_in_required', 'Войдите, чтобы посмотреть курсы.');

@@ -108,6 +108,32 @@ test('course keeps authorized folders in order even when they have no direct les
   } finally { f.close(); }
 });
 
+test('program preserves folders and shows locked lessons without protected content', async () => {
+  const f = fixture({ nested: true, trainingIds: [100, 101, 102, 103], policyChange: policy => {
+    policy.lessons.find(l => l.lessonId === 1002).visibility = '2';
+    policy.lessons.find(l => l.lessonId === 1002).startAt = '2030-01-01 00:00:00';
+    policy.lessons.find(l => l.lessonId === 1003).hidden = true;
+  } });
+  try {
+    const service = f.make();
+    const owned = await service.program(42, 10);
+    assert.equal(owned.course.available, true);
+    assert.deepEqual(owned.course.sections.map(s => [s.streamId, s.parentStreamId, s.available]), [
+      [100, null, true], [103, 100, true], [101, 103, true], [102, 100, false],
+    ]);
+    const lessons = owned.course.sections.flatMap(section => section.lessons);
+    assert.equal(lessons.find(l => l.lessonId === 1001).available, true);
+    assert.equal(lessons.find(l => l.lessonId === 1002).available, false);
+    assert.equal(lessons.find(l => l.lessonId === 1021).available, false);
+    assert.equal(lessons.some(l => l.lessonId === 1003), false);
+    assert.doesNotMatch(JSON.stringify(owned), /Exact school text|signedUrl|secret|fs\.getcourse/);
+    const locked = await service.program(42, 20);
+    assert.equal(locked.course.available, false);
+    assert.ok(locked.course.sections.flatMap(section => section.lessons).every(l => !l.available));
+    await denied(service.lesson(42, 10, 1021));
+  } finally { f.close(); }
+});
+
 test('source text remains exact while media IDs, URLs and secret fields are stripped', async () => {
   const f = fixture();
   try {

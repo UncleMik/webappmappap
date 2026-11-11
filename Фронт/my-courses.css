@@ -17,6 +17,7 @@
 .owned-page .course-start-caption::after { content:'›'; font-size:24px; line-height:1; }
 .owned-page .course-module-card { display:grid; grid-template-columns:36px minmax(0,1fr) auto; align-items:center; gap:10px; min-height:60px; padding:9px 12px; border:1px solid #e9e0f1; border-radius:12px; color:#10152f; background:#fff; text-decoration:none; }
 .owned-page .course-module-card::after { content:'›'; color:#794aff; font-size:23px; line-height:1; }
+.owned-page .course-module-card.course-locked::after { content:'🔒'; font-size:17px; }
 .owned-page .course-module-index { display:grid; place-items:center; width:36px; height:36px; border-radius:9px; color:#6530d3; background:#f0e8ff; font-size:14px; font-weight:700; }
 .owned-page .course-module-copy { display:grid; gap:3px; min-width:0; }
 .owned-page .course-module-copy h3 { font-size:15px; line-height:1.2; margin:0; overflow-wrap:anywhere; }
@@ -72,6 +73,8 @@
 .owned-page [data-cover-topic="pregnancy"] { --course-topic-art:url('assets/course-topic-covers/pregnancy.svg'); }
 .owned-page [data-cover-topic="other"] { --course-topic-art:url('assets/course-topic-covers/meetings.svg'); }
 .course-topic-product { display:grid; gap:8px; padding:14px; border:1px solid #ece7f6; border-radius:12px; color:#10152f; background:white; text-decoration:none; }
+.course-topic-product.course-locked { background:#f8f7fb; color:#777d96; }
+.course-topic-tile.course-topic-locked::after { content:'🔒'; display:inline-block; margin-left:6px; font-size:15px; }
 .owned-page .course-topic-product h2 { font-size:17px; line-height:1.25; overflow-wrap:anywhere; }
 .course-topic-tile:focus-visible,.course-topic-product:focus-visible { outline:3px solid #794aff; outline-offset:2px; }
 

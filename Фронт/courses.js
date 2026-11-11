@@ -26,6 +26,8 @@ const programHighlights = {
   ],
 };
 
+const offerProgramUrl = offerId => `my-courses.html?offer=${encodeURIComponent(offerId)}`;
+
 export function mountCourseOffers(container) {
   const plans = container.querySelector('.plans');
   const status = container.querySelector('.selection-status');
@@ -73,7 +75,7 @@ export function mountCourseOffers(container) {
       list.append(element('li', '', `${title} — ${days(item.accessDays)}`));
     }
     const link = element('a', 'choose-plan', 'Программа');
-    link.href = `#program-${offer.offerId}`;
+    link.href = offerProgramUrl(offer.offerId);
     link.setAttribute('aria-label', `Программа тарифа «${offer.displayName}»`);
     const purchase = element('a', 'choose-plan offer-purchase', 'Купить на сайте школы');
     purchase.href = 'https://legkie-rody.ru/tarif';

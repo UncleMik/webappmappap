@@ -190,6 +190,7 @@ export function createCourseMaterials({ db, courseChecks, clock = Date.now }) {
     return stream.parents.flatMap(p => pathsToRoot(p.id, root, seen).map(path => [...path, streamId]));
   }
   function allowedPath(streamId, product, ctx) {
+    if (!ctx.grants.has(product.productId)) return null;
     let best = null;
     for (const path of pathsToRoot(streamId, product.trainingId)) {
       let validUntil = ctx.grants.get(product.productId), allowed = true;
@@ -245,6 +246,56 @@ export function createCourseMaterials({ db, courseChecks, clock = Date.now }) {
       sectionId: lesson.parent, sectionPath, title: lesson.title, contentHash: record.sha256, text };
   }
   return Object.freeze({
+    async program(userId, productId) {
+      const ctx = await context(userId);
+      const product = catalog.products.find(p => p.productId === productId && p.type === 'training');
+      if (!product) throw denied();
+      const sections = new Map();
+      let validUntil = Math.min(Date.parse(ctx.check.expiresAt), ctx.grants.get(productId) ?? Infinity);
+      for (const stream of catalog.streams.values()) {
+        const path = pathsToRoot(stream.id, product.trainingId)[0];
+        if (!path) continue;
+        const rows = (siblings.get(stream.id) ?? []).filter(lesson => !lessonPolicies.get(lesson.id)?.hidden);
+        if (!rows.length) continue;
+        if (streamPolicies.get(stream.id).reverseLessons) rows.reverse();
+        for (const [index, streamId] of path.entries()) {
+          if (!sections.has(streamId)) sections.set(streamId, { streamId,
+            parentStreamId: path[index - 1] ?? null,
+            title: catalog.streams.get(streamId).title, available: false, lessons: [] });
+        }
+        const section = sections.get(stream.id);
+        section.lessons = rows.map(lesson => {
+          const access = readable(lesson, product, ctx);
+          if (access) validUntil = Math.min(validUntil, access.validUntil);
+          return { lessonId: lesson.id, title: lesson.title,
+            available: Boolean(access) || isFreeLesson(productId, lesson.id),
+            hasVideo: lesson.hasVideo, hasText: lesson.hasText };
+        });
+      }
+      for (const section of sections.values()) {
+        if (!section.lessons.some(lesson => lesson.available)) continue;
+        let current = section;
+        while (current && !current.available) {
+          current.available = true;
+          current = sections.get(current.parentStreamId);
+        }
+      }
+      const children = new Map();
+      for (const section of sections.values()) {
+        if (!children.has(section.parentStreamId)) children.set(section.parentStreamId, []);
+        children.get(section.parentStreamId).push(section);
+      }
+      const order = section => catalog.streams.get(section.streamId).parents
+        .find(parent => parent.id === section.parentStreamId)?.order ?? 0;
+      const ordered = parentId => (children.get(parentId) ?? [])
+        .sort((a, b) => order(a) - order(b) || a.streamId - b.streamId)
+        .flatMap(section => [section, ...ordered(section.streamId)]);
+      const grant = ctx.active.find(row => row.productId === productId);
+      return { course: { productId, title: product.title, rootStreamId: product.trainingId,
+        available: Boolean(grant),
+        ...(grant ? { accessEndsAt: grant.accessEndsAt === null ? null : new Date(grant.accessEndsAt).toISOString() } : {}),
+        sections: ordered(null) }, ...ctx.meta(validUntil) };
+    },
     async aiContext(userId) {
       const ctx = await context(userId);
       const courses = catalog.products.filter(p => p.type === 'training' && ctx.grants.has(p.productId));

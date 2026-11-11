@@ -32,16 +32,16 @@ test('course database path defaults to project data and accepts a server overrid
 
 test('all course routes require a session and completed profile before materials are called', async () => {
   const calls = [];
-  const courseMaterials = { list: () => calls.push('list'), course: () => calls.push('course'), lesson: () => calls.push('lesson') };
+  const courseMaterials = { list: () => calls.push('list'), course: () => calls.push('course'), lesson: () => calls.push('lesson'), program: () => calls.push('program') };
   await withServer({ service: { session: async () => null }, courseMaterials }, async get => {
-    for (const path of ['/api/auth/courses', '/api/auth/courses/123', '/api/auth/courses/123/lessons/456']) {
+    for (const path of ['/api/auth/courses', '/api/auth/courses/123', '/api/auth/courses/123/lessons/456', '/api/auth/course-programs/123']) {
       const response = await get(path);
       assert.equal(response.status, 401);
       assert.equal(response.headers.get('cache-control'), 'no-store');
     }
   });
   await withServer({ service: { session: async () => ({ ...user, profile: null }) }, courseMaterials }, async get => {
-    for (const path of ['/api/auth/courses', '/api/auth/courses/123', '/api/auth/courses/123/lessons/456']) {
+    for (const path of ['/api/auth/courses', '/api/auth/courses/123', '/api/auth/courses/123/lessons/456', '/api/auth/course-programs/123']) {
       const response = await get(path);
       assert.equal(response.status, 403);
       assert.equal((await response.json()).error, 'onboarding_required');
@@ -74,18 +74,19 @@ test('course routes delegate only the authenticated user ID and positive numeric
     list: async (...args) => { calls.push(['list', ...args]); return { courses: [] }; },
     course: async (...args) => { calls.push(['course', ...args]); return { course: { productId: args[1] } }; },
     lesson: async (...args) => { calls.push(['lesson', ...args]); return { lesson: { lessonId: args[2] } }; },
+    program: async (...args) => { calls.push(['program', ...args]); return { course: { productId: args[1] } }; },
   };
   await withServer({ service: { session: async token => token ? user : null }, courseMaterials }, async get => {
-    const paths = ['/api/auth/courses', '/api/auth/courses/123', '/api/auth/courses/123/lessons/456'];
+    const paths = ['/api/auth/courses', '/api/auth/courses/123', '/api/auth/courses/123/lessons/456', '/api/auth/course-programs/123'];
     for (const path of paths) {
       const response = await get(path);
       assert.equal(response.status, 200);
       assert.equal(response.headers.get('cache-control'), 'no-store');
     }
-    assert.deepEqual(calls, [['list', user.id], ['course', user.id, 123], ['lesson', user.id, 123, 456]]);
+    assert.deepEqual(calls, [['list', user.id], ['course', user.id, 123], ['lesson', user.id, 123, 456], ['program', user.id, 123]]);
     assert.equal((await get('/api/auth/courses', false)).status, 401);
     assert.equal((await get('/api/auth/courses?userId=other')).status, 400);
-    assert.equal(calls.length, 3);
+    assert.equal(calls.length, 4);
   });
 });
 
@@ -99,7 +100,8 @@ test('malformed IDs never reach materials; foreign product and lesson IDs stay d
   await withServer({ service: { session: async () => user }, courseMaterials }, async get => {
     for (const path of ['/api/auth/courses/0', '/api/auth/courses/-1', '/api/auth/courses/abc',
       '/api/auth/courses/9007199254740992', '/api/auth/courses/123/lessons/0',
-      '/api/auth/courses/123/lessons/abc', '/api/auth/courses/123/lessons/456/extra']) {
+      '/api/auth/courses/123/lessons/abc', '/api/auth/courses/123/lessons/456/extra',
+      '/api/auth/course-programs/0', '/api/auth/course-programs/abc', '/api/auth/course-programs/9007199254740992']) {
       const response = await get(path);
       assert.equal(response.status, 404, path);
     }

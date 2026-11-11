@@ -167,6 +167,11 @@ export function courseLessonTopic(lesson, parents, productId) {
 export function groupTopicLessons(courses) {
   const groups = new Map();
   const seen = new Set();
+  const preferred = new Map();
+  for (const course of courses) for (const section of course.sections) for (const lesson of section.lessons) {
+    const id = String(lesson.lessonId);
+    if (!preferred.has(id) || (!preferred.get(id).available && lesson.available)) preferred.set(id, lesson);
+  }
   for (const course of courses) {
     const paths = new Map();
     for (const section of course.sections) {
@@ -174,6 +179,7 @@ export function groupTopicLessons(courses) {
       const path = String(section.streamId) === String(course.rootStreamId) ? [] : [section.title, ...parents];
       paths.set(String(section.streamId), path);
       for (const lesson of section.lessons) {
+        if (preferred.get(String(lesson.lessonId)) !== lesson) continue;
         if (seen.has(String(lesson.lessonId))) continue;
         seen.add(String(lesson.lessonId));
         const id = Number(lesson.lessonId);
