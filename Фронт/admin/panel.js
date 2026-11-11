@@ -332,6 +332,146 @@
     }, 'Пока нет голосований.');
   }
 
+  const chatRoom = $('#chat-room'), chatQuery = $('#chat-query'), chatList = $('#chat-list');
+  const chatStatus = $('#chat-status'), chatMore = $('#chat-more'), chatRetry = $('#chat-retry');
+  let chatTicket = 0, chatBefore, chatSearch = '', chatBusy = false, chatRoomsReady = false;
+  function chatControls() {
+    const unavailable = !chatRoomsReady || !chatRoom.value || leaving || workspace.hidden;
+    for (const control of [chatRoom, chatQuery, $('#chat-search'), $('#chat-reset')]) control.disabled = unavailable;
+    chatMore.disabled = unavailable || chatBusy;
+  }
+  function clearChat() {
+    chatTicket++;
+    chatBusy = false;
+    chatBefore = undefined;
+    chatList.replaceChildren();
+    chatList.removeAttribute('aria-busy');
+    chatMore.hidden = true;
+    chatRetry.hidden = true;
+    message('', false, chatStatus);
+  }
+  function renderChatMessage(item, room) {
+    const row = node('li');
+    const name = item.author?.name || 'Участница';
+    row.append(node('strong', name), node('span', describeDate(item.createdAt), 'meta'));
+    if (item.reply) {
+      const quote = node('blockquote', undefined, 'chat-reply');
+      quote.append(node('span', item.reply.authorName || 'Участница', 'meta'),
+        node('p', item.reply.deleted ? 'Сообщение удалено' : (item.reply.text || 'Фотография'), 'body-copy'));
+      row.append(quote);
+    }
+    if (item.text) row.append(node('p', item.text, 'body-copy'));
+    if (item.hasScreenshot) {
+      const photo = node('img', undefined, 'chat-photo');
+      photo.alt = 'Фотография к сообщению ' + name;
+      photo.loading = 'lazy';
+      photo.src = '/api/admin/chats/' + encodeURIComponent(room) + '/messages/' + encodeURIComponent(item.id) + '/photo';
+      const photoLink = node('a');
+      photoLink.href = photo.src;
+      photoLink.target = '_blank';
+      photoLink.rel = 'noopener noreferrer';
+      photoLink.append(photo, node('span', 'Открыть фотографию в новой вкладке', 'meta'));
+      photo.addEventListener('error', () => {
+        photoLink.replaceWith(node('p', 'Фотография недоступна. Обновите список сообщений.', 'meta'));
+      }, { once: true });
+      row.append(photoLink);
+    }
+    const remove = button('Удалить сообщение', () => {
+      const ticket = chatTicket;
+      const content = [node('p', chatRoom.selectedOptions[0]?.textContent || 'Чат', 'meta'),
+        node('strong', name), node('p', item.text || 'Фотография', 'body-copy'),
+        node('p', 'Сообщение и прикреплённая фотография будут удалены для всех участниц. Действие появится в журнале.')];
+      showPreview('Удалить сообщение?', content, 'Удалить сообщение', async () => {
+        if (leaving || ticket !== chatTicket || section !== 'chats' || workspace.hidden) {
+          preview.close();
+          return;
+        }
+        await api('chats/delete', { room, id: item.id });
+        preview.close();
+        if (!leaving && ticket === chatTicket && section === 'chats' && !workspace.hidden) {
+          if (await loadChatMessages()) message('Сообщение удалено. Действие записано в журнал.', false, chatStatus);
+        }
+      });
+    }, 'Удалить сообщение от ' + name);
+    remove.className = 'danger';
+    const actions = node('div', undefined, 'actions');
+    actions.append(remove);
+    row.append(actions);
+    return row;
+  }
+  async function loadChatMessages(more = false) {
+    if (!chatRoom.value || !chatRoomsReady || leaving || section !== 'chats' || workspace.hidden || (more && chatBusy)) return;
+    if (!more) clearChat();
+    const ticket = ++chatTicket, room = chatRoom.value;
+    chatBusy = true;
+    chatRetry.hidden = true;
+    chatList.setAttribute('aria-busy', 'true');
+    message('Загружаем сообщения…', false, chatStatus);
+    chatControls();
+    try {
+      const data = await api('chats/messages', { room, ...(more ? { before: chatBefore } : {}), ...(chatSearch ? { query: chatSearch } : {}) });
+      if (ticket !== chatTicket || leaving || section !== 'chats' || workspace.hidden) return;
+      const rows = data.messages;
+      if (!more) chatList.replaceChildren();
+      chatList.append(...rows.map(item => renderChatMessage(item, room)));
+      if (!chatList.childElementCount) chatList.append(node('li', chatSearch ? 'По этому запросу сообщений не найдено.' : 'В этом чате пока нет сообщений.', 'muted'));
+      chatBefore = data.nextBefore;
+      chatMore.hidden = !data.hasMore || !chatBefore;
+      message(chatSearch ? 'Результаты поиска: «' + chatSearch + '».' : '', false, chatStatus);
+      return true;
+    } catch (error) {
+      if (ticket === chatTicket && !leaving && !workspace.hidden) {
+        message(error.message, true, chatStatus);
+        chatRetry.hidden = false;
+      }
+    } finally {
+      if (ticket === chatTicket && !leaving) {
+        chatBusy = false;
+        chatList.removeAttribute('aria-busy');
+        chatControls();
+      }
+    }
+  }
+  async function loadChatRooms() {
+    clearChat();
+    const ticket = chatTicket, selected = chatRoom.value;
+    chatRoomsReady = false;
+    chatRoom.replaceChildren(new Option('Загружаем чаты…', ''));
+    chatControls();
+    message('Загружаем чаты…', false, chatStatus);
+    try {
+      const data = await api('chats');
+      if (ticket !== chatTicket || leaving || section !== 'chats' || workspace.hidden) return;
+      chatRoom.replaceChildren(...data.rooms.map(room => new Option(room.title + (room.closed ? ' · Закрыт' : ''), room.id)));
+      if (data.rooms.some(room => room.id === selected)) chatRoom.value = selected;
+      chatRoomsReady = true;
+      chatControls();
+      if (data.rooms.length) await loadChatMessages();
+      else {
+        chatRoom.add(new Option('Нет доступных чатов', ''));
+        message('Пока нет чатов для модерации.', false, chatStatus);
+      }
+    } catch (error) {
+      if (ticket === chatTicket && !leaving && !workspace.hidden) {
+        chatRoom.replaceChildren(new Option('Не удалось загрузить чаты', ''));
+        message(error.message, true, chatStatus);
+        chatRetry.hidden = false;
+      }
+    }
+  }
+  chatRoom.addEventListener('change', () => { void loadChatMessages(); });
+  $('#chat-search-form').addEventListener('submit', event => {
+    event.preventDefault();
+    chatSearch = chatQuery.value.trim();
+    void loadChatMessages();
+  });
+  $('#chat-reset').addEventListener('click', () => {
+    chatQuery.value = chatSearch = '';
+    void loadChatMessages();
+  });
+  chatMore.addEventListener('click', () => { void loadChatMessages(true); });
+  chatRetry.addEventListener('click', () => { void (chatRoomsReady ? loadChatMessages() : loadChatRooms()); });
+
   const staffForm = $('#staff-form');
   staffForm.addEventListener('submit', event => {
     event.preventDefault();
@@ -359,6 +499,7 @@
     article_published: 'Статья опубликована', article_hidden: 'Статья скрыта', article_restored: 'Статья возвращена',
     announcement_published: 'Объявление опубликовано', announcement_hidden: 'Объявление снято',
     poll_scheduled: 'Голосование запланировано', staff_granted: 'Доступ выдан', staff_revoked: 'Доступ отозван',
+    chat_message_deleted: 'Сообщение чата удалено',
   };
   function renderHistory(rows) {
     setList('#history-list', rows, item => {
@@ -372,6 +513,7 @@
     announcements: renderAnnouncements, polls: renderPolls, staff: renderStaff, history: renderHistory };
   async function reload() {
     const id = ++loading, selected = section;
+    if (selected === 'chats') { await loadChatRooms(); return; }
     try {
       const data = await api(selected);
       if (id === loading && !leaving) renderers[selected](data);
@@ -381,6 +523,7 @@
   }
   for (const tab of tabs) tab.addEventListener('click', () => {
     if (section === tab.dataset.tab) return;
+    if (section === 'chats') clearChat();
     section = tab.dataset.tab;
     for (const button of tabs) {
       const active = button === tab;
@@ -410,7 +553,7 @@
       workspace.hidden = false;
       if (wasHidden) { message(''); await reload(); }
     } catch (error) {
-      if (!leaving) { workspace.hidden = true; if (preview.open) preview.close(); message(error.message, true); }
+      if (!leaving) { workspace.hidden = true; clearChat(); chatControls(); if (preview.open) preview.close(); previewCopy.replaceChildren(); message(error.message, true); }
     } finally { checking = false; }
   }
   void check();

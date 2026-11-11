@@ -23,6 +23,7 @@
         <button type="button" data-tab="articles" aria-current="page">Статьи</button>
         <button type="button" data-tab="announcements">Объявления</button>
         <button type="button" data-tab="polls">Голосования недели</button>
+        <button type="button" data-tab="chats">Модерация чатов</button>
         <button type="button" data-tab="staff" hidden>Сотрудники</button>
         <button type="button" data-tab="history">Журнал</button>
       </nav>
@@ -88,6 +89,26 @@
           </div>
         </form>
         <ul id="poll-list" class="list"></ul>
+      </section>
+
+      <section id="chats" hidden>
+        <h2>Модерация чатов</h2>
+        <p class="muted">Общие и экспертные чаты, активности и обсуждения голосований, включая закрытые. Личные переписки с Ларой здесь не отображаются.</p>
+        <div class="surface">
+          <label>Чат <select id="chat-room" disabled></select></label>
+          <form id="chat-search-form">
+            <label>Поиск по тексту сообщений <input id="chat-query" type="search" maxlength="200" disabled></label>
+            <div class="actions">
+              <button id="chat-search" type="submit" disabled>Найти</button>
+              <button id="chat-reset" type="button" disabled>Сбросить</button>
+            </div>
+          </form>
+        </div>
+        <p class="muted">Сначала новые сообщения, по 50 за раз. Время указано по Москве. Удаление сообщения и фотографии фиксируется в журнале.</p>
+        <p id="chat-status" class="status" role="status" aria-live="polite"></p>
+        <button id="chat-retry" type="button" hidden>Повторить загрузку</button>
+        <ul id="chat-list" class="list" aria-label="Сообщения выбранного чата"></ul>
+        <button id="chat-more" class="chat-more" type="button" hidden>Показать ещё</button>
       </section>
 
       <section id="staff" hidden>

@@ -1,5 +1,6 @@
 import { AuthError, hashToken, isUuid, normalizeEmail } from './security.mjs';
 import { transaction } from './store.mjs';
+import { createAdminChats } from './admin-chats.mjs';
 
 const unauthorized = () => new AuthError(401, 'sign_in_required', 'Войдите по email.');
 const forbidden = () => new AuthError(403, 'admin_forbidden', 'У этого аккаунта нет доступа к админке.');
@@ -79,10 +80,17 @@ export function createAdmin({ pool, articles, ownerEmail, appOrigin }) {
     run(client, await access(client, token, expected, false, ownerOnly)));
   const write = (token, expected, run, ownerOnly = false) => transaction(pool, async client =>
     run(client, await access(client, token, expected, true, ownerOnly)));
+  // Images have no account header. Resolve the account and then lock its live
+  // session and editor grant, exactly as for writes, before reading chat data.
+  const chatRead = (token, expected, run) => transaction(pool, async client => {
+    const user = await access(client, token, expected);
+    return run(client, await access(client, token, user.id, true));
+  });
   const editorList = async client => (await client.query(`SELECT u.email,e.granted_at AS "grantedAt"
     FROM admin_editors e JOIN auth_users u ON u.id=e.user_id ORDER BY e.granted_at DESC`)).rows;
 
   return {
+    ...createAdminChats({ read: chatRead, write, audit }),
     session: (token, expected) => access(pool, token, expected),
     async allowedEmail(email) {
       if (email === ownerEmail) return true;

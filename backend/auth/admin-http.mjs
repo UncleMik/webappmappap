@@ -59,6 +59,14 @@ export async function createAdminHttp({ admin, service, store, origin, frontend,
     }
     const article = path.match(/^\/api\/admin\/articles\/(pregnancy-\d{3})(\/visibility)?$/);
     if (method === 'GET') {
+      if (path === '/api/admin/chats') { send(200, await admin.chats(token, expected)); return; }
+      const chatPhoto = path.match(/^\/api\/admin\/chats\/([^/]+)\/messages\/([1-9]\d{0,18})\/photo$/);
+      if (chatPhoto) {
+        let room;
+        try { room = decodeURIComponent(chatPhoto[1]); } catch { throw new AuthError(400, 'invalid_url', 'Неверный запрос.'); }
+        const { bytes } = await admin.chatPhoto(token, expected, room, chatPhoto[2]);
+        fileResponse({ bytes, type: 'image/jpeg' }); return;
+      }
       if (path === '/api/admin/session') { send(200, await admin.session(token, expected)); return; }
       if (path === '/api/admin/articles') { send(200, await admin.articles(token, expected)); return; }
       if (article && !article[2]) { send(200, await admin.article(token, expected, article[1])); return; }
@@ -101,6 +109,8 @@ export async function createAdminHttp({ admin, service, store, origin, frontend,
     }
     await admin.session(token, expected);
     const data = await readJson(request, path === '/api/admin/articles' || article && !article[2] ? 900_000 : 20_000);
+    if (path === '/api/admin/chats/messages') { send(200, await admin.chatMessages(token, expected, data)); return; }
+    if (path === '/api/admin/chats/delete') { send(200, await admin.deleteChatMessage(token, expected, data)); return; }
     if (path === '/api/admin/articles' || article && !article[2]) {
       send(200, await admin.publishArticle(token, expected, article?.[1] ?? null, data)); return;
     }
