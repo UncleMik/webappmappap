@@ -11,6 +11,15 @@ function dayLabel(date) {
 
 export function createChatTimeline({ room, log, messages, deletedIds, reactions, actions, canSend, onReply, onJump }) {
   let unreadStart = null, highlightTimer;
+  const viewer = document.createElement('dialog');
+  viewer.className = 'chat-photo-viewer';
+  viewer.setAttribute('aria-label', 'Просмотр фотографии');
+  viewer.innerHTML = '<button type="button" class="close-button chat-photo-close" aria-label="Закрыть фотографию" autofocus><svg class="close-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="m6 6 12 12M18 6 6 18"/></svg></button><img alt="Прикреплённое изображение">';
+  const viewerImage = viewer.querySelector('img');
+  viewer.querySelector('button').addEventListener('click', () => viewer.close());
+  viewer.addEventListener('click', event => { if (event.target === viewer) viewer.close(); });
+  viewer.addEventListener('close', () => viewerImage.removeAttribute('src'));
+  document.body.append(viewer);
   const articles = () => [...log.querySelectorAll(':scope > article[data-id]')];
   const find = id => articles().find(article => article.dataset.id === id);
   function snapshot() {
@@ -74,8 +83,11 @@ export function createChatTimeline({ room, log, messages, deletedIds, reactions,
         const link = document.createElement('a');
         link.className = 'club-message-screenshot';
         link.href = '/api/auth/club/messages/' + encodeURIComponent(message.id) + '/screenshot?room=' + encodeURIComponent(room);
-        link.target = '_blank';
-        link.rel = 'noopener noreferrer';
+        link.addEventListener('click', event => {
+          event.preventDefault();
+          viewerImage.src = link.href;
+          viewer.showModal();
+        });
         const image = document.createElement('img');
         image.alt = 'Прикреплённое изображение';
         image.src = link.href;
@@ -106,7 +118,7 @@ export function createChatTimeline({ room, log, messages, deletedIds, reactions,
     snapshot, restore, find,
     setUnread(id) { unreadStart = validId(id) ? id : null; const place = snapshot(); decorate(); restore(place); },
     render,
-    clear() { clearTimeout(highlightTimer); reactions.clear(); actions.reset(); messages.clear(); log.replaceChildren(); },
+    clear() { if (viewer.open) viewer.close(); viewerImage.removeAttribute('src'); clearTimeout(highlightTimer); reactions.clear(); actions.reset(); messages.clear(); log.replaceChildren(); },
     remove(id) {
       const place = snapshot(); deletedIds.add(id); messages.delete(id); actions.removed(id); reactions.remove(id); find(id)?.remove();
       const affected = [...messages.values()].filter(message => message.reply?.id === id && !message.reply.deleted);

@@ -2,7 +2,7 @@ import { activityRoom, clubRooms } from './club-rooms.js?v=20261109-activity';
 import { createReactionControls } from './chat-reactions.js?v=20261031-chips';
 import { createMessageActions } from './club-message-actions.js?v=20261103-chat';
 import { createDraftStore, copyMessageText } from './club-chat-tools.js?v=20261105-rooms';
-import { createChatTimeline } from './club-chat-timeline.js?v=20261109-attachments';
+import { createChatTimeline } from './club-chat-timeline.js?v=20261111-photo-close';
 import { clubRequest, chatLease } from './club-api.js?v=20261105-rooms';
 
 const params = new URLSearchParams(location.search);
