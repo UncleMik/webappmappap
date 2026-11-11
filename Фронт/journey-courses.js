@@ -1,4 +1,5 @@
-import { createCourseView, courseErrorText, positiveId } from './course-views.js?v=20261109-silent-access';
+import { programCards, programUrl } from './course-programs.js?v=20261111-bonuses';
+import { createCourseView, courseErrorText } from './course-views.js?v=20261109-silent-access';
 import { applySchoolCourseBanner, schoolCourseBanners } from './course-banners.js?v=20261109-school-covers';
 
 const section = document.querySelector('[aria-labelledby="courses-title"]');
@@ -16,33 +17,6 @@ function node(tag, className, text) {
   return result;
 }
 
-// Product IDs come from the school's catalogue; a tariff or a demo card is
-// never proof that the current account may read a product.
-export function courseCards(offers, owned) {
-  if (!Array.isArray(offers) || !offers.length || !Array.isArray(owned)) throw new Error('invalid_catalog');
-  const products = new Map();
-  for (const offer of offers) {
-    if (!Array.isArray(offer.items)) throw new Error('invalid_catalog');
-    for (const item of offer.items) {
-      if (!positiveId(item.productId) || typeof item.title !== 'string' || !item.title.trim()
-        || !['training', 'groups'].includes(item.type)) throw new Error('invalid_catalog');
-      if (item.type === 'training') products.set(String(item.productId), { productId: item.productId, title: item.title });
-    }
-  }
-  if (!products.size) throw new Error('invalid_catalog');
-  const available = new Map();
-  for (const course of owned) {
-    if (!positiveId(course.productId) || typeof course.title !== 'string' || !course.title.trim()
-      || !Number.isSafeInteger(course.lessonCount) || course.lessonCount < 0
-      || available.has(String(course.productId))) throw new Error('invalid_response');
-    available.set(String(course.productId), course);
-    // Preserve older purchases even if the product has left current tariffs.
-    products.set(String(course.productId), { productId: course.productId, title: course.title });
-  }
-  return [...products.values()].map(product => ({ ...product, owned: available.has(String(product.productId)),
-    lessonCount: available.get(String(product.productId))?.lessonCount }))
-    .sort((a, b) => Number(b.owned) - Number(a.owned));
-}
 
 function clear() {
   list.replaceChildren();
@@ -66,16 +40,16 @@ function error(caught, again) {
 }
 
 function render(data) {
-  const cards = courseCards(catalog.offers, data.courses);
+  const cards = programCards(catalog.offers, data.courses);
   const fragment = document.createDocumentFragment();
   const banners = schoolCourseBanners();
   for (const course of cards) {
     const card = node('article', 'journey-content-card course-card');
-    card.dataset.productId = course.productId;
-    card.dataset.access = course.owned ? 'available' : 'locked';
+    card.dataset.offerId = course.offerId;
+    card.dataset.access = course.availableCount ? 'available' : 'locked';
     const photo = node('div', 'course-photo journey-photo');
     applySchoolCourseBanner(photo, banners.next().value, course.title, 'h3');
-    if (!course.owned) {
+    if (!course.availableCount) {
       const icon = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
       icon.setAttribute('class', 'course-lock-icon');
       icon.setAttribute('aria-hidden', 'true');
@@ -85,10 +59,10 @@ function render(data) {
       photo.append(icon);
     }
     const copy = node('div', 'course-copy');
-    copy.append(node('p', '', course.owned ? 'Доступен по вашей покупке' : 'Входит в программу школы'));
-    const link = node('a', 'journey-primary', course.owned ? 'Открыть курс' : 'Открыть доступ');
-    link.href = course.owned ? `my-courses.html?course=${encodeURIComponent(course.productId)}` : 'courses.html';
-    link.setAttribute('aria-label', `${course.owned ? 'Открыть курс' : 'Открыть доступ'}: ${course.title}`);
+    copy.append(node('p', '', course.availableCount ? 'Есть доступные материалы' : 'Основной курс и бонусы'));
+    const link = node('a', 'journey-primary', 'Открыть программу');
+    link.href = programUrl(course.offerId);
+    link.setAttribute('aria-label', `${'Открыть программу'}: ${course.title}`);
     card.append(photo, copy, link);
     fragment.append(card);
   }
@@ -108,7 +82,7 @@ async function start() {
     const response = await fetch('/api/course-offers', { credentials: 'same-origin', cache: 'no-store', signal: AbortSignal.timeout(15000) });
     if (!response.ok) throw Object.assign(new Error('catalog_unavailable'), { status: response.status });
     catalog = await response.json();
-    courseCards(catalog.offers, []);
+    programCards(catalog.offers, []);
     createCourseView({ url: '/api/auth/courses', clear, loading, render, error }).start();
   } catch (caught) {
     error(caught, start);

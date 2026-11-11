@@ -1,7 +1,8 @@
 import { mountCourseOffers } from './courses.js?v=20261110-programs';
+import { programCards, programUrl, programsUrl } from './course-programs.js?v=20261111-bonuses';
 import { topicIllustration } from './course-topic-illustrations.js?v=20261109';
 import { createCourseView, courseErrorText, positiveId } from './course-views.js?v=20261109-silent-access';
-import { node, cover, courseProgram, courseListUrl, courseUrl, lessonUrl, freeCourseLessonId, validateCourse, primaryLink } from './course-ui.js?v=20261109-available-program-videos';
+import { node, cover, courseProgram, courseListUrl, courseUrl as baseCourseUrl, lessonUrl, freeCourseLessonId, validateCourse, primaryLink } from './course-ui.js?v=20261109-available-program-videos';
 
 import { applySchoolCourseBanner, schoolCourseBanners } from './course-banners.js?v=20261109-school-covers';
 
@@ -16,6 +17,9 @@ const productId = params.get('course');
 const sectionId = params.get('section');
 const program = courseProgram(params.get('program'));
 const selected = productId !== null;
+const offerId = params.get('offer');
+const grouped = !selected && (offerId !== null || params.get('programs') === '1');
+let offerCatalog = null;
 const topicId = params.get('topic');
 const subsectionId = params.get('sub');
 const topic = topics.find(item => item.id === topicId);
@@ -23,13 +27,14 @@ const subsection = topic?.sections.find(([id]) => id === subsectionId);
 
 const validId = (!selected || positiveId(productId)) && (sectionId === null || (selected && positiveId(sectionId)));
 const baseTitle = selected ? (sectionId === null ? 'Курс' : 'Раздел курса')
-  : program ? (subsection?.[1] ?? topic?.title ?? 'Курсы школы') : 'Мои курсы';
+  : grouped ? 'Программы школы' : program ? (subsection?.[1] ?? topic?.title ?? 'Курсы школы') : 'Мои курсы';
 const programOffers = { express: [8835218], full: [8835266, 8835331] };
 const programCourseIds = { express: '4309095', full: '4302509' };
 const fullCourseId = programCourseIds.full;
 const otherProgram = program === 'express' ? 'full' : 'express';
 let programProducts = null;
 let otherProgramProducts = null;
+const courseUrl = (...args) => baseCourseUrl(...args) + (offerId !== null ? '&offer=' + encodeURIComponent(offerId) : '');
 
 function setBack(href, text) {
   back.href = href;
@@ -163,6 +168,7 @@ function renderProgram(data, owned) {
 }
 
 function renderProducts(data) {
+  if (grouped) return renderOfferPrograms(data);
   if (!Array.isArray(data.courses)) throw new Error('invalid_response');
   const owned = new Map();
   for (const course of data.courses) {
@@ -210,6 +216,40 @@ function renderProducts(data) {
   list.setAttribute('aria-busy', 'false');
 }
 
+function renderOfferPrograms(data) {
+  const programs = programCards(offerCatalog, data.courses);
+  const current = offerId === null ? null : programs.find(item => String(item.offerId) === offerId);
+  if (offerId !== null && !current) throw Object.assign(new Error('not_found'), { status: 404 });
+  const fragment = document.createDocumentFragment();
+  const banners = schoolCourseBanners();
+  const appendCard = (title, href, label, available) => {
+    const card = node('a', 'owned-course course-product-card');
+    card.href = href;
+    const photo = node('div', 'course-cover');
+    applySchoolCourseBanner(photo, banners.next().value, title, 'h2');
+    const copy = node('div', 'owned-copy');
+    copy.append(node('span', available ? 'course-label' : 'course-label course-label-locked', label));
+    card.append(photo, copy);
+    fragment.append(card);
+  };
+  if (current) {
+    heading.textContent = current.title;
+    document.title = current.title;
+    setBack(programsUrl, 'Все программы');
+    current.items.forEach((item, index) => {
+      if (index < 2) fragment.append(node('h2', 'course-list-title', index === 0 ? 'Основной курс' : 'Бонусы'));
+      const href = item.owned ? courseUrl(item.productId) : 'courses.html';
+      appendCard(item.title, href, item.owned ? 'Доступен · ' + lessonCount(item.lessonCount) : 'Открыть доступ', item.owned);
+    });
+  } else {
+    setBack('journey.html', 'Мой путь');
+    for (const item of programs) appendCard(item.title, programUrl(item.offerId),
+      item.availableCount ? 'Есть доступные материалы' : 'Основной курс и бонусы', item.availableCount > 0);
+  }
+  list.replaceChildren(fragment);
+  list.setAttribute('aria-busy', 'false');
+}
+
 function moduleCard(section, count, number, parentTitle) {
   const card = node('a', 'course-module-card');
   card.href = courseUrl(productId, section.streamId, program);
@@ -243,7 +283,7 @@ function renderCourse(data) {
   const atRoot = sectionId === null || String(currentId) === String(course.rootStreamId);
   const parentId = section?.parentStreamId;
   const insideSection = !atRoot && positiveId(parentId) && String(parentId) !== String(course.rootStreamId);
-  if (atRoot) setBack(courseListUrl(program), program ? 'К курсам школы' : 'Мои курсы');
+  if (atRoot) setBack(offerId !== null ? programUrl(offerId) : courseListUrl(program), offerId !== null ? 'К программе' : program ? 'К курсам школы' : 'Мои курсы');
   else setBack(courseUrl(productId, insideSection ? parentId : undefined, program),
     insideSection ? 'К разделу выше' : 'К программе курса');
   heading.textContent = atRoot ? course.title : section.title;
@@ -368,8 +408,20 @@ async function loadProgram() {
   }
 }
 
+async function loadOfferPrograms() {
+  clear();
+  loading();
+  try {
+    const response = await fetch('/api/course-offers', { credentials: 'same-origin', cache: 'no-store', signal: AbortSignal.timeout(15000) });
+    if (!response.ok) throw Object.assign(new Error('catalog_unavailable'), { status: response.status });
+    offerCatalog = (await response.json()).offers;
+    programCards(offerCatalog, []);
+    startView();
+  } catch (error) { showError(error, loadOfferPrograms); }
+}
+
 if (!selected) {
-  programNav.hidden = Boolean(program);
+  programNav.hidden = Boolean(program) || grouped;
   for (const link of programNav.querySelectorAll('a')) {
     if (courseProgram(link.dataset.program) === program) link.setAttribute('aria-current', 'page');
   }
@@ -386,7 +438,8 @@ if (validId && sectionId !== null) {
 if (!validId) {
   clear();
   showError({ status: 404 }, () => location.assign(courseListUrl(program)));
-} else if (!selected && program) void loadProgram();
+} else if (grouped) void loadOfferPrograms();
+else if (!selected && program) void loadProgram();
 else {
   clear();
   startView();

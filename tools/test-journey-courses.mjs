@@ -6,6 +6,7 @@ import vm from 'node:vm';
 const viewSource = readFileSync(new URL('../Фронт/course-views.js', import.meta.url), 'utf8').replaceAll('export ', '');
 const source = readFileSync(new URL('../Фронт/journey-courses.js', import.meta.url), 'utf8')
   .replace(/^import [^\n]*\n/gm, '').replaceAll('export ', '');
+const programSource = readFileSync(new URL('../Фронт/course-programs.js', import.meta.url), 'utf8').replaceAll('export ', '');
 const bannerSource = readFileSync(new URL('../Фронт/course-banners.js', import.meta.url), 'utf8').replaceAll('export ', '');
 const flush = async () => { for (let i = 0; i < 5; i++) await new Promise(resolve => setImmediate(resolve)); };
 class Element {
@@ -16,11 +17,15 @@ class Element {
   replaceChildren(...nodes) { this.children = []; this.append(...nodes); }
   setAttribute(name, value) { this.attributes[name] = String(value); }
 }
-const offers = { offers: [{ items: [
-  { productId: 10, type: 'training', title: 'Экспресс' },
-  { productId: 20, type: 'training', title: 'Основной курс' },
-  { productId: 30, type: 'groups', title: 'Встречи' },
-] }, { items: [{ productId: 20, type: 'training', title: 'Основной курс' }] }] };
+const offers = { offers: [
+  { offerId: 8835218, displayName: 'Экспресс', items: [
+    { productId: 10, type: 'training', title: 'Экспресс основной' },
+    { productId: 20, type: 'training', title: 'Бонус' },
+    { productId: 30, type: 'groups', title: 'Встречи' },
+  ] },
+  { offerId: 8835266, displayName: 'Все включено', items: [{ productId: 40, type: 'training', title: 'Полный курс' }] },
+  { offerId: 8835331, displayName: 'ПРОФИ', items: [{ productId: 40, type: 'training', title: 'Полный курс' }, { productId: 20, type: 'training', title: 'Бонус' }] },
+] };
 const owned = [{ productId: 20, title: 'Основной курс', lessonCount: 12 }];
 function payload(courses = owned) {
   const now = Date.now();
@@ -40,7 +45,7 @@ function harness(replies = [response(offers), response(payload())]) {
     Date, performance: { now: () => 0 }, AbortController, AbortSignal, queueMicrotask,
     setTimeout: (fn, ms) => { timers.set(++timerId, { fn, ms }); return timerId; }, clearTimeout: id => timers.delete(id),
     fetch: async (url, options) => { requests.push({ url, options }); const r = replies.shift(); if (!r) throw new Error('missing response'); return typeof r === 'function' ? r() : r; } });
-  vm.runInContext(viewSource + '\n' + bannerSource + '\n' + source, context);
+  vm.runInContext(viewSource + '\n' + bannerSource + '\n' + programSource + '\n' + source, context);
   return { list, status, retry, arrows, document, docEvents, windowEvents, requests, replies, timers, context };
 }
 const buttonOf = card => card.children.find(n => n.tag === 'a');
@@ -52,20 +57,20 @@ test('no demo locks or owned links while the server check is pending', async () 
   assert.equal(h.list.children.length, 0);
   assert.match(h.status.textContent, /Проверяем/);
   finish(response(payload())); await flush();
-  assert.equal(h.list.children.length, 2);
-  assert.equal(h.list.children[0].dataset.productId, 20);
+  assert.equal(h.list.children.length, 3);
+  assert.equal(h.list.children[0].dataset.offerId, 8835218);
   assert.equal(h.list.children[0].dataset.access, 'available');
-  assert.equal(buttonOf(h.list.children[0]).href, 'my-courses.html?course=20');
+  assert.equal(buttonOf(h.list.children[0]).href, 'my-courses.html?offer=8835218');
   assert.deepEqual(h.list.children[0].children[0].children.map(n => n.tag), ['img', 'h3']);
-  assert.equal(buttonOf(h.list.children[1]).href, 'courses.html');
+  assert.equal(buttonOf(h.list.children[1]).href, 'my-courses.html?offer=8835266');
   assert.equal(h.list.children[1].children[0].children.at(-1).tag, 'svg');
   assert.ok(h.requests.every(r => r.options.cache === 'no-store' && r.options.credentials === 'same-origin'));
 });
 
 test('no purchases means locked real catalogue, deduplicated products, no group cards', async () => {
   const h = harness([response(offers), response(payload([]))]); await flush();
-  assert.deepEqual(h.list.children.map(n => n.dataset.productId), [10, 20]);
-  assert.ok(h.list.children.every(n => n.dataset.access === 'locked' && buttonOf(n).href === 'courses.html'));
+  assert.deepEqual(h.list.children.map(n => n.dataset.offerId), [8835218, 8835266, 8835331]);
+  assert.ok(h.list.children.every(n => n.dataset.access === 'locked' && buttonOf(n).href.startsWith('my-courses.html?offer=')));
 });
 
 for (const code of [401, 403, 503]) test(`access failure ${code} clears cards and offers retry`, async () => {
@@ -99,21 +104,31 @@ test('catalogue failure can be retried without creating duplicate views', async 
   const h = harness([response({}, 503), response(offers), response(payload())]); await flush();
   assert.equal(h.list.children.length, 0); assert.equal(h.retry.hidden, false);
   await h.retry.onclick(); await flush();
-  assert.equal(h.list.children.length, 2);
+  assert.equal(h.list.children.length, 3);
   assert.equal(h.requests.filter(r => r.url === '/api/auth/courses').length, 1);
 });
 
-test('old purchased products outside current offers remain usable', async () => {
+test('standalone older purchases do not add a fourth program or grant the current programs', async () => {
   const h = harness([response(offers), response(payload([{ productId: 99, title: '<Old course>', lessonCount: 1 }]))]); await flush();
-  assert.equal(h.list.children[0].dataset.productId, 99);
-  assert.equal(buttonOf(h.list.children[0]).href, 'my-courses.html?course=99');
-  assert.equal(h.list.children[0].children[0].children[1].textContent, '<Old course>');
+  assert.equal(h.list.children.length, 3);
+  assert.ok(h.list.children.every(card => card.dataset.access === 'locked'));
+});
+
+test('a bonus purchase opens only that product, not the main course or another bonus', () => {
+  const h = harness();
+  const cards = h.context.programCards(offers.offers, owned);
+  assert.equal(cards.length, 3);
+  assert.equal(cards[0].items[0].owned, false);
+  assert.equal(cards[0].items[1].owned, true);
+  assert.equal(cards[1].availableCount, 0);
+  assert.equal(cards[2].items[0].owned, false);
+  assert.equal(cards[0].items.length, 2);
 });
 
 test('journey initial HTML has no fake course cards and all-courses opens the program catalog', () => {
   const html = readFileSync(new URL('../Фронт/journey.html', import.meta.url), 'utf8');
   const courses = html.split('aria-labelledby="courses-title"')[1].split('</section>')[0];
-  assert.match(courses, /href="my-courses\.html\?program=express">Все курсы/);
+  assert.match(courses, /href="my-courses\.html\?programs=1">Все программы/);
   assert.doesNotMatch(courses, /Подготовка к родам|Здоровая спина|course-lock-icon/);
   assert.match(html, /type="module" src="journey-courses.js\?v=/);
 });
