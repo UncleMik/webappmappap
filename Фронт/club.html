@@ -11,7 +11,7 @@
   <link rel="preload" href="assets/fonts/Intro-Regular.woff" as="font" type="font/woff" crossorigin>
   <link rel="preload" href="assets/fonts/Intro-Bold.woff" as="font" type="font/woff" crossorigin>
   <link rel="stylesheet" href="styles.css?v=20261008-close">
-  <link rel="stylesheet" href="club.css?v=20261111-poll-focus">
+  <link rel="stylesheet" href="club.css?v=20261111-poll-countdown">
   <script src="club.js?v=20261110-no-search" defer></script>
   <link rel="stylesheet" href="club-chat-live.css?v=20261105-card">
   <script type="module" src="club-access.js?v=20261109-silent-access"></script>
@@ -68,6 +68,7 @@
 <section class="weekly-poll" id="weekly-poll" aria-labelledby="weekly-poll-question" hidden>
   <span class="event-badge">Голосование недели</span>
   <h2 id="weekly-poll-question" tabindex="-1"></h2>
+  <p class="weekly-poll-countdown" role="timer" aria-live="off" hidden></p>
   <form>
     <fieldset aria-labelledby="weekly-poll-question"></fieldset>
     <button type="submit" disabled>Ответить</button>
@@ -96,5 +97,5 @@
       </div>
     </nav>
 </div><script src="app.js?v=20261005-performance3"></script><script src="app-navigation.js?v=20261020-initial-content"></script><script src="resource-prefetch.js?v=20261009"></script>
-  <script defer src="weekly-poll.js?v=20261110-poll-discussion"></script>
+  <script defer src="weekly-poll.js?v=20261111-poll-countdown"></script>
 </body></html>

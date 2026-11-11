@@ -8,7 +8,36 @@
   const numbers = new Intl.NumberFormat('ru');
   let refreshTimer;
   let loadSequence = 0;
+
+  let countdownTimer;
   let requestedFocus = new URLSearchParams(location.search).has('poll');
+
+  function startCountdown(poll) {
+    clearInterval(countdownTimer);
+    const countdown = section?.querySelector('.weekly-poll-countdown');
+    if (!countdown) return;
+    const closesAt = new Date(poll?.closesAt).getTime();
+    countdown.hidden = !poll?.open || !Number.isFinite(closesAt);
+    if (countdown.hidden) return;
+    const update = () => {
+      const remaining = Math.max(0, Math.ceil((closesAt - Date.now()) / 1000));
+      const days = Math.floor(remaining / 86400);
+      const hours = Math.floor(remaining % 86400 / 3600);
+      const minutes = Math.floor(remaining % 3600 / 60);
+      const seconds = remaining % 60;
+      countdown.textContent = remaining
+        ? 'До конца голосования: ' + (days ? days + ' д. ' : '')
+          + [hours, minutes, seconds].map(value => String(value).padStart(2, '0')).join(':')
+        : 'Голосование завершено';
+      if (!remaining) {
+        clearInterval(countdownTimer);
+        section.querySelector('form').hidden = true;
+        if (discussion) discussion.hidden = true;
+      }
+    };
+    countdownTimer = setInterval(update, 1000);
+    update();
+  }
 
   async function request(options) {
     const response = await fetch(url, { cache: 'no-store', signal: AbortSignal.timeout(15000), ...options });
@@ -18,6 +47,7 @@
   }
 
   function render({ poll, accountId }) {
+    clearInterval(countdownTimer);
     if (card) {
       card.hidden = !poll;
       if (!card.hidden) card.querySelector('.article-title').textContent = poll.question;
@@ -27,7 +57,7 @@
     discussion.hidden = !poll?.open || poll.choice === null;
     if (discussion.hidden) discussion.removeAttribute('href');
     else discussion.href = 'club-chat.html?room=' + encodeURIComponent('weekly-poll:' + poll.id);
-    if (!poll) return;
+    if (!poll) { startCountdown(poll); return; }
 
     const question = section.querySelector('h2');
     question.textContent = poll.question;
@@ -112,6 +142,7 @@
         fieldset.disabled = false;
       }
     };
+    startCountdown(poll);
   }
 
   async function load() {
