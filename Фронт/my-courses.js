@@ -1,4 +1,4 @@
-import { mountCourseOffers } from './courses.js?v=20261111-clean-titles';
+import { mountCourseOffers } from './courses.js?v=20261111-highlights';
 import { programCards, programUrl, programsUrl } from './course-programs.js?v=20261111-return';
 import { topicIllustration } from './course-topic-illustrations.js?v=20261109';
 import { createCourseView, courseErrorText, positiveId } from './course-views.js?v=20261109-silent-access';
