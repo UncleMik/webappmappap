@@ -1,5 +1,5 @@
 import { mountCourseOffers } from './courses.js?v=20261110-programs';
-import { programCards, programUrl, programsUrl } from './course-programs.js?v=20261111-bonuses';
+import { programCards, programUrl, programsUrl } from './course-programs.js?v=20261111-return';
 import { topicIllustration } from './course-topic-illustrations.js?v=20261109';
 import { createCourseView, courseErrorText, positiveId } from './course-views.js?v=20261109-silent-access';
 import { node, cover, courseProgram, courseListUrl, courseUrl as baseCourseUrl, lessonUrl, freeCourseLessonId, validateCourse, primaryLink } from './course-ui.js?v=20261109-available-program-videos';
@@ -18,6 +18,7 @@ const sectionId = params.get('section');
 const program = courseProgram(params.get('program'));
 const selected = productId !== null;
 const offerId = params.get('offer');
+const offerSource = params.get('from') === 'journey' ? 'journey' : null;
 const grouped = !selected && (offerId !== null || params.get('programs') === '1');
 let offerCatalog = null;
 const topicId = params.get('topic');
@@ -34,7 +35,7 @@ const fullCourseId = programCourseIds.full;
 const otherProgram = program === 'express' ? 'full' : 'express';
 let programProducts = null;
 let otherProgramProducts = null;
-const courseUrl = (...args) => baseCourseUrl(...args) + (offerId !== null ? '&offer=' + encodeURIComponent(offerId) : '');
+const courseUrl = (...args) => baseCourseUrl(...args) + (offerId !== null ? '&offer=' + encodeURIComponent(offerId) + (offerSource ? '&from=journey' : '') : '');
 
 function setBack(href, text) {
   back.href = href;
@@ -235,7 +236,7 @@ function renderOfferPrograms(data) {
   if (current) {
     heading.textContent = current.title;
     document.title = current.title;
-    setBack(programsUrl, 'Все программы');
+    setBack(offerSource ? 'journey.html' : programsUrl, offerSource ? 'Мой путь' : 'Все программы');
     current.items.forEach((item, index) => {
       if (index < 2) fragment.append(node('h2', 'course-list-title', index === 0 ? 'Основной курс' : 'Бонусы'));
       const href = item.owned ? courseUrl(item.productId) : 'courses.html';
@@ -283,7 +284,7 @@ function renderCourse(data) {
   const atRoot = sectionId === null || String(currentId) === String(course.rootStreamId);
   const parentId = section?.parentStreamId;
   const insideSection = !atRoot && positiveId(parentId) && String(parentId) !== String(course.rootStreamId);
-  if (atRoot) setBack(offerId !== null ? programUrl(offerId) : courseListUrl(program), offerId !== null ? 'К программе' : program ? 'К курсам школы' : 'Мои курсы');
+  if (atRoot) setBack(offerId !== null ? programUrl(offerId, offerSource) : courseListUrl(program), offerId !== null ? 'К программе' : program ? 'К курсам школы' : 'Мои курсы');
   else setBack(courseUrl(productId, insideSection ? parentId : undefined, program),
     insideSection ? 'К разделу выше' : 'К программе курса');
   heading.textContent = atRoot ? course.title : section.title;
@@ -432,7 +433,10 @@ if (!selected) {
 if (validId && sectionId !== null) {
   setBack(courseUrl(productId, undefined, program), 'К программе курса');
 } else {
-  setBack(selected ? courseListUrl(program) : 'journey.html', selected ? program ? 'К курсам школы' : 'Мои курсы' : 'Мой путь');
+  if (offerId !== null) {
+    setBack(selected ? programUrl(offerId, offerSource) : offerSource ? 'journey.html' : programsUrl,
+      selected ? 'К программе' : offerSource ? 'Мой путь' : 'Все программы');
+  } else setBack(selected ? courseListUrl(program) : 'journey.html', selected ? program ? 'К курсам школы' : 'Мои курсы' : 'Мой путь');
 }
 
 if (!validId) {

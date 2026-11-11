@@ -60,9 +60,9 @@ test('no demo locks or owned links while the server check is pending', async () 
   assert.equal(h.list.children.length, 3);
   assert.equal(h.list.children[0].dataset.offerId, 8835218);
   assert.equal(h.list.children[0].dataset.access, 'available');
-  assert.equal(buttonOf(h.list.children[0]).href, 'my-courses.html?offer=8835218');
+  assert.equal(buttonOf(h.list.children[0]).href, 'my-courses.html?offer=8835218&from=journey');
   assert.deepEqual(h.list.children[0].children[0].children.map(n => n.tag), ['img', 'h3']);
-  assert.equal(buttonOf(h.list.children[1]).href, 'my-courses.html?offer=8835266');
+  assert.equal(buttonOf(h.list.children[1]).href, 'my-courses.html?offer=8835266&from=journey');
   assert.equal(h.list.children[1].children[0].children.at(-1).tag, 'svg');
   assert.ok(h.requests.every(r => r.options.cache === 'no-store' && r.options.credentials === 'same-origin'));
 });

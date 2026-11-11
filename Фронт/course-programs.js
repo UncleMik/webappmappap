@@ -2,7 +2,8 @@
 const programIds = [8835218, 8835266, 8835331];
 const validId = value => Number.isSafeInteger(Number(value)) && /^[1-9][0-9]*$/.test(String(value));
 
-export const programUrl = offerId => `my-courses.html?offer=${encodeURIComponent(offerId)}`;
+export const programUrl = (offerId, source) => `my-courses.html?offer=${encodeURIComponent(offerId)}`
+  + (source === 'journey' ? '&from=journey' : '');
 export const programsUrl = 'my-courses.html?programs=1';
 
 export function programCards(offers, owned) {

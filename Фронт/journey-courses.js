@@ -1,4 +1,4 @@
-import { programCards, programUrl } from './course-programs.js?v=20261111-bonuses';
+import { programCards, programUrl } from './course-programs.js?v=20261111-return';
 import { createCourseView, courseErrorText } from './course-views.js?v=20261109-silent-access';
 import { applySchoolCourseBanner, schoolCourseBanners } from './course-banners.js?v=20261109-school-covers';
 
@@ -61,7 +61,7 @@ function render(data) {
     const copy = node('div', 'course-copy');
     copy.append(node('p', '', course.availableCount ? 'Есть доступные материалы' : 'Основной курс и бонусы'));
     const link = node('a', 'journey-primary', 'Открыть программу');
-    link.href = programUrl(course.offerId);
+    link.href = programUrl(course.offerId, 'journey');
     link.setAttribute('aria-label', `${'Открыть программу'}: ${course.title}`);
     card.append(photo, copy, link);
     fragment.append(card);
