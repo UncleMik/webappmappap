@@ -3,7 +3,15 @@
   const lock = document.querySelector('#account-lock');
   const owner = window.top;
   let checking, heartbeat, exiting = false, suspended = false, sessionUserId;
+  let checkEpoch = 0;
   function hide() { lock.sheet.disabled = false; }
+  function suspend() {
+    suspended = true;
+    // Navigation can cancel fetch. Its late failure must not replace the new page.
+    checkEpoch++;
+    checking = undefined;
+    hide();
+  }
   function login(reason) {
     if (exiting) return;
     exiting = true;
@@ -32,13 +40,15 @@
     owner.location.replace(destination.href);
   }
   async function check({ background = false } = {}) {
-    if (exiting) return;
+    if (exiting || suspended || document.hidden) return;
     if (!background) hide();
     if (checking) return checking;
+    const epoch = checkEpoch;
     checking = (async () => {
       try {
         const response = await fetch('/api/auth/session', { credentials: 'same-origin', cache: 'no-store', signal: AbortSignal.timeout(15000) });
         const session = response.ok ? await response.json() : null;
+        if (epoch !== checkEpoch || suspended || document.hidden || exiting) return;
         if (session?.authenticated !== true || typeof session.user?.id !== 'string' ||
             typeof session.user?.email !== 'string') { login(session?.reason); return; }
         if (sessionUserId && sessionUserId !== session.user.id) { login('session_replaced'); return; }
@@ -48,8 +58,8 @@
         sessionUserId = session.user.id;
         window.webprilSessionAccountId = sessionUserId;
         if (!suspended && !document.hidden && !exiting) lock.sheet.disabled = true;
-      } catch { login(); }
-      finally { checking = undefined; }
+      } catch { if (epoch === checkEpoch && !suspended && !document.hidden) login(); }
+      finally { if (epoch === checkEpoch) checking = undefined; }
     })();
     return checking;
   }
@@ -63,7 +73,7 @@
   }
   if (owner === window) window.webprilSessionGate = { end: login };
   window.addEventListener('pagehide', () => {
-    suspended = true; hide(); clearInterval(heartbeat); heartbeat = undefined;
+    suspend(); clearInterval(heartbeat); heartbeat = undefined;
   });
   window.addEventListener('pageshow', event => {
     suspended = false;
@@ -72,7 +82,7 @@
   });
   window.addEventListener('focus', () => check({ background: lock.sheet.disabled && !suspended }));
   document.addEventListener('visibilitychange', () => {
-    if (document.hidden) { suspended = true; hide(); }
+    if (document.hidden) suspend();
     else { suspended = false; check(); }
   });
   if (location.hostname === 'unclemik.github.io') {
