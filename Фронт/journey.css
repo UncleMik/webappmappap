@@ -45,6 +45,7 @@
 .course-photo::before, .video-photo::before { content: ''; position: absolute; top: 0; left: 50%; width: calc(100% * var(--w) / var(--h) * 2 / 3); height: 100%; transform: translateX(-50%); background-image: url('assets/journey-reference.webp'); background-repeat: no-repeat; background-size: calc(95100% / var(--w)) calc(147200% / var(--h)); background-position: calc(var(--x) * 100% / (951 - var(--w))) calc(var(--y) * 100% / (1472 - var(--h))); }
 .course-photo::before { background-image: url('assets/journey-courses-clean.webp'); }
 .course-lock-icon { position: absolute; width: 2.4rem; height: 2.8rem; top: 50%; left: 50%; transform: translate(-50%, -50%); }
+.journey-page .course-photo .course-lock-icon { top:50%; left:50%; right:auto; width:3rem; height:3.5rem; transform:translate(-50%, -50%); }
 .course-copy { padding: .7rem 1rem; }
 .journey-page .course-copy h3 { font-size: 1.45rem; line-height: 1.7rem; }
 .course-copy p { color: var(--muted); margin-top: .4rem; font-size: 1.2rem; line-height: 1.5rem; }
