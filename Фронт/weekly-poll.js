@@ -7,10 +7,11 @@
   const plural = new Intl.PluralRules('ru');
   const numbers = new Intl.NumberFormat('ru');
   let refreshTimer;
+  let loadSequence = 0;
   let requestedFocus = new URLSearchParams(location.search).has('poll');
 
   async function request(options) {
-    const response = await fetch(url, { cache: 'no-store', ...options });
+    const response = await fetch(url, { cache: 'no-store', signal: AbortSignal.timeout(15000), ...options });
     const data = await response.json();
     if (!response.ok) throw Error(data.message || 'Голосование временно недоступно.');
     return data;
@@ -18,7 +19,7 @@
 
   function render({ poll, accountId }) {
     if (card) {
-      card.hidden = !poll?.open;
+      card.hidden = !poll;
       if (!card.hidden) card.querySelector('.article-title').textContent = poll.question;
     }
     if (!section) return;
@@ -114,9 +115,11 @@
   }
 
   async function load() {
+    const sequence = ++loadSequence;
     clearTimeout(refreshTimer);
     try {
       const data = await request();
+      if (sequence !== loadSequence) return;
       render(data);
       if (data.poll?.open) {
         const delay = new Date(data.poll.closesAt).getTime() - Date.now();
@@ -126,12 +129,16 @@
         }, Math.max(1000, Math.min(delay, 2_147_000_000)));
       } else if (data.poll && !data.poll.settled) {
         refreshTimer = setTimeout(load, 3000);
+      } else {
+        refreshTimer = setTimeout(load, 30000);
       }
     } catch {
-      if (card) card.hidden = true;
+      if (sequence !== loadSequence) return;
       if (discussion) discussion.hidden = true;
+      refreshTimer = setTimeout(load, 3000);
     }
   }
+  document.addEventListener('visibilitychange', () => { if (!document.hidden) load(); });
   window.addEventListener('pageshow', event => { if (event.persisted) load(); });
   load();
 })();

@@ -30,11 +30,11 @@
 #today .summary-progress::-webkit-progress-value { background: linear-gradient(90deg, #c8a7ff, #9772ff); border-radius: 1rem; }
 #today .summary-progress::-moz-progress-bar { background: linear-gradient(90deg, #c8a7ff, #9772ff); border-radius: 1rem; }
 #today-articles { margin-top: 1rem; }
-#today-articles > .today-material-card:first-child { grid-column: 1 / -1; }
+#today-articles > .today-poll-card { grid-column: 1 / -1; }
 #today-articles > .article-load-status { grid-column: 1 / -1; }
 .today-material-card { height: auto; min-height: 11.2rem; padding: 1.1rem 1.3rem 3.9rem; background: #f7f3ef; }
 .today-material-card .article-title { max-width: 78%; }
-.today-material-card:first-child .article-title { max-width: 72%; font-size: 1.6rem; line-height: 1.9rem; }
+.today-poll-card .article-title { max-width: 72%; font-size: 1.6rem; line-height: 1.9rem; }
 .today-material-card .article-meta { padding: 0 .5rem; font-size: 1rem; }
 .today-material-cover { position: absolute; right: 0; top: 0; width: 65%; height: 100%; object-fit: cover; mask-image: linear-gradient(to right, transparent, #000); opacity: .6; }
 .today-practice-cover { background: url('assets/mom-reference.webp') 34.8% 62.82871% / 981% auto no-repeat; }
@@ -42,6 +42,4 @@
 .today-material-card.today-poll-card { background: linear-gradient(115deg, #faf7ff, #eee5ff); }
 .today-poll-card .article-meta { color: #6240b8; background: #f0e7ff; }
 
-.today-poll-card[hidden], .today-poll-card:not([hidden]) + .today-material-card:not(.practice-article) { display: none; }
-#today-articles > .today-poll-card[hidden] + .today-material-card { grid-column: 1 / -1; }
-.today-poll-card[hidden] + .today-material-card .article-title { max-width: 72%; font-size: 1.6rem; line-height: 1.9rem; }
+.today-poll-card[hidden], .today-poll-card + .today-material-card:not(.practice-article) { display: none; }
