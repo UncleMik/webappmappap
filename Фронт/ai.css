@@ -36,7 +36,7 @@
 .message-meta { display: flex; align-items: center; justify-content: flex-end; gap: 4px; margin-top: 5px; color: #eee4ff; }
 .message-meta time { margin: 0; color: inherit; }
 .read-mark { color: inherit; font-size: 10px; line-height: 13px; }
-.chat-controls { padding: 12px 0 8px; }
+.chat-controls { padding: 12px 0 16px; }
 .help-label { color: #7968ac; font-size: 12px; margin-bottom: 3px; }
 .suggestions { display: flex; gap: 4px; }
 .suggestions button { display: flex; align-items: center; justify-content: center; gap: 5px; flex: 1; min-height: 44px; background: none; border-radius: 22px; font-size: 10px; white-space: normal; min-width: 0; position: relative; isolation: isolate; }
@@ -46,7 +46,7 @@
 .materials { --chip: #ecf9f5; }.materials svg { color: #409e98; }
 .analyses { --chip: #fff7e9; }.analyses svg { color: #ed9b30; }
 .doctor { --chip: #f5efff; }.doctor svg { color: #8a4dff; }
-.composer { display: flex; gap: 8px; margin-top: 7px; }
+.composer { display: flex; gap: 8px; margin-top: 14px; }
 .attachment-button { width: 44px; height: 44px; display: grid; place-items: center; background: white; border: 1px solid #ece3fc; border-radius: 50%; color: #8073a8; flex-shrink: 0; }
 .attachment-button svg { width: 23px; height: 23px; }
 .input-wrap { flex: 1; min-width: 0; display: flex; align-items: center; border: 1px solid #ece3fc; border-radius: 28px; padding: 2px; }
@@ -55,7 +55,7 @@
 .send-button { display: grid; place-items: center; width: 40px; height: 40px; border-radius: 50%; background: linear-gradient(140deg, #b071ff, #7934ff); color: white; flex-shrink: 0; }
 .send-button svg { fill: currentColor; stroke: none; width: 40px; height: 40px; display: block; }
 .send-button:disabled { opacity: .45; cursor: default; }
-.chat-quota { min-height: 14px; margin: 2px 4px 0; font-size: 10px; color: #8273b2; }
+.chat-quota { min-height: 14px; margin: 6px 4px 0; font-size: 10px; color: #8273b2; }
 #chat-status { font-size: 12px; line-height: 1.4; color: #685882; padding: 8px 4px 0; }
 #chat-retry, #history-more { padding: 8px 12px; margin-top: 5px; background: #f6f0ff; color: #7542c6; border-radius: 18px; font-size: 12px; }
 .visually-hidden { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; border: 0; }
@@ -101,3 +101,5 @@
 #conversations-more,#conversations-retry { min-height:44px; padding:8px 12px; border-radius:14px; background:#f6f0ff; color:#7542c6; font-size:13px; }
 .conversations-dialog [hidden] { display:none; }
 @media(max-width:374px) { .conversations-dialog { padding-inline:12px; }.conversations-header h2 { font-size:18px; }.conversation-heading { padding-top:10px; }.conversation-empty h2 { font-size:20px; } }
+
+@media (max-height: 420px) { .chat-controls { padding-bottom: 8px; }.composer { margin-top: 7px; }.chat-quota { margin-top: 2px; } }
