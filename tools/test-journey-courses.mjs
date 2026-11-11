@@ -128,7 +128,7 @@ test('a bonus purchase opens only that product, not the main course or another b
 test('journey initial HTML has no fake course cards and all-courses opens the program catalog', () => {
   const html = readFileSync(new URL('../Фронт/journey.html', import.meta.url), 'utf8');
   const courses = html.split('aria-labelledby="courses-title"')[1].split('</section>')[0];
-  assert.match(courses, /href="my-courses\.html\?programs=1">Все программы/);
+  assert.match(courses, /href="my-courses\.html\?program=express">Все программы/);
   assert.doesNotMatch(courses, /Подготовка к родам|Здоровая спина|course-lock-icon/);
   assert.match(html, /type="module" src="journey-courses.js\?v=/);
 });
