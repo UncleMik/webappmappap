@@ -12,16 +12,16 @@ const text = (parent, value, muted = false) => { if (value) parent.append(el('p'
 const row = parent => { const node = el('div', 'stars-row'); parent.append(node); return node; };
 const list = value => Array.isArray(value) ? value : value && typeof value === 'object' ? Object.entries(value).map(([id, item]) => ({ id, ...item })) : [];
 const available = value => value === true || value?.available === true || value?.enabled === true;
-let state, modal, body, modalStatus, tab = 'wallet', mutation = false, refreshId = 0;
+let state, modal, body, modalStatus, enhancedUi, legacyUi, presentationHost, tab = 'wallet', mutation = false, refreshId = 0;
 let presentationBusy=false,presentationTimer,pendingPresentation=null,presentationDialog=null,hintNode=null,hintDeferred=false,wasTodayVisible=false;
 const presentationAttempts=new Set(),presentationSessionId=crypto.randomUUID();
 let walletState = null, quota = null, historyRows = null, historyCursor = null, notificationPrefs = null, visitAccount = null, packPurchasesRemaining = null;
 const root = el('section', 'stars-shell'); root.hidden = true; root.setAttribute('aria-label', 'Твой день и звёздочки');
-if (main && ['index.html', 'journey.html', 'profile.html', 'baby.html'].includes(file)) main.prepend(root);
+// Activities render only inside the explicitly opened points window.
 const globalStatus = el('p', 'stars-status'); globalStatus.setAttribute('role', 'status'); globalStatus.setAttribute('aria-live', 'polite'); root.append(globalStatus);
 const content = el('div'); root.append(content);
-const trigger = button('★', () => open('wallet')); trigger.className = 'stars-trigger'; trigger.hidden = true; trigger.setAttribute('aria-label', 'Звёздочки: кошелёк и возможности');
-if (isToday || file === 'ai.html') (page?.querySelector('.header-actions') || page?.querySelector('header'))?.append(trigger);
+const trigger = document.querySelector('#points-trigger');
+
 function feature(name) {
   const alias = {peekNextWeek:'peek_next_week',capsule:'time_capsule',firstKick:'first_kick',kickRecord:'kicks_daily'}[name] || name;
   if (typeof state?.settings?.features?.[name] === 'boolean') return state.settings.features[name];
@@ -68,11 +68,14 @@ function actionButton(parent, title, payload, primary = false) {
 }
 function createModal() {
   if (modal) return;
-  modal = el('dialog', 'stars-dialog'); modal.setAttribute('aria-labelledby', 'stars-title');
+  modal = document.querySelector('#points-dialog') || el('dialog');
+  legacyUi = el('div'); legacyUi.dataset.legacyPointsUi='';legacyUi.append(...modal.childNodes);modal.append(legacyUi);
+  enhancedUi=el('div');enhancedUi.dataset.starsUi='';modal.append(enhancedUi);
+  modal.classList.add('stars-dialog');modal.setAttribute('aria-labelledby','stars-title');legacyUi.hidden=true;
   const header = el('header'); header.append(el('h2', '', 'Звёздочки и твой день')); header.firstChild.id = 'stars-title';
   const close = button('×', () => modal.close()); close.setAttribute('aria-label', 'Закрыть'); header.append(close);
   const tabs = el('div', 'stars-tabs'); tabs.setAttribute('role', 'tablist'); tabs.setAttribute('aria-label', 'Звёздочки и возможности');
-  for (const [id, label] of [['wallet','Кошелёк'],['letters','Письма'],['tools','Мои дела'],['preferences','Настройки']]) {
+  for (const [id, label] of [['wallet','Баллы'],['today','Твой день'],['tools','Мои дела'],['letters','Письма'],['preferences','Настройки']]) {
     const item = button(label, () => switchTab(id)); item.className = 'stars-tab'; item.dataset.tab = id; item.id = 'stars-tab-' + id; item.setAttribute('role','tab'); item.setAttribute('aria-controls','stars-panel');
     item.addEventListener('keydown', event => {
       if (!['ArrowLeft','ArrowRight','Home','End'].includes(event.key)) return;
@@ -83,20 +86,23 @@ function createModal() {
   }
   modalStatus = el('p', 'stars-status'); modalStatus.setAttribute('role','status'); modalStatus.setAttribute('aria-live','polite');
   body = el('div'); body.id = 'stars-panel'; body.setAttribute('role', 'tabpanel');
-  modal.append(header, tabs, modalStatus, body); document.body.append(modal);
+  presentationHost=el('div');presentationHost.className='stars-presentation-host';
+  enhancedUi.append(header,tabs,modalStatus,presentationHost,body);if(!modal.isConnected)document.body.append(modal);
+  modal.addEventListener('close',()=>{presentationDialog?.close();hintNode?.remove();hintNode=null;hintDeferred=false;wasTodayVisible=false;});
   modal.addEventListener('click', event => { if (event.target !== modal) return; const rect = modal.getBoundingClientRect(); if (event.clientX < rect.left || event.clientX > rect.right || event.clientY < rect.top || event.clientY > rect.bottom) modal.close(); });
 }
 async function open(which = 'wallet') {
   if (!state?.enabled) return;
-  packPurchasesRemaining = null; createModal(); switchTab(which); if (!modal.open) modal.showModal(); modal.scrollTop = 0;
+  packPurchasesRemaining = null; createModal();legacyUi.hidden=true;enhancedUi.hidden=false;modal.classList.add('stars-dialog');modal.setAttribute('aria-labelledby','stars-title');switchTab(which);if(!modal.open)modal.showModal();modal.scrollTop=0;schedulePresentation();
   const version = ++refreshId, account = state.accountId;
   try {
     const [value, quotaResult, historyResult, notifications] = await Promise.all([api.wallet(), api.aiQuota().catch(() => null), api.history().catch(() => null), api.notificationState().catch(() => null)]);
-    if (quotaResult?.quota) quota = quotaResult.quota;
+    if (version !== refreshId || state?.accountId !== account) return;
     const purchasesRemaining = await availablePackPurchases(historyResult,quotaResult?.quota);
     if (version !== refreshId || state?.accountId !== account) return;
+    if (quotaResult?.quota) quota = quotaResult.quota;
     packPurchasesRemaining=purchasesRemaining; notificationPrefs=notifications; walletState = value; historyRows = historyResult?.history || value.wallet?.history || []; historyCursor = historyResult?.nextCursor ?? null; if (tab === 'wallet' || tab === 'preferences') renderModal();
-  } catch (error) { if (modal.open && state?.accountId === account) notice(error.message); }
+  } catch (error) { if (version === refreshId && modal.open && state?.accountId === account) notice(error.message); }
 }
 async function availablePackPurchases(first, currentQuota) {
   if (!first?.history || !currentQuota?.serverTime || !state) return null;
@@ -294,16 +300,13 @@ function renderModal() {
   if (!body || !state) return;
   const active = document.activeElement, key = body.contains(active) ? active.dataset.starsFocus || active.getAttribute('aria-label') || active.name : null;
   const scroll = modal.scrollTop; body.replaceChildren();
-  if (tab === 'wallet') renderWallet(); else if (tab === 'letters') renderLetters(); else if (tab === 'tools') renderTools(); else renderPreferences();
+  if (tab === 'wallet') renderWallet(); else if (tab === 'today') {renderToday(body);renderRecommendations(body);renderProgress(body);} else if (tab === 'letters') renderLetters(); else if (tab === 'tools') renderTools(); else renderPreferences();
   modal.scrollTop = scroll;
   if (key) { const replacement = [...body.querySelectorAll('button,input,textarea')].find(node => (node.dataset.starsFocus || node.getAttribute('aria-label') || node.name) === key); replacement?.focus({preventScroll:true}); }
 }
 function renderProgress(parent) {
   const week = file === 'journey.html' ? Number(document.querySelector('#journey')?.dataset.week) || state.currentWeek : state.currentWeek;
   const item = list(state.weekProgress || walletState?.weekProgress || state.weeks).find(item => Number(item.week) === week);
-  const sections = ['weekly-articles-title','videos-title'].map(id=>document.getElementById(id)?.closest('section')).filter(Boolean);
-  if (item?.locked || item?.available === false) sections.forEach(section=>{section.dataset.starsLocked='true';section.hidden=true;});
-  else sections.forEach(section=>{if(section.dataset.starsLocked){section.hidden=false;delete section.dataset.starsLocked;}});
   if (!item) return;
   const box = card(`${week}-я неделя`,parent);
   if (item.locked || item.available === false) {
@@ -319,6 +322,17 @@ function renderProgress(parent) {
     else text(box,item.rewardPending ? 'Бонус и письмо придут после наступления недели.' : 'Неделя завершена ✓');
   }
   box.append(button('Коллекция писем', () => open('letters')));
+}
+function renderRecommendations(parent) {
+  const recommendations = state.today?.recommendations;
+  if (!recommendations?.length) return;
+  const box = card('Материалы для вас', parent);
+  for (const item of recommendations) {
+    const id = item.kind === 'video' ? ({'001':'contractions-lesson','002':'back-relief-video','003':'birth-breathing-video'}[item.id] || 'week-video-' + String(item.id).padStart(3,'0')) : item.id;
+    const link = el('a', 'stars-material-link', item.title);
+    link.href = (item.kind === 'video' ? 'video.html?id=' : 'article.html?id=') + encodeURIComponent(id) + '&from=index&week=' + item.week;
+    box.append(link);
+  }
 }
 function renderSurpriseGame(box) {
   const formats = [['choose','surprise_pick3','Выбрать'],['flip','surprise_flip','Перевернуть'],['scratch','surprise_scratch','Стереть']].filter(([,featureName])=>state.features?.[featureName]);
@@ -409,7 +423,7 @@ function renderToday(parent) {
 }
 function todayVisible() { return isToday && !document.hidden && !page?.hidden && !window.frameElement?.hidden; }
 function presentationReady() {
-  return todayVisible() && state?.enabled && !state.preferences?.quiet && !mutation && !document.querySelector('dialog[open]') && !state.today?.urgent;
+  return todayVisible() && modal?.open && state?.enabled && !state.preferences?.quiet && !mutation && ![...document.querySelectorAll('dialog[open]')].some(dialog=>dialog!==modal) && !state.today?.urgent;
 }
 function presentationAllowed(entry) {
   if (entry.kind === 'hint') return !paused() && state.features?.[entry.value.feature] === true && (entry.week === undefined || entry.week === state.currentWeek);
@@ -417,7 +431,7 @@ function presentationAllowed(entry) {
 }
 function schedulePresentation() {
   clearTimeout(presentationTimer);
-  const visible=todayVisible();
+  const visible=todayVisible() && modal?.open;
   if(visible&&!wasTodayVisible)hintDeferred=false;
   wasTodayVisible=visible;
   if(!visible){presentationDialog?.close();hintNode?.remove();hintNode=null;return;}
@@ -425,7 +439,7 @@ function schedulePresentation() {
 }
 async function showPresentation() {
   if(presentationBusy||!presentationReady())return;
-  if(hintNode?.isConnected)return;
+  if(hintNode?.isConnected||presentationDialog?.isConnected)return;
   let entry=pendingPresentation;
   if(entry?.accountId!==state.accountId)entry=pendingPresentation=null;
   if(!entry){
@@ -455,13 +469,13 @@ async function showPresentation() {
     pendingPresentation=null;
     if(entry.kind==='hint'){
       const aside=el('aside','stars-card stars-hint');aside.setAttribute('role','note');aside.setAttribute('aria-label','Подсказка о новой возможности');
-      text(aside,entry.value.text);const close=button('Понятно',()=>{aside.remove();if(hintNode===aside)hintNode=null;});aside.append(close);root.insertBefore(aside,content);hintNode=aside;
+      text(aside,entry.value.text);const close=button('Понятно',()=>{aside.remove();if(hintNode===aside)hintNode=null;});aside.append(close);presentationHost.append(aside);hintNode=aside;
     }else{
       hintDeferred=true;
-      const dialog=el('dialog','stars-dialog stars-celebration');presentationDialog=dialog;dialog.dataset.celebrationKind=entry.value.kind;dialog.setAttribute('aria-labelledby','stars-celebration-title');
+      const dialog=el('section','stars-card stars-celebration');presentationDialog=dialog;dialog.dataset.celebrationKind=entry.value.kind;dialog.setAttribute('aria-labelledby','stars-celebration-title');
       const heading=el('h2','',entry.value.title);heading.id='stars-celebration-title';dialog.append(heading);text(dialog,entry.value.body);
-      const close=button('Продолжить',()=>dialog.close(),true);dialog.append(close);
-      dialog.addEventListener('close',()=>{dialog.remove();if(presentationDialog===dialog)presentationDialog=null;});document.body.append(dialog);dialog.showModal();
+      dialog.close=()=>{dialog.remove();if(presentationDialog===dialog)presentationDialog=null;schedulePresentation();};
+      const close=button('Продолжить',()=>dialog.close(),true);dialog.append(close);presentationHost.append(dialog);
     }
   }catch(error){
     if(error.code==='account_changed'||[401,403].includes(error.status))pendingPresentation=null;
@@ -472,41 +486,20 @@ function render(value) {
   if (!value?.enabled) { reset(); return; }
   if (state?.accountId && state.accountId !== value.accountId) { walletState = null; quota = null; modal?.close(); }
   state = value;
-  const legacyDialog=document.querySelector('#points-dialog');if(legacyDialog?.open)legacyDialog.close();
+
   if (visitAccount !== state.accountId) { visitAccount = state.accountId; void api.visit().catch(()=>{}); }
   window.webprilGamificationWeeks = state.weeks; document.documentElement.classList.add('stars-enabled');
   document.documentElement.classList.toggle('baby-messages-paused',paused());
-  trigger.hidden = false; trigger.textContent = money(state.wallet?.balance) + ' ★';
-  root.hidden = false; content.replaceChildren();
-  if (isToday) { renderToday(content); renderRecommendations(); }
-  if (paused() && file === 'baby.html') text(content,'Сообщения о малыше на паузе. Вернуть их можно в настройках.');
-  if (file === 'journey.html' || isToday) renderProgress(content);
-  const links = row(content); links.append(button('Кошелёк', () => open('wallet')),button('Мои дела', () => open('tools')));
-  if (!paused()) links.append(button('Письма', () => open('letters')));
-  links.append(button('Настройки', () => open('preferences')));
-  if (modal?.open) renderModal();
+  if(trigger){trigger.hidden=false;trigger.querySelector('#points-trigger-balance').textContent=money(state.wallet?.balance);}
+  if (modal?.open && enhancedUi && !enhancedUi.hidden) renderModal();
   if (paused() || state.preferences?.quiet) {hintNode?.remove();hintNode=null;if(state.preferences?.quiet || presentationDialog && presentationDialog.dataset.celebrationKind!=='welcome')presentationDialog?.close();}
   document.querySelectorAll('a[href*="baby.html"]').forEach(link => { link.hidden = paused(); });
-  const poll = document.querySelector('#weekly-poll-card'); if (poll && state.features?.poll === false) poll.hidden = true;
   schedulePresentation();
 }
-function renderRecommendations() {
-  const target = document.querySelector('#today-articles');
-  if (!target || !state.today?.recommendations) return;
-  window.webprilDailyRecommendations = state.today.recommendations;
-  if (window.renderGamificationRecommendations) { window.renderGamificationRecommendations(); return; }
-  const poll = target.querySelector('#weekly-poll-card');
-  const cards = state.today.recommendations.map(item => {
-    const node = el('a','article-card today-material-card'); node.dataset.starsRecommendation = 'true';
-    const id = item.kind === 'video' ? ({'001':'contractions-lesson','002':'back-relief-video','003':'birth-breathing-video'}[item.id] || 'week-video-' + String(item.id).padStart(3,'0')) : item.id;
-    node.href = (item.kind === 'video' ? 'video.html?id=' : 'article.html?id=') + encodeURIComponent(id) + '&from=index&week=' + item.week;
-    node.append(el('span','article-meta',item.week + ' НЕДЕЛЯ'),el('strong','article-title',item.title)); return node;
-  });
-  target.replaceChildren(...(poll ? [poll] : []),...cards);
-}
+
 function reset() {
   clearTimeout(presentationTimer);pendingPresentation=null;presentationDialog?.close();hintNode?.remove();hintNode=null;presentationAttempts.clear();hintDeferred=false;
-  mutation = false; state = null; walletState = null; quota = null; historyRows = null; historyCursor = null; notificationPrefs = null; visitAccount = null; packPurchasesRemaining = null; refreshId++; content.replaceChildren(); globalStatus.textContent = ''; root.hidden = true; trigger.hidden = true; window.webprilDailyRecommendations = null; window.webprilGamificationWeeks = null; modal?.close(); body?.replaceChildren();
+  mutation = false; state = null; walletState = null; quota = null; historyRows = null; historyCursor = null; notificationPrefs = null; visitAccount = null; packPurchasesRemaining = null; refreshId++; content.replaceChildren(); globalStatus.textContent = ''; root.hidden = true; window.webprilDailyRecommendations = null; window.webprilGamificationWeeks = null; modal?.close(); body?.replaceChildren();if(legacyUi){legacyUi.hidden=false;enhancedUi.hidden=true;modal.classList.remove('stars-dialog');modal.setAttribute('aria-labelledby','points-title');}
   document.documentElement.classList.remove('stars-enabled','baby-messages-paused');
 }
 api.subscribe(render);
@@ -533,7 +526,7 @@ if (isToday && page) new MutationObserver(schedulePresentation).observe(page,{at
 if (window.frameElement) new MutationObserver(()=>{schedulePresentation();void refresh();}).observe(window.frameElement,{attributes:true,attributeFilter:['hidden']});
 const journey = document.querySelector('#journey');
 if (journey) new MutationObserver(() => { if (state) render(state); }).observe(journey,{attributes:true,attributeFilter:['data-week']});
-const css = el('link'); css.rel = 'stylesheet'; css.href = 'gamification.css?v=20261112-stars'; document.head.append(css);
+const css = el('link'); css.rel = 'stylesheet'; css.href = 'gamification.css?v=20261112-layout-window'; document.head.append(css);
 void refresh();
 
 function resizeDialog() { document.documentElement.style.setProperty('--stars-viewport-height', Math.max(160,(window.visualViewport?.height || innerHeight)-12)+'px'); }

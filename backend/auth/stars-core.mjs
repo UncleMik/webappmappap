@@ -166,9 +166,12 @@ export function createStars({pool,service,courseMaterials,settings,catalog,clock
   const config=forGamificationUser(await options(client),userId);
   // Outside the stars pilot, preserve the existing poll without onboarding gates.
   if(!enabled(config))return {available:true,pilot:false,reason:null,availableAt:null};
-  const {rows:[user]}=await client.query(`SELECT GREATEST(u.created_at,l.launched_at) AS started_at
+  const {rows:[user]}=await client.query(`SELECT GREATEST(u.created_at,l.launched_at) AS started_at,
+   u.created_at<=l.launched_at AS prelaunch
    FROM auth_users u CROSS JOIN auth_stars_launch l WHERE u.id=$1`,[userId]);
   if(!user)return {available:false,pilot:true,reason:'poll_unavailable',availableAt:null};
+  // The poll predates stars. A material-access review must never revoke it.
+  if(user.prelaunch)return {available:true,pilot:true,reason:null,availableAt:null};
   const start=Date.parse(starsDay(user.started_at)),day=Date.parse(starsDay(clock()));
   const available=day-start>=2*DAY;
   return {available,pilot:true,reason:available?null:'poll_onboarding',availableAt:new Date(start+2*DAY-3*3600000).toISOString()};

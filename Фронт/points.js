@@ -1,3 +1,4 @@
+import { snapshot as starsSnapshot, subscribe as subscribeStars } from './gamification-api.js?v=20261112-stars';
 import { authRequest } from './auth-client.js?v=20261109-pilot';
 
 const today = document.querySelector('#today');
@@ -16,6 +17,7 @@ const formatDate = new Intl.DateTimeFormat('ru-RU', {
 });
 
 let accountId;
+let pilotOwned = starsSnapshot()?.enabled === true;
 let enabled = false;
 let ended = false;
 let active = false;
@@ -25,7 +27,7 @@ let nextCursor = null;
 const seen = new Set();
 
 function clearBalance() {
-  triggerBalance.textContent = '';
+  if (!pilotOwned) triggerBalance.textContent = '';
   balance.querySelector('strong').textContent = '';
   balance.hidden = true;
 }
@@ -49,8 +51,11 @@ function reset() {
   generation++;
   pending = false;
   enabled = false;
-  if (dialog.open) dialog.close();
-  trigger.hidden = true;
+  accountId = undefined;
+  if (!pilotOwned) {
+    if (dialog.open) dialog.close();
+    trigger.hidden = true;
+  }
   clearBalance();
   clearHistory();
   status.textContent = '';
@@ -89,9 +94,9 @@ function matchesSession(expected) {
 }
 
 async function load(before = null) {
-  if (!active || ended || pending) return;
+  if (!active || ended || pending || pilotOwned) return;
   const request = ++generation;
-  const current = () => request === generation && active && !ended;
+  const current = () => request === generation && active && !ended && !pilotOwned;
   pending = true;
   if (before === null) {
     clearHistory();
@@ -134,10 +139,11 @@ function syncActivity() {
   if (active === visible) return;
   active = visible;
   if (active) void load();
-  else reset();
+  else { if (dialog.open) dialog.close(); reset(); }
 }
 
 trigger.addEventListener('click', () => {
+  if(pilotOwned){window.dispatchEvent(new CustomEvent('stars:open',{detail:{tab:'wallet'}}));return;}
   if (!active || ended || !enabled || dialog.open) return;
   generation++;
   pending = false;
@@ -157,11 +163,28 @@ details.addEventListener('click', () => {
 more.addEventListener('click', () => void load(nextCursor));
 window.addEventListener('webpril:session-ended', () => {
   ended = true;
+  if (dialog.open) dialog.close();
   reset();
 });
 window.addEventListener('pagehide', () => {
   active = false;
+  if (dialog.open) dialog.close();
   reset();
+});
+subscribeStars(value => {
+  const next = value?.enabled === true;
+  if (next === pilotOwned) return;
+  pilotOwned = next;
+  if (next && dialog.open && !dialog.classList.contains('stars-dialog')) dialog.close();
+  reset();
+  if (!next && active && !ended) void load();
+});
+window.addEventListener('account:change', () => {
+  const current = window.webprilSessionAccountId || window.webprilAccount?.user?.id;
+  if (accountId && accountId !== current) {
+    reset();
+    if (active && !pilotOwned && !ended) void load();
+  }
 });
 window.addEventListener('pageshow', syncActivity);
 document.addEventListener('visibilitychange', syncActivity);

@@ -21,7 +21,14 @@ async function identity() {
 }
 async function request(path, body) {
   const id = await identity(), revision = generation;
-  const result = await authRequest(path, body, { headers: { 'X-Webpril-Account': id } });
+  let result;
+  try {
+    result = await authRequest(path, body, { headers: { 'X-Webpril-Account': id } });
+  } catch (error) {
+    const authRead = body === undefined && ['gamification','stars','points','ai/quota','gamification/letters','notifications'].includes(path.split('?')[0]);
+    if (generation === revision && account === id && (error.status === 401 || error.code === 'sign_in_required' || error.code === 'account_changed' || authRead && error.status === 403)) clear();
+    throw error;
+  }
   if (ended || generation !== revision || account !== id || sessionAccount() && sessionAccount() !== id) throw changed();
   if (result.accountId && result.accountId !== id || result.state?.accountId && result.state.accountId !== id) { clear(); throw changed(); }
   return result;

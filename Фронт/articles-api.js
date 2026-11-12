@@ -140,17 +140,6 @@ const renderTodayArticles = () => renderWhenArticlesReady(todayArticles, () => {
     card.querySelector('.article-title').textContent = title;
     return card;
   }
-  if (Array.isArray(window.webprilDailyRecommendations)) {
-    const cards = window.webprilDailyRecommendations.map(item => {
-      const videoId = item.kind === 'video' ? ({'001':'contractions-lesson','002':'back-relief-video','003':'birth-breathing-video'}[item.id] || 'week-video-' + String(item.id).padStart(3,'0')) : null;
-      const article = window.pregnancyArticleList.find(row=>String(row.id)===String(item.id));
-      const card = createTodayCard(item.title,article?.minutes || '',(videoId?'video.html?id='+encodeURIComponent(videoId):'article.html?id='+encodeURIComponent(item.id))+'&from=index&week='+item.week);
-      card.querySelector('.article-meta').textContent = `${item.kind==='video'?'ВИДЕО':'СТАТЬЯ'} · ${item.week} НЕДЕЛЯ`;
-      if (article) {const cover=articleCover(article,'today-material-cover');if(cover)card.prepend(cover);}
-      return card;
-    });
-    const poll=todayArticles.querySelector('#weekly-poll-card'); todayArticles.replaceChildren(...(poll?[poll]:[]),...cards); return;
-  }
   const cards = window.articleReadState.unreadFirst(window.pregnancyArticleList.filter(article => article.week === (window.webprilAccount?.week || 27))).slice(0, 2)
     .map(article => {
       const card = createTodayCard(article.title, article.minutes, `article.html?id=${encodeURIComponent(article.id)}&from=index`);
@@ -168,7 +157,6 @@ const renderTodayArticles = () => renderWhenArticlesReady(todayArticles, () => {
 });
 renderTodayArticles();
 window.addEventListener('account:change', renderTodayArticles);
-window.renderGamificationRecommendations = renderTodayArticles;
 }
 
 window.addEventListener('webpril:session-ended', () => { articleRevision++; articleOwner=null; window.articleLibrary = {}; window.pregnancyArticleList = []; });

@@ -1,6 +1,6 @@
 .stars-shell { margin: 18px 0; color: #121443; font-size: 15px; line-height: 1.5; }
 .stars-shell *, .stars-dialog * { box-sizing: border-box; min-width: 0; }
-.stars-shell [hidden], .stars-dialog [hidden], .stars-trigger[hidden], .stars-enabled #points-trigger { display: none !important; }
+.stars-shell [hidden], .stars-dialog [hidden], .stars-trigger[hidden] { display: none !important; }
 .stars-card { border: 1px solid #e9e3f5; border-radius: 20px; padding: 17px; margin: 12px 0; background: #fffdfb; overflow-wrap: anywhere; }
 .stars-card h2, .stars-card h3, .stars-dialog h2, .stars-dialog h3 { margin: 0 0 10px; line-height: 1.25; }
 .stars-card h2 { font-size: 22px; }
@@ -68,9 +68,10 @@
 .stars-celebration h2 {font-size:26px;margin-bottom:16px;}
 .stars-celebration .stars-button {margin-top:12px;}
 
-/* Personalized copy must yield space to the existing header controls. */
-.stars-enabled #today .page-header { gap: 8px; }
+/* Preserve original header spacing while allowing personalized names to wrap. */
 .stars-enabled #today .page-header > :first-child { flex: 1 1 0; min-width: 0; }
-.stars-enabled #today .header-actions { flex: 0 0 auto; gap: clamp(6px, 2vw, 12px); }
+.stars-enabled #today .header-actions { flex: 0 0 auto; }
 .stars-enabled #today .greeting { display: block; overflow-wrap: anywhere; }
 .stars-enabled #today .greeting-heart { display: inline-block; vertical-align: middle; }
+
+.stars-material-link { display: block; padding: 10px 0; color: #5430aa; }

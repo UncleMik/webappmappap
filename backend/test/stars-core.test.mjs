@@ -285,7 +285,25 @@ test('wallet SQL, migrations, domain hooks and verified course progress',async t
    assert.deepEqual(rows[0].event,{userId:selected.id,key:'poll-results-notify-results',type:'poll_results',title:'Голосование завершено',body:'',url:'/club.html?poll=1#events',babyRelated:false,medical:false});
    delete settings.audience;
   });
-  await t.test('pilot poll onboarding is enforced on Moscow day0/day1 and opens on day2',async()=>{
+  await t.test('prelaunch and exact-launch pilot accounts retain active poll on day0 regardless of material review',async()=>{
+   const {rows:[launch]}=await pool.query('SELECT launched_at FROM auth_stars_launch WHERE id=1');
+   const start=+new Date(launch.launched_at);now=start;
+   const existing=await account(10,{created:new Date(start-1).toISOString()}),boundary=await account(10,{created:new Date(start).toISOString()});
+   settings.audience={mode:'selected',userIds:[existing.id,boundary.id]};
+   const polls=createWeeklyPoll(pool,{stars});
+   await pool.query("INSERT INTO weekly_polls(id,question,options,opens_at,closes_at) VALUES('prelaunch-active','synthetic',ARRAY['a','b'],now()-interval '1 hour',now()+interval '1 day')");
+   for(const u of [existing,boundary]){
+    await state(u);
+    // Explicit owner review state cannot remove this old poll entitlement.
+    await pool.query('UPDATE auth_stars_wallet SET legacy=false WHERE user_id=$1',[u.id]);
+    const result=await polls.read(u.id);assert.equal(result.accountId,u.id);assert.equal(result.enabled,true);assert.equal(result.available,true);assert.ok(result.poll);
+    await polls.vote(u.token,u.id,{pollId:'prelaunch-active',choice:0});await polls.vote(u.token,u.id,{pollId:'prelaunch-active',choice:0});
+    const {rows}=await pool.query("SELECT amount FROM auth_points_ledger WHERE user_id=$1 AND event_code='poll_vote' AND event_ref='prelaunch-active'",[u.id]);
+    assert.equal(rows.length,1);assert.equal(rows[0].amount,20);assert.equal((await state(u)).wallet.balance,120);
+   }
+   delete settings.audience;
+  });
+  await t.test('postlaunch pilot poll onboarding is enforced on Moscow day0/day1 and opens on day2',async()=>{
    now=Date.parse(starsDay(now)+'T20:59:59.999Z');
    const start=now,selected=await account(10,{created:new Date(now).toISOString()}),outside=await account(10,{created:new Date(now).toISOString()});
    settings.audience={mode:'selected',userIds:[selected.id]};
