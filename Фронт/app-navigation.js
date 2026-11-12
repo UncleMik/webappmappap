@@ -68,11 +68,15 @@ import('./account-profile.js?v=20261020-initial-content').catch(() => {});
   document.body.append(status);
   const updateHeight = () => {
     const viewport = window.visualViewport;
-    const visibleBottom = viewport && Math.abs(viewport.scale - 1) < 0.01
-      ? viewport.offsetTop + viewport.height
-      : innerHeight;
-    // Shrink the section for the keyboard without moving the navigation bar.
-    const contentHeight = Math.min(visibleBottom, nav.getBoundingClientRect().top);
+    const unzoomed = viewport && Math.abs(viewport.scale - 1) < 0.01;
+    const chatActive = activeFile === 'ai.html';
+    const viewportTop = chatActive && unzoomed ? viewport.offsetTop : 0;
+    const visibleBottom = unzoomed ? viewport.offsetTop + viewport.height : innerHeight;
+    document.documentElement.classList.toggle('chat-viewport-active', chatActive);
+    document.documentElement.style.setProperty('--section-viewport-top', `${viewportTop}px`);
+    // iOS can pan the visible viewport when focusing an input. Keep the whole
+    // chat inside that viewport; its bottom coordinate is not its height.
+    const contentHeight = Math.min(visibleBottom, nav.getBoundingClientRect().top) - viewportTop;
     document.documentElement.style.setProperty('--section-content-height', `${Math.max(0, contentHeight)}px`);
   };
   window.visualViewport?.addEventListener('resize', updateHeight);
@@ -137,6 +141,7 @@ import('./account-profile.js?v=20261020-initial-content').catch(() => {});
     old.element.hidden = true;
     panel.element.hidden = false;
     activeFile = file;
+    updateHeight();
     setActive(file);
     status.hidden = true;
     nav.setAttribute('aria-busy', 'false');

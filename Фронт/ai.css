@@ -1,5 +1,7 @@
-.ai-page { background: #fff; overflow: hidden; }
-.ai-page .app { background: #fff; height: var(--chat-viewport-height, 100dvh); min-height: 0; overflow: hidden; }
+html:has(> .ai-page) { height: 100%; overflow: clip; }
+.ai-page { height: 100%; background: #fff; overflow: clip; }
+.ai-page .app { background: #fff; height: var(--chat-viewport-height, 100dvh); min-height: 0; overflow: hidden; container-type: size; }
+.embedded-section .ai-page .app { height: 100%; }
 .ai-header, .assistant-card, .chat-controls { flex-shrink: 0; }
 .ai-header { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: calc(12px + env(safe-area-inset-top, 0px)) 20px 8px; }
 .ai-header h1 { font-size: 20px; line-height: 1.25; letter-spacing: -.45px; }
@@ -61,7 +63,7 @@
 .visually-hidden { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; border: 0; }
 @media (max-width: 374px) { .ai-header { padding-left: 14px; padding-right: 14px; }.ai-header h1 { font-size: 17px; }.ai-main { padding: 0 12px; }.assistant-card { gap: 8px; padding: 4px 7px; }.assistant-card h2 { font-size: 12px; }.bubble { font-size: 13px; }.message { gap: 8px; }.suggestions { flex-wrap: wrap; }.suggestions button { flex-basis: 45%; } }
 
-@media (max-height: 500px) { .assistant-art { width: 48px; height: 48px; border-radius: 10px; }.assistant-card { min-height: 0; }.assistant-card p { display: none; }.suggestions { flex-wrap: nowrap; }.suggestions button { flex: 1; min-width: 0; gap: 3px; padding: 0 1px; }.suggestions svg { width: 14px; height: 14px; }.ai-header { padding-top: env(safe-area-inset-top, 0px); }.chat-controls { padding-top: 4px; } }
+@container (max-height: 500px) { .assistant-art { width: 48px; height: 48px; border-radius: 10px; }.assistant-card { min-height: 0; }.assistant-card p { display: none; }.suggestions { flex-wrap: nowrap; }.suggestions button { flex: 1; min-width: 0; gap: 3px; padding: 0 1px; }.suggestions svg { width: 14px; height: 14px; }.ai-header { padding-top: env(safe-area-inset-top, 0px); }.chat-controls { padding-top: 4px; } }
 
 .selected-attachment { display: flex; align-items: center; gap: 8px; margin-top: 4px; padding: 0 4px 0 12px; border-radius: 14px; background: #f6f0ff; color: #685882; font-size: 12px; min-width: 0; }
 .selected-attachment[hidden] { display: none; }
@@ -84,6 +86,7 @@
 #history-more { flex-shrink:0; align-self:center; min-height:44px; margin:0; }
 #history-more[hidden] { display:none; }
 .conversations-dialog { position:fixed; top:0; bottom:auto; left:max(0px,calc((100vw - 500px)/2)); margin:0; width:min(86vw,340px); height:var(--chat-viewport-height,100dvh); max-height:none; max-width:none; padding:calc(14px + env(safe-area-inset-top,0px)) 14px calc(22px + env(safe-area-inset-bottom,0px)); border:0; border-right:1px solid #eee6f7; border-radius:0 22px 22px 0; background:#fdfbff; color:#171333; box-shadow:8px 0 32px #21173518; overflow-y:auto; }
+.app-shell.ai-page > .conversations-dialog { top:var(--section-viewport-top, 0px); }
 .conversations-dialog::backdrop { background:#21173563; }
 .conversations-header { display:flex; align-items:center; gap:4px; margin-bottom:14px; padding-left:7px; }
 .conversations-header h2 { flex:1; font-size:20px; line-height:27px; letter-spacing:-.3px; }
@@ -102,7 +105,7 @@
 .conversations-dialog [hidden] { display:none; }
 @media(max-width:374px) { .conversations-dialog { padding-inline:12px; }.conversations-header h2 { font-size:18px; }.conversation-heading { padding-top:10px; }.conversation-empty h2 { font-size:20px; } }
 
-@media (max-height: 420px) { .chat-controls { padding-bottom: 8px; }.composer { margin-top: 7px; }.chat-quota { margin-top: 2px; } }
+@container (max-height: 420px) { .chat-controls { padding-bottom: 8px; }.composer { margin-top: 7px; }.chat-quota { margin-top: 2px; } }
 .ai-urgent-dialog {position:fixed;inset:0;width:min(100%,500px);max-width:100%;max-height:90dvh;margin:auto;padding:24px;border:0;border-radius:24px;background:#fffaf5;color:#211b37;font-size:16px;line-height:1.5;overflow:auto;}
 .ai-urgent-dialog::backdrop {background:#21173599;}
 .ai-urgent-dialog h2 {font-size:24px;margin-bottom:16px;}
