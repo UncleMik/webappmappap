@@ -92,3 +92,35 @@
   background: #f0e9ff;
   color: #5430aa;
 }
+
+/* Separate, softly rounded bubbles, as in the supplied notification reference. */
+.notifications-dialog { background: #eeedf2; }
+.notifications-content ul { display: grid; gap: 10px; }
+.notifications-content h3 { margin: 18px 8px 10px; color: #55515e; }
+.notifications-content li {
+  justify-content: flex-start;
+  padding: 18px 16px;
+  min-height: 80px;
+  border: 0;
+  border-radius: 28px;
+  background: #fafafa;
+  color: #25232b;
+  line-height: 1.45;
+}
+.notifications-content li::before {
+  content: "";
+  flex: 0 0 36px;
+  width: 36px;
+  height: 36px;
+  border-radius: 11px;
+  background: #ebe3ff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23794aff' stroke-width='1.7' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9M10 21h4'/%3E%3C/svg%3E") center / 22px no-repeat;
+}
+.notifications-content li > div, .notifications-content li > a { flex: 1; min-width: 0; }
+.notifications-content li strong { font-weight: 700; }
+.notifications-content li a strong { color: inherit; }
+.notifications-content li p { margin: 5px 0; }
+.notifications-content li time, .notifications-content li a span { color: #65616e; }
+.notifications-content li a:focus-visible { outline: 2px solid #794aff; outline-offset: 4px; border-radius: 4px; }
+.notifications-amount { margin-left: auto; border-radius: 20px; }
+.notifications-close { background: #e1dfe7; color: #55515e; }
+.notifications-close:focus-visible { outline: 2px solid #794aff; outline-offset: 3px; }
