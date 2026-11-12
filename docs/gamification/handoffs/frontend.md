@@ -77,3 +77,16 @@ Admin QA итог до исправления чужим владельцем: 2
 Владелец/root исправил `admin/stars.js`: подписи correct-answer options обновляются по input вариантов, выбранный индекс сохраняется. Я admin-код не редактировал. Повтор `node tools/test-gamification-admin-ui.mjs` после этой правки: **390/1280 — по30/30 pass**, findings=[], pageErrors=[], apiErrors=[], exit0. Предыдущий P2 закрыт подтверждённым браузерным повтором. Снимки/result.json обновлены.
 
 Одновременно повторены после integration presentation: основной UI **3/3 width pass**, presentation **3/3 width pass**, poll **6/6 page/width pass**, все pageerrors=[]. Последние артефакты: output/playwright/gamification/{result,presentation-result,poll-result}.json и output/playwright/gamification-admin/result.json. Scoped syntax/diff checks проходят. Системы production, почта, реальные push и чужие файлы не затронуты этим тредом.
+
+## Срочное исправление Today header после production QA
+Production не открывал и не менял. Исходный live screenshot изучен только как локальный файл output/verification/live-browser/inspection-320.png.
+
+До CSS исправления расширенный regression воспроизвёл проблему с настоящим account-profile.js и именем «Проверка выпуска»: viewport/clientWidth320, scrollWidth343, badge.right343.156 (balance1124, поэтому шире production badge55). Это был ожидаемый падающий прогон, а не скрытый scroll overflow.
+
+Минимальная правка только в Фронт/gamification.css: первый блок заголовка flex:1 1 0 + min-width:0; блок кнопок flex:0 0 auto с существующим компактным gap; приветствие переносится как обычный текст с overflow-wrap:anywhere, сердечко остаётся inline. Навигация, размеры кнопок, типографика и остальной дизайн не менялись. Для runtime публикации нужен только этот CSS файл; JS/HTML не изменялись.
+
+В tools/test-gamification-ui.mjs подключён настоящий account-profile.js. Origin fixture — https://localhost (поддержанный кодом профильный guard), все запросы перехватываются без запуска сервера. Проверяются три имени на каждой ширине320/390/500: «Проверка выпуска», длинное имя с пробелами и длинное имя без пробелов. Имя приходит из session/profile и изменяется через настоящий profile:saved refresh, не подставляется вручную в DOM. После загрузки шрифтов проверяются clientWidth===scrollWidth, badge целиком внутри viewport, отсутствие наложения приветствия на кнопки, видимость сердечка. Снимки header-{width}-{1,2,3}.png, метрики headerLayouts входят в result.json. Визуально просмотрен самый длинный вариант320.
+
+Commit/push/deploy остаются root; никаких production запросов, только route fixtures и локальные файлы.
+
+Финальный прогон исправления: **3/3 ширины, 9/9 комбинаций имени**, основной сценарий целиком проходит, errors=[]. На320 px scrollWidth=clientWidth=320 для всех имён, badge.right=307.844; на390 —390/390,badge.right375.188; на500 —500/500,badge.right481. Это закрывает исходный mobile overflow в fixture с настоящей персонализацией. node --check и scoped diff --check проходят (только штатное LF→CRLF предупреждение CSS).
