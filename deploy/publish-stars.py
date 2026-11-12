@@ -412,7 +412,7 @@ def prepare_dependencies(stage, payload, bundle, checksum, generate_keys):
         path.chmod(0o755 if path.is_dir() else 0o644)
     keys = None
     if generate_keys:
-        env = {'PATH': '/usr/local/bin:/usr/bin:/bin', 'LANG': 'C.UTF-8', 'HOME': '/nonexistent'}
+        env = {'PATH': '/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin', 'LANG': 'C.UTF-8', 'HOME': '/nonexistent'}
         try:
             keys = unique_json(run(['runuser', '-u', 'wep-pril-auth', '--', NODE, '--input-type=module', '-e',
                 VAPID_SCRIPT], cwd=work, env=env).stdout)
