@@ -32,3 +32,25 @@ test('daily recommendations never carry inaccessible future catalogue entries', 
   assert.equal(daily.materials.find(row => row.id === '074').completed, false);
   assert.ok(daily.materials.every(row => row.accessible === true));
 });
+
+
+test('released string lesson identifiers match numeric lesson requests and require current content hash', async t => {
+  const { mkdtemp, writeFile, rm } = await import('node:fs/promises');
+  const { tmpdir } = await import('node:os');
+  const { join } = await import('node:path');
+  const directory = await mkdtemp(join(tmpdir(), 'stars-durations-'));
+  t.after(() => rm(directory, {recursive:true,force:true}));
+  const filename=join(directory,'durations.json'), current='a'.repeat(64);
+  const rows=[{lessonId:'123',videoKey:'0:0',durationMs:120000,provider:'youtube',contentHash:current},
+    {lessonId:123,videoKey:'0:1',durationMs:60000,provider:'rutube',contentHash:current},
+    {lessonId:'123',videoKey:'0:2',durationMs:60000,provider:'rutube',contentHash:'b'.repeat(64)}];
+  await writeFile(filename,JSON.stringify({version:1,rows}));
+  const db = openDatabase(':memory:', false);t.after(()=>db.close());
+  db.exec('CREATE TABLE course_lesson_drafts(lesson_id integer PRIMARY KEY,sha256 text)');
+  db.prepare('INSERT INTO course_lesson_drafts VALUES(?,?)').run(123,current);
+  const catalog=createStarsCatalog({db,courseDurationsPath:filename});
+  assert.deepEqual(catalog.courseVideos(123).map(x=>x.key),['0:0','0:1']);
+  assert.equal(catalog.courseVideos(124).length,0);
+  db.prepare('UPDATE course_lesson_drafts SET sha256=? WHERE lesson_id=123').run('c'.repeat(64));
+  assert.equal(catalog.courseVideos(123).length,0);
+});

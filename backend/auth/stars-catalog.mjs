@@ -28,7 +28,7 @@ export function createStarsCatalog({ db, contentCatalog, courseDurationsPath, st
     courseVideos(lessonId) {
       if (!db) return [];
       const lesson = db.prepare('SELECT sha256 FROM course_lesson_drafts WHERE lesson_id=?').get(lessonId);
-      return courseDurations.filter(row => row.lessonId === lessonId && /^[a-f0-9]{64}$/.test(row.contentHash)
+      return courseDurations.filter(row => String(row.lessonId) === String(lessonId) && /^[a-f0-9]{64}$/.test(row.contentHash)
         && row.contentHash === lesson?.sha256
         && /^[0-9]+:[0-9]+$/.test(row.videoKey) && Number.isSafeInteger(row.durationMs) && row.durationMs > 0)
         .map(row => ({ key: row.videoKey, durationMs: row.durationMs, provider: row.provider, contentHash: row.contentHash }));
