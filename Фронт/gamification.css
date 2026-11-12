@@ -67,3 +67,10 @@
 .stars-celebration {inset:0;margin:auto;height:fit-content;border-radius:24px;text-align:center;padding:28px 20px;}
 .stars-celebration h2 {font-size:26px;margin-bottom:16px;}
 .stars-celebration .stars-button {margin-top:12px;}
+
+/* Personalized copy must yield space to the existing header controls. */
+.stars-enabled #today .page-header { gap: 8px; }
+.stars-enabled #today .page-header > :first-child { flex: 1 1 0; min-width: 0; }
+.stars-enabled #today .header-actions { flex: 0 0 auto; gap: clamp(6px, 2vw, 12px); }
+.stars-enabled #today .greeting { display: block; overflow-wrap: anywhere; }
+.stars-enabled #today .greeting-heart { display: inline-block; vertical-align: middle; }

@@ -5,13 +5,16 @@ import assert from 'node:assert/strict';
 import { createUiFixture } from './test-gamification-ui-fixtures.mjs';
 const require=createRequire('C:/Users/MIK/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/package.json');
 const {chromium}=require('playwright');
-const fixture=await createUiFixture(),origin='https://webpril-fixture.invalid';
+const fixture=await createUiFixture(),origin='https://localhost';
 const directory=resolve('output/playwright/gamification');await mkdir(directory,{recursive:true});
 const browser=await chromium.launch({headless:true,channel:'chrome'});
 const results=[],errors=[];
 try {
  for(const width of [320,390,500]) {
   let current=await fixture.account(width),failAction=false,holdAction=false,release;
+  current.user.profile.name='Проверка выпуска';
+  await fixture.pool.query('UPDATE auth_users SET profile=$2 WHERE id=$1',[current.id,current.user.profile]);
+  const headerLayouts=[];
   const bodies=[];
   const context=await browser.newContext({viewport:{width,height:844},reducedMotion:'reduce'}),page=await context.newPage();
   page.on('pageerror',error=>errors.push(error.message));
@@ -43,7 +46,7 @@ try {
     let html=await readFile('Фронт/index.html','utf8');
     // Use the real page structure and styles; unrelated APIs/modules are isolated.
     html=html.replace(/<script\b[^>]*>[\s\S]*?<\/script>/g,'').replace('<style id="account-lock">html { visibility: hidden !important; }</style>','');
-    html=html.replace('</body>',`<script>window.webprilSessionAccountId=${JSON.stringify(current.id)};</script><script type="module" src="gamification.js?v=20261112-stars"></script></body>`);
+    html=html.replace('</body>',`<script>window.webprilSessionAccountId=${JSON.stringify(current.id)};</script><script type="module" src="account-profile.js?v=20261020-initial-content"></script><script type="module" src="gamification.js?v=20261112-stars"></script></body>`);
     return route.fulfill({contentType:'text/html',body:html});
    }
    const path=resolve('Фронт','.'+decodeURIComponent(url.pathname));if(!path.startsWith(resolve('Фронт')+'\\'))return route.abort();
@@ -51,6 +54,18 @@ try {
    try{return route.fulfill({body:await readFile(path),contentType:types[extname(path)]||'application/octet-stream'});}catch{return route.fulfill({status:404,body:''});}
   });
   console.log('viewport',width);await page.goto(origin+'/index.html');await page.locator('.stars-shell:not([hidden])').waitFor();
+  for (const name of ['Проверка выпуска','Александра Мария Константиновна','АлександраКонстантиновнаАлександраКонстантиновна']) {
+    current.user.profile.name=name;await fixture.pool.query('UPDATE auth_users SET profile=$2 WHERE id=$1',[current.id,current.user.profile]);
+    await page.evaluate(()=>window.dispatchEvent(new Event('profile:saved')));
+    await page.waitForFunction(name=>document.querySelector('.greeting')?.textContent.includes(name),name);await page.evaluate(()=>document.fonts.ready);
+    const layout=await page.evaluate(()=>{const badge=document.querySelector('.stars-trigger'),header=document.querySelector('#today .page-header'),greeting=document.querySelector('.greeting'),actions=header.querySelector('.header-actions'),rect=node=>{const r=node.getBoundingClientRect();return {left:r.left,right:r.right,width:r.width,height:r.height};};return {clientWidth:document.documentElement.clientWidth,scrollWidth:document.documentElement.scrollWidth,badge:rect(badge),greeting:rect(greeting),actions:rect(actions),name:greeting.textContent};});
+    headerLayouts.push(layout);
+    assert.equal(layout.scrollWidth,layout.clientWidth,'personalized Today horizontal overflow '+JSON.stringify(layout));
+    assert.ok(layout.badge.right<=layout.clientWidth&&layout.badge.left>=0,'balance badge inside viewport');
+    assert.ok(layout.greeting.right<=layout.actions.left,'greeting and header actions do not overlap');
+    assert.equal(await page.locator('.greeting-heart').isVisible(),true,'personalized greeting retains heart');
+    await page.screenshot({path:resolve(directory,'header-'+width+'-'+headerLayouts.length+'.png')});
+  }
   assert.equal((await page.locator('.stars-week-ring').textContent()).trim(),'0 / 2','server material denominator');
   await page.getByRole('button',{name:'Хорошо',exact:true}).click();await page.getByText('Отметка сохранена. Можно изменить без повторной награды.').waitFor();
   const question=page.getByRole('button',{name:'Вариант А',exact:true});assert.ok(await question.count()>0,'real daily question reaches UI');
@@ -124,7 +139,7 @@ try {
   fixture.config.features.weekLocks=true;
   await page.evaluate(()=>window.dispatchEvent(new Event('webpril:session-ended')));
   assert.equal(await page.locator('.stars-shell').evaluate(node=>node.hidden),true);
-  results.push({width,passed:true,engine:fixture.db.engine,checks:['real domain API','checkin','myth','game choose/flip/scratch','ledger pagination >20','letters','checklist','capsule save/delete','pause','keyboard','scroll','retry id','week purchase','AI pack purchases x2 and limit','no sale legacy/preserved/locks-off','account switch','session end']});
+  results.push({width,passed:true,headerLayouts,engine:fixture.db.engine,checks:['real account-profile personalization and long names','real domain API','checkin','myth','game choose/flip/scratch','ledger pagination >20','letters','checklist','capsule save/delete','pause','keyboard','scroll','retry id','week purchase','AI pack purchases x2 and limit','no sale legacy/preserved/locks-off','account switch','session end']});
   await context.close();
  }
  assert.deepEqual(errors,[]);
