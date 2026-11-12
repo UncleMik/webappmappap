@@ -1,5 +1,6 @@
 import { authRequest } from './auth-client.js?v=20261109-pilot';
 import { clubRequest, chatLease } from './club-api.js?v=20261105-rooms';
+import { snapshot as starsSnapshot } from './gamification-api.js?v=20261112-stars';
 import { clubRooms } from './club-rooms.js?v=20261105-rooms';
 
 const frame = window.frameElement;
@@ -18,6 +19,7 @@ dialog.innerHTML = `
   </header>
   <div class="notifications-content">
     <p class="notifications-status" role="status"></p>
+<section aria-labelledby="notification-personal-title" hidden><h3 id="notification-personal-title">Для вас</h3><ul id="notification-personal"></ul></section>
     <section aria-labelledby="notification-announcements-title" hidden>
       <h3 id="notification-announcements-title">Объявления школы</h3>
       <ul id="notification-announcements"></ul>
@@ -38,6 +40,7 @@ const status = dialog.querySelector('.notifications-status');
 const announcements = dialog.querySelector('#notification-announcements');
 const messages = dialog.querySelector('#notification-messages');
 const points = dialog.querySelector('#notification-points');
+const personal = dialog.querySelector('#notification-personal');
 const retry = dialog.querySelector('.notifications-retry');
 const dates = new Intl.DateTimeFormat('ru-RU', { dateStyle: 'medium', timeStyle: 'short', timeZone: 'Europe/Moscow' });
 const plurals = new Intl.PluralRules('ru');
@@ -49,7 +52,7 @@ const pointLabels = new Map([
 
 const bell = today?.querySelector('[data-notifications-trigger]');
 const seenInMemory = new Map();
-const unread = { announcements: false, points: false, messages: false };
+const unread = { announcements: false, points: false, messages: false, personal:false };
 let badgeAccount;
 
 function paintBadge() {
@@ -59,6 +62,7 @@ function paintBadge() {
 }
 
 function updateUnread(account, source, rows, markSeen) {
+  if (source === 'points' && starsSnapshot()?.enabled) { unread.points = false; return; }
   const key = 'webpril:notifications:seen:' + account + ':' + source;
   const ids = rows.map(row => String(row.id));
   let seen = seenInMemory.get(key) || [];
@@ -89,6 +93,7 @@ function reset() {
   generation++;
   controller?.abort();
   clearTimeout(expiry);
+  setItems(personal, []);
   setItems(messages, []);
   setItems(points, []);
   setItems(announcements, []);
@@ -167,10 +172,11 @@ async function load(panel = dialog.open) {
       badgeAccount = session;
     }
     const started = performance.now();
-    const [wallet, club, school] = await Promise.allSettled([
+    const [wallet, club, school, forYou] = await Promise.allSettled([
       authRequest('points', undefined, { headers: { 'X-Webpril-Account': session } }),
       clubRequest('club', { accountId: session, signal: controller.signal }),
       authRequest('announcements', undefined, { headers: { 'X-Webpril-Account': session } }),
+      authRequest('notifications', undefined, {headers:{'X-Webpril-Account':session}}),
     ]);
     if (!current()) return;
     if (!sameAccount(session) || [wallet, school].some(result => result.status === 'fulfilled' && result.value?.accountId !== session) ||
@@ -180,6 +186,17 @@ async function load(panel = dialog.open) {
       return;
     }
 
+    if (forYou.status === 'fulfilled' && forYou.value.accountId !== session) { clearBadge(); dismiss(); return; }
+    const personalRows = forYou.status === 'fulfilled' && Array.isArray(forYou.value.items) ? forYou.value.items : [];
+    unread.personal = personalRows.some(item => !item.readAt);
+    if (panel && personalRows.length) {
+      setItems(personal, personalRows.map(item => {
+        const li = element('li',''), copy = element('div',''); copy.append(element('strong',item.title),element('p',item.body));
+        if (item.url) { try { const url = new URL(item.url,location.origin); if (url.origin === location.origin) { const link = element('a','Открыть'); link.href = url.href; copy.append(link); } } catch {} }
+        li.append(copy); return li;
+      }));
+      void authRequest('notifications/read',{ids:personalRows.filter(item=>!item.readAt).map(item=>item.id)},{headers:{'X-Webpril-Account':session}}).then(()=>{if(sameAccount(session)){unread.personal=false;paintBadge();}}).catch(()=>{});
+    }
     const history = wallet.value?.history;
     const walletFailed = wallet.status === 'rejected' || wallet.value?.enabled === true && !Array.isArray(history);
     const schoolRows = school.value?.announcements;
@@ -215,7 +232,7 @@ async function load(panel = dialog.open) {
     const failed = walletFailed || clubFailed || schoolFailed;
     status.textContent = walletFailed && clubFailed && schoolFailed ? 'Не удалось загрузить уведомления.' :
       failed ? 'Часть уведомлений пока недоступна.' :
-      points.children.length || items.length || announcements.children.length ? '' : 'Пока нет уведомлений.';
+      personal.children.length || points.children.length || items.length || announcements.children.length ? '' : 'Пока нет уведомлений.';
     retry.hidden = !failed;
     if (Number.isFinite(remaining)) expiry = setTimeout(() => {
       if (!current()) return;
@@ -248,7 +265,7 @@ dialog.addEventListener('click', event => {
 retry.addEventListener('click', () => void load());
 function clearBadge() {
   badgeAccount = undefined;
-  unread.announcements = unread.points = unread.messages = false;
+  unread.announcements = unread.points = unread.messages = unread.personal = false;
   paintBadge();
 }
 
@@ -272,3 +289,5 @@ if (today) observer.observe(today, { attributes: true, attributeFilter: ['hidden
 if (frame) observer.observe(frame, { attributes: true, attributeFilter: ['hidden'] });
 
 if (bell) setInterval(refreshBadge, 60_000);
+
+window.addEventListener('stars:state', () => { unread.points = false; paintBadge(); });

@@ -4,6 +4,7 @@ import { AuthError, isUuid, normalizeEmail, readSessionCookie, sessionCookie } f
 
 const assets = new Map([
   ['/admin/ui.css', ['ui.css', 'text/css; charset=utf-8']],
+  ['/admin/stars.js', ['stars.js', 'application/javascript; charset=utf-8']],
   ['/admin/panel.js', ['panel.js', 'application/javascript; charset=utf-8']],
   ['/admin/login.js', ['login.js', 'application/javascript; charset=utf-8']],
 ]);
@@ -11,7 +12,7 @@ const panelType = 'text/html; charset=utf-8';
 const csp = "default-src 'none'; script-src 'self'; style-src 'self'; img-src 'self' blob:; connect-src 'self'; base-uri 'none'; frame-ancestors 'none'; form-action 'self'";
 const denied = () => new AuthError(403, 'admin_forbidden', 'У этого аккаунта нет доступа к админке.');
 
-export async function createAdminHttp({ admin, service, store, origin, frontend, uploads, mailPerMinute }) {
+export async function createAdminHttp({ admin, service, store, origin, frontend, uploads, mailPerMinute, gamificationAdmin }) {
   const host = new URL(origin).host;
   const files = new Map();
   for (const [key, [file, type]] of [...assets, ['/admin/login', ['login.html', panelType]], ['/admin', ['index.html', panelType]]]) {
@@ -59,6 +60,9 @@ export async function createAdminHttp({ admin, service, store, origin, frontend,
     }
     const article = path.match(/^\/api\/admin\/articles\/(pregnancy-\d{3})(\/visibility)?$/);
     if (method === 'GET') {
+      if (gamificationAdmin && path === '/api/admin/gamification') { send(200, await gamificationAdmin.state(token, expected)); return; }
+      if (gamificationAdmin && path === '/api/admin/gamification/metrics') { send(200, await gamificationAdmin.metrics(token, expected)); return; }
+      if (gamificationAdmin && path === '/api/admin/gamification/history') { send(200, await gamificationAdmin.history(token, expected)); return; }
       if (path === '/api/admin/chats') { send(200, await admin.chats(token, expected)); return; }
       const chatPhoto = path.match(/^\/api\/admin\/chats\/([^/]+)\/messages\/([1-9]\d{0,18})\/photo$/);
       if (chatPhoto) {
@@ -108,7 +112,9 @@ export async function createAdminHttp({ admin, service, store, origin, frontend,
       send(200, { authenticated: false }, { 'Set-Cookie': sessionCookie('', true) }); return;
     }
     await admin.session(token, expected);
-    const data = await readJson(request, path === '/api/admin/articles' || article && !article[2] ? 900_000 : 20_000);
+    const data = await readJson(request, path === '/api/admin/articles' || article && !article[2] ? 900_000 : path === '/api/admin/gamification/content' ? 60_000 : 20_000);
+    const gamificationMethods = { '/api/admin/gamification/settings':'updateSettings', '/api/admin/gamification/content':'saveContent', '/api/admin/gamification/approve-content':'approveContent', '/api/admin/gamification/approve-gate':'approveGate', '/api/admin/gamification/resolve-legacy':'resolveLegacy' };
+    if (gamificationAdmin && Object.hasOwn(gamificationMethods,path)) { send(200, await gamificationAdmin[gamificationMethods[path]](token,expected,data)); return; }
     if (path === '/api/admin/chats/messages') { send(200, await admin.chatMessages(token, expected, data)); return; }
     if (path === '/api/admin/chats/delete') { send(200, await admin.deleteChatMessage(token, expected, data)); return; }
     if (path === '/api/admin/articles' || article && !article[2]) {

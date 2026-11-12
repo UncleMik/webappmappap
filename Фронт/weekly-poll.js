@@ -7,7 +7,7 @@
   const plural = new Intl.PluralRules('ru');
   const numbers = new Intl.NumberFormat('ru');
   let refreshTimer;
-  let loadSequence = 0;
+  let loadSequence = 0, ended = false;
 
   let countdownTimer;
   let requestedFocus = new URLSearchParams(location.search).has('poll');
@@ -43,13 +43,16 @@
   }
 
   async function request(options) {
-    const response = await fetch(url, { cache: 'no-store', signal: AbortSignal.timeout(15000), ...options });
+    const expected=window.webprilSessionAccountId || window.webprilAccount?.user?.id;
+    const response = await fetch(url, {credentials:'same-origin',cache:'no-store',signal:AbortSignal.timeout(15000),...options,headers:{...(expected?{'X-Webpril-Account':expected}:{}),...options?.headers}});
     const data = await response.json();
     if (!response.ok) throw Error(data.message || 'Голосование временно недоступно.');
+    if (ended || expected && (data.accountId !== expected || window.webprilSessionAccountId && window.webprilSessionAccountId !== expected)) throw Error('Аккаунт изменился.');
     return data;
   }
 
-  function render({ poll, accountId }) {
+  function render({ poll, accountId, available, enabled }) {
+    if (available === false || enabled === false) poll = null;
     clearInterval(countdownTimer);
     if (card) {
       card.hidden = !poll;
@@ -149,6 +152,7 @@
   }
 
   async function load() {
+    if (ended) return;
     const sequence = ++loadSequence;
     clearTimeout(refreshTimer);
     try {
@@ -168,10 +172,12 @@
       }
     } catch {
       if (sequence !== loadSequence) return;
-      if (discussion) discussion.hidden = true;
+      render({poll:null,available:false});
       refreshTimer = setTimeout(load, 3000);
     }
   }
+  window.addEventListener('account:change',()=>{loadSequence++;render({poll:null,available:false});void load();});
+  window.addEventListener('webpril:session-ended',()=>{ended=true;loadSequence++;clearTimeout(refreshTimer);clearInterval(countdownTimer);render({poll:null,available:false});});
   document.addEventListener('visibilitychange', () => { if (!document.hidden) load(); });
   window.addEventListener('pageshow', event => { if (event.persisted) load(); });
   load();

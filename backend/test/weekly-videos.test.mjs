@@ -7,11 +7,13 @@ import { COOKIE_NAME } from '../auth/security.mjs';
 test('weekly video source and each media request require a current, completed session', async () => {
   let loggedIn = true, completed = true;
   const token = 'a'.repeat(43);
+  const account = '11111111-1111-4111-8111-111111111111';
+  const foreign = '22222222-2222-4222-8222-222222222222';
   const cookie = { cookie: COOKIE_NAME + '=' + token };
   const calls = [];
   const service = {
     session: async value => loggedIn && value === token
-      ? { id: 'free-user', profile: completed ? { completedAt: '2026-10-19T00:00:00Z' } : null }
+      ? { id: account, profile: completed ? { completedAt: '2026-10-19T00:00:00Z' } : null }
       : null,
   };
   const weeklyMedia = async (request, response, position, asset) => {
@@ -35,25 +37,32 @@ test('weekly video source and each media request require a current, completed se
     for (const id of ['contractions-lesson', 'back-relief-video', 'birth-breathing-video', 'week-video-004', 'week-video-126']) {
       const result = await fetch(url + id, { headers: cookie });
       assert.equal(result.status, 200);
-      assert.deepEqual(await result.json(), { source: '/api/auth/videos/' + id + '/file' });
+      assert.deepEqual(await result.json(), { source: '/api/auth/videos/' + id + '/file?account=' + account,
+        cover: '/api/auth/videos/' + id + '/cover?account=' + account });
       assert.equal(result.headers.get('cache-control'), 'no-store');
     }
-    const range = await fetch(url + 'week-video-004/file', { headers: { ...cookie, Range: 'bytes=0-3' } });
+    const range = await fetch(url + 'week-video-004/file?account=' + account, { headers: { ...cookie, Range: 'bytes=0-3' } });
     assert.equal(range.status, 206);
     assert.equal(range.headers.get('content-range'), 'bytes 0-3/100');
     assert.equal(await range.text(), 'data');
-    assert.equal((await fetch(url + 'contractions-lesson/cover', { method: 'HEAD', headers: cookie })).status, 200);
+    assert.equal((await fetch(url + 'contractions-lesson/cover?account=' + account, { method: 'HEAD', headers: cookie })).status, 200);
     assert.deepEqual(calls, [['GET', '004', 'file', 'bytes=0-3'], ['HEAD', '001', 'cover', undefined]]);
     for (const path of ['week-video-075', 'week-video-075/file', 'week-video-075/cover', 'unknown/file']) {
       assert.equal((await fetch(url + path, { headers: cookie })).status, 404);
     }
+    for (const method of ['GET', 'HEAD']) for (const asset of ['file', 'cover']) {
+      const denied = await fetch(url + 'week-video-004/' + asset + '?account=' + foreign, { method, headers: cookie });
+      assert.equal(denied.status, 409);
+      if (method === 'GET') assert.equal((await denied.json()).error, 'account_changed');
+    }
+    assert.equal(calls.length, 2, 'foreign account UUID must not reach byte streaming');
     completed = false;
     const incomplete = await fetch(url + 'week-video-004/file', { headers: cookie });
     assert.equal(incomplete.status, 403);
     assert.equal((await incomplete.json()).error, 'onboarding_required');
     completed = true;
     loggedIn = false;
-    assert.equal((await fetch(url + 'week-video-004/file', { headers: cookie })).status, 401);
+    assert.equal((await fetch(url + 'week-video-004/file?account=' + account, { headers: cookie })).status, 401);
     assert.equal(calls.length, 2);
   } finally {
     server.closeAllConnections();

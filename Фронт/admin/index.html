@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Админка · Лёгкие роды</title>
   <link rel="stylesheet" href="/admin/ui.css">
+  <script src="/admin/stars.js" defer></script>
   <script src="/admin/panel.js" defer></script>
 </head>
 <body>
@@ -25,6 +26,7 @@
         <button type="button" data-tab="polls">Голосования недели</button>
         <button type="button" data-tab="chats">Модерация чатов</button>
         <button type="button" data-tab="staff" hidden>Сотрудники</button>
+        <button type="button" data-tab="gamification" hidden>Звёздочки</button>
         <button type="button" data-tab="history">Журнал</button>
       </nav>
 
@@ -76,7 +78,7 @@
 
       <section id="polls" hidden>
         <h2>Голосования недели</h2>
-        <p class="muted">Голосование откроется в понедельник в 00:00 и закроется в воскресенье в 18:00 по Москве.</p>
+        <p class="muted">При включённых звёздочках новые голосования открываются в понедельник в 10:00, иначе — в 00:00. Закрытие — в воскресенье в 18:00 по Москве. Время уже созданных голосований сохраняется.</p>
         <form id="poll-form" class="surface">
           <h3 id="poll-editor-title">Новое голосование</h3>
           <label>Дата понедельника <input name="week" type="date" required></label>
@@ -120,6 +122,8 @@
         </form>
         <ul id="staff-list" class="list"></ul>
       </section>
+
+      <section id="gamification" hidden aria-label="Управление звёздочками"></section>
 
       <section id="history" hidden>
         <h2>Журнал</h2>

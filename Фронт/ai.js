@@ -11,7 +11,7 @@ const retry = document.querySelector('#chat-retry');
 let accountId, revision = 0, controller, ended = false, ready = false;
 let messages = [], hasMore = false, nextBefore = null, busy = false, pending = null;
 let quotaTimer, quotaFlight = null, quotaDeadline = null, quotaRetryAt = 0, quotaSnapshot = null, quotaClock = null, limitNotice = false;
-let remaining = null, currentLimit = null, replyWaiting = false, selectedAttachment = null;
+let remaining = null, currentLimit = null, replyWaiting = false, selectedAttachment = null, starsQuota = false;
 const fileInput = document.querySelector('#analysis-file');
 const attachmentChip = document.querySelector('#selected-attachment');
 const attachmentName = document.querySelector('#attachment-name');
@@ -178,11 +178,12 @@ window.addEventListener('resize', resizeChat);
 resizeChat();
 function notice(message, isLimit = false) { status.textContent = message; status.hidden = !message; limitNotice = isLimit && !!message; }
 function updateControls() {
-  const locked = !ready || busy || !!pending || remaining === 0;
+  const locked = !ready || busy || !!pending || remaining === 0 && !starsQuota;
+  const insufficientAttachment = !!selectedAttachment && remaining !== null && remaining < 2;
   input.disabled = locked || !!voice;
   const recording = voice?.stage === 'recording';
   const microphone = !input.value.trim() && !selectedAttachment;
-  send.disabled = voice ? !recording : locked;
+  send.disabled = voice ? !recording : locked || insufficientAttachment;
   send.setAttribute('aria-label', recording ? 'Остановить запись' : microphone ? 'Записать голосом' : 'Отправить сообщение');
   send.classList.toggle('voice-action', recording || microphone);
   send.classList.toggle('voice-stop', recording);
@@ -242,7 +243,7 @@ async function request(path, body, signal, timeoutMs) {
     const data = await response.json().catch(() => null);
     if (!response.ok) throw Object.assign(new Error(data?.message || 'Чат временно недоступен.'), { code: data?.error, status: response.status, ...(data?.error === 'ai_daily_limit' ? { quota: data.quota } : {}) });
     if (!data || data.accountId !== identity || identity !== accountId) throw Object.assign(new Error('Аккаунт изменился.'), { code: 'account_changed' });
-    if (body?.conversationId && ['history/read', 'messages', 'messages/status'].includes(path) && data.conversationId !== body.conversationId) throw Object.assign(new Error('Не удалось подтвердить беседу.'), { code: 'invalid_conversation_response' });
+    if (body?.conversationId && ['history/read', 'messages', 'messages/status'].includes(path) && data.conversationId !== body.conversationId && !(data.status === 'urgent' && data.requestId === body.requestId)) throw Object.assign(new Error('Не удалось подтвердить беседу.'), { code: 'invalid_conversation_response' });
     return data;
   } finally { clearTimeout(timer); signal?.removeEventListener('abort', onAbort); }
 }
@@ -276,8 +277,10 @@ function quota(value) {
   if (!value || !Number.isInteger(value.remaining) || !Number.isInteger(value.limit) || value.limit <= 0 || value.remaining < 0 || value.remaining > value.limit) return false;
   const stamp = quotaStamp(value);
   if (olderQuota(stamp)) return false;
-  remaining = value.remaining; currentLimit = value.limit;
-  quotaLabel.textContent = `Осталось вопросов сегодня: ${value.remaining} из ${value.limit}`;
+  starsQuota = value.freeRemaining !== undefined;
+  remaining = Number.isInteger(value.totalRemaining) ? value.totalRemaining : value.remaining; currentLimit = value.maximum ?? value.limit;
+  quotaLabel.textContent = value.freeRemaining === undefined ? `Осталось вопросов сегодня: ${value.remaining} из ${value.limit}` : `Сегодня: ${value.freeRemaining} бесплатных · из запаса: ${Math.min(value.paidRemaining, value.paidDailyRemaining)} · запас: ${value.paidRemaining}. Фото или файл — 2 вопроса.`;
+  window.dispatchEvent(new CustomEvent('stars:quota', { detail: value }));
   if (stamp) {
     quotaSnapshot = stamp; quotaDeadline = performance.now() + stamp.reset - stamp.server; quotaRetryAt = 0;
     quotaClock = { wall: Date.now(), monotonic: performance.now() };
@@ -451,7 +454,7 @@ async function waitForSession() {
   }
 }
 async function submit() {
-  if (busy || !ready || ended || !accountId || !pending && remaining === 0) return;
+  if (busy || !ready || ended || !accountId || !pending && remaining === 0 && !starsQuota) return;
   if (!activeConversationId) allocateConversation();
   const threadId = activeConversationId;
   const wasRetry = !!pending;
@@ -482,6 +485,7 @@ async function submit() {
     }
     if (!data) {
       const body = { conversationId: attempt.conversationId, requestId: attempt.requestId, text: attempt.text };
+      if (attempt.urgentContinue) body.urgentContinue = attempt.urgentContinue;
       if (attempt.attachment) {
         body.attachment = { name: attempt.attachment.name, mimeType: attempt.attachment.type,
           data: await fileData(attempt.attachment) };
@@ -491,13 +495,16 @@ async function submit() {
       data = await request('messages', body, controller.signal, attempt.attachment ? 180_000 : 75_000);
     }
     if (current !== revision) return;
+    if (data.status === 'urgent') {
+      quota(data.quota); replyWaiting=false; attempt.checkStatus=false; delete attempt.urgentContinue; render(); showUrgent(data.urgent,attempt); return;
+    }
     replyWaiting = data.status === 'pending';
     quota(data.quota); acceptConversation(data); merge(data.messages);
     if (data.status === 'completed') { pending = null; input.value = ''; notice(''); }
     else if (data.status === 'failed') {
       pending = null; input.value = '';
       const failure = failedMessage(data.messages?.find(item => item.role === 'user' && item.status === 'failed') || data);
-      notice(`${failure} Вопрос учтён в дневном лимите; можно задать новый.`);
+      notice(starsQuota ? `${failure} Расход возвращён; можно задать новый вопрос.` : `${failure} Вопрос учтён в дневном лимите; можно задать новый.`);
     } else notice('Нажмите «Проверить результат» через несколько секунд.');
   } catch (error) {
     if (current !== revision || validateIdentity(error)) return;
@@ -646,3 +653,32 @@ fileInput.addEventListener('change', () => {
 });
 historyMore.addEventListener('click', () => loadHistory(true));
 updateControls(); waitForSession();
+
+window.addEventListener('stars:changed', async () => { if (!ready || ended) return; try { const data = await request('quota'); quota(data.quota); updateControls(); } catch {} });
+
+let urgentDialog;
+function showUrgent(value, attempt) {
+  if (!value || pending !== attempt || !accountId) return;
+  urgentDialog?.remove();
+  const dialog = document.createElement('dialog'); urgentDialog=dialog;dialog.className='ai-urgent-dialog';dialog.setAttribute('aria-labelledby','ai-urgent-title');
+  const title=document.createElement('h2');title.id='ai-urgent-title';title.textContent=value.title;
+  const body=document.createElement('p');body.textContent=value.body;
+  const reassurance=document.createElement('p');reassurance.textContent=value.reassurance;
+  const cost=document.createElement('p');cost.className='ai-urgent-free';cost.textContent='Эта подсказка бесплатна и не расходует вопросы.';
+  dialog.append(title,body,reassurance,cost);
+  for (const action of value.actions || []) {
+    if (action.type==='call' && /^tel:[+0-9]+$/.test(action.href)) {const link=document.createElement('a');link.href=action.href;link.textContent=action.label;link.className='ai-urgent-call';dialog.append(link);}
+    if (action.type==='continue' && value.continueToken) {
+      const resume=document.createElement('button');resume.type='button';resume.textContent=action.label;
+      resume.addEventListener('click',()=>{if(pending!==attempt||ended)return;attempt.urgentContinue=value.continueToken;attempt.checkStatus=false;dialog.close();void submit();});dialog.append(resume);
+    }
+  }
+  const close=document.createElement('button');close.type='button';close.textContent='Закрыть';close.addEventListener('click',()=>dialog.close());dialog.append(close);
+  dialog.addEventListener('close',()=>{
+    if(pending===attempt&&!attempt.urgentContinue){messages=messages.filter(item=>item.id!==sendingId(attempt.requestId));pending=null;replyWaiting=false;render();updateControls();if(threadStates.has(activeConversationId))saveThread();}
+    dialog.remove();if(urgentDialog===dialog)urgentDialog=null;
+  });
+  document.body.append(dialog);dialog.showModal();
+}
+window.addEventListener('webpril:session-ended',()=>{urgentDialog?.close();urgentDialog?.remove();urgentDialog=null;});
+window.addEventListener('account:change',()=>{if(urgentDialog)urgentDialog.close();});

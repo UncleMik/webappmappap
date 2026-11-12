@@ -1,7 +1,8 @@
 import { authRequest } from './auth-client.js';
-import { trackVideoPoints } from './video-points.js?v=20261109-points';
+import { trackVideoPoints } from './video-points.js?v=20261112-stars';
 
 export function mountWeeklyVideo(id) {
+  let mediaAccount = window.webprilSessionAccountId || window.webprilAccount?.user?.id || null;
   const item = window.webprilWeeklyVideos.find(entry => entry.id === id);
   const items = window.webprilWeeklyVideos.filter(entry => entry.week === item.week);
   const index = items.indexOf(item);
@@ -22,9 +23,9 @@ export function mountWeeklyVideo(id) {
   description.classList.add('weekly-video-description');
   stage.before(description);
   cover.classList.add('weekly-cover');
-  cover.querySelector('img').src = item.image;
+  if (item.image) cover.querySelector('img').src = item.image;
   cover.querySelector('img').alt = item.title;
-  video.poster = item.image;
+  if (item.image) video.poster = item.image;
   cover.setAttribute('aria-label', 'Включить видео');
   previous.disabled = index === 0; next.disabled = index === items.length - 1;
   previous.setAttribute('aria-label', 'Предыдущее видео недели');
@@ -107,10 +108,14 @@ export function mountWeeklyVideo(id) {
     if (position === null && !video.paused) { video.pause(); return; }
     busy = true; login.hidden = true; message('Загружаем видео…');
     try {
-      const result = await authRequest(`videos/${id}`);
+      const expected = mediaAccount || (await authRequest('session')).user?.id;
+      if (!expected || mediaAccount && expected !== mediaAccount) throw new Error('Аккаунт изменился.');
+      mediaAccount = expected;
+      const result = await authRequest(`videos/${id}`,undefined,{headers:{'X-Webpril-Account':expected}});
+      if (window.webprilSessionAccountId && window.webprilSessionAccountId !== expected) { signIn(); return; }
       const source = new URL(result.source, location.origin);
       if (source.origin !== location.origin || source.pathname !== '/api/auth/videos/' + id + '/file'
-        || source.search || source.hash) throw new Error('Некорректный адрес видео.');
+        || source.hash || [...source.searchParams.keys()].some(key=>key!=='account') || source.searchParams.getAll('account').length>1 || source.searchParams.has('account') && source.searchParams.get('account')!==expected) throw new Error('Некорректный адрес видео.');
       if (!video.getAttribute('src') || failed) { video.src = source.href; failed = false; }
       pending = true; clearTimeout(timer); timer = setTimeout(() => { if (pending) error(); }, 30000);
       cover.hidden = true; video.hidden = false;
@@ -152,8 +157,11 @@ export function mountWeeklyVideo(id) {
     if (location.hostname === 'unclemik.github.io') { signIn(); return; }
     try {
       const session = await authRequest('session');
-      if (!session.authenticated) signIn();
-      else { login.hidden = true; play.disabled = false; cover.disabled = false;
+      if (!session.authenticated || mediaAccount && session.user?.id !== mediaAccount) signIn();
+      else { mediaAccount = session.user.id;
+        const coverUrl = '/api/auth/videos/' + id + '/cover?account=' + encodeURIComponent(mediaAccount);
+        if (cover.querySelector('img').getAttribute('src') !== coverUrl) { cover.querySelector('img').src = coverUrl; video.poster = coverUrl; }
+        login.hidden = true; play.disabled = false; cover.disabled = false;
         timestampButtons.forEach(button => { button.disabled = false; });
         if (!video.getAttribute('src')) { cover.hidden = false; cover.querySelector('.cover-label').textContent = 'Смотреть видео'; message(''); } }
     } catch { if (!video.paused) { video.pause(); message('Не удалось проверить вход. Попробуйте включить видео ещё раз.'); } }
@@ -163,6 +171,8 @@ export function mountWeeklyVideo(id) {
   function resumeChecks() { if (sessionTimer === undefined) sessionTimer = setInterval(checkSession, 30000); checkSession(); }
   resumeChecks();
   document.addEventListener('visibilitychange', checkSession);
+  addEventListener('webpril:session-ended',()=>{signIn();video.removeAttribute('poster');cover.querySelector('img').removeAttribute('src');});
+  addEventListener('account:change',()=>{if(mediaAccount&&window.webprilSessionAccountId!==mediaAccount){signIn();video.removeAttribute('poster');cover.querySelector('img').removeAttribute('src');}});
   addEventListener('pageshow', resumeChecks);
   addEventListener('pagehide', () => { clearTimeout(timer); clearInterval(sessionTimer); sessionTimer = undefined; video.pause(); });
 }

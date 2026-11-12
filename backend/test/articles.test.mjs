@@ -17,7 +17,7 @@ test('Only published public articles are readable; weeks, errors, caching and wr
     const body = await response.json();
     assert.deepEqual(body.articles.map(article => article.id), ['pregnancy-001']);
     assert.equal(body.articles[0].blocks, undefined);
-    assert.equal(response.headers.get('access-control-allow-origin'), 'https://unclemik.github.io');
+    assert.equal(response.headers.get('access-control-allow-origin'), 'https://app.legkie-rody.ru');
     assert.equal((await fetch(`${base}/api/articles/pregnancy-001`)).status, 200);
     assert.equal((await fetch(`${base}/api/articles/pregnancy-002`)).status, 404);
     assert.equal((await fetch(`${base}/api/articles/pregnancy-003`)).status, 404);

@@ -20,22 +20,45 @@ window.showArticleLoadError = (container, text = 'Не удалось загру
   container.replaceChildren(message, retry);
 };
 
+let articleOwner = null, articleRevision = 0;
 async function requestArticleData(path) {
-  const response = await fetch(window.articlesApiBase + path, { signal: AbortSignal.timeout(15000) });
-  if (!response.ok) throw Object.assign(new Error('Article request failed'), { status: response.status });
-  return response.json();
+  const revision = articleRevision;
+  const expected = window.webprilSessionAccountId || (await fetch('/api/auth/session', {credentials:'same-origin',cache:'no-store',signal:AbortSignal.timeout(15000)}).then(response=>response.json())).user?.id;
+  if (!expected) throw new Error('Sign in required');
+  if (articleOwner && articleOwner !== expected) throw new Error('Account changed');
+  articleOwner = expected;
+  const response = await fetch(window.articlesApiBase + path, {credentials:'same-origin',cache:'no-store',headers:{'X-Webpril-Account':expected},signal:AbortSignal.timeout(15000)});
+  if (revision !== articleRevision || window.webprilSessionAccountId && window.webprilSessionAccountId !== expected) throw new Error('Account changed');
+  if (!response.ok) { const data=await response.json().catch(()=>({})); throw Object.assign(new Error(data.message || 'Не удалось открыть материал'), {status:response.status,code:data.error}); }
+  const data = await response.json();
+  if (revision !== articleRevision || window.webprilSessionAccountId && window.webprilSessionAccountId !== expected) throw new Error('Account changed');
+  return data;
 }
 
-let articleLoadingError = null;
+let articleLoadingError = null, articleIndexRevision = 0;
 const decorateArticle = article => Object.assign(article, { type: `${article.week} неделя`, supplied: true, pregnancy: true });
-if (!new URLSearchParams(location.search).has('courseLesson') || !document.querySelector('#article-finish')) {
-  window.articlesReady = requestArticleData('/api/articles').then(payload => {
+function loadArticleIndex() {
+  const request = ++articleIndexRevision;
+  articleLoadingError = null;
+  return requestArticleData('/api/articles').then(payload => {
+    if (request !== articleIndexRevision) return;
     if (!Array.isArray(payload.articles)) throw new Error('Invalid article list');
     window.pregnancyArticleList = payload.articles.map(decorateArticle);
     window.pregnancyArticleList.forEach(article => { window.articleLibrary[article.id] = article; });
     window.articleLibrary.dating = window.pregnancyArticleList[0];
-  }).catch(error => { articleLoadingError = error; });
+  }).catch(error => { if (request === articleIndexRevision) articleLoadingError = error; });
 }
+if (!new URLSearchParams(location.search).has('courseLesson') || !document.querySelector('#article-finish')) window.articlesReady = loadArticleIndex();
+window.addEventListener('account:change', () => {
+  const next=window.webprilSessionAccountId || window.webprilAccount?.user?.id;
+  if (!articleOwner || !next || next === articleOwner) return;
+  articleRevision++; articleOwner=next;
+  for (const key of Object.keys(window.articleLibrary)) delete window.articleLibrary[key];
+  window.pregnancyArticleList=[];
+  document.querySelector('.reader-scroll')?.replaceChildren();
+  window.articlesReady=loadArticleIndex();
+});
+window.addEventListener('stars:changed', () => { window.articlesReady=loadArticleIndex(); });
 
 window.loadSchoolArticle = async id => {
   await window.articlesReady;
@@ -117,6 +140,17 @@ const renderTodayArticles = () => renderWhenArticlesReady(todayArticles, () => {
     card.querySelector('.article-title').textContent = title;
     return card;
   }
+  if (Array.isArray(window.webprilDailyRecommendations)) {
+    const cards = window.webprilDailyRecommendations.map(item => {
+      const videoId = item.kind === 'video' ? ({'001':'contractions-lesson','002':'back-relief-video','003':'birth-breathing-video'}[item.id] || 'week-video-' + String(item.id).padStart(3,'0')) : null;
+      const article = window.pregnancyArticleList.find(row=>String(row.id)===String(item.id));
+      const card = createTodayCard(item.title,article?.minutes || '',(videoId?'video.html?id='+encodeURIComponent(videoId):'article.html?id='+encodeURIComponent(item.id))+'&from=index&week='+item.week);
+      card.querySelector('.article-meta').textContent = `${item.kind==='video'?'ВИДЕО':'СТАТЬЯ'} · ${item.week} НЕДЕЛЯ`;
+      if (article) {const cover=articleCover(article,'today-material-cover');if(cover)card.prepend(cover);}
+      return card;
+    });
+    const poll=todayArticles.querySelector('#weekly-poll-card'); todayArticles.replaceChildren(...(poll?[poll]:[]),...cards); return;
+  }
   const cards = window.articleReadState.unreadFirst(window.pregnancyArticleList.filter(article => article.week === (window.webprilAccount?.week || 27))).slice(0, 2)
     .map(article => {
       const card = createTodayCard(article.title, article.minutes, `article.html?id=${encodeURIComponent(article.id)}&from=index`);
@@ -134,4 +168,7 @@ const renderTodayArticles = () => renderWhenArticlesReady(todayArticles, () => {
 });
 renderTodayArticles();
 window.addEventListener('account:change', renderTodayArticles);
+window.renderGamificationRecommendations = renderTodayArticles;
 }
+
+window.addEventListener('webpril:session-ended', () => { articleRevision++; articleOwner=null; window.articleLibrary = {}; window.pregnancyArticleList = []; });

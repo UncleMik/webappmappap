@@ -1,0 +1,4115 @@
+{
+  "source": {
+    "title": "Звёздочки и «Твой день» — ТЗ геймификации",
+    "date": "2026-11-12",
+    "filename": "1-Zvezdochki-TZ-gejmifikacii.docx",
+    "sha256": "a57d27b4be039bdf6b14103ba305b7499586ca92e9c327fae3d7848e0b2ebb7a",
+    "authority": "primary_user_source",
+    "source_text_status": "verbatim_source_not_approved_for_publication",
+    "business_plan_status": "proposal_for_user_review_before_implementation"
+  },
+  "usage": "Editorial preparation only. Apply agreed business rules before implementation. No automatic publication.",
+  "letters": [
+    {
+      "week": 1,
+      "text": "«Привет, это я — ты, только через 9 месяцев. Сейчас кажется, что ничего не происходит, но календарь уже пошёл. Береги себя — нам предстоит что-то очень хорошее»",
+      "review_status": "editor_and_medical_review_required"
+    },
+    {
+      "week": 2,
+      "text": "«Твоё тело сейчас тихо готовится к встрече. Ничего не нужно делать идеально: достаточно высыпаться и не забывать о себе. Поверь, однажды ты будешь вспоминать эти дни с улыбкой»",
+      "review_status": "editor_and_medical_review_required"
+    },
+    {
+      "week": 3,
+      "text": "«Всё начинается с одной клетки — ты пока не знаешь, а чудо уже может быть в пути. Что бы ни показал тест, ты уже делаешь главное: заботишься о себе»",
+      "review_status": "editor_and_medical_review_required"
+    },
+    {
+      "week": 4,
+      "text": "«Две полоски? Дыши. Сердце бьётся чаще, в голове сто вопросов — это нормально. Я знаю, чем всё закончится, и скажу одно: ты справишься ♥»",
+      "review_status": "editor_and_medical_review_required"
+    },
+    {
+      "week": 5,
+      "text": "«Мам, привет! У меня всё только начинается: сейчас закладывается моё сердце. Если тебе всё время хочется спать — это ты трудишься для нас обоих. Отдыхай»",
+      "review_status": "editor_and_medical_review_required"
+    },
+    {
+      "week": 6,
+      "text": "«Мам, моё сердце уже бьётся! Так быстро-быстро, что иногда его видно на УЗИ. Если тебя подташнивает — прости, это тоже ненадолго»",
+      "review_status": "editor_and_medical_review_required"
+    },
+    {
+      "week": 7,
+      "text": "«Мой мозг растёт очень быстро, а на ручках уже намечаются кисти. Скоро эти ладошки будут держать твой палец. А пока — спасибо, что ты есть»",
+      "review_status": "editor_and_medical_review_required"
+    },
+    {
+      "week": 8,
+      "text": "«У меня появляются пальчики! Пока с перепонками, как у маленького лягушонка. Иди к врачу спокойно: у нас всё по плану»",
+      "review_status": "editor_and_medical_review_required"
+    },
+    {
+      "week": 9,
+      "text": "«Мам, теперь врачи называют меня плодом — звучит солидно! У меня появляются веки и рот. Когда-нибудь я им тебе улыбнусь»",
+      "review_status": "editor_and_medical_review_required"
+    },
+    {
+      "week": 10,
+      "text": "«Я уже двигаюсь, правда! Просто пока слишком маленький, чтобы ты почувствовала. Но знай: там, внутри, я уже плаваю и кувыркаюсь»",
+      "review_status": "editor_and_medical_review_required"
+    },
+    {
+      "week": 11,
+      "text": "«У меня заработала печень, а в дёснах прячутся будущие зубки. Скоро скрининг — там ты меня, может, увидишь. Помашешь мне?»",
+      "review_status": "editor_and_medical_review_required"
+    },
+    {
+      "week": 12,
+      "text": "«Мам, все мои главные органы уже на месте — теперь они будут расти и тренироваться. Самое трудное начало позади. Мы молодцы»",
+      "review_status": "editor_and_medical_review_required"
+    },
+    {
+      "week": 13,
+      "text": "«У меня появляются голосовые связки. Кричать пока не умею, но когда научусь — ты услышишь первой. Кстати, сделай фото на память — нас уже двое!»",
+      "review_status": "editor_and_medical_review_required"
+    },
+    {
+      "week": 14,
+      "text": "«Мам, первая глава позади! Я уже глотаю водичку и тренирую почки. Говорят, впереди самый уютный триместр — давай пользоваться»",
+      "review_status": "editor_and_medical_review_required"
+    },
+    {
+      "week": 15,
+      "text": "«Я умею подносить пальчик ко рту — тренируюсь на будущее. А ещё меня покрывает нежный пушок. Тепло и уютно, спасибо тебе»",
+      "review_status": "editor_and_medical_review_required"
+    },
+    {
+      "week": 16,
+      "text": "«Мои кулачки уже сжимаются, а глазки двигаются под веками. Скоро ты почувствуешь, как я толкаюсь. Не пропусти!»",
+      "review_status": "editor_and_medical_review_required"
+    },
+    {
+      "week": 17,
+      "text": "«Мам, я начинаю слышать. Расскажи мне что-нибудь сегодня — про себя, про папу, про то, как ждёшь меня. Мне всё интересно»",
+      "review_status": "editor_and_medical_review_required"
+    },
+    {
+      "week": 18,
+      "text": "«У меня уже есть суставы, я сгибаю ручки и ножки. На УЗИ может быть видно, как я растягиваюсь. Позирую тебе!»",
+      "review_status": "editor_and_medical_review_required"
+    },
+    {
+      "week": 19,
+      "text": "«Меня защищает первородная смазка — как специальный крем. А ты пользуешься кремом для животика? Мне нравится, когда ты гладишь меня»",
+      "review_status": "editor_and_medical_review_required"
+    },
+    {
+      "week": 20,
+      "text": "«Половина пути, мам! Теперь ты чувствуешь мои толчки — это я говорю «привет». И ещё я умею сосать пальчик»",
+      "review_status": "editor_and_medical_review_required"
+    },
+    {
+      "week": 21,
+      "text": "«У меня появились брови и ресницы, и я умею моргать! Когда мы встретимся, я буду так тебе подмигивать»",
+      "review_status": "editor_and_medical_review_required"
+    },
+    {
+      "week": 22,
+      "text": "«Тренируюсь дышать! Пока понарошку — кислород мне даёшь ты. Давай тренироваться вместе: ты делаешь глубокий вдох, а я повторяю за тобой»",
+      "review_status": "editor_and_medical_review_required"
+    },
+    {
+      "week": 23,
+      "text": "«В моих лёгких появилось особое вещество — оно поможет мне дышать после рождения. Видишь, я уже готовлюсь к встрече. А ты?»",
+      "review_status": "editor_and_medical_review_required"
+    },
+    {
+      "week": 24,
+      "text": "«Моя кожа пока тоненькая и морщинистая, но я расту каждый день. Спасибо, что сходила на анализы — это и забота обо мне тоже»",
+      "review_status": "editor_and_medical_review_required"
+    },
+    {
+      "week": 25,
+      "text": "«Иногда я икаю — если ты чувствуешь ритмичные толчки, это оно. А ещё я умею хватать свою ножку. У нас тут весело!»",
+      "review_status": "editor_and_medical_review_required"
+    },
+    {
+      "week": 26,
+      "text": "«Мам, я запоминаю твой голос. После рождения я узнаю его из тысячи. Спой мне что-нибудь перед сном?»",
+      "review_status": "editor_and_medical_review_required"
+    },
+    {
+      "week": 27,
+      "text": "«У меня появляется жирок, складочки разглаживаются — становлюсь пухленьким. Вторая глава заканчивается, и я так рад, что мы вместе»",
+      "review_status": "editor_and_medical_review_required"
+    },
+    {
+      "week": 28,
+      "text": "«Мам, мы вошли в последнюю главу! Я уже умею открывать глаза. Послушай сегодня, как я шевелюсь — это наш с тобой разговор»",
+      "review_status": "editor_and_medical_review_required"
+    },
+    {
+      "week": 29,
+      "text": "«Скоро я, скорее всего, перевернусь головкой вниз — так удобнее идти к тебе навстречу. А ты уже подумала, кто будет помогать нам после родов?»",
+      "review_status": "editor_and_medical_review_required"
+    },
+    {
+      "week": 30,
+      "text": "«У меня растут волосы! Интересно, на кого я буду похож — на тебя или на папу? Давай поспорим, а потом проверим»",
+      "review_status": "editor_and_medical_review_required"
+    },
+    {
+      "week": 31,
+      "text": "«Мой кишечник уже тренируется — всё по-взрослому. Мам, пора потихоньку собирать сумку — положи туда что-нибудь мягкое для меня?»",
+      "review_status": "editor_and_medical_review_required"
+    },
+    {
+      "week": 32,
+      "text": "«У меня уже есть ноготки на пальчиках ног, а пушок с тела исчезает. Кажется, я почти готов к фотосессии 😊»",
+      "review_status": "editor_and_medical_review_required"
+    },
+    {
+      "week": 33,
+      "text": "«Моя печень запасает железо на первые месяцы. Я предусмотрительный, всё в тебя! А если сны стали яркими — может, тебе снюсь я?»",
+      "review_status": "editor_and_medical_review_required"
+    },
+    {
+      "week": 34,
+      "text": "«Мам, ты передаёшь мне свою защиту, чтобы я родился сильным. Мои ногти уже доросли до кончиков пальцев. Спасибо тебе за всё»",
+      "review_status": "editor_and_medical_review_required"
+    },
+    {
+      "week": 35,
+      "text": "«Учусь сосать и глотать — готовлюсь к нашему первому обеду. Тесновато тут стало, но мне всё равно хорошо рядом с тобой»",
+      "review_status": "editor_and_medical_review_required"
+    },
+    {
+      "week": 36,
+      "text": "«Мои кости крепнут, а головка остаётся гибкой — так надо, чтобы нам с тобой было легче встретиться. Дома всё готово к моему приезду?»",
+      "review_status": "editor_and_medical_review_required"
+    },
+    {
+      "week": 37,
+      "text": "«Мам, я доношенный! Теперь я могу прийти в любой день. Не волнуйся: я выберу самый лучший момент»",
+      "review_status": "editor_and_medical_review_required"
+    },
+    {
+      "week": 38,
+      "text": "«Я уже умею крепко хватать — скоро докажу это на твоём пальце. Осталось совсем чуть-чуть. Отдыхай и спи побольше, пока можно!»",
+      "review_status": "editor_and_medical_review_required"
+    },
+    {
+      "week": 39,
+      "text": "«Я полностью готов, мам. Если все вокруг спрашивают «ну что, ещё нет?» — отвечай, что мы с тобой сами решим. До встречи!»",
+      "review_status": "editor_and_medical_review_required"
+    },
+    {
+      "week": 40,
+      "text": "«Мам, ПДР — это просто дата в календаре, а у меня свои часы. Я приду, когда буду готов. Я уже слышу, как сильно ты меня ждёшь ♥» (особое письмо: приходит в День 1 40 недели всем, даже без «6 из 6»)",
+      "review_status": "editor_and_medical_review_required"
+    },
+    {
+      "week": 41,
+      "text": "«Я всё ещё тут, и это нормально. Врачи присматривают за нами внимательнее — слушайся их и себя. Мы очень близко»",
+      "review_status": "editor_and_medical_review_required"
+    },
+    {
+      "week": 42,
+      "text": "«Мам, скоро-скоро. Что бы ни решил врач, мы вместе и мы справимся. До встречи — совсем чуть-чуть ♥»",
+      "review_status": "editor_and_medical_review_required"
+    }
+  ],
+  "myths": [
+    {
+      "week": 1,
+      "slot": 1,
+      "article_number": "001",
+      "article_id": "pregnancy-001",
+      "statement": "Срок беременности считают от дня зачатия",
+      "answer": "Миф",
+      "explanation": "Акушерский срок считают от первого дня последней менструации — примерно за 2 недели до зачатия.",
+      "review_status": "medical_review_required"
+    },
+    {
+      "week": 1,
+      "slot": 2,
+      "article_number": "002",
+      "article_id": "pregnancy-002",
+      "statement": "Фолиевую кислоту стоит начинать ещё на этапе планирования",
+      "answer": "Правда",
+      "explanation": "Фолаты нужны в первые недели, когда формируется нервная трубка, поэтому их обычно советуют начинать заранее. Дозу подскажет врач.",
+      "review_status": "medical_review_required"
+    },
+    {
+      "week": 1,
+      "slot": 3,
+      "article_number": "003",
+      "article_id": "pregnancy-003",
+      "statement": "Перед беременностью нужно сдать десятки анализов",
+      "answer": "Миф",
+      "explanation": "Обычно хватает базового набора, который назначит врач. Лишние обследования чаще добавляют тревоги, чем пользы.",
+      "review_status": "medical_review_required"
+    },
+    {
+      "week": 2,
+      "slot": 1,
+      "article_number": "004",
+      "article_id": "pregnancy-004",
+      "statement": "Овуляция всегда бывает на 14-й день цикла",
+      "answer": "Миф",
+      "explanation": "14-й день — среднее для 28-дневного цикла. У каждой женщины и даже в разные месяцы дата может сдвигаться.",
+      "review_status": "medical_review_required"
+    },
+    {
+      "week": 2,
+      "slot": 2,
+      "article_number": "005",
+      "article_id": "pregnancy-005",
+      "statement": "Фертильное окно — это только один день",
+      "answer": "Миф",
+      "explanation": "Сперматозоиды живут до нескольких дней, поэтому фертильные дни — это несколько дней до овуляции и сам день овуляции.",
+      "review_status": "medical_review_required"
+    },
+    {
+      "week": 2,
+      "slot": 3,
+      "article_number": "006",
+      "article_id": "pregnancy-006",
+      "statement": "При планировании лучше полностью бросить спорт",
+      "answer": "Миф",
+      "explanation": "Умеренная активность помогает организму. Обсудить с врачом стоит только очень интенсивные нагрузки.",
+      "review_status": "medical_review_required"
+    },
+    {
+      "week": 3,
+      "slot": 1,
+      "article_number": "007",
+      "article_id": "pregnancy-007",
+      "statement": "Сразу после зачатия женщина чувствует беременность",
+      "answer": "Миф",
+      "explanation": "В первые дни чаще всего ничего не ощущается — это нормально и ни о чём плохом не говорит.",
+      "review_status": "medical_review_required"
+    },
+    {
+      "week": 3,
+      "slot": 2,
+      "article_number": "008",
+      "article_id": "pregnancy-008",
+      "statement": "Узнав о беременности, нужно срочно перевернуть всю жизнь",
+      "answer": "Миф",
+      "explanation": "Достаточно убрать алкоголь и курение, обсудить с врачом лекарства и больше отдыхать. Привычная жизнь в основном остаётся.",
+      "review_status": "medical_review_required"
+    },
+    {
+      "week": 3,
+      "slot": 3,
+      "article_number": "009",
+      "article_id": "pregnancy-009",
+      "statement": "Привычную еду придётся полностью поменять",
+      "answer": "Миф",
+      "explanation": "Большинство продуктов можно оставить. Важнее разнообразие и безопасная обработка продуктов.",
+      "review_status": "medical_review_required"
+    },
+    {
+      "week": 4,
+      "slot": 1,
+      "article_number": "010",
+      "article_id": "pregnancy-010",
+      "statement": "Тест на беременность покажет точно в любой день цикла",
+      "answer": "Миф",
+      "explanation": "До задержки тест может быть ложноотрицательным. Надёжнее делать его с первого дня задержки или повторить через 2–3 дня.",
+      "review_status": "medical_review_required"
+    },
+    {
+      "week": 4,
+      "slot": 2,
+      "article_number": "011",
+      "article_id": "pregnancy-011",
+      "statement": "Увидев две полоски, к врачу нужно идти в тот же день",
+      "answer": "Миф",
+      "explanation": "Если ничего не беспокоит, записаться можно спокойно в ближайшие недели. Сразу — если есть боль или кровянистые выделения.",
+      "review_status": "medical_review_required"
+    },
+    {
+      "week": 4,
+      "slot": 3,
+      "article_number": "012",
+      "article_id": "pregnancy-012",
+      "statement": "ПДР можно посчитать самой",
+      "answer": "Правда",
+      "explanation": "К дате первого дня последних месячных добавляют 280 дней. Потом врач уточнит срок по УЗИ.",
+      "review_status": "medical_review_required"
+    },
+    {
+      "week": 5,
+      "slot": 1,
+      "article_number": "013",
+      "article_id": "pregnancy-013",
+      "statement": "К акушеру-гинекологу нужно идти в первую же неделю задержки",
+      "answer": "Миф",
+      "explanation": "Для первого визита важнее успеть до 10–12 недель. Раньше — если есть жалобы или хронические заболевания.",
+      "review_status": "medical_review_required"
+    },
+    {
+      "week": 5,
+      "slot": 2,
+      "article_number": "014",
+      "article_id": "pregnancy-014",
+      "statement": "Первое УЗИ нужно сделать как можно раньше",
+      "answer": "Миф",
+      "explanation": "Слишком раннее УЗИ часто ничего не показывает и только добавляет тревоги. Срок подскажет врач.",
+      "review_status": "medical_review_required"
+    },
+    {
+      "week": 5,
+      "slot": 3,
+      "article_number": "015",
+      "article_id": "pregnancy-015",
+      "statement": "Беременным нужно пить все витамины подряд «на всякий случай»",
+      "answer": "Миф",
+      "explanation": "Реально нужны лишь некоторые (например, фолаты и йод), остальное — по анализам и назначению врача.",
+      "review_status": "medical_review_required"
+    },
+    {
+      "week": 6,
+      "slot": 1,
+      "article_number": "016",
+      "article_id": "pregnancy-016",
+      "statement": "Утреннюю тошноту можно облегчить частым питанием маленькими порциями",
+      "answer": "Правда",
+      "explanation": "Небольшие перекусы и достаточно воды помогают многим. Если рвота частая и невозможно пить — нужен врач.",
+      "review_status": "medical_review_required"
+    },
+    {
+      "week": 6,
+      "slot": 2,
+      "article_number": "017",
+      "article_id": "pregnancy-017",
+      "statement": "Если любимая еда разонравилась, с организмом что-то не так",
+      "answer": "Миф",
+      "explanation": "Изменения аппетита и вкуса — обычная часть начала беременности из-за гормонов.",
+      "review_status": "medical_review_required"
+    },
+    {
+      "week": 6,
+      "slot": 3,
+      "article_number": "018",
+      "article_id": "pregnancy-018",
+      "statement": "Беременным нельзя всё из длинных списков в интернете",
+      "answer": "Миф",
+      "explanation": "Реальных запретов немного: сырые мясо и рыба, непастеризованные продукты, алкоголь. Многое запрещают зря.",
+      "review_status": "medical_review_required"
+    },
+    {
+      "week": 7,
+      "slot": 1,
+      "article_number": "019",
+      "article_id": "pregnancy-019",
+      "statement": "Сильная сонливость в начале беременности — норма",
+      "answer": "Правда",
+      "explanation": "Прогестерон и большая работа организма делают своё дело. Обычно ко второму триместру становится легче.",
+      "review_status": "medical_review_required"
+    },
+    {
+      "week": 7,
+      "slot": 2,
+      "article_number": "020",
+      "article_id": "pregnancy-020",
+      "statement": "Вздутие и запоры в начале беременности бывают часто",
+      "answer": "Правда",
+      "explanation": "Гормоны замедляют работу кишечника. Помогают вода, клетчатка и движение.",
+      "review_status": "medical_review_required"
+    },
+    {
+      "week": 7,
+      "slot": 3,
+      "article_number": "021",
+      "article_id": "pregnancy-021",
+      "statement": "Если сил стало меньше, надо просто терпеть и работать как раньше",
+      "answer": "Миф",
+      "explanation": "Лучше перестроить день: перерывы, перекусы, самые сложные задачи — на время, когда сил больше.",
+      "review_status": "medical_review_required"
+    },
+    {
+      "week": 8,
+      "slot": 1,
+      "article_number": "022",
+      "article_id": "pregnancy-022",
+      "statement": "Часть анализов при постановке на учёт можно спокойно пропустить",
+      "answer": "Миф",
+      "explanation": "Стартовые анализы помогают вовремя заметить анемию, инфекции и несовместимость по резусу. Если что-то смущает — спросите врача, зачем оно.",
+      "review_status": "medical_review_required"
+    },
+    {
+      "week": 8,
+      "slot": 2,
+      "article_number": "023",
+      "article_id": "pregnancy-023",
+      "statement": "Зубы во время беременности лечить нельзя",
+      "answer": "Миф",
+      "explanation": "Лечить можно и нужно, особенно удобно во втором триместре. Достаточно предупредить стоматолога о беременности.",
+      "review_status": "medical_review_required"
+    },
+    {
+      "week": 8,
+      "slot": 3,
+      "article_number": "024",
+      "article_id": "pregnancy-024",
+      "statement": "Привычный уход за кожей придётся полностью отменить",
+      "answer": "Миф",
+      "explanation": "Большинство средств можно оставить. Стоит уточнить лишь отдельные активные компоненты, например ретиноиды.",
+      "review_status": "medical_review_required"
+    },
+    {
+      "week": 9,
+      "slot": 1,
+      "article_number": "025",
+      "article_id": "pregnancy-025",
+      "statement": "От кофе придётся отказаться полностью",
+      "answer": "Миф",
+      "explanation": "Обычно допустимо до 200 мг кофеина в день — это примерно 1–2 чашки кофе.",
+      "review_status": "medical_review_required"
+    },
+    {
+      "week": 9,
+      "slot": 2,
+      "article_number": "026",
+      "article_id": "pregnancy-026",
+      "statement": "При нормально протекающей беременности секс вреден малышу",
+      "answer": "Миф",
+      "explanation": "Малыша защищают околоплодные воды и шейка матки. Ограничения бывают только по особым показаниям врача.",
+      "review_status": "medical_review_required"
+    },
+    {
+      "week": 9,
+      "slot": 3,
+      "article_number": "027",
+      "article_id": "pregnancy-027",
+      "statement": "Баня и очень горячая ванна на раннем сроке безопасны, если нравится",
+      "answer": "Миф",
+      "explanation": "Сильный перегрев в первом триместре нежелателен. Тёплый, а не горячий душ — хорошая замена.",
+      "review_status": "medical_review_required"
+    },
+    {
+      "week": 10,
+      "slot": 1,
+      "article_number": "028",
+      "article_id": "pregnancy-028",
+      "statement": "На беременность нужно набрать строго указанную цифру килограммов",
+      "answer": "Миф",
+      "explanation": "Норма прибавки зависит от веса до беременности и у всех разная. Важнее плавность, чем точная цифра.",
+      "review_status": "medical_review_required"
+    },
+    {
+      "week": 10,
+      "slot": 2,
+      "article_number": "029",
+      "article_id": "pregnancy-029",
+      "statement": "Если занималась спортом до беременности, его часто можно продолжать",
+      "answer": "Правда",
+      "explanation": "Привычные тренировки обычно продолжают с поправкой на самочувствие, исключая риск ударов и падений.",
+      "review_status": "medical_review_required"
+    },
+    {
+      "week": 10,
+      "slot": 3,
+      "article_number": "030",
+      "article_id": "pregnancy-030",
+      "statement": "НИПТ полностью заменяет обычный скрининг",
+      "answer": "Миф",
+      "explanation": "НИПТ ищет хромосомные отклонения, а скрининговое УЗИ оценивает ещё и развитие малыша. Врач подскажет, что нужно именно вам.",
+      "review_status": "medical_review_required"
+    },
+    {
+      "week": 11,
+      "slot": 1,
+      "article_number": "031",
+      "article_id": "pregnancy-031",
+      "statement": "К первому скринингу можно прийти в любой неделе первого триместра",
+      "answer": "Миф",
+      "explanation": "У первого скрининга есть своё окно — примерно 11–14 недель. Раньше или позже его результаты менее точны.",
+      "review_status": "medical_review_required"
+    },
+    {
+      "week": 11,
+      "slot": 2,
+      "article_number": "032",
+      "article_id": "pregnancy-032",
+      "statement": "Летать на самолёте беременным запрещено",
+      "answer": "Миф",
+      "explanation": "При нормальной беременности летать обычно можно. У авиакомпаний свои ограничения по сроку — уточняйте заранее.",
+      "review_status": "medical_review_required"
+    },
+    {
+      "week": 11,
+      "slot": 3,
+      "article_number": "033",
+      "article_id": "pregnancy-033",
+      "statement": "Работа за компьютером вредит малышу из-за излучения",
+      "answer": "Миф",
+      "explanation": "Излучение компьютера не опасно. Важнее удобный стул и разминка каждый час.",
+      "review_status": "medical_review_required"
+    },
+    {
+      "week": 12,
+      "slot": 1,
+      "article_number": "034",
+      "article_id": "pregnancy-034",
+      "statement": "Ко второму триместру тошнота и усталость часто ослабевают",
+      "answer": "Правда",
+      "explanation": "У многих самочувствие заметно улучшается к 13–16 неделе, хотя у каждой по-своему.",
+      "review_status": "medical_review_required"
+    },
+    {
+      "week": 12,
+      "slot": 2,
+      "article_number": "035",
+      "article_id": "pregnancy-035",
+      "statement": "Результат скрининга лучше расшифровать самой в интернете",
+      "answer": "Миф",
+      "explanation": "Риски в скрининге считаются из многих показателей сразу. Расшифровка со стороны пугает зря — её делает врач.",
+      "review_status": "medical_review_required"
+    },
+    {
+      "week": 12,
+      "slot": 3,
+      "article_number": "036",
+      "article_id": "pregnancy-036",
+      "statement": "Группу крови и резус определяют просто «для галочки»",
+      "answer": "Миф",
+      "explanation": "При отрицательном резусе врач следит за антителами и вовремя делает профилактику — это защищает малыша.",
+      "review_status": "medical_review_required"
+    },
+    {
+      "week": 13,
+      "slot": 1,
+      "article_number": "037",
+      "article_id": "pregnancy-037",
+      "statement": "Второй триместр часто называют самым комфортным",
+      "answer": "Правда",
+      "explanation": "Тошнота уходит, сил становится больше, а живот ещё не мешает. Хорошее время для поездок и дел.",
+      "review_status": "medical_review_required"
+    },
+    {
+      "week": 13,
+      "slot": 2,
+      "article_number": "038",
+      "article_id": "pregnancy-038",
+      "statement": "Во втором триместре нужно есть за двоих",
+      "answer": "Миф",
+      "explanation": "Потребность в энергии растёт немного — примерно на один перекус в день. Важнее качество еды, а не объём.",
+      "review_status": "medical_review_required"
+    },
+    {
+      "week": 13,
+      "slot": 3,
+      "article_number": "039",
+      "article_id": "pregnancy-039",
+      "statement": "Специальная одежда для беременных нужна с первых недель",
+      "answer": "Миф",
+      "explanation": "Пока удобно в своей одежде — в ней и ходите. Главное, чтобы ничего не давило на живот и грудь.",
+      "review_status": "medical_review_required"
+    },
+    {
+      "week": 14,
+      "slot": 1,
+      "article_number": "040",
+      "article_id": "pregnancy-040",
+      "statement": "Спать на животе на этом сроке опасно для малыша",
+      "answer": "Миф",
+      "explanation": "Пока удобно, можно. Малыша защищают воды и матка, а с ростом живота вы сами перейдёте на бок.",
+      "review_status": "medical_review_required"
+    },
+    {
+      "week": 14,
+      "slot": 2,
+      "article_number": "041",
+      "article_id": "pregnancy-041",
+      "statement": "Пигментные пятна на коже во время беременности — обычное явление",
+      "answer": "Правда",
+      "explanation": "Из-за гормонов кожа темнеет у многих. Помогает солнцезащитный крем, а после родов пятна часто бледнеют.",
+      "review_status": "medical_review_required"
+    },
+    {
+      "week": 14,
+      "slot": 3,
+      "article_number": "042",
+      "article_id": "pregnancy-042",
+      "statement": "Во втором триместре лучше больше лежать и меньше двигаться",
+      "answer": "Миф",
+      "explanation": "Регулярное спокойное движение — прогулки, плавание, гимнастика — помогает спине, сну и настроению, если врач не запретил.",
+      "review_status": "medical_review_required"
+    },
+    {
+      "week": 15,
+      "slot": 1,
+      "article_number": "043",
+      "article_id": "pregnancy-043",
+      "statement": "Любые выделения во время беременности — повод срочно ехать к врачу",
+      "answer": "Миф",
+      "explanation": "Светлые без запаха и зуда — норма, их обычно становится больше. Срочно — если кровь, водянистые или с неприятным запахом.",
+      "review_status": "medical_review_required"
+    },
+    {
+      "week": 15,
+      "slot": 2,
+      "article_number": "044",
+      "article_id": "pregnancy-044",
+      "statement": "Во время беременности дёсна чаще кровоточат",
+      "answer": "Правда",
+      "explanation": "Гормоны делают дёсны чувствительнее. Помогают мягкая щётка, нить и плановый визит к стоматологу.",
+      "review_status": "medical_review_required"
+    },
+    {
+      "week": 15,
+      "slot": 3,
+      "article_number": "045",
+      "article_id": "pregnancy-045",
+      "statement": "Беременным лучше не пристёгиваться ремнём безопасности",
+      "answer": "Миф",
+      "explanation": "Пристёгиваться нужно всегда: нижнюю лямку — под животом по бёдрам, верхнюю — между грудью и сбоку от живота.",
+      "review_status": "medical_review_required"
+    },
+    {
+      "week": 16,
+      "slot": 1,
+      "article_number": "046",
+      "article_id": "pregnancy-046",
+      "statement": "Все чувствуют первые шевеления в одну и ту же неделю",
+      "answer": "Миф",
+      "explanation": "При первой беременности чаще около 18–22 недель, при повторной — раньше. Влияют и расположение плаценты, и телосложение.",
+      "review_status": "medical_review_required"
+    },
+    {
+      "week": 16,
+      "slot": 2,
+      "article_number": "047",
+      "article_id": "pregnancy-047",
+      "statement": "На плановом приёме можно задавать врачу любые вопросы, даже «глупые»",
+      "answer": "Правда",
+      "explanation": "Запишите их заранее в заметки — на приёме легко забыть. Врачу важно знать о ваших сомнениях.",
+      "review_status": "medical_review_required"
+    },
+    {
+      "week": 16,
+      "slot": 3,
+      "article_number": "048",
+      "article_id": "pregnancy-048",
+      "statement": "Давление дома можно мерить сразу после подъёма по лестнице",
+      "answer": "Миф",
+      "explanation": "Перед измерением нужно 5 минут посидеть спокойно, рука на столе на уровне сердца. Записывайте цифры для врача.",
+      "review_status": "medical_review_required"
+    },
+    {
+      "week": 17,
+      "slot": 1,
+      "article_number": "049",
+      "article_id": "pregnancy-049",
+      "statement": "Боль в спине у беременных можно уменьшить без таблеток",
+      "answer": "Правда",
+      "explanation": "Помогают движение, удобная обувь, тёплый душ и правильный подъём тяжестей. Сильная или ритмичная боль — повод позвонить врачу.",
+      "review_status": "medical_review_required"
+    },
+    {
+      "week": 17,
+      "slot": 2,
+      "article_number": "050",
+      "article_id": "pregnancy-050",
+      "statement": "Бандаж нужен каждой беременной",
+      "answer": "Миф",
+      "explanation": "Бандаж помогает не всем и не всегда. Если спина в порядке, он не обязателен; подбирают его по ощущениям.",
+      "review_status": "medical_review_required"
+    },
+    {
+      "week": 17,
+      "slot": 3,
+      "article_number": "051",
+      "article_id": "pregnancy-051",
+      "statement": "Вставать с кровати лучше через бок, а не «рывком» со спины",
+      "answer": "Правда",
+      "explanation": "Так меньше нагрузка на пресс и поясницу: повернуться на бок, опустить ноги и подняться с опорой на руки.",
+      "review_status": "medical_review_required"
+    },
+    {
+      "week": 18,
+      "slot": 1,
+      "article_number": "052",
+      "article_id": "pregnancy-052",
+      "statement": "Ко второму скринингу нужно сложно готовиться: диета, полный мочевой пузырь",
+      "answer": "Миф",
+      "explanation": "Особой подготовки обычно не нужно. Возьмите с собой прошлые заключения и вопросы к врачу.",
+      "review_status": "medical_review_required"
+    },
+    {
+      "week": 18,
+      "slot": 2,
+      "article_number": "053",
+      "article_id": "pregnancy-053",
+      "statement": "Низкое расположение плаценты на втором УЗИ часто меняется к родам",
+      "answer": "Правда",
+      "explanation": "По мере роста матки плацента часто «поднимается». Врач перепроверит её позже.",
+      "review_status": "medical_review_required"
+    },
+    {
+      "week": 18,
+      "slot": 3,
+      "article_number": "054",
+      "article_id": "pregnancy-054",
+      "statement": "Пол малыша на УЗИ определяют без ошибок",
+      "answer": "Миф",
+      "explanation": "Ошибки случаются: мешают положение малыша и срок. До рождения на 100% уверены быть нельзя.",
+      "review_status": "medical_review_required"
+    },
+    {
+      "week": 19,
+      "slot": 1,
+      "article_number": "055",
+      "article_id": "pregnancy-055",
+      "statement": "Первые шевеления легко перепутать с работой кишечника",
+      "answer": "Правда",
+      "explanation": "Они похожи на лёгкое порхание или пузырьки. Со временем толчки станут понятнее.",
+      "review_status": "medical_review_required"
+    },
+    {
+      "week": 19,
+      "slot": 2,
+      "article_number": "056",
+      "article_id": "pregnancy-056",
+      "statement": "Препараты железа нужны всем беременным",
+      "answer": "Миф",
+      "explanation": "Их назначают по анализам — если есть дефицит. Пить «на всякий случай» не стоит.",
+      "review_status": "medical_review_required"
+    },
+    {
+      "week": 19,
+      "slot": 3,
+      "article_number": "057",
+      "article_id": "pregnancy-057",
+      "statement": "Ночные судороги в ногах помогает снять мягкое растяжение икры",
+      "answer": "Правда",
+      "explanation": "Потяните носок на себя и помассируйте икру. Если судороги частые — расскажите врачу.",
+      "review_status": "medical_review_required"
+    },
+    {
+      "week": 20,
+      "slot": 1,
+      "article_number": "058",
+      "article_id": "pregnancy-058",
+      "statement": "В середине беременности ещё рано думать о роддоме и помощи после родов",
+      "answer": "Миф",
+      "explanation": "Сейчас как раз удобно начать: сил достаточно, и спешить не придётся.",
+      "review_status": "medical_review_required"
+    },
+    {
+      "week": 20,
+      "slot": 2,
+      "article_number": "059",
+      "article_id": "pregnancy-059",
+      "statement": "Давление на каждом приёме меряют просто по привычке",
+      "answer": "Миф",
+      "explanation": "Это один из самых важных способов вовремя заметить преэклампсию.",
+      "review_status": "medical_review_required"
+    },
+    {
+      "week": 20,
+      "slot": 3,
+      "article_number": "060",
+      "article_id": "pregnancy-060",
+      "statement": "Готовиться к родам с 20 недель — хорошее время",
+      "answer": "Правда",
+      "explanation": "Информация успевает улечься, а дыхание и позы — стать привычкой к третьему триместру.",
+      "review_status": "medical_review_required"
+    },
+    {
+      "week": 21,
+      "slot": 1,
+      "article_number": "061",
+      "article_id": "pregnancy-061",
+      "statement": "Удобнее всего спать на боку с подушкой между коленями",
+      "answer": "Правда",
+      "explanation": "Так разгружаются поясница и таз. Левый или правый бок — как вам приятнее.",
+      "review_status": "medical_review_required"
+    },
+    {
+      "week": 21,
+      "slot": 2,
+      "article_number": "062",
+      "article_id": "pregnancy-062",
+      "statement": "Мышцы тазового дна нужно только качать",
+      "answer": "Миф",
+      "explanation": "Для родов не менее важно уметь их расслаблять. Хорошая тренировка — и сжатие, и расслабление.",
+      "review_status": "medical_review_required"
+    },
+    {
+      "week": 21,
+      "slot": 3,
+      "article_number": "063",
+      "article_id": "pregnancy-063",
+      "statement": "Ощущения от секса во второй половине беременности могут меняться — это нормально",
+      "answer": "Правда",
+      "explanation": "Меняются кровоток и чувствительность, иногда после бывает лёгкий тонус. Кровь или боль — повод позвонить врачу.",
+      "review_status": "medical_review_required"
+    },
+    {
+      "week": 22,
+      "slot": 1,
+      "article_number": "064",
+      "article_id": "pregnancy-064",
+      "statement": "Если живот иногда ненадолго твердеет и расслабляется — это уже роды",
+      "answer": "Миф",
+      "explanation": "Редкие безболезненные сокращения бывают тренировочными. Регулярные, болезненные или с выделениями — срочно к врачу.",
+      "review_status": "medical_review_required"
+    },
+    {
+      "week": 22,
+      "slot": 2,
+      "article_number": "065",
+      "article_id": "pregnancy-065",
+      "statement": "Поясница устаёт из-за изменившейся осанки",
+      "answer": "Правда",
+      "explanation": "Центр тяжести смещается вперёд, и спина работает больше. Помогают перерывы и мягкие упражнения.",
+      "review_status": "medical_review_required"
+    },
+    {
+      "week": 22,
+      "slot": 3,
+      "article_number": "066",
+      "article_id": "pregnancy-066",
+      "statement": "Подушка для беременных — обязательная покупка",
+      "answer": "Миф",
+      "explanation": "Она удобна многим, но тот же эффект дают обычные подушки под животом и между коленями.",
+      "review_status": "medical_review_required"
+    },
+    {
+      "week": 23,
+      "slot": 1,
+      "article_number": "067",
+      "article_id": "pregnancy-067",
+      "statement": "При тяжести после еды помогает есть чаще и меньше",
+      "answer": "Правда",
+      "explanation": "Растущая матка подпирает желудок. 5–6 небольших приёмов пищи часто переносятся легче трёх больших.",
+      "review_status": "medical_review_required"
+    },
+    {
+      "week": 23,
+      "slot": 2,
+      "article_number": "068",
+      "article_id": "pregnancy-068",
+      "statement": "Плохой сон во второй половине беременности неизбежен",
+      "answer": "Миф",
+      "explanation": "Помогают режим, прохладная спальня, подушки и лёгкий ужин. Хороший сон вполне возможен.",
+      "review_status": "medical_review_required"
+    },
+    {
+      "week": 23,
+      "slot": 3,
+      "article_number": "069",
+      "article_id": "pregnancy-069",
+      "statement": "При боли в спине лучше совсем не двигаться",
+      "answer": "Миф",
+      "explanation": "Мягкие упражнения на четвереньках и с фитболом часто разгружают спину лучше покоя.",
+      "review_status": "medical_review_required"
+    },
+    {
+      "week": 24,
+      "slot": 1,
+      "article_number": "070",
+      "article_id": "pregnancy-070",
+      "statement": "Глюкозотолерантный тест нужен только тем, у кого уже есть диабет",
+      "answer": "Миф",
+      "explanation": "Тест нужен как раз чтобы выявить гестационный диабет, который часто никак не ощущается.",
+      "review_status": "medical_review_required"
+    },
+    {
+      "week": 24,
+      "slot": 2,
+      "article_number": "071",
+      "article_id": "pregnancy-071",
+      "statement": "Перед ГТТ нужно сесть на строгую диету без углеводов",
+      "answer": "Миф",
+      "explanation": "Наоборот, 3 дня до теста лучше есть как обычно, а сам тест сдавать натощак. Иначе результат искажается.",
+      "review_status": "medical_review_required"
+    },
+    {
+      "week": 24,
+      "slot": 3,
+      "article_number": "072",
+      "article_id": "pregnancy-072",
+      "statement": "Лёгкие отёки ног к вечеру бывают у многих беременных",
+      "answer": "Правда",
+      "explanation": "Помогают отдых с приподнятыми ногами и движение. Резкие отёки лица и рук, головная боль — срочно к врачу.",
+      "review_status": "medical_review_required"
+    },
+    {
+      "week": 25,
+      "slot": 1,
+      "article_number": "073",
+      "article_id": "pregnancy-073",
+      "statement": "От изжоги спасает сода",
+      "answer": "Миф",
+      "explanation": "Сода облегчает ненадолго и не подходит для регулярного приёма. Лучше дробное питание, не ложиться сразу после еды и средство, которое подберёт врач.",
+      "review_status": "medical_review_required"
+    },
+    {
+      "week": 25,
+      "slot": 2,
+      "article_number": "074",
+      "article_id": "pregnancy-074",
+      "statement": "Варикоз во время беременности нельзя никак предупредить",
+      "answer": "Миф",
+      "explanation": "Нагрузку на ноги снижают движение, отдых с приподнятыми ногами и при необходимости компрессионный трикотаж.",
+      "review_status": "medical_review_required"
+    },
+    {
+      "week": 25,
+      "slot": 3,
+      "article_number": "075",
+      "article_id": "pregnancy-075",
+      "statement": "Компрессионный трикотаж можно подобрать на глаз",
+      "answer": "Миф",
+      "explanation": "Класс компрессии и размер подбирают по замерам и совету врача, иначе он может не помочь.",
+      "review_status": "medical_review_required"
+    },
+    {
+      "week": 26,
+      "slot": 1,
+      "article_number": "076",
+      "article_id": "pregnancy-076",
+      "statement": "Тренировочные схватки могут появляться задолго до родов",
+      "answer": "Правда",
+      "explanation": "Это нерегулярные и обычно безболезненные сокращения. Если они частые и болезненные — врач нужен срочно.",
+      "review_status": "medical_review_required"
+    },
+    {
+      "week": 26,
+      "slot": 2,
+      "article_number": "077",
+      "article_id": "pregnancy-077",
+      "statement": "Спать можно только на левом боку",
+      "answer": "Миф",
+      "explanation": "Подходит любой бок. На поздних сроках лучше не засыпать подолгу на спине, а если проснулись на спине — просто повернитесь.",
+      "review_status": "medical_review_required"
+    },
+    {
+      "week": 26,
+      "slot": 3,
+      "article_number": "078",
+      "article_id": "pregnancy-078",
+      "statement": "К концу беременности обувь может стать на размер больше",
+      "answer": "Правда",
+      "explanation": "Из-за отёков и расслабления связок стопа меняется. Выбирайте удобную обувь на низком устойчивом каблуке.",
+      "review_status": "medical_review_required"
+    },
+    {
+      "week": 27,
+      "slot": 1,
+      "article_number": "079",
+      "article_id": "pregnancy-079",
+      "statement": "До третьего триместра полезно успеть выбрать роддом и курсы",
+      "answer": "Правда",
+      "explanation": "Пока сил достаточно, проще съездить на экскурсию и спокойно всё обдумать.",
+      "review_status": "medical_review_required"
+    },
+    {
+      "week": 27,
+      "slot": 2,
+      "article_number": "080",
+      "article_id": "pregnancy-080",
+      "statement": "При отрицательном резусе беременность обязательно будет сложной",
+      "answer": "Миф",
+      "explanation": "С вовремя сданными анализами и профилактикой она обычно протекает спокойно.",
+      "review_status": "medical_review_required"
+    },
+    {
+      "week": 27,
+      "slot": 3,
+      "article_number": "081",
+      "article_id": "pregnancy-081",
+      "statement": "Все документы и анализы всё равно есть в консультации, свою папку вести не нужно",
+      "answer": "Миф",
+      "explanation": "Своя папка с результатами и обменной картой выручит в роддоме или на приёме у другого врача.",
+      "review_status": "medical_review_required"
+    },
+    {
+      "week": 28,
+      "slot": 1,
+      "article_number": "082",
+      "article_id": "pregnancy-082",
+      "statement": "В третьем триместре приёмы у врача становятся чаще",
+      "answer": "Правда",
+      "explanation": "Обычно раз в 2 недели, а ближе к родам — еженедельно. Так врач ничего не пропустит.",
+      "review_status": "medical_review_required"
+    },
+    {
+      "week": 28,
+      "slot": 2,
+      "article_number": "083",
+      "article_id": "pregnancy-083",
+      "statement": "У каждого малыша свой режим активности, и его стоит знать",
+      "answer": "Правда",
+      "explanation": "Важна не точная цифра шевелений, а его привычный ритм. Заметно затих — сразу звоните врачу.",
+      "review_status": "medical_review_required"
+    },
+    {
+      "week": 28,
+      "slot": 3,
+      "article_number": "084",
+      "article_id": "pregnancy-084",
+      "statement": "Давление в третьем триместре можно не контролировать, если самочувствие хорошее",
+      "answer": "Миф",
+      "explanation": "Повышенное давление часто никак не ощущается, а именно сейчас его важно заметить вовремя.",
+      "review_status": "medical_review_required"
+    },
+    {
+      "week": 29,
+      "slot": 1,
+      "article_number": "085",
+      "article_id": "pregnancy-085",
+      "statement": "Малыш в животе уже спит и бодрствует по своему расписанию",
+      "answer": "Правда",
+      "explanation": "И часто активизируется, когда мама ложится отдохнуть — настоящий ночной танцор 🙂",
+      "review_status": "medical_review_required"
+    },
+    {
+      "week": 29,
+      "slot": 2,
+      "article_number": "086",
+      "article_id": "pregnancy-086",
+      "statement": "Одышка при подъёме по лестнице на этом сроке — часто вариант нормы",
+      "answer": "Правда",
+      "explanation": "Матка подпирает диафрагму. Но одышка в покое, боль в груди или синие губы — срочно к врачу.",
+      "review_status": "medical_review_required"
+    },
+    {
+      "week": 29,
+      "slot": 3,
+      "article_number": "087",
+      "article_id": "pregnancy-087",
+      "statement": "Перед родами нужно успеть сделать ремонт, генеральную уборку и все дела",
+      "answer": "Миф",
+      "explanation": "Малышу нужна спокойная и отдохнувшая мама, а не идеальная квартира. Делите дела и просите помощи.",
+      "review_status": "medical_review_required"
+    },
+    {
+      "week": 30,
+      "slot": 1,
+      "article_number": "088",
+      "article_id": "pregnancy-088",
+      "statement": "План родов — бесполезная формальность",
+      "answer": "Миф",
+      "explanation": "Он помогает заранее подумать о своих желаниях и обсудить их с врачом и партнёром. Главное — оставить в нём гибкость.",
+      "review_status": "medical_review_required"
+    },
+    {
+      "week": 30,
+      "slot": 2,
+      "article_number": "089",
+      "article_id": "pregnancy-089",
+      "statement": "Рожать можно только лёжа на спине",
+      "answer": "Миф",
+      "explanation": "В схватках часто легче двигаться и менять позы: стоя, на фитболе, на четвереньках. Попробуйте их заранее.",
+      "review_status": "medical_review_required"
+    },
+    {
+      "week": 30,
+      "slot": 3,
+      "article_number": "090",
+      "article_id": "pregnancy-090",
+      "statement": "Дышать в родах тело «само разберётся», тренироваться заранее не нужно",
+      "answer": "Миф",
+      "explanation": "Отработанное дыхание легче вспомнить на пике схватки. Несколько минут в день заметно помогают.",
+      "review_status": "medical_review_required"
+    },
+    {
+      "week": 31,
+      "slot": 1,
+      "article_number": "091",
+      "article_id": "pregnancy-091",
+      "statement": "Сумку в роддом собирают за неделю до ПДР",
+      "answer": "Миф",
+      "explanation": "Лучше собрать к 34–36 неделе: роды могут начаться раньше, и собираться в спешке не придётся.",
+      "review_status": "medical_review_required"
+    },
+    {
+      "week": 31,
+      "slot": 2,
+      "article_number": "092",
+      "article_id": "pregnancy-092",
+      "statement": "Партнёру не нужно готовиться к родам, достаточно просто прийти",
+      "answer": "Миф",
+      "explanation": "Подготовленный партнёр знает приёмы массажа, понимает этапы родов и больше помогает, чем тревожится.",
+      "review_status": "medical_review_required"
+    },
+    {
+      "week": 31,
+      "slot": 3,
+      "article_number": "093",
+      "article_id": "pregnancy-093",
+      "statement": "Роддом стоит выбирать только по отзывам в интернете",
+      "answer": "Миф",
+      "explanation": "Важнее спросить о партнёрских родах, обезболивании, совместном пребывании и поддержке ГВ — и сравнить ответы.",
+      "review_status": "medical_review_required"
+    },
+    {
+      "week": 32,
+      "slot": 1,
+      "article_number": "094",
+      "article_id": "pregnancy-094",
+      "statement": "УЗИ в третьем триместре делают всем одинаково",
+      "answer": "Миф",
+      "explanation": "Его назначает врач по показаниям, иногда с доплером. Спросите, что именно хочет посмотреть ваш врач.",
+      "review_status": "medical_review_required"
+    },
+    {
+      "week": 32,
+      "slot": 2,
+      "article_number": "095",
+      "article_id": "pregnancy-095",
+      "statement": "Вес малыша по УЗИ — точная цифра",
+      "answer": "Миф",
+      "explanation": "Это оценка по формуле, погрешность может быть 10–15% в обе стороны.",
+      "review_status": "medical_review_required"
+    },
+    {
+      "week": 32,
+      "slot": 3,
+      "article_number": "096",
+      "article_id": "pregnancy-096",
+      "statement": "По размеру живота можно понять, крупный ли малыш",
+      "answer": "Миф",
+      "explanation": "Размер живота зависит и от телосложения, мышц, количества вод. Сравнивать себя с другими не стоит.",
+      "review_status": "medical_review_required"
+    },
+    {
+      "week": 33,
+      "slot": 1,
+      "article_number": "097",
+      "article_id": "pregnancy-097",
+      "statement": "Тренировочные схватки можно использовать для репетиции дыхания",
+      "answer": "Правда",
+      "explanation": "Пока живот напряжён, сделайте медленный длинный выдох и расслабьте плечи — хорошая тренировка.",
+      "review_status": "medical_review_required"
+    },
+    {
+      "week": 33,
+      "slot": 2,
+      "article_number": "098",
+      "article_id": "pregnancy-098",
+      "statement": "Если появилось молозиво, грудь нужно сцеживать и «закалять»",
+      "answer": "Миф",
+      "explanation": "Молозиво до родов — норма. Специально готовить грудь не нужно; сцеживать — только по совету врача.",
+      "review_status": "medical_review_required"
+    },
+    {
+      "week": 33,
+      "slot": 3,
+      "article_number": "099",
+      "article_id": "pregnancy-099",
+      "statement": "Для малыша в роддом нужен целый чемодан вещей",
+      "answer": "Миф",
+      "explanation": "Обычно хватает подгузников, нескольких боди, шапочки, носочков и комплекта на выписку. Уточните список своего роддома.",
+      "review_status": "medical_review_required"
+    },
+    {
+      "week": 34,
+      "slot": 1,
+      "article_number": "100",
+      "article_id": "pregnancy-100",
+      "statement": "Массаж промежности в конце беременности может снизить риск разрывов",
+      "answer": "Правда",
+      "explanation": "Исследования показывают пользу, особенно в первых родах. Начинают около 34 недели, если врач не возражает.",
+      "review_status": "medical_review_required"
+    },
+    {
+      "week": 34,
+      "slot": 2,
+      "article_number": "101",
+      "article_id": "pregnancy-101",
+      "statement": "Контакт «кожа к коже» сразу после родов — просто красивая традиция",
+      "answer": "Миф",
+      "explanation": "Он помогает малышу согреться, стабилизирует дыхание и помогает начать грудное вскармливание.",
+      "review_status": "medical_review_required"
+    },
+    {
+      "week": 34,
+      "slot": 3,
+      "article_number": "102",
+      "article_id": "pregnancy-102",
+      "statement": "Всё о родах муж узнает на месте, заранее обсуждать нечего",
+      "answer": "Миф",
+      "explanation": "Лучше заранее договориться: кто везёт в роддом, кто сидит с старшими детьми, кому и когда сообщать.",
+      "review_status": "medical_review_required"
+    },
+    {
+      "week": 35,
+      "slot": 1,
+      "article_number": "103",
+      "article_id": "pregnancy-103",
+      "statement": "Организм заранее готовится к родам, и это можно заметить",
+      "answer": "Правда",
+      "explanation": "Может опуститься живот, чаще хотеться в туалет, появиться тянущее чувство внизу живота. У каждой по-своему.",
+      "review_status": "medical_review_required"
+    },
+    {
+      "week": 35,
+      "slot": 2,
+      "article_number": "104",
+      "article_id": "pregnancy-104",
+      "statement": "Анализ на стрептококк группы B нужен для защиты малыша в родах",
+      "answer": "Правда",
+      "explanation": "Если бактерия найдена, в родах дают антибиотик, и малыш не заражается. У мамы при этом обычно нет никаких симптомов.",
+      "review_status": "medical_review_required"
+    },
+    {
+      "week": 35,
+      "slot": 3,
+      "article_number": "105",
+      "article_id": "pregnancy-105",
+      "statement": "В сумку в роддом главное — одежда, документы можно привезти потом",
+      "answer": "Миф",
+      "explanation": "Без паспорта, полиса и обменной карты в роддоме будет сложнее. Документы — первое, что кладём.",
+      "review_status": "medical_review_required"
+    },
+    {
+      "week": 36,
+      "slot": 1,
+      "article_number": "106",
+      "article_id": "pregnancy-106",
+      "statement": "К 36 неделе малыш уже не может поменять положение",
+      "answer": "Миф",
+      "explanation": "Иногда поворачиваются и позже. Если малыш лежит не головкой вниз, врач расскажет о вариантах.",
+      "review_status": "medical_review_required"
+    },
+    {
+      "week": 36,
+      "slot": 2,
+      "article_number": "107",
+      "article_id": "pregnancy-107",
+      "statement": "На последних приёмах врач просто ждёт родов и ничего не оценивает",
+      "answer": "Миф",
+      "explanation": "Он следит за давлением, положением малыша, сердцебиением и состоянием шейки матки.",
+      "review_status": "medical_review_required"
+    },
+    {
+      "week": 36,
+      "slot": 3,
+      "article_number": "108",
+      "article_id": "pregnancy-108",
+      "statement": "К возвращению из роддома дома должен быть готов целый детский магазин",
+      "answer": "Миф",
+      "explanation": "Хватит места для сна, подгузников, нескольких комплектов одежды и аптечки. Остальное можно докупить потом.",
+      "review_status": "medical_review_required"
+    },
+    {
+      "week": 37,
+      "slot": 1,
+      "article_number": "109",
+      "article_id": "pregnancy-109",
+      "statement": "С 37 недели беременность считается доношенной",
+      "answer": "Правда",
+      "explanation": "Органы малыша готовы к жизни снаружи, и роды могут начаться в любой день.",
+      "review_status": "medical_review_required"
+    },
+    {
+      "week": 37,
+      "slot": 2,
+      "article_number": "110",
+      "article_id": "pregnancy-110",
+      "statement": "Отход слизистой пробки означает, что роды начнутся в ближайшие часы",
+      "answer": "Миф",
+      "explanation": "После этого до родов может пройти и несколько дней. А иногда пробку вообще не замечают.",
+      "review_status": "medical_review_required"
+    },
+    {
+      "week": 37,
+      "slot": 3,
+      "article_number": "111",
+      "article_id": "pregnancy-111",
+      "statement": "Настоящие схватки отличаются регулярностью и нарастанием",
+      "answer": "Правда",
+      "explanation": "Они идут через равные промежутки, становятся длиннее и сильнее и не проходят от отдыха или смены позы.",
+      "review_status": "medical_review_required"
+    },
+    {
+      "week": 38,
+      "slot": 1,
+      "article_number": "112",
+      "article_id": "pregnancy-112",
+      "statement": "Предвестники родов — сигнал сразу ехать в роддом",
+      "answer": "Миф",
+      "explanation": "Предвестники могут быть за дни и недели до родов. Ехать — при регулярных схватках, излитии вод, крови или снижении шевелений.",
+      "review_status": "medical_review_required"
+    },
+    {
+      "week": 38,
+      "slot": 2,
+      "article_number": "113",
+      "article_id": "pregnancy-113",
+      "statement": "Роды всегда начинаются со схваток",
+      "answer": "Миф",
+      "explanation": "Иногда сначала отходят воды. В этом случае в роддом едут, даже если схваток ещё нет.",
+      "review_status": "medical_review_required"
+    },
+    {
+      "week": 38,
+      "slot": 3,
+      "article_number": "114",
+      "article_id": "pregnancy-114",
+      "statement": "В самом начале схваток дома можно принять душ, перекусить и отдыхать",
+      "answer": "Правда",
+      "explanation": "Если воды целы и врач не давал других указаний, ранний период спокойнее пережить в привычной обстановке.",
+      "review_status": "medical_review_required"
+    },
+    {
+      "week": 39,
+      "slot": 1,
+      "article_number": "115",
+      "article_id": "pregnancy-115",
+      "statement": "Первый период родов — самый длинный",
+      "answer": "Правда",
+      "explanation": "От первых схваток до полного раскрытия шейки может пройти много часов, особенно в первых родах.",
+      "review_status": "medical_review_required"
+    },
+    {
+      "week": 39,
+      "slot": 2,
+      "article_number": "116",
+      "article_id": "pregnancy-116",
+      "statement": "Боль в схватках можно облегчить без лекарств",
+      "answer": "Правда",
+      "explanation": "Помогают дыхание, движение, тёплая вода, массаж и поддержка рядом. А лекарственное обезболивание можно обсудить с врачом.",
+      "review_status": "medical_review_required"
+    },
+    {
+      "week": 39,
+      "slot": 3,
+      "article_number": "117",
+      "article_id": "pregnancy-117",
+      "statement": "Об обезболивании в родах бесполезно думать заранее",
+      "answer": "Миф",
+      "explanation": "Полезно знать варианты и порядок их получения в своём роддоме, чтобы в родах спокойно сделать выбор.",
+      "review_status": "medical_review_required"
+    },
+    {
+      "week": 40,
+      "slot": 1,
+      "article_number": "118",
+      "article_id": "pregnancy-118",
+      "statement": "Если в ПДР роды не начались, что-то пошло не так",
+      "answer": "Миф",
+      "explanation": "В саму дату ПДР рожает лишь малая часть женщин. Роды в пределах нескольких недель до и после неё — норма.",
+      "review_status": "medical_review_required"
+    },
+    {
+      "week": 40,
+      "slot": 2,
+      "article_number": "119",
+      "article_id": "pregnancy-119",
+      "statement": "ПДР — точный срок, к которому малыш обязан родиться",
+      "answer": "Миф",
+      "explanation": "Это расчётная середина интервала, а не срок годности. Врач следит за состоянием, а не за календарём.",
+      "review_status": "medical_review_required"
+    },
+    {
+      "week": 40,
+      "slot": 3,
+      "article_number": "120",
+      "article_id": "pregnancy-120",
+      "statement": "Острая еда и долгие прогулки надёжно запускают роды",
+      "answer": "Миф",
+      "explanation": "Надёжных домашних способов нет, а некоторые могут навредить. Прогулки полезны просто для самочувствия.",
+      "review_status": "medical_review_required"
+    },
+    {
+      "week": 41,
+      "slot": 1,
+      "article_number": "121",
+      "article_id": "pregnancy-121",
+      "statement": "На 41 неделе врач обычно чаще проверяет маму и малыша",
+      "answer": "Правда",
+      "explanation": "Могут назначить КТГ и УЗИ, чтобы убедиться, что малышу хорошо, и вместе решить, можно ли подождать.",
+      "review_status": "medical_review_required"
+    },
+    {
+      "week": 41,
+      "slot": 2,
+      "article_number": "122",
+      "article_id": "pregnancy-122",
+      "statement": "После ПДР шевеления могут пропасть — это нормально",
+      "answer": "Миф",
+      "explanation": "Малышу теснее, движения меняются, но пропадать они не должны. Заметно меньше шевелений — сразу в роддом.",
+      "review_status": "medical_review_required"
+    },
+    {
+      "week": 41,
+      "slot": 3,
+      "article_number": "123",
+      "article_id": "pregnancy-123",
+      "statement": "Индукция родов всегда означает кесарево",
+      "answer": "Миф",
+      "explanation": "Большинство индуцированных родов заканчивается естественно. Спросите врача, какой метод и почему предлагают именно вам.",
+      "review_status": "medical_review_required"
+    },
+    {
+      "week": 42,
+      "slot": 1,
+      "article_number": "124",
+      "article_id": "pregnancy-124",
+      "statement": "На 42 неделе остаётся только ждать",
+      "answer": "Миф",
+      "explanation": "На этом сроке врач вместе с вами составляет план действий. Важно не пропускать назначенные осмотры.",
+      "review_status": "medical_review_required"
+    },
+    {
+      "week": 42,
+      "slot": 2,
+      "article_number": "125",
+      "article_id": "pregnancy-125",
+      "statement": "На индукцию нужно брать с собой ту же сумку, что и на обычные роды",
+      "answer": "Правда",
+      "explanation": "Документы, вещи для себя и малыша — всё то же. Плюс что-то для досуга: процесс может занять время.",
+      "review_status": "medical_review_required"
+    },
+    {
+      "week": 42,
+      "slot": 3,
+      "article_number": "126",
+      "article_id": "pregnancy-126",
+      "statement": "Если ожидание затянулось, настроиться на роды уже невозможно",
+      "answer": "Миф",
+      "explanation": "Помогают отдых, дыхательные практики, любимые дела и разговор с близкими. Вы всё ещё можете войти в роды спокойно.",
+      "review_status": "medical_review_required"
+    }
+  ],
+  "care_cards": [
+    {
+      "number": 1,
+      "text": "«Сегодня у тебя официальное разрешение ничего не успевать. Подписано: отдел заботы о мамах ♥»",
+      "trimester": "Все",
+      "review_status": "editor_and_relevant_specialist_review_required"
+    },
+    {
+      "number": 2,
+      "text": "«Попроси близких взять на себя одно дело. Одно — это не много»",
+      "trimester": "Все",
+      "review_status": "editor_and_relevant_specialist_review_required"
+    },
+    {
+      "number": 3,
+      "text": "«Включи любимую песню и просто послушай её до конца»",
+      "trimester": "Все",
+      "review_status": "editor_and_relevant_specialist_review_required"
+    },
+    {
+      "number": 4,
+      "text": "«Стакан воды прямо сейчас — самый простой способ сказать себе «я о тебе помню»»",
+      "trimester": "Все",
+      "review_status": "editor_and_relevant_specialist_review_required"
+    },
+    {
+      "number": 5,
+      "text": "«Напиши подруге, с которой давно не говорила»",
+      "trimester": "Все",
+      "review_status": "editor_and_relevant_specialist_review_required"
+    },
+    {
+      "number": 6,
+      "text": "«Ты уже делаешь очень важную работу — растишь человека. Остальное подождёт»",
+      "trimester": "Все",
+      "review_status": "editor_and_relevant_specialist_review_required"
+    },
+    {
+      "number": 7,
+      "text": "«Отложи сегодня одно несрочное дело. Мир выдержит»",
+      "trimester": "Все",
+      "review_status": "editor_and_relevant_specialist_review_required"
+    },
+    {
+      "number": 8,
+      "text": "«Выйди на 10 минут подышать свежим воздухом»",
+      "trimester": "Все",
+      "review_status": "editor_and_relevant_specialist_review_required"
+    },
+    {
+      "number": 9,
+      "text": "«Сделай себе что-то вкусное и съешь без телефона в руках»",
+      "trimester": "Все",
+      "review_status": "editor_and_relevant_specialist_review_required"
+    },
+    {
+      "number": 10,
+      "text": "«Ложись сегодня на полчаса раньше. Это тоже забота о малыше»",
+      "trimester": "Все",
+      "review_status": "editor_and_relevant_specialist_review_required"
+    },
+    {
+      "number": 11,
+      "text": "«Тошнит? Держи рядом сухарики или орешки — перекус до подъёма часто помогает»",
+      "trimester": "I",
+      "review_status": "editor_and_relevant_specialist_review_required"
+    },
+    {
+      "number": 12,
+      "text": "«Хочется спать днём — поспи. 20 минут тоже считаются»",
+      "trimester": "I",
+      "review_status": "editor_and_relevant_specialist_review_required"
+    },
+    {
+      "number": 13,
+      "text": "«Не обязательно рассказывать всем прямо сейчас. Это твоя новость и твоё время»",
+      "trimester": "I",
+      "review_status": "editor_and_relevant_specialist_review_required"
+    },
+    {
+      "number": 14,
+      "text": "«Разреши себе сомневаться и тревожиться — и радоваться тоже. Всё это нормально»",
+      "trimester": "I",
+      "review_status": "editor_and_relevant_specialist_review_required"
+    },
+    {
+      "number": 15,
+      "text": "«Сегодня без интернет-форумов с страшными историями. Вопросы — в AI врача» (кнопка «Спросить» → AI врач)",
+      "trimester": "I",
+      "review_status": "editor_and_relevant_specialist_review_required"
+    },
+    {
+      "number": 16,
+      "text": "«Самое время сделать красивые фото животика — потом будет приятно перелистывать»",
+      "trimester": "II",
+      "review_status": "editor_and_relevant_specialist_review_required"
+    },
+    {
+      "number": 17,
+      "text": "«Нанеси крем на живот и погладь малыша. Это ваши первые объятия»",
+      "trimester": "II",
+      "review_status": "editor_and_relevant_specialist_review_required"
+    },
+    {
+      "number": 18,
+      "text": "«Поговори с малышом вслух — он уже начинает слышать»",
+      "trimester": "II",
+      "review_status": "editor_and_relevant_specialist_review_required"
+    },
+    {
+      "number": 19,
+      "text": "«Устройте с партнёром свидание — как раньше, только без вина 😊»",
+      "trimester": "II",
+      "review_status": "editor_and_relevant_specialist_review_required"
+    },
+    {
+      "number": 20,
+      "text": "«Подложи подушку между коленями на ночь — спина скажет спасибо»",
+      "trimester": "II",
+      "review_status": "editor_and_relevant_specialist_review_required"
+    },
+    {
+      "number": 21,
+      "text": "«Напиши на бумажке три вещи, которые сегодня были хорошими»",
+      "trimester": "II",
+      "review_status": "editor_and_relevant_specialist_review_required"
+    },
+    {
+      "number": 22,
+      "text": "«Отдохни 15 минут с ногами на подушке — ноги к вечеру тоже устают»",
+      "trimester": "II",
+      "review_status": "editor_and_relevant_specialist_review_required"
+    },
+    {
+      "number": 23,
+      "text": "«Тебе можно просить помощи. После родов — тем более. Начни с одной просьбы сегодня»",
+      "trimester": "III",
+      "review_status": "editor_and_relevant_specialist_review_required"
+    },
+    {
+      "number": 24,
+      "text": "«Дневной сон сейчас — не лень, а подготовка к родам»",
+      "trimester": "III",
+      "review_status": "editor_and_relevant_specialist_review_required"
+    },
+    {
+      "number": 25,
+      "text": "«Пусть кто-то сделает тебе массаж стоп или плеч. Можно и попросить!»",
+      "trimester": "III",
+      "review_status": "editor_and_relevant_specialist_review_required"
+    },
+    {
+      "number": 26,
+      "text": "«Приготовь пару обедов в морозилку — потом скажешь себе спасибо»",
+      "trimester": "III",
+      "review_status": "editor_and_relevant_specialist_review_required"
+    },
+    {
+      "number": 27,
+      "text": "«Положи руки на живот и посчитай 10 спокойных выдохов. Малыш чувствует твоё спокойствие»",
+      "trimester": "III",
+      "review_status": "editor_and_relevant_specialist_review_required"
+    },
+    {
+      "number": 28,
+      "text": "«Не сравнивай свой живот с чужими. У вас с малышом свой путь»",
+      "trimester": "III",
+      "review_status": "editor_and_relevant_specialist_review_required"
+    },
+    {
+      "number": 29,
+      "text": "«Сегодня можно просто полежать с сериалом. Да, целый вечер»",
+      "trimester": "III",
+      "review_status": "editor_and_relevant_specialist_review_required"
+    },
+    {
+      "number": 30,
+      "text": "«Воспомни, как ты узнала о беременности. Сколько уже пройдено! Ты молодец ♥»",
+      "trimester": "III",
+      "review_status": "editor_and_relevant_specialist_review_required"
+    }
+  ],
+  "day_ideas": [
+    {
+      "Нед.": "1–4",
+      "Текст": "«Сегодня хороший день, чтобы начать пить воду по чуть-чуть в течение дня и прогуляться 20 минут» (текст один на 4 недели; смена по разделу В, если уже был)",
+      "Кнопка": "—"
+    },
+    {
+      "Нед.": "5",
+      "Текст": "«Отличный день, чтобы записаться к врачу на первый приём, если ещё не записалась»",
+      "Кнопка": "«В календарь»"
+    },
+    {
+      "Нед.": "6",
+      "Текст": "«Идея дня: прогулка 30 минут в спокойном темпе — и поделись шагами в клубе»",
+      "Кнопка": "«Активности недели»"
+    },
+    {
+      "Нед.": "7",
+      "Текст": "«Составь список вопросов к врачу на ближайший приём — записанное не забудется»",
+      "Кнопка": "«В календарь»"
+    },
+    {
+      "Нед.": "8",
+      "Текст": "«Сегодня — отличный день завести папку для анализов и заключений»",
+      "Кнопка": "—"
+    },
+    {
+      "Нед.": "9",
+      "Текст": "«Сфотографируйся в профиль у зеркала — и повторяй раз в месяц. Потом из этого получится чудесный ролик»",
+      "Кнопка": "—"
+    },
+    {
+      "Нед.": "10",
+      "Текст": "«Расскажи новость кому-то из близких — или напиши в чат I триместра, как ты себя чувствуешь»",
+      "Кнопка": "«В чат»"
+    },
+    {
+      "Нед.": "11",
+      "Текст": "«День для лёгкой разминки: 10 минут практики недели — и ты уже сделала многое»",
+      "Кнопка": "«К видео»"
+    },
+    {
+      "Нед.": "12",
+      "Текст": "«Триместр почти позади. Отпразднуй — любимым десертом или прогулкой»",
+      "Кнопка": "—"
+    },
+    {
+      "Нед.": "13",
+      "Текст": "«Самое время присмотреть удобную одежду и бельё на ближайшие месяцы. Маленький шопинг для себя разрешён!»",
+      "Кнопка": "—"
+    },
+    {
+      "Нед.": "14",
+      "Текст": "«Первая глава позади — запишись на плавание или йогу для беременных, если давно хотела»",
+      "Кнопка": "—"
+    },
+    {
+      "Нед.": "15",
+      "Текст": "«Идея дня: придумайте с партнёром по три имени и сравните списки»",
+      "Кнопка": "—"
+    },
+    {
+      "Нед.": "16",
+      "Текст": "«Сегодня стоит дойти до стоматолога — во втором триместре самое удобное время»",
+      "Кнопка": "—"
+    },
+    {
+      "Нед.": "17",
+      "Текст": "«Сегодня день семейных историй: спроси маму или бабушку, как они ждали своих детей»",
+      "Кнопка": "—"
+    },
+    {
+      "Нед.": "18",
+      "Текст": "«Отличный день, чтобы нашагать 5 000 шагов и похвастаться в клубе 👟»",
+      "Кнопка": "«Активности недели»"
+    },
+    {
+      "Нед.": "19",
+      "Текст": "«Составь плейлист любимых песен — он пригодится и сейчас, и в родах»",
+      "Кнопка": "—"
+    },
+    {
+      "Нед.": "20",
+      "Текст": "«Половина пути! Сегодня отличный день, чтобы начать подготовку к родам — и написать капсулу времени»",
+      "Кнопка": "«Написать» (капсула, если открыта)"
+    },
+    {
+      "Нед.": "21",
+      "Текст": "«Идея дня: сходите вдвоём в кафе или на фотосессию с животиком 📸»",
+      "Кнопка": "—"
+    },
+    {
+      "Нед.": "22",
+      "Текст": "«Самое время сравнить роддома: выпиши 2–3 варианта и вопросы к ним»",
+      "Кнопка": "—"
+    },
+    {
+      "Нед.": "23",
+      "Текст": "«Сегодня отличный день для первых покупок для малыша. Начни с чего-то маленького и милого ♥»",
+      "Кнопка": "—"
+    },
+    {
+      "Нед.": "24",
+      "Текст": "«Идея дня: лёгкая прогулка после еды — полезно для сахара в крови и настроения»",
+      "Кнопка": "—"
+    },
+    {
+      "Нед.": "25",
+      "Текст": "«Расскажи в чате II триместра, что тебя на этой неделе рассмешило или удивило»",
+      "Кнопка": "«В чат»"
+    },
+    {
+      "Нед.": "26",
+      "Текст": "«Сегодня стоит присмотреть удобную обувь на последние месяцы — ноги скажут спасибо»",
+      "Кнопка": "—"
+    },
+    {
+      "Нед.": "27",
+      "Текст": "«Идея дня: собери в одну папку все документы и анализы — скоро она понадобится»",
+      "Кнопка": "—"
+    },
+    {
+      "Нед.": "28",
+      "Текст": "«Начинаем третью главу! Сегодня — отличный день, чтобы записать шевеления и познакомиться с режимом малыша»",
+      "Кнопка": "«Шевеления»"
+    },
+    {
+      "Нед.": "29",
+      "Текст": "«Договорись, кто и чем будет помогать первые недели после родов: еда, уборка, старшие дети»",
+      "Кнопка": "—"
+    },
+    {
+      "Нед.": "30",
+      "Текст": "«Сегодня идеальный день для шопинга для малыша: коляска, автокресло и первые вещички 👶»",
+      "Кнопка": "—"
+    },
+    {
+      "Нед.": "31",
+      "Текст": "«Время собирать сумку в роддом. Начни с документов — это 5 минут»",
+      "Кнопка": "«Чек-лист» (если открыт; иначе без кнопки)"
+    },
+    {
+      "Нед.": "32",
+      "Текст": "«Стираем и гладим детские вещи? Сегодня самое время — пусть пахнут домом»",
+      "Кнопка": "—"
+    },
+    {
+      "Нед.": "33",
+      "Текст": "«Идея дня: составьте с партнёром план «что делать, когда начнётся»: кто везёт, что берём»",
+      "Кнопка": "—"
+    },
+    {
+      "Нед.": "34",
+      "Текст": "«Сегодня день для репетиции: потренируйте дыхание и массаж вместе с партнёром»",
+      "Кнопка": "«К видео»"
+    },
+    {
+      "Нед.": "35",
+      "Текст": "«Проверь сумку по чек-листу и поставь её у двери. Всё, ты готова!»",
+      "Кнопка": "«Чек-лист»"
+    },
+    {
+      "Нед.": "36",
+      "Текст": "«Идея дня: подготовь уголок для малыша дома — столик для пеленания и место для сна»",
+      "Кнопка": "—"
+    },
+    {
+      "Нед.": "37",
+      "Текст": "«Сегодня ты молодец и можешь ничего не делать. Всё главное уже готово ♥»",
+      "Кнопка": "—"
+    },
+    {
+      "Нед.": "38",
+      "Текст": "«Отличный день для спокойной прогулки и любимого фильма вечером»",
+      "Кнопка": "—"
+    },
+    {
+      "Нед.": "39",
+      "Текст": "«Расскажи в чате III триместра, как ты отвечаешь на «ну что, ещё нет?» — там поймут 😄»",
+      "Кнопка": "«В чат»"
+    },
+    {
+      "Нед.": "40",
+      "Текст": "«Сегодня — день маленьких радостей: ванна для ног, любимая еда, тёплый плед»",
+      "Кнопка": "—"
+    },
+    {
+      "Нед.": "41–42",
+      "Текст": "«Отдыхай, слушай себя и врача. Совсем скоро встреча ♥»",
+      "Кнопка": "—"
+    }
+  ],
+  "short_practices": [
+    {
+      "number": 1,
+      "text": "«Сядь удобно. Вдох на 4 счёта, медленный выдох на 6. Повтори 5 раз»",
+      "source_paragraph": 2462,
+      "review_status": "medical_or_instructor_review_required"
+    },
+    {
+      "number": 2,
+      "text": "«Положи ладони на нижние рёбра и дыши так, чтобы они расходились в стороны. 5 вдохов»",
+      "source_paragraph": 2463,
+      "review_status": "medical_or_instructor_review_required"
+    },
+    {
+      "number": 3,
+      "text": "«Подними плечи к ушам на вдохе и расслабленно урони на выдохе. 5 раз»",
+      "source_paragraph": 2464,
+      "review_status": "medical_or_instructor_review_required"
+    },
+    {
+      "number": 4,
+      "text": "«Медленные круги тазом стоя или на фитболе: 5 в одну сторону, 5 в другую»",
+      "source_paragraph": 2465,
+      "review_status": "medical_or_instructor_review_required"
+    },
+    {
+      "number": 5,
+      "text": "«Встань на четвереньки и мягко прогни и выгни спину «кошечкой». 5 раз в своём темпе»",
+      "source_paragraph": 2466,
+      "review_status": "medical_or_instructor_review_required"
+    },
+    {
+      "number": 6,
+      "text": "«Расслабь челюсть: приоткрой рот и сделай три длинных выдоха со звуком «а-а-а»»",
+      "source_paragraph": 2467,
+      "review_status": "medical_or_instructor_review_required"
+    },
+    {
+      "number": 7,
+      "text": "«Помассируй круговыми движениями виски и основание черепа — 15 секунд каждую зону»",
+      "source_paragraph": 2468,
+      "review_status": "medical_or_instructor_review_required"
+    },
+    {
+      "number": 8,
+      "text": "«Покрути стопами по 10 раз в каждую сторону — ногам станет легче»",
+      "source_paragraph": 2469,
+      "review_status": "medical_or_instructor_review_required"
+    },
+    {
+      "number": 9,
+      "text": "«Ляг на бок, подушка между коленями. Отпусти плечи, лицо, живот — по очереди, на каждом выдохе»",
+      "source_paragraph": 2470,
+      "review_status": "medical_or_instructor_review_required"
+    },
+    {
+      "number": 10,
+      "text": "«Вспомни место, где тебе спокойно. Побудь там 30 секунд с закрытыми глазами»",
+      "source_paragraph": 2471,
+      "review_status": "medical_or_instructor_review_required"
+    },
+    {
+      "number": 11,
+      "text": "«Руки на живот. Скажи малышу три слова, которые хочешь, чтобы он услышал первыми»",
+      "source_paragraph": 2472,
+      "review_status": "medical_or_instructor_review_required"
+    },
+    {
+      "number": 12,
+      "text": "«Длинный выдох через сложенные трубочкой губы, как в схватке. 5 раз — это уже тренировка к родам» (только с 28 недели)",
+      "source_paragraph": 2473,
+      "review_status": "medical_or_instructor_review_required"
+    }
+  ],
+  "checkin_replies": [
+    {
+      "number": 1,
+      "text": "«Как здорово! Пусть это чувство останется с тобой на весь день ♥»",
+      "mood": "Радуюсь",
+      "trimester": "I",
+      "review_status": "psychologist_or_medical_review_required"
+    },
+    {
+      "number": 2,
+      "text": "«Радость — лучший спутник на этом пути. Малышу тоже хорошо»",
+      "mood": "Радуюсь",
+      "trimester": "I",
+      "review_status": "psychologist_or_medical_review_required"
+    },
+    {
+      "number": 3,
+      "text": "«Ура! Запомни этот день — он ещё попадёт в итоги недели»",
+      "mood": "Радуюсь",
+      "trimester": "I",
+      "review_status": "psychologist_or_medical_review_required"
+    },
+    {
+      "number": 1,
+      "text": "«Отлично! Второй триместр умеет радовать»",
+      "mood": "Радуюсь",
+      "trimester": "II",
+      "review_status": "psychologist_or_medical_review_required"
+    },
+    {
+      "number": 2,
+      "text": "«Как же приятно это слышать! Поделись радостью с малышом — погладь живот»",
+      "mood": "Радуюсь",
+      "trimester": "II",
+      "review_status": "psychologist_or_medical_review_required"
+    },
+    {
+      "number": 3,
+      "text": "«Супер! В такие дни хорошо делать фото животика»",
+      "mood": "Радуюсь",
+      "trimester": "II",
+      "review_status": "psychologist_or_medical_review_required"
+    },
+    {
+      "number": 1,
+      "text": "«Как здорово! Малыш сейчас тоже чувствует твоё хорошее настроение»",
+      "mood": "Радуюсь",
+      "trimester": "III",
+      "review_status": "psychologist_or_medical_review_required"
+    },
+    {
+      "number": 2,
+      "text": "«Ура! Совсем скоро встреча ♥»",
+      "mood": "Радуюсь",
+      "trimester": "III",
+      "review_status": "psychologist_or_medical_review_required"
+    },
+    {
+      "number": 3,
+      "text": "«Вот это настрой! С таким настроением и в роды идти легче»",
+      "mood": "Радуюсь",
+      "trimester": "III",
+      "review_status": "psychologist_or_medical_review_required"
+    },
+    {
+      "number": 1,
+      "text": "«Спокойствие — отличная опора. Хорошего дня!»",
+      "mood": "Спокойно",
+      "trimester": "I",
+      "review_status": "psychologist_or_medical_review_required"
+    },
+    {
+      "number": 2,
+      "text": "«Ровный день — тоже хороший день. Вот что на этой неделе с малышом»",
+      "mood": "Спокойно",
+      "trimester": "I",
+      "review_status": "psychologist_or_medical_review_required"
+    },
+    {
+      "number": 3,
+      "text": "«Так держать! Можно добавить лёгкую прогулку»",
+      "mood": "Спокойно",
+      "trimester": "I",
+      "review_status": "psychologist_or_medical_review_required"
+    },
+    {
+      "number": 1,
+      "text": "«Хороший день, чтобы немного подвигаться. Практика недели — если захочется»",
+      "mood": "Спокойно",
+      "trimester": "II",
+      "review_status": "psychologist_or_medical_review_required"
+    },
+    {
+      "number": 2,
+      "text": "«Спокойствие тебе идёт. Самое время спланировать приятное на выходные»",
+      "mood": "Спокойно",
+      "trimester": "II",
+      "review_status": "psychologist_or_medical_review_required"
+    },
+    {
+      "number": 3,
+      "text": "«Ровно и хорошо — идеально. Вот статья недели, если есть минутка»",
+      "mood": "Спокойно",
+      "trimester": "II",
+      "review_status": "psychologist_or_medical_review_required"
+    },
+    {
+      "number": 1,
+      "text": "«Спокойствие перед родами — на вес золота. Потренируем дыхание?»",
+      "mood": "Спокойно",
+      "trimester": "III",
+      "review_status": "psychologist_or_medical_review_required"
+    },
+    {
+      "number": 2,
+      "text": "«Хороший день, чтобы спокойно проверить сумку в роддом»",
+      "mood": "Спокойно",
+      "trimester": "III",
+      "review_status": "psychologist_or_medical_review_required"
+    },
+    {
+      "number": 3,
+      "text": "«Так и продолжай — ты всё делаешь правильно ♥»",
+      "mood": "Спокойно",
+      "trimester": "III",
+      "review_status": "psychologist_or_medical_review_required"
+    },
+    {
+      "number": 1,
+      "text": "«В начале беременности тело делает огромную работу — усталость это нормально. Поспи, если можно»",
+      "mood": "Устала",
+      "trimester": "I",
+      "review_status": "psychologist_or_medical_review_required"
+    },
+    {
+      "number": 2,
+      "text": "«Сегодня можно сделать только самое важное. Остальное подождёт»",
+      "mood": "Устала",
+      "trimester": "I",
+      "review_status": "psychologist_or_medical_review_required"
+    },
+    {
+      "number": 3,
+      "text": "«Сонливость ко второму триместру обычно отступает. А пока — береги себя»",
+      "mood": "Устала",
+      "trimester": "I",
+      "review_status": "psychologist_or_medical_review_required"
+    },
+    {
+      "number": 1,
+      "text": "«Ноги и спина стали работать больше. 15 минут отдыха с подушкой — и станет легче»",
+      "mood": "Устала",
+      "trimester": "II",
+      "review_status": "psychologist_or_medical_review_required"
+    },
+    {
+      "number": 2,
+      "text": "«Устать — не стыдно. Вот короткая практика расслабления»",
+      "mood": "Устала",
+      "trimester": "II",
+      "review_status": "psychologist_or_medical_review_required"
+    },
+    {
+      "number": 3,
+      "text": "«Дай себе сегодня ранний отбой. Малыш скажет спасибо»",
+      "mood": "Устала",
+      "trimester": "II",
+      "review_status": "psychologist_or_medical_review_required"
+    },
+    {
+      "number": 1,
+      "text": "«Третий триместр забирает много сил, это нормально. Сегодня можно ничего не успевать»",
+      "mood": "Устала",
+      "trimester": "III",
+      "review_status": "psychologist_or_medical_review_required"
+    },
+    {
+      "number": 2,
+      "text": "«Отдох сейчас — это подготовка к родам. Вот дыхание для отдыха»",
+      "mood": "Устала",
+      "trimester": "III",
+      "review_status": "psychologist_or_medical_review_required"
+    },
+    {
+      "number": 3,
+      "text": "«Попроси сегодня кого-то сделать что-то за тебя. Ты заслужила»",
+      "mood": "Устала",
+      "trimester": "III",
+      "review_status": "psychologist_or_medical_review_required"
+    },
+    {
+      "number": 1,
+      "text": "«В начале тревога бывает почти у всех. В чате I триместра сейчас такие же мамы — ты не одна»",
+      "mood": "Тревожно",
+      "trimester": "I",
+      "review_status": "psychologist_or_medical_review_required"
+    },
+    {
+      "number": 2,
+      "text": "«Тревога означает, что тебе важно. Запиши один вопрос, который беспокоит, — и задай его врачу»",
+      "mood": "Тревожно",
+      "trimester": "I",
+      "review_status": "psychologist_or_medical_review_required"
+    },
+    {
+      "number": 3,
+      "text": "«Давай начнём с дыхания: медленный вдох и длинный выдох. А потом — вот практика на эту тему»",
+      "mood": "Тревожно",
+      "trimester": "I",
+      "review_status": "psychologist_or_medical_review_required"
+    },
+    {
+      "number": 1,
+      "text": "«Тревожиться в беременность — нормально. В чате II триместра мамы делятся и поддерживают друг друга»",
+      "mood": "Тревожно",
+      "trimester": "II",
+      "review_status": "psychologist_or_medical_review_required"
+    },
+    {
+      "number": 2,
+      "text": "«Что именно беспокоит? Иногда помогает просто назвать это вслух»",
+      "mood": "Тревожно",
+      "trimester": "II",
+      "review_status": "psychologist_or_medical_review_required"
+    },
+    {
+      "number": 3,
+      "text": "«Вот статья про эмоции — может, станет немного спокойнее»",
+      "mood": "Тревожно",
+      "trimester": "II",
+      "review_status": "psychologist_or_medical_review_required"
+    },
+    {
+      "number": 1,
+      "text": "«Перед родами тревога бывает почти у всех. В чате III триместра сейчас такие же мамы — ты не одна»",
+      "mood": "Тревожно",
+      "trimester": "III",
+      "review_status": "psychologist_or_medical_review_required"
+    },
+    {
+      "number": 2,
+      "text": "«Страх перед родами смягчается, когда знаешь, что будет. Вот материал недели про роды»",
+      "mood": "Тревожно",
+      "trimester": "III",
+      "review_status": "psychologist_or_medical_review_required"
+    },
+    {
+      "number": 3,
+      "text": "«Давай подышим вместе: вдох на 4, выдох на 6. Ты справишься ♥»",
+      "mood": "Тревожно",
+      "trimester": "III",
+      "review_status": "psychologist_or_medical_review_required"
+    },
+    {
+      "number": 1,
+      "text": "«Сочувствуем. Если есть сильная боль или кровь — сразу звони врачу. Тошнота и слабость часто бывают в начале, можно спросить AI врача»",
+      "mood": "Нехорошо",
+      "trimester": "I",
+      "review_status": "psychologist_or_medical_review_required"
+    },
+    {
+      "number": 2,
+      "text": "«Непростой день. Отдохни и наблюдай за собой. Если станет хуже — к врачу»",
+      "mood": "Нехорошо",
+      "trimester": "I",
+      "review_status": "psychologist_or_medical_review_required"
+    },
+    {
+      "number": 3,
+      "text": "«Рвота более 3 раз в день или не получается пить — повод позвонить врачу сегодня»",
+      "mood": "Нехорошо",
+      "trimester": "I",
+      "review_status": "psychologist_or_medical_review_required"
+    },
+    {
+      "number": 1,
+      "text": "«Сочувствуем. Если есть боль, кровь, подтекание или сильная головная боль — сразу звони врачу»",
+      "mood": "Нехорошо",
+      "trimester": "II",
+      "review_status": "psychologist_or_medical_review_required"
+    },
+    {
+      "number": 2,
+      "text": "«Спина или ноги? Вот материал, который может помочь. Если не проходит — скажи врачу»",
+      "mood": "Нехорошо",
+      "trimester": "II",
+      "review_status": "psychologist_or_medical_review_required"
+    },
+    {
+      "number": 3,
+      "text": "«Береги себя сегодня. Можно задать вопрос AI врачу»",
+      "mood": "Нехорошо",
+      "trimester": "II",
+      "review_status": "psychologist_or_medical_review_required"
+    },
+    {
+      "number": 1,
+      "text": "«Сочувствуем. Если есть боль, кровь, подтекание или малыш затих — сразу звони врачу. Можно задать вопрос AI врачу»",
+      "mood": "Нехорошо",
+      "trimester": "III",
+      "review_status": "psychologist_or_medical_review_required"
+    },
+    {
+      "number": 2,
+      "text": "«Отдохни на боку и послушай шевеления. Если тревожно — лучше позвонить врачу»",
+      "mood": "Нехорошо",
+      "trimester": "III",
+      "review_status": "psychologist_or_medical_review_required"
+    },
+    {
+      "number": 3,
+      "text": "«Резкие отёки, головная боль, «мушки» перед глазами — сразу к врачу. Остальное можно обсудить с AI врачом»",
+      "mood": "Нехорошо",
+      "trimester": "III",
+      "review_status": "psychologist_or_medical_review_required"
+    }
+  ],
+  "daily_schedule_source": [
+    {
+      "День недели": "День 1",
+      "Карточка 2 «Сюрприз дня»": "«Малыш на этой неделе»",
+      "Откуда текст": "baby[N].description + строка measurements, если она есть",
+      "Карточка 3": "«Правда или миф» № 1 недели",
+      "Утреннее уведомление, 10:00": "«Началась {N} неделя! {baby.description}»"
+    },
+    {
+      "День недели": "День 2",
+      "Карточка 2 «Сюрприз дня»": "«Забота о себе»",
+      "Откуда текст": "Пул В (раздел А.6) по триместру",
+      "Карточка 3": "—",
+      "Утреннее уведомление, 10:00": "«Для тебя кое-что хорошее на сегодня ♥»"
+    },
+    {
+      "День недели": "День 3",
+      "Карточка 2 «Сюрприз дня»": "«Ты на этой неделе»",
+      "Откуда текст": "mom[N].title (заголовок) + первое предложение mom[N].paragraphs[0]",
+      "Карточка 3": "«Правда или миф» № 2",
+      "Утреннее уведомление, 10:00": "«Сегодня про тебя: {mom.title}»"
+    },
+    {
+      "День недели": "День 4",
+      "Карточка 2 «Сюрприз дня»": "«Идея на сегодня»",
+      "Откуда текст": "Пул М (раздел А.6) по неделям",
+      "Карточка 3": "—",
+      "Утреннее уведомление, 10:00": "Заголовок карточки из пула М"
+    },
+    {
+      "День недели": "День 5",
+      "Карточка 2 «Сюрприз дня»": "«Как растёт малыш»",
+      "Откуда текст": "Первые 2 предложения baby[N].developmentDescription",
+      "Карточка 3": "«Правда или миф» № 3",
+      "Утреннее уведомление, 10:00": "«Сегодня у малыша: {первые 80 знаков}…»"
+    },
+    {
+      "День недели": "День 6",
+      "Карточка 2 «Сюрприз дня»": "«Практика дня»",
+      "Откуда текст": "Видео недели, в названии которого есть слова из списка «практика» (раздел А.10); если такого нет — практика из пула П (А.6)",
+      "Карточка 3": "—",
+      "Утреннее уведомление, 10:00": "«Практика дня: {название}, {N} мин»"
+    },
+    {
+      "День недели": "День 7",
+      "Карточка 2 «Сюрприз дня»": "«Итоги недели»",
+      "Откуда текст": "Собирается автоматически (шаблон ниже)",
+      "Карточка 3": "—",
+      "Утреннее уведомление, 10:00": "«Итоги недели: {x} из 6 материалов — осталось совсем чуть-чуть» или «…неделя закрыта ♥»"
+    }
+  ],
+  "feature_schedule_source": [
+    {
+      "Код": "checkin",
+      "Что это": "«Как ты сегодня?»",
+      "Тип": "Основа",
+      "Стаж, дней ≥": "0",
+      "Недели": "1–42",
+      "Приоритет новинок": "—"
+    },
+    {
+      "Код": "week_ring",
+      "Что это": "Кольцо недели, бонус +50, письмо от малыша",
+      "Тип": "Основа",
+      "Стаж, дней ≥": "0",
+      "Недели": "1–42",
+      "Приоритет новинок": "—"
+    },
+    {
+      "Код": "ai_limit",
+      "Что это": "Лимит AI врача 5 в день (с курсом 30) + пакеты за ★",
+      "Тип": "Основа",
+      "Стаж, дней ≥": "0",
+      "Недели": "1–42",
+      "Приоритет новинок": "—"
+    },
+    {
+      "Код": "poll",
+      "Что это": "Голосование недели на главной",
+      "Тип": "Основа",
+      "Стаж, дней ≥": "2",
+      "Недели": "1–42",
+      "Приоритет новинок": "—"
+    },
+    {
+      "Код": "surprise_tap",
+      "Что это": "Сюрприз дня: открыть нажатием",
+      "Тип": "Основа",
+      "Стаж, дней ≥": "1",
+      "Недели": "1–42",
+      "Приоритет новинок": "—"
+    },
+    {
+      "Код": "myth",
+      "Что это": "«Правда или миф?», две кнопки",
+      "Тип": "Основа",
+      "Стаж, дней ≥": "3",
+      "Недели": "1–42",
+      "Приоритет новинок": "—"
+    },
+    {
+      "Код": "peek_next_week",
+      "Что это": "Замочек на следующей неделе + «Открыть за 100 ★»",
+      "Тип": "Основа",
+      "Стаж, дней ≥": "3",
+      "Недели": "1–41",
+      "Приоритет новинок": "—"
+    },
+    {
+      "Код": "time_capsule",
+      "Что это": "Капсула времени",
+      "Тип": "Новинка",
+      "Стаж, дней ≥": "10",
+      "Недели": "20–36",
+      "Приоритет новинок": "4"
+    },
+    {
+      "Код": "surprise_scratch",
+      "Что это": "Сюрприз дня: стереть пальцем",
+      "Тип": "Новинка",
+      "Стаж, дней ≥": "10",
+      "Недели": "14–36",
+      "Приоритет новинок": "5"
+    },
+    {
+      "Код": "streak",
+      "Что это": "Серия недель (цепочка сердечек)",
+      "Тип": "Новинка",
+      "Стаж, дней ≥": "14",
+      "Недели": "1–36",
+      "Приоритет новинок": "6"
+    },
+    {
+      "Код": "guess_size",
+      "Что это": "«Угадай размер»: вариант «Правда или миф» с тремя ответами про рост и вес малыша, раз в неделю",
+      "Тип": "Новинка",
+      "Стаж, дней ≥": "14",
+      "Недели": "22–36",
+      "Приоритет новинок": "7"
+    },
+    {
+      "Код": "surprise_flip",
+      "Что это": "Сюрприз дня: перевернуть карточку",
+      "Тип": "Новинка",
+      "Стаж, дней ≥": "14",
+      "Недели": "20–36",
+      "Приоритет новинок": "8"
+    },
+    {
+      "Код": "surprise_pick3",
+      "Что это": "Сюрприз дня: выбрать одну из трёх",
+      "Тип": "Новинка",
+      "Стаж, дней ≥": "21",
+      "Недели": "30–36",
+      "Приоритет новинок": "9"
+    },
+    {
+      "Код": "quests",
+      "Что это": "Квесты из событий календаря",
+      "Тип": "Практическое",
+      "Стаж, дней ≥": "4",
+      "Недели": "1–42",
+      "Приоритет новинок": "—"
+    },
+    {
+      "Код": "first_kick",
+      "Что это": "Кнопка «Я почувствовала первое шевеление!» (момент + 15 ★)",
+      "Тип": "Практическое",
+      "Стаж, дней ≥": "0",
+      "Недели": "16–24",
+      "Приоритет новинок": "—"
+    },
+    {
+      "Код": "kicks_daily",
+      "Что это": "Шевеления каждый день + 5 ★",
+      "Тип": "Практическое",
+      "Стаж, дней ≥": "3",
+      "Недели": "28–42",
+      "Приоритет новинок": "—"
+    },
+    {
+      "Код": "bag_checklist",
+      "Что это": "Чек-лист «Сумка в роддом»",
+      "Тип": "Практическое",
+      "Стаж, дней ≥": "0",
+      "Недели": "32–42",
+      "Приоритет новинок": "—"
+    },
+    {
+      "Код": "birth_questions",
+      "Что это": "Чек-лист «Вопросы врачу перед родами»",
+      "Тип": "Практическое",
+      "Стаж, дней ≥": "0",
+      "Недели": "35–42",
+      "Приоритет новинок": "—"
+    }
+  ],
+  "week_plan_source": [
+    {
+      "Нед.": "1",
+      "Тема недели (заманка на замочке)": "Считается началом беременности, хотя зачатия ещё нет",
+      "Квест календаря": "—",
+      "Что включается": "Приветствие 100 ★, «Твой день», кольцо недели",
+      "«Правда или миф?»: тема": "Срок считают от зачатия?",
+      "Письмо: о чём": "От тебя будущей: календарь начался раньше зачатия"
+    },
+    {
+      "Нед.": "2",
+      "Тема недели (заманка на замочке)": "Тело создаёт условия для встречи",
+      "Квест календаря": "—",
+      "Что включается": "—",
+      "«Правда или миф?»: тема": "Овуляция всегда на 14-й день цикла?",
+      "Письмо: о чём": "От тебя будущей: что происходит в теле, пока вы ждёте"
+    },
+    {
+      "Нед.": "3",
+      "Тема недели (заманка на замочке)": "В яичнике появляется временная железа",
+      "Квест календаря": "—",
+      "Что включается": "—",
+      "«Правда или миф?»: тема": "Кофе нужно исключить полностью?",
+      "Письмо: о чём": "От тебя будущей: всё начинается с одной клетки"
+    },
+    {
+      "Нед.": "4",
+      "Тема недели (заманка на замочке)": "Матка уже участвует в питании эмбриона",
+      "Квест календаря": "—",
+      "Что включается": "—",
+      "«Правда или миф?»: тема": "Тест на беременность можно делать в любой день?",
+      "Письмо: о чём": "От тебя будущей: две полоски и простой план без паники"
+    },
+    {
+      "Нед.": "5",
+      "Тема недели (заманка на замочке)": "Почему хочется спать ещё до появления живота",
+      "Квест календаря": "«Первая реакция»",
+      "Что включается": "Первое письмо от малыша",
+      "«Правда или миф?»: тема": "Первое УЗИ нужно сделать как можно раньше?",
+      "Письмо: о чём": "«Я крошечный, но во мне уже закладывается сердце»"
+    },
+    {
+      "Нед.": "6",
+      "Тема недели (заманка на замочке)": "Внутри вас растёт новый орган",
+      "Квест календаря": "—",
+      "Что включается": "—",
+      "«Правда или миф?»: тема": "Беременным запрещено всё из длинных списков в интернете?",
+      "Письмо: о чём": "«Моё сердце уже бьётся»"
+    },
+    {
+      "Нед.": "7",
+      "Тема недели (заманка на замочке)": "В туалет хочется чаще",
+      "Квест календаря": "«О чём спросить врача»",
+      "Что включается": "—",
+      "«Правда или миф?»: тема": "Сильная усталость в начале — повод для тревоги?",
+      "Письмо: о чём": "«Растут мои ручки, и мозг тоже»"
+    },
+    {
+      "Нед.": "8",
+      "Тема недели (заманка на замочке)": "Любимая еда вдруг стала невкусной",
+      "Квест календаря": "«Постановка на учёт», «Стартовые анализы»",
+      "Что включается": "—",
+      "«Правда или миф?»: тема": "Анализов слишком много, часть можно пропустить?",
+      "Письмо: о чём": "«У меня появляются пальчики»"
+    },
+    {
+      "Нед.": "9",
+      "Тема недели (заманка на замочке)": "Почему к вечеру живот больше",
+      "Квест календаря": "«Заметка на память»",
+      "Что включается": "—",
+      "«Правда или миф?»: тема": "Баня и горячая ванна безопасны, если нравится?",
+      "Письмо: о чём": "«У меня появляются веки и рот»"
+    },
+    {
+      "Нед.": "10",
+      "Тема недели (заманка на замочке)": "Матка начинает активный рост",
+      "Квест календаря": "«Кому рассказать»",
+      "Что включается": "—",
+      "«Правда или миф?»: тема": "НИПТ заменяет обычный скрининг?",
+      "Письмо: о чём": "«Я уже двигаюсь, просто ты пока не чувствуешь»"
+    },
+    {
+      "Нед.": "11",
+      "Тема недели (заманка на замочке)": "Плацента принимает новую работу",
+      "Квест календаря": "«Скрининг I», «Анализы»",
+      "Что включается": "—",
+      "«Правда или миф?»: тема": "Результат скрининга можно расшифровать самой?",
+      "Письмо: о чём": "«У меня работает печень, а в дёснах прячутся будущие зубки»"
+    },
+    {
+      "Нед.": "12",
+      "Тема недели (заманка на замочке)": "Матка выходит за пределы таза",
+      "Квест календаря": "—",
+      "Что включается": "—",
+      "«Правда или миф?»: тема": "Резус-фактор: что он значит для беременности?",
+      "Письмо: о чём": "«Все главные органы уже на месте»"
+    },
+    {
+      "Нед.": "13",
+      "Тема недели (заманка на замочке)": "Крови больше, а гемоглобин ниже",
+      "Квест календаря": "«Фото на память»",
+      "Что включается": "—",
+      "«Правда или миф?»: тема": "Во втором триместре нужно есть за двоих?",
+      "Письмо: о чём": "«Я учусь говорить: у меня появляются голосовые связки»"
+    },
+    {
+      "Нед.": "14",
+      "Тема недели (заманка на замочке)": "Беременность меняет даже дёсны",
+      "Квест календаря": "—",
+      "Что включается": "«Глава I позади» (+30 ★, итоги триместра), сюрприз «сотри пальцем»",
+      "«Правда или миф?»: тема": "Можно ли спать на животе?",
+      "Письмо: о чём": "«Я заглатываю воды, и мои почки уже работают»"
+    },
+    {
+      "Нед.": "15",
+      "Тема недели (заманка на замочке)": "Откуда берётся полоска на животе",
+      "Квест календаря": "«История имени»",
+      "Что включается": "—",
+      "«Правда или миф?»: тема": "Любые выделения — повод ехать к врачу?",
+      "Письмо: о чём": "«Я подношу пальчик ко рту»"
+    },
+    {
+      "Нед.": "16",
+      "Тема недели (заманка на замочке)": "Первое молоко появляется уже сейчас",
+      "Квест календаря": "—",
+      "Что включается": "Кнопка «Я почувствовала первое шевеление!» (до 24 недели)",
+      "«Правда или миф?»: тема": "Все чувствуют первые шевеления в одну неделю?",
+      "Письмо: о чём": "«Мои кулачки уже сжимаются»"
+    },
+    {
+      "Нед.": "17",
+      "Тема недели (заманка на замочке)": "Растяжки зависят не только от размера живота",
+      "Квест календаря": "«Семейные истории»",
+      "Что включается": "—",
+      "«Правда или миф?»: тема": "Бандаж нужен каждой беременной?",
+      "Письмо: о чём": "«Я начинаю слышать тебя»"
+    },
+    {
+      "Нед.": "18",
+      "Тема недели (заманка на замочке)": "Плацента может смягчать первые толчки",
+      "Квест календаря": "«Скрининг II», «Контроль антител» (Rh−)",
+      "Что включается": "—",
+      "«Правда или миф?»: тема": "Пол малыша на УЗИ определяют точно?",
+      "Письмо: о чём": "«У меня появляются суставы, я сгибаю ручки и ножки»"
+    },
+    {
+      "Нед.": "19",
+      "Тема недели (заманка на замочке)": "Нос может заложить без простуды",
+      "Квест календаря": "«Музыка для себя»",
+      "Что включается": "—",
+      "«Правда или миф?»: тема": "Первые шевеления легко перепутать с работой кишечника?",
+      "Письмо: о чём": "«Меня защищает первородная смазка»"
+    },
+    {
+      "Нед.": "20",
+      "Тема недели (заманка на замочке)": "Теперь вы чувствуете малыша",
+      "Квест календаря": "«Начать подготовку к родам»",
+      "Что включается": "«Половина пути», приглашение в капсулу времени, сюрприз «переверни карточку»",
+      "«Правда или миф?»: тема": "20 недель — рано готовиться к родам?",
+      "Письмо: о чём": "«Теперь ты чувствуешь мои толчки»"
+    },
+    {
+      "Нед.": "21",
+      "Тема недели (заманка на замочке)": "Внутри живота идёт обмен жидкостью",
+      "Квест календаря": "—",
+      "Что включается": "—",
+      "«Правда или миф?»: тема": "Позу для сна можно не выбирать?",
+      "Письмо: о чём": "«У меня появились брови и ресницы, я моргаю»"
+    },
+    {
+      "Нед.": "22",
+      "Тема недели (заманка на замочке)": "Сердце увеличивает производительность",
+      "Квест календаря": "—",
+      "Что включается": "«Угадай размер»",
+      "«Правда или миф?»: тема": "Подушка для беременных — обязательная вещь?",
+      "Письмо: о чём": "«Я тренирую дыхательные движения»"
+    },
+    {
+      "Нед.": "23",
+      "Тема недели (заманка на замочке)": "Первые отёки: обувь может стать тесной",
+      "Квест календаря": "«Первые покупки»",
+      "Что включается": "—",
+      "«Правда или миф?»: тема": "Плохой сон во второй половине — это неизбежно?",
+      "Письмо: о чём": "«В моих лёгких появляется вещество, которое поможет мне дышать»"
+    },
+    {
+      "Нед.": "24",
+      "Тема недели (заманка на замочке)": "Плацента влияет даже на уровень сахара",
+      "Квест календаря": "«ГТТ»",
+      "Что включается": "Кнопка «первое шевеление» закрывается",
+      "«Правда или миф?»: тема": "К глюкозотолерантному тесту нужна особая подготовка?",
+      "Письмо: о чём": "«Кожа ещё тонкая, жирка пока мало»"
+    },
+    {
+      "Нед.": "25",
+      "Тема недели (заманка на замочке)": "Почему любой прием пищи может вызвать изжогу",
+      "Квест календаря": "—",
+      "Что включается": "—",
+      "«Правда или миф?»: тема": "Изжога значит, что у малыша густые волосы?",
+      "Письмо: о чём": "«Я иногда икаю и хватаю свою ножку»"
+    },
+    {
+      "Нед.": "26",
+      "Тема недели (заманка на замочке)": "Ноги сводит ночью: судороги мышц и стоп",
+      "Квест календаря": "—",
+      "Что включается": "—",
+      "«Правда или миф?»: тема": "Тренировочные сокращения — это уже роды?",
+      "Письмо: о чём": "«Я запоминаю твой голос»"
+    },
+    {
+      "Нед.": "27",
+      "Тема недели (заманка на замочке)": "Тело учится держать равновесие",
+      "Квест календаря": "«Советы окружающих»",
+      "Что включается": "Подборка «Что успеть до конца II триместра»",
+      "«Правда или миф?»: тема": "Отрицательный резус: зачем контролировать антитела?",
+      "Письмо: о чём": "«У меня прибавляется жирок, складочки разглаживаются»"
+    },
+    {
+      "Нед.": "28",
+      "Тема недели (заманка на замочке)": "Положение тела влияет на кровоток",
+      "Квест календаря": "«Контроль Rh−, антирезус-профилактика» (Rh−)",
+      "Что включается": "«Глава II позади» (+30 ★), шевеления каждый день",
+      "«Правда или миф?»: тема": "В третьем триместре нельзя спать на спине?",
+      "Письмо: о чём": "«Мы вошли в последнюю главу вместе»"
+    },
+    {
+      "Нед.": "29",
+      "Тема недели (заманка на замочке)": "Густые волосы — тоже работа гормонов",
+      "Квест календаря": "«Помощь после родов»",
+      "Что включается": "—",
+      "«Правда или миф?»: тема": "Одышка на лестнице — всегда повод для тревоги?",
+      "Письмо: о чём": "«Скоро я займу головное положение»"
+    },
+    {
+      "Нед.": "30",
+      "Тема недели (заманка на замочке)": "Почему немеют пальцы рук",
+      "Квест календаря": "«Анализы III триместра»",
+      "Что включается": "Сюрприз «выбери одну из трёх»",
+      "«Правда или миф?»: тема": "План родов — это формальность?",
+      "Письмо: о чём": "«У меня растут волосы»"
+    },
+    {
+      "Нед.": "31",
+      "Тема недели (заманка на замочке)": "Дыхание меняется раньше, чем вы думаете",
+      "Квест календаря": "«Роддом изнутри»",
+      "Что включается": "—",
+      "«Правда или миф?»: тема": "Сумку собирают только в последний месяц?",
+      "Письмо: о чём": "«Мой кишечник уже тренируется»"
+    },
+    {
+      "Нед.": "32",
+      "Тема недели (заманка на замочке)": "Мышцы живота уступают место матке",
+      "Квест календаря": "«КТГ», «Сумка в роддом»",
+      "Что включается": "Чек-лист «Сумка в роддом»",
+      "«Правда или миф?»: тема": "Вес малыша по УЗИ — точная цифра?",
+      "Письмо: о чём": "«У меня уже есть ноготки на пальчиках ног»"
+    },
+    {
+      "Нед.": "33",
+      "Тема недели (заманка на замочке)": "Почему сны стали такими яркими",
+      "Квест календаря": "«Почему списки разные»",
+      "Что включается": "—",
+      "«Правда или миф?»: тема": "Грудь нужно готовить к кормлению заранее?",
+      "Письмо: о чём": "«Моя печень запасает железо на первые месяцы»"
+    },
+    {
+      "Нед.": "34",
+      "Тема недели (заманка на замочке)": "Вы передаёте малышу иммунную защиту",
+      "Квест календаря": "«УЗИ III»",
+      "Что включается": "—",
+      "«Правда или миф?»: тема": "Массаж промежности действительно помогает?",
+      "Письмо: о чём": "«Мои ногти дорастают до кончиков пальцев»"
+    },
+    {
+      "Нед.": "35",
+      "Тема недели (заманка на замочке)": "Сама матка к родам весит около килограмма",
+      "Квест календаря": "«Стрептококк группы B»",
+      "Что включается": "Чек-лист «Вопросы врачу перед родами»",
+      "«Правда или миф?»: тема": "Мазок на стрептококк B нужен всем?",
+      "Письмо: о чём": "«Я учусь сосать и глотать — готовлюсь к кормлению»"
+    },
+    {
+      "Нед.": "36",
+      "Тема недели (заманка на замочке)": "Легче дышать, но чаще хочется в туалет",
+      "Квест календаря": "—",
+      "Что включается": "—",
+      "«Правда или миф?»: тема": "К 36 неделе малыш уже не может перевернуться?",
+      "Письмо: о чём": "«Мои кости крепнут, а череп пока гибкий — так надо для рождения»"
+    },
+    {
+      "Нед.": "37",
+      "Тема недели (заманка на замочке)": "Шейка созревает, начинаются тренировочные схватки",
+      "Квест календаря": "«Первые фотографии малыша»",
+      "Что включается": "Тихий режим: новинок больше не открывается",
+      "«Правда или миф?»: тема": "Слизистая пробка — это начало родов?",
+      "Письмо: о чём": "«Я уже доношенный: всё готово, чтобы встретиться»"
+    },
+    {
+      "Нед.": "38",
+      "Тема недели (заманка на замочке)": "Может выйти слизистая пробка",
+      "Квест календаря": "—",
+      "Что включается": "—",
+      "«Правда или миф?»: тема": "Предвестники родов — значит, пора ехать в роддом?",
+      "Письмо: о чём": "«Я лучше координирую движения и хватаю»"
+    },
+    {
+      "Нед.": "39",
+      "Тема недели (заманка на замочке)": "Воды могут отходить по каплям",
+      "Квест календаря": "«Ну что, ещё нет?»",
+      "Что включается": "—",
+      "«Правда или миф?»: тема": "Роды всегда начинаются со схваток?",
+      "Письмо: о чём": "«Я полностью готов, мне осталось только дождаться»"
+    },
+    {
+      "Нед.": "40",
+      "Тема недели (заманка на замочке)": "У организма нет будильника на ПДР",
+      "Квест календаря": "—",
+      "Что включается": "Особое письмо",
+      "«Правда или миф?»: тема": "ПДР — срок, к которому малыш обязан родиться?",
+      "Письмо: о чём": "Особое: «Я приду, когда буду готов»"
+    },
+    {
+      "Нед.": "41",
+      "Тема недели (заманка на замочке)": "Нужна ли индукция родов",
+      "Квест календаря": "—",
+      "Что включается": "—",
+      "«Правда или миф?»: тема": "Индукция родов — это всегда плохо?",
+      "Письмо: о чём": "«Моя кожа может быть суховатой — это нормально»"
+    },
+    {
+      "Нед.": "42",
+      "Тема недели (заманка на замочке)": "Самочувствие не показывает всей картины",
+      "Квест календаря": "—",
+      "Что включается": "Вопрос «Малыш уже родился?»",
+      "«Правда или миф?»: тема": "На 42 неделе остаётся только ждать?",
+      "Письмо: о чём": "«Мои ноготки могут быть длинными — я почти готов»"
+    }
+  ],
+  "polls_source": [
+    {
+      "Неделя": "16–22 ноября",
+      "Вопрос": "Свекровь хочет приезжать «помогать» каждый день после выписки. Ваше решение?",
+      "Варианты ответа (порядок на экране такой же)": "1) Да, свежие руки лишними не бывают · 2) Только когда сами позовём · 3) Первый месяц — только мы трое · 4) Пусть приезжает, но с едой и без советов 😄"
+    },
+    {
+      "Неделя": "23–29 ноября",
+      "Вопрос": "Муж на родах: да или нет?",
+      "Варианты ответа (порядок на экране такой же)": "1) Обязательно, это и его ребёнок · 2) Только если сам хочет · 3) Нет, пусть встречает на выписке · 4) Пусть стоит за дверью и держит кофе наготове"
+    },
+    {
+      "Неделя": "30 ноября – 6 декабря",
+      "Вопрос": "Когда рассказывать о беременности?",
+      "Варианты ответа (порядок на экране такой же)": "1) Сразу всем, это же радость · 2) Только самым близким до 12 недель · 3) После первого скрининга · 4) Пока живот не расскажет сам"
+    },
+    {
+      "Неделя": "7–13 декабря",
+      "Вопрос": "Папа в декрете вместо мамы — это…",
+      "Варианты ответа (порядок на экране такой же)": "1) Нормально, почему нет · 2) Только если мама зарабатывает больше · 3) Нет, малышу нужна мама · 4) Мой муж сбежит на третий день — давайте обсудим 🙈"
+    },
+    {
+      "Неделя": "14–20 декабря",
+      "Вопрос": "Кто выбирает имя малышу?",
+      "Варианты ответа (порядок на экране такой же)": "1) Мама — она же рожает · 2) Только вместе, ищем компромисс · 3) Папа, чтобы он тоже почувствовал себя главным · 4) Кинем жребий, иначе до родов не договоримся"
+    },
+    {
+      "Неделя": "21–27 декабря",
+      "Вопрос": "Подарок от мужа за рождение ребёнка — нужен?",
+      "Варианты ответа (порядок на экране такой же)": "1) Обязательно, и чем больше, тем лучше · 2) Лучший подарок — ночь сна и чистая кухня · 3) Нет, ребёнок — общий подарок · 4) А что, так можно было? Расскажите, что вам дарили"
+    },
+    {
+      "Неделя": "28 декабря – 3 января",
+      "Вопрос": "Новый год с животиком: как встречаете?",
+      "Варианты ответа (порядок на экране такой же)": "1) Как обычно — гости, салаты, до утра · 2) Тихо вдвоём и спать в 00:30 · 3) Вообще не до праздника · 4) Главное — мандарины и оливье в кровать"
+    },
+    {
+      "Неделя": "4–10 января",
+      "Вопрос": "Фото малыша в соцсетях — ваша позиция?",
+      "Варианты ответа (порядок на экране такой же)": "1) Да, с первого дня, пусть все видят наше счастье · 2) Можно, но без лица · 3) Никаких фото в сети · 4) Только в семейный чат — и пусть бабушки не пересылают"
+    }
+  ],
+  "polls_reserve_source": [
+    {
+      "Вопрос": "Узнавать пол малыша заранее?",
+      "Варианты ответа": "1) Конечно, мне нужно планировать · 2) Нет, пусть будет сюрприз · 3) Узнаю, но никому не скажу · 4) Устроим гендер-пати с тортом 🎂"
+    },
+    {
+      "Вопрос": "Вещи для малыша покупать до родов?",
+      "Варианты ответа": "1) Да, всё заранее · 2) Только самое нужное, остальное потом · 3) Нет, примета · 4) Уже купила половину магазина, не осуждайте"
+    },
+    {
+      "Вопрос": "Спать вместе с малышом или в кроватке?",
+      "Варианты ответа": "1) Вместе, так спокойнее · 2) Только в своей кроватке · 3) Приставная кроватка — золотая середина · 4) Где уснёт, там и спим"
+    },
+    {
+      "Вопрос": "Рожать в платном или бесплатном роддоме?",
+      "Варианты ответа": "1) Платно, хочу своего врача · 2) Бесплатно, врачи везде хорошие · 3) Важнее не цена, а отзывы и близость · 4) Ещё не решила, помогите в чате!"
+    }
+  ],
+  "reward_rules_source": [
+    {
+      "Код события": "welcome",
+      "Действие": "Первый вход после указания ПДР",
+      "★": "100",
+      "Сколько раз": "1 раз навсегда",
+      "Условие засчёта": "ПДР заполнена",
+      "В дневном лимите": "Нет"
+    },
+    {
+      "Код события": "checkin",
+      "Действие": "Отметка «Как ты сегодня?»",
+      "★": "5",
+      "Сколько раз": "1 в день",
+      "Условие засчёта": "Выбрано состояние",
+      "В дневном лимите": "Да"
+    },
+    {
+      "Код события": "surprise",
+      "Действие": "Открыла «Сюрприз дня»",
+      "★": "5",
+      "Сколько раз": "1 в день",
+      "Условие засчёта": "Карточка открыта",
+      "В дневном лимите": "Да"
+    },
+    {
+      "Код события": "myth_answer",
+      "Действие": "Ответила на «Правда или миф?»",
+      "★": "5",
+      "Сколько раз": "1 в день",
+      "Условие засчёта": "Любой ответ",
+      "В дневном лимите": "Да"
+    },
+    {
+      "Код события": "myth_correct",
+      "Действие": "Ответила верно",
+      "★": "+5",
+      "Сколько раз": "1 в день",
+      "Условие засчёта": "Ответ совпал с верным",
+      "В дневном лимите": "Да"
+    },
+    {
+      "Код события": "article_read",
+      "Действие": "Прочитала статью",
+      "★": "10",
+      "Сколько раз": "1 раз на статью",
+      "Условие засчёта": "Как сейчас: дочитана + 30 сек",
+      "В дневном лимите": "Да"
+    },
+    {
+      "Код события": "video_watched",
+      "Действие": "Посмотрела видео",
+      "★": "20",
+      "Сколько раз": "1 раз на видео",
+      "Условие засчёта": "Как сейчас: 80% ролика",
+      "В дневном лимите": "Да"
+    },
+    {
+      "Код события": "week_closed",
+      "Действие": "Закрыла неделю (6 из 6)",
+      "★": "50",
+      "Сколько раз": "1 раз на неделю",
+      "Условие засчёта": "Все 3 статьи и 3 видео недели N засчитаны в кольцо (в том числе прочитанные заранее: тогда бонус приходит в первый день недели N); N не меньше недели прихода в приложение",
+      "В дневном лимите": "Нет"
+    },
+    {
+      "Код события": "poll_vote",
+      "Действие": "Проголосовала в голосовании недели",
+      "★": "20",
+      "Сколько раз": "1 в неделю",
+      "Условие засчёта": "Голос принят",
+      "В дневном лимите": "Нет"
+    },
+    {
+      "Код события": "poll_majority",
+      "Действие": "Угадала мнение большинства",
+      "★": "+10",
+      "Сколько раз": "1 в неделю",
+      "Условие засчёта": "Начисляется после закрытия голосования; при ничьей — всем лидерам",
+      "В дневном лимите": "Нет"
+    },
+    {
+      "Код события": "club_message",
+      "Действие": "Сообщение в чате клуба",
+      "★": "5",
+      "Сколько раз": "1 в день",
+      "Условие засчёта": "Первое сообщение за день в любой комнате",
+      "В дневном лимите": "Да"
+    },
+    {
+      "Код события": "kicks_logged",
+      "Действие": "Записала шевеления",
+      "★": "5",
+      "Сколько раз": "1 в день",
+      "Условие засчёта": "Срок ≥ 28 недель, есть запись за день",
+      "В дневном лимите": "Да"
+    },
+    {
+      "Код события": "quest_done",
+      "Действие": "Отметила событие календаря или чек-лист «Готово»",
+      "★": "15",
+      "Сколько раз": "1 раз на квест",
+      "Условие засчёта": "Квест открыт для её срока",
+      "В дневном лимите": "Нет"
+    },
+    {
+      "Код события": "trimester_done",
+      "Действие": "Завершила триместр",
+      "★": "30",
+      "Сколько раз": "1 раз на триместр",
+      "Условие засчёта": "Срок перешёл границу 14 или 28 недель, пока она в приложении",
+      "В дневном лимите": "Нет"
+    }
+  ],
+  "course_benefits_source": [
+    {
+      "Что": "AI врач бесплатно в день",
+      "Без курса": "5",
+      "С курсом": "30"
+    },
+    {
+      "Что": "Пакет вопросов за ★",
+      "Без курса": "3 вопроса за 50 ★, до 2 в день",
+      "С курсом": "10 вопросов за 100 ★, 1 в день"
+    },
+    {
+      "Что": "Урок курса, код course_lesson",
+      "Без курса": "—",
+      "С курсом": "30 ★ за урок, один раз за урок, при 80% просмотра (как бесплатные видео)"
+    },
+    {
+      "Что": "Дневной лимит ★",
+      "Без курса": "100",
+      "С курсом": "150"
+    },
+    {
+      "Что": "Остальные начисления",
+      "Без курса": "По таблице выше",
+      "С курсом": "Так же, без повышения"
+    }
+  ],
+  "spending_rules_source": [
+    {
+      "Код": "peek_next_week",
+      "Трата": "Открыть следующую неделю раньше срока",
+      "Цена": "100 ★",
+      "Правила": "Только неделя N+1 от текущей. Открывает все 6 материалов и описания «Малыш/Мама». Открытое остаётся открытым навсегда. За материалы заранее открытой недели звёздочки не начисляются, иначе покупка окупилась бы. Они засчитываются в кольцо недели; бонус +50 ★ и письмо приходят в первый день этой недели. N+2 и дальше открыть нельзя"
+    },
+    {
+      "Код": "ai_pack",
+      "Трата": "Пакет вопросов AI врачу: 3 без курса / 10 с курсом",
+      "Цена": "50 ★ / 100 ★",
+      "Правила": "Вопросы из пакета не сгорают в полночь, тратятся после бесплатных. Без курса — не больше 2 пакетов в день, с курсом — не больше 1, чтобы расходы на AI оставались предсказуемыми"
+    }
+  ],
+  "ui_channels_source": [
+    {
+      "Канал": "Тост",
+      "Как выглядит": "Плашка над нижней навигацией, исчезает через 3 сек, тап — переход по ссылке",
+      "Для чего": "Мелкие подтверждения: «+10 ★», «Неделя открыта»",
+      "Правила": "Одновременно один. Начисления в пределах 3 сек склеиваются в один тост («+25 ★»). Во время полноэкранного видео тосты копятся и показываются после выхода"
+    },
+    {
+      "Канал": "Счётчик в шапке",
+      "Как выглядит": "Иконка ★ с балансом вместо нынешней ⊚",
+      "Для чего": "Всегда виден баланс",
+      "Правила": "При начислении цифра коротко «подпрыгивает» (0,5 сек); при prefers-reduced-motion — без анимации"
+    },
+    {
+      "Канал": "Колокольчик",
+      "Как выглядит": "Окно «Уведомления» (уже есть)",
+      "Для чего": "История всего важного за 30 дней",
+      "Правила": "Разделы и красная точка — ниже"
+    },
+    {
+      "Канал": "Подсказка новинки",
+      "Как выглядит": "Облачко со стрелкой у нового элемента + метка «Новое» на 3 дня",
+      "Для чего": "Объяснить открывшуюся механику одной фразой",
+      "Правила": "Не больше одной в день. Закрывается тапом в любом месте. Не показывается поверх окна или тоста"
+    },
+    {
+      "Канал": "Праздничный экран",
+      "Как выглядит": "Окно на весь экран с иллюстрацией и одной кнопкой",
+      "Для чего": "Приветствие, неделя закрыта (письмо), триместр позади, открылась капсула",
+      "Правила": "Не больше одного за вход; второй переносится на следующий вход. Запись всегда дублируется в колокольчик"
+    },
+    {
+      "Канал": "Окно подтверждения",
+      "Как выглядит": "Небольшое окно с двумя кнопками",
+      "Для чего": "Перед каждой тратой звёздочек",
+      "Правила": "Текст и кнопки — в таблице событий"
+    },
+    {
+      "Канал": "Экран «Срочно к врачу»",
+      "Как выглядит": "Окно на весь экран, готовый текст, номера 103 / 112",
+      "Для чего": "Тревожный признак в AI враче или в метке «Нехорошо»",
+      "Правила": "Важнее всего остального: закрывает любые другие окна и тосты"
+    },
+    {
+      "Канал": "Встроенные состояния",
+      "Как выглядит": "Замочек, «Осталось N вопросов», кольцо «4 из 6», «На сегодня всё ♥»",
+      "Для чего": "Состояние без всплывания",
+      "Правила": "Обновляются сразу после события"
+    }
+  ],
+  "notification_sections_source": [
+    {
+      "Раздел": "Объявления школы (есть)",
+      "Что там": "Как сейчас",
+      "Красная точка": "Да"
+    },
+    {
+      "Раздел": "Новые сообщения (есть)",
+      "Что там": "Как сейчас",
+      "Красная точка": "Да"
+    },
+    {
+      "Раздел": "Для вас (новый, первым в списке)",
+      "Что там": "Письма от малыша, новая неделя, новинки, квесты по сроку, итоги голосования, капсула",
+      "Красная точка": "Да"
+    },
+    {
+      "Раздел": "Звёздочки (переименовать «Начисления баллов»)",
+      "Что там": "Начисления и траты, сгруппированные по дням: «Сегодня · +45 ★», по тапу — список с названиями. Строится из журнала stars_ledger, отдельно не хранится",
+      "Красная точка": "Нет — начисления точку не зажигают, чтобы не шуметь"
+    }
+  ],
+  "notification_events_source": [
+    {
+      "Событие": "welcome",
+      "Тост": "—",
+      "Колокольчик": "Для вас: «Тебе 100 ★ для старта» · Звёздочки: +100 Приветствие",
+      "Другое": "Праздничный экран «Рады тебе, Мила! Ты на 28 неделе — начнём отсюда» [Начать]"
+    },
+    {
+      "Событие": "checkin",
+      "Тост": "«+5 ★»",
+      "Колокольчик": "Звёздочки: +5 Самочувствие",
+      "Другое": "Ответ — в самой карточке"
+    },
+    {
+      "Событие": "surprise",
+      "Тост": "«+5 ★»",
+      "Колокольчик": "Звёздочки: +5 Сюрприз дня",
+      "Другое": "—"
+    },
+    {
+      "Событие": "myth_answer / myth_correct",
+      "Тост": "«+5 ★» или «Верно! +10 ★»",
+      "Колокольчик": "Звёздочки",
+      "Другое": "Пояснение — в самой карточке"
+    },
+    {
+      "Событие": "article_read",
+      "Тост": "«+10 ★ · 4 из 6 на этой неделе»",
+      "Колокольчик": "Звёздочки: +10 Статья «…»",
+      "Другое": "Кольцо недели обновляется"
+    },
+    {
+      "Событие": "video_watched",
+      "Тост": "«+20 ★ · 5 из 6 на этой неделе»",
+      "Колокольчик": "Звёздочки: +20 Видео «…»",
+      "Другое": "Кольцо недели обновляется"
+    },
+    {
+      "Событие": "week_closed",
+      "Тост": "—",
+      "Колокольчик": "Для вас: «Письмо от малыша · 28 неделя» → коллекция писем · Звёздочки: +50",
+      "Другое": "Праздничный экран с письмом [Сохранить] [Отправить папе]. При паузе сообщений о малыше — вместо экрана тост «+50 ★ · Неделя закрыта»"
+    },
+    {
+      "Событие": "poll_vote",
+      "Тост": "«+20 ★ · Голос принят»",
+      "Колокольчик": "Звёздочки",
+      "Другое": "—"
+    },
+    {
+      "Событие": "Итоги голосования (вс 18:00)",
+      "Тост": "—",
+      "Колокольчик": "Для вас: «Итоги: твой вариант выбрали 67%» · Звёздочки: +10, если угадала",
+      "Другое": "Пуш (раздел «Пуш-уведомления»)"
+    },
+    {
+      "Событие": "club_message (первое за день)",
+      "Тост": "«+5 ★»",
+      "Колокольчик": "Звёздочки",
+      "Другое": "—"
+    },
+    {
+      "Событие": "kicks_logged",
+      "Тост": "«+5 ★ · Записано»",
+      "Колокольчик": "Звёздочки",
+      "Другое": "—"
+    },
+    {
+      "Событие": "quest_done",
+      "Тост": "«+15 ★ · Готово!»",
+      "Колокольчик": "Звёздочки",
+      "Другое": "Отметка в календаре"
+    },
+    {
+      "Событие": "trimester_done",
+      "Тост": "—",
+      "Колокольчик": "Для вас: «Глава II позади» · Звёздочки: +30",
+      "Другое": "Праздничный экран с итогами триместра"
+    },
+    {
+      "Событие": "Новая неделя",
+      "Тост": "—",
+      "Колокольчик": "Для вас: «Началась 29 неделя: 3 статьи и 3 видео»",
+      "Другое": "Пуш"
+    },
+    {
+      "Событие": "Квест стал актуален",
+      "Тост": "—",
+      "Колокольчик": "Для вас: «Пора: сумка в роддом»",
+      "Другое": "Пуш в первый день диапазона"
+    },
+    {
+      "Событие": "Неделя почти закрыта (сб, 4–5 из 6)",
+      "Тост": "—",
+      "Колокольчик": "Для вас: «До письма от малыша — 1 материал»",
+      "Другое": "Пуш вместо «Твой день»"
+    },
+    {
+      "Событие": "Открылась новинка",
+      "Тост": "—",
+      "Колокольчик": "Для вас: «Новое: сюрприз теперь можно стереть пальцем»",
+      "Другое": "Подсказка у элемента"
+    },
+    {
+      "Событие": "Дневной лимит ★ достигнут",
+      "Тост": "«На сегодня звёздочек достаточно ♥ Завтра будут новые» — один раз в день",
+      "Колокольчик": "—",
+      "Другое": "—"
+    },
+    {
+      "Событие": "Трата: следующая неделя",
+      "Тост": "«Неделя 29 открыта»",
+      "Колокольчик": "Звёздочки: −100 Следующая неделя",
+      "Другое": "Окно до траты: «Открыть 29 неделю за 100 ★? Останется 140 ★» [Открыть] [Не сейчас]"
+    },
+    {
+      "Событие": "Трата: пакет AI врача",
+      "Тост": "«+3 вопроса AI врачу»",
+      "Колокольчик": "Звёздочки: −50 Вопросы AI врачу",
+      "Другое": "Окно до траты: «Открыть ещё 3 вопроса за 50 ★? Останется 90 ★» [Открыть] [Не сейчас]"
+    },
+    {
+      "Событие": "Не хватает ★ на трату",
+      "Тост": "—",
+      "Колокольчик": "—",
+      "Другое": "Окно: «Не хватает 35 ★. Отметь самочувствие или прочитай статью недели» [Понятно]"
+    },
+    {
+      "Событие": "5 вопросов AI врачу закончились",
+      "Тост": "—",
+      "Колокольчик": "—",
+      "Другое": "Сообщение прямо в чате AI врача с кнопкой [Открыть 3 вопроса за 50 ★]"
+    },
+    {
+      "Событие": "Тревожный признак",
+      "Тост": "—",
+      "Колокольчик": "—",
+      "Другое": "Экран «Срочно к врачу»"
+    },
+    {
+      "Событие": "Открылась капсула времени",
+      "Тост": "—",
+      "Колокольчик": "Для вас: «Письмо от тебя самой, из 20 недели»",
+      "Другое": "Праздничный экран + пуш"
+    }
+  ],
+  "push_events_source": [
+    {
+      "Тип": "Новая неделя",
+      "Когда": "День смены недели, 10:00",
+      "Пример текста": "«Ура, уже 25 недель вместе! Посмотри, что нового у малыша ♥»"
+    },
+    {
+      "Тип": "Твой день",
+      "Когда": "Остальные дни, 10:00, если ещё не заходила",
+      "Пример текста": "«Для тебя кое-что хорошее на сегодня ♥» / «Правда или миф? Сегодня вопрос про сон малыша»"
+    },
+    {
+      "Тип": "Неделя почти закрыта",
+      "Когда": "Суббота, если пройдено 4–5 из 6, вместо «Твой день»",
+      "Пример текста": "«До письма от малыша осталось совсем чуть-чуть ♥»"
+    },
+    {
+      "Тип": "Квест по сроку",
+      "Когда": "Первый день диапазона квеста",
+      "Пример текста": "«Сумка в роддом: мы собрали список, чтобы ничего не искать в последний момент»"
+    },
+    {
+      "Тип": "Итог голосования",
+      "Когда": "Воскресенье после 18:00, если голосовала",
+      "Пример текста": "«Итоги голосования: твой вариант выбрали 67% мам»"
+    },
+    {
+      "Тип": "Капсула времени",
+      "Когда": "День открытия",
+      "Пример текста": "«Тебе письмо — от тебя самой, из 20 недели ♥»"
+    }
+  ],
+  "ui_texts_source": [
+    {
+      "Где": "Приветствие (день 0)",
+      "Текст": "«Рады тебе, Мила! Ты на 28 неделе — начнём отсюда. Вот 100 ★ для старта»"
+    },
+    {
+      "Где": "Замочек на неделе N+1",
+      "Текст": "«Откроется через 3 дня» + кнопка «Открыть сейчас · 100 ★»"
+    },
+    {
+      "Где": "Замочек, не хватает ★",
+      "Текст": "«Нужно ещё 35 ★. Отметь самочувствие или прочитай статью недели»"
+    },
+    {
+      "Где": "Недели N+2 и дальше",
+      "Текст": "«Откроется через 10 дней ♥»"
+    },
+    {
+      "Где": "Счётчик AI врача",
+      "Текст": "«Сегодня осталось 2 вопроса»"
+    },
+    {
+      "Где": "Лимит AI врача исчерпан",
+      "Текст": "«5 вопросов на сегодня использованы. Завтра будут новые — или открой ещё 3 за 50 ★»"
+    },
+    {
+      "Где": "Дневной лимит ★ достигнут",
+      "Текст": "«На сегодня звёздочек достаточно ♥ Завтра будут новые»"
+    },
+    {
+      "Где": "«Твой день» выполнен",
+      "Текст": "«На сегодня всё ♥ Завтра — новый сюрприз»"
+    },
+    {
+      "Где": "Подсказка новинки (пример)",
+      "Текст": "«Новое: сотри карточку пальцем — под ней сюрприз дня»"
+    },
+    {
+      "Где": "Приглашение в капсулу",
+      "Текст": "«Ты на полпути ♥ Напиши письмо себе: какой ты представляешь вашу первую встречу? Мы откроем его, когда малышу исполнится месяц»"
+    },
+    {
+      "Где": "Триместр позади",
+      "Текст": "«Глава I позади! Собрано 9 писем от малыша, 23 радостных дня. +30 ★»"
+    }
+  ],
+  "celebration_screens_source": [
+    {
+      "Экран": "Приветствие",
+      "Заголовок": "«Рады тебе, {имя}!»",
+      "Текст": "«Ты на {N} неделе — начнём отсюда. Здесь каждый день немножко пользы и заботы, а за них — звёздочки ★. Держи 100 ★ для старта»",
+      "Кнопка": "«Начать»"
+    },
+    {
+      "Экран": "Неделя закрыта",
+      "Заголовок": "«Неделя {N} закрыта!»",
+      "Текст": "Иллюстрация малыша недели + текст письма из раздела Б + «+50 ★»",
+      "Кнопка": "«Сохранить» · «Отправить папе»"
+    },
+    {
+      "Экран": "Глава I позади (14 нед.)",
+      "Заголовок": "«Первая глава позади!»",
+      "Текст": "«Самый таинственный триместр пройден. Собрано писем: {k}, радостных дней: {d}. +30 ★»",
+      "Кнопка": "«Дальше»"
+    },
+    {
+      "Экран": "Глава II позади (28 нед.)",
+      "Заголовок": "«Вторая глава позади!»",
+      "Текст": "«Ты на финишной прямой. Собрано писем: {k}, радостных дней: {d}. +30 ★»",
+      "Кнопка": "«Дальше»"
+    },
+    {
+      "Экран": "Капсула открылась",
+      "Заголовок": "«Письмо из {N} недели»",
+      "Текст": "Текст её письма + «Ты написала это {дата}. Смотри, как много всего случилось ♥»",
+      "Кнопка": "«Закрыть»"
+    }
+  ],
+  "feature_hints_source": [
+    {
+      "Код": "checkin",
+      "Текст подсказки": "«Отметь, как ты сегодня, — мы подберём что-то для тебя. +5 ★»"
+    },
+    {
+      "Код": "week_ring",
+      "Текст подсказки": "«Пройди 6 материалов недели — и получишь письмо и +50 ★»"
+    },
+    {
+      "Код": "surprise_tap",
+      "Текст подсказки": "«Каждый день здесь сюрприз. Нажми, чтобы открыть»"
+    },
+    {
+      "Код": "myth",
+      "Текст подсказки": "«Проверь интуицию: правда это или миф? Отвечает врач школы»"
+    },
+    {
+      "Код": "peek_next_week",
+      "Текст подсказки": "«Следующую неделю можно открыть раньше за звёздочки»"
+    },
+    {
+      "Код": "quests",
+      "Текст подсказки": "«Отмечай события календаря — и ничего не забудешь. +15 ★ за каждое»"
+    },
+    {
+      "Код": "time_capsule",
+      "Текст подсказки": "«Напиши письмо себе будущей — откроем его, когда малышу исполнится месяц»"
+    },
+    {
+      "Код": "surprise_scratch",
+      "Текст подсказки": "«Новое: сотри карточку пальцем — под ней сюрприз дня»"
+    },
+    {
+      "Код": "streak",
+      "Текст подсказки": "«Это твоя цепочка недель. Одну пропущенную за триместр мы простим ♥»"
+    },
+    {
+      "Код": "guess_size",
+      "Текст подсказки": "«Новая игра: угадай, сколько сейчас весит малыш»"
+    },
+    {
+      "Код": "surprise_flip",
+      "Текст подсказки": "«Новое: переверни карточку — что там сегодня?»"
+    },
+    {
+      "Код": "surprise_pick3",
+      "Текст подсказки": "«Новое: выбери одну из трёх карточек»"
+    },
+    {
+      "Код": "first_kick",
+      "Текст подсказки": "«Почувствовала первые толчки? Отметь этот момент!»"
+    },
+    {
+      "Код": "kicks_daily",
+      "Текст подсказки": "«Записывай шевеления — так ты лучше узнаешь режим малыша. +5 ★ в день»"
+    },
+    {
+      "Код": "bag_checklist",
+      "Текст подсказки": "«Соберём сумку в роддом по списку — без спешки»"
+    },
+    {
+      "Код": "birth_questions",
+      "Текст подсказки": "«Вот вопросы, которые стоит задать врачу до родов»"
+    }
+  ],
+  "checklists_quests_capsule_source": [
+    {
+      "paragraph": 2501,
+      "style": "Heading2",
+      "text": "Е. Чек-листы, квесты, «Угадай размер», капсула"
+    },
+    {
+      "paragraph": 2502,
+      "style": "",
+      "text": "Квесты календаря. Тексты уже есть в приложении: calendar[N][i].title и .description. К каждому событию добавляется кнопка. Для типов visit, tests, scan, ctg — «Сделано ✓»; для study — «Готово ✓»; для bag — «Открыть чек-лист» (квест засчитывается, когда отмечено 80% пунктов чек-листа). Квест активен с его недели и ещё 3 недели после неё; если женщина пришла позже — квест не показываем. Квесты с пометкой Rh− — см. открытые вопросы."
+    },
+    {
+      "paragraph": 2503,
+      "style": "",
+      "text": "Чек-лист «Сумка в роддом» (bag_checklist, с 32 недели). Пункты отмечаются галочкой, отметки хранятся в аккаунте. Подпись сверху: «Уточни список в своём роддоме — правила иногда отличаются»."
+    },
+    {
+      "paragraph": 2504,
+      "style": "ListParagraph",
+      "text": "Документы: паспорт · полис ОМС · СНИЛС · обменная карта · родовый сертификат (если есть) · договор с роддомом (если есть) · папка с последними анализами и УЗИ"
+    },
+    {
+      "paragraph": 2505,
+      "style": "ListParagraph",
+      "text": "Для мамы в родах: тапочки с моющейся подошвой · сорочка или большая футболка · вода без газа · зарядка и длинный кабель · резинка для волос · гигиеническая помада"
+    },
+    {
+      "paragraph": 2506,
+      "style": "ListParagraph",
+      "text": "Для мамы после родов: послеродовые прокладки · одноразовые трусы · бюстгальтер для кормления · вкладыши для груди · халат · зубная щётка и паста · полотенце · кружка и ложка"
+    },
+    {
+      "paragraph": 2507,
+      "style": "ListParagraph",
+      "text": "Для малыша: подгузники для новорождённых · влажные салфетки без отдушки · 2–3 боди или распашонки · шапочка · носочки · вещи на выписку по погоде"
+    },
+    {
+      "paragraph": 2508,
+      "style": "ListParagraph",
+      "text": "На выписку (можно оставить дома и попросить привезти): автокресло для новорождённого · одежда для мамы по сезону"
+    },
+    {
+      "paragraph": 2509,
+      "style": "",
+      "text": "Чек-лист «Вопросы врачу перед родами» (birth_questions, с 35 недели). Каждый пункт можно отметить «Спросила» и дописать ответ в поле заметки."
+    },
+    {
+      "paragraph": 2510,
+      "style": "ListParagraph",
+      "text": "Когда мне ехать в роддом: через сколько минут между схватками?"
+    },
+    {
+      "paragraph": 2511,
+      "style": "ListParagraph",
+      "text": "Что делать, если отошли воды, а схваток нет?"
+    },
+    {
+      "paragraph": 2512,
+      "style": "ListParagraph",
+      "text": "Как посчитать шевеления и когда они повод приехать?"
+    },
+    {
+      "paragraph": 2513,
+      "style": "ListParagraph",
+      "text": "Какие есть варианты обезболивания и как их попросить?"
+    },
+    {
+      "paragraph": 2514,
+      "style": "ListParagraph",
+      "text": "Можно ли двигаться и менять позы в родах?"
+    },
+    {
+      "paragraph": 2515,
+      "style": "ListParagraph",
+      "text": "Разрешены ли партнёрские роды и что для этого нужно?"
+    },
+    {
+      "paragraph": 2516,
+      "style": "ListParagraph",
+      "text": "Когда предлагают индукцию и до какого срока можно ждать?"
+    },
+    {
+      "paragraph": 2517,
+      "style": "ListParagraph",
+      "text": "Есть ли у меня показания к кесареву или особенности, о которых нужно знать?"
+    },
+    {
+      "paragraph": 2518,
+      "style": "ListParagraph",
+      "text": "Будет ли контакт «кожа к коже» и первое прикладывание сразу после родов?"
+    },
+    {
+      "paragraph": 2519,
+      "style": "ListParagraph",
+      "text": "Совместное пребывание с малышом — как организовано?"
+    },
+    {
+      "paragraph": 2520,
+      "style": "ListParagraph",
+      "text": "Что взять с собой именно в этот роддом?"
+    },
+    {
+      "paragraph": 2521,
+      "style": "ListParagraph",
+      "text": "Какой номер телефона приёмного отделения и куда подъезжать?"
+    },
+    {
+      "paragraph": 2522,
+      "style": "",
+      "text": "«Угадай размер» (недели 22–36, в День 3 вместо вопроса № 2, если механика открыта; вопрос № 2 переносится на День 7). Данные из baby[N].measurements (формат «Рост ≈ 38 см · Вес ≈ 1 кг»). Вопрос: «Сколько весит малыш на {N} неделе?» Варианты: верный, верный × 0,6 и верный × 1,5, округлённые до 50 г, в случайном порядке. После ответа: «Около {вес} — и примерно {рост} см от макушки до пят. Цифры средние: у твоего малыша могут быть свои». Те же звёздочки, что и за «Правда или миф». Если строка не разбирается — на этой неделе игры нет, остаётся вопрос № 2."
+    },
+    {
+      "paragraph": 2523,
+      "style": "",
+      "text": "Капсула времени. Одно письмо на беременность, до 2 000 знаков, только текст. Подсказки в поле ввода (меняются по нажатию «Другая идея»): «Какой я представляю нашу первую встречу?» · «Что я чувствую сейчас, на {N} неделе?» · «Что я хочу сказать себе в первый месяц после родов?» · «Чему я хочу научить моего малыша?» Кнопка «Запечатать письмо», тост «Письмо запечатано ♥ Откроем, когда малышу исполнится месяц». До открытия текст не показываем, но его можно удалить. За капсулу — квест +15 ★ (один раз)."
+    }
+  ],
+  "urgent_help_source": [
+    {
+      "paragraph": 2585,
+      "style": "",
+      "text": "Экран «Срочно к врачу» (черновик, утверждает врач):"
+    },
+    {
+      "paragraph": 2586,
+      "style": "Quote",
+      "text": "Это может быть срочно"
+    },
+    {
+      "paragraph": 2587,
+      "style": "Quote",
+      "text": "Звони 103 или 112 прямо сейчас, если есть: кровотечение · сильная или непрекращающаяся боль в животе · малыш перестал шевелиться или шевелится заметно меньше · подтекание или излитие вод · сильная головная боль, «мушки» перед глазами, резкие отёки лица и рук · температура 38 °C и выше · судороги или потеря сознания."
+    },
+    {
+      "paragraph": 2588,
+      "style": "Quote",
+      "text": "Если сомневаешься — лучше позвонить своему врачу или в роддом. Так делают многие, и это правильно."
+    },
+    {
+      "paragraph": 2589,
+      "style": "Quote",
+      "text": "[Позвонить 103] · [Это не срочно, продолжить]"
+    },
+    {
+      "paragraph": 2590,
+      "style": "",
+      "text": "Словарь тревожных признаков (стартовая версия; поиск без учёта регистра и по основе слова):"
+    },
+    {
+      "paragraph": 2591,
+      "style": "",
+      "text": "Группа"
+    },
+    {
+      "paragraph": 2592,
+      "style": "",
+      "text": "Слова и фразы"
+    },
+    {
+      "paragraph": 2593,
+      "style": "",
+      "text": "Кровь"
+    },
+    {
+      "paragraph": 2594,
+      "style": "",
+      "text": "кровь, кровит, кровотеч, кровян, алые выделения, сгустки"
+    },
+    {
+      "paragraph": 2595,
+      "style": "",
+      "text": "Боль"
+    },
+    {
+      "paragraph": 2596,
+      "style": "",
+      "text": "сильная боль, режущая боль, очень болит живот, невыносимо, каменный живот и боль"
+    },
+    {
+      "paragraph": 2597,
+      "style": "",
+      "text": "Шевеления"
+    },
+    {
+      "paragraph": 2598,
+      "style": "",
+      "text": "не шевелится, не чувствую шевелений, перестал шевелиться, затих, мало шевелится"
+    },
+    {
+      "paragraph": 2599,
+      "style": "",
+      "text": "Воды"
+    },
+    {
+      "paragraph": 2600,
+      "style": "",
+      "text": "отошли воды, подтекают воды, подтекание, льётся вода, мокрое бельё постоянно"
+    },
+    {
+      "paragraph": 2601,
+      "style": "",
+      "text": "Давление"
+    },
+    {
+      "paragraph": 2602,
+      "style": "",
+      "text": "голова раскалывается, мушки перед глазами, давление 140, давление 150, резко отекло лицо"
+    },
+    {
+      "paragraph": 2603,
+      "style": "",
+      "text": "Общее"
+    },
+    {
+      "paragraph": 2604,
+      "style": "",
+      "text": "температура 38, температура 39, судороги, потеряла сознание, упала на живот, авария"
+    },
+    {
+      "paragraph": 2605,
+      "style": "",
+      "text": "Исключения (не срабатывать)"
+    },
+    {
+      "paragraph": 2606,
+      "style": "",
+      "text": "«нет крови», «без крови», «не болит», «анализ крови», «группа крови», «сахар в крови», вопрос в прошедшем времени с «было на прошлой неделе»"
+    },
+    {
+      "paragraph": 2607,
+      "style": "",
+      "text": "Метки «Нехорошо», которые открывают экран сразу: «Кровь», «Сильная боль», «Малыш затих», «Подтекание» (добавить их в список меток при выборе «Нехорошо»)."
+    }
+  ],
+  "tag_dictionary_source": [
+    {
+      "Тег": "Анализы и скрининги",
+      "Ключевые слова в названии": "анализ, скрининг, УЗИ, НИПТ, ГТТ, глюкозотолер, мазок, резус, кровоток, КТГ, стрептококк, антител, обследован"
+    },
+    {
+      "Тег": "Спина и тело",
+      "Ключевые слова в названии": "спин, поясниц, крестец, таз, осанк, бандаж, симфизит, судорог, отёк/отек, варикоз, кожа, растяжк, обувь"
+    },
+    {
+      "Тег": "Сон",
+      "Ключевые слова в названии": "сон, спать, спится, позу для сна, ночью, сонлив, подушк"
+    },
+    {
+      "Тег": "Питание",
+      "Ключевые слова в названии": "питан, еда, есть, продукт, витамин, фолат, желез, кофе, изжог, тошнот, аппетит, ГСД, диабет, вес, завтрак"
+    },
+    {
+      "Тег": "Эмоции",
+      "Ключевые слова в названии": "эмоц, тревог, страх, страшн, переживан, спокойн, уверенност, поддержк, советы окружающих, настроиться"
+    },
+    {
+      "Тег": "Движение и практики",
+      "Ключевые слова в названии": "упражнен, разминк, растяжк, движен, подвижност, самомассаж, массаж, спорт, тренир, валик, четвереньк, коврик, активност"
+    },
+    {
+      "Тег": "Дыхание и расслабление",
+      "Ключевые слова в названии": "дыхан, дышать, выдох, расслабл, самогипноз, образы, душ"
+    },
+    {
+      "Тег": "Подготовка к родам",
+      "Ключевые слова в названии": "роддом, сумк, план родов, партнёрские роды, промежност, обезболиван, эпидурал, выбрать врача, контракт, подготовк"
+    },
+    {
+      "Тег": "Роды",
+      "Ключевые слова в названии": "схватк, потуг, роды, родов, предвестник, слизистая пробк, воды, индукц, амниотом, кесарев, шейк, ПДР"
+    },
+    {
+      "Тег": "ГВ",
+      "Ключевые слова в названии": "груд, кормлен, молозив, сцеживан, соск, прикладыван, нагрубан, докорм"
+    },
+    {
+      "Тег": "Уход за малышом",
+      "Ключевые слова в названии": "новорождён, неонатолог, кожа к коже, дома к возвращению, вещи малышу, пустышк, бутылочк"
+    },
+    {
+      "Тег": "Партнёр и семья",
+      "Ключевые слова в названии": "партнёр/партнер, близк, секс, муж, семь, помощь после родов"
+    },
+    {
+      "Тег": "Самочувствие",
+      "Ключевые слова в названии": "самочувств, триместр, выделен, давлен, одышк, нос, зуб, дёсн, усталост, сил, путешеств, работ (и всё без совпадений)"
+    }
+  ],
+  "source_rules_appendix": [
+    {
+      "paragraph": 1412,
+      "style": "Heading2",
+      "text": "А. Расписание карточек и утренних уведомлений"
+    },
+    {
+      "paragraph": 1413,
+      "style": "",
+      "text": "Дни считаются не по календарю, а по неделе беременности женщины: День 1 — первый день очередной недели по её ПДР (тот же расчёт, что уже делает приложение для «28 нед. и 4 дн.»). У каждой женщины свой День 1. Карточки о малыше и о маме не пишутся заново: берутся из уже существующих карточек «Малыш» и «Мама» этой недели (/api/weekly-content: baby[N].description, baby[N].developmentDescription, baby[N].measurements, mom[N].title, mom[N].paragraphs), чтобы женщина увидела их, даже если не открывает разделы."
+    },
+    {
+      "paragraph": 1414,
+      "style": "",
+      "text": "День недели"
+    },
+    {
+      "paragraph": 1415,
+      "style": "",
+      "text": "Карточка 2 «Сюрприз дня»"
+    },
+    {
+      "paragraph": 1416,
+      "style": "",
+      "text": "Откуда текст"
+    },
+    {
+      "paragraph": 1417,
+      "style": "",
+      "text": "Карточка 3"
+    },
+    {
+      "paragraph": 1418,
+      "style": "",
+      "text": "Утреннее уведомление, 10:00"
+    },
+    {
+      "paragraph": 1419,
+      "style": "",
+      "text": "День 1"
+    },
+    {
+      "paragraph": 1420,
+      "style": "",
+      "text": "«Малыш на этой неделе»"
+    },
+    {
+      "paragraph": 1421,
+      "style": "",
+      "text": "baby[N].description + строка measurements, если она есть"
+    },
+    {
+      "paragraph": 1422,
+      "style": "",
+      "text": "«Правда или миф» № 1 недели"
+    },
+    {
+      "paragraph": 1423,
+      "style": "",
+      "text": "«Началась {N} неделя! {baby.description}»"
+    },
+    {
+      "paragraph": 1424,
+      "style": "",
+      "text": "День 2"
+    },
+    {
+      "paragraph": 1425,
+      "style": "",
+      "text": "«Забота о себе»"
+    },
+    {
+      "paragraph": 1426,
+      "style": "",
+      "text": "Пул В (раздел А.6) по триместру"
+    },
+    {
+      "paragraph": 1427,
+      "style": "",
+      "text": "—"
+    },
+    {
+      "paragraph": 1428,
+      "style": "",
+      "text": "«Для тебя кое-что хорошее на сегодня ♥»"
+    },
+    {
+      "paragraph": 1429,
+      "style": "",
+      "text": "День 3"
+    },
+    {
+      "paragraph": 1430,
+      "style": "",
+      "text": "«Ты на этой неделе»"
+    },
+    {
+      "paragraph": 1431,
+      "style": "",
+      "text": "mom[N].title (заголовок) + первое предложение mom[N].paragraphs[0]"
+    },
+    {
+      "paragraph": 1432,
+      "style": "",
+      "text": "«Правда или миф» № 2"
+    },
+    {
+      "paragraph": 1433,
+      "style": "",
+      "text": "«Сегодня про тебя: {mom.title}»"
+    },
+    {
+      "paragraph": 1434,
+      "style": "",
+      "text": "День 4"
+    },
+    {
+      "paragraph": 1435,
+      "style": "",
+      "text": "«Идея на сегодня»"
+    },
+    {
+      "paragraph": 1436,
+      "style": "",
+      "text": "Пул М (раздел А.6) по неделям"
+    },
+    {
+      "paragraph": 1437,
+      "style": "",
+      "text": "—"
+    },
+    {
+      "paragraph": 1438,
+      "style": "",
+      "text": "Заголовок карточки из пула М"
+    },
+    {
+      "paragraph": 1439,
+      "style": "",
+      "text": "День 5"
+    },
+    {
+      "paragraph": 1440,
+      "style": "",
+      "text": "«Как растёт малыш»"
+    },
+    {
+      "paragraph": 1441,
+      "style": "",
+      "text": "Первые 2 предложения baby[N].developmentDescription"
+    },
+    {
+      "paragraph": 1442,
+      "style": "",
+      "text": "«Правда или миф» № 3"
+    },
+    {
+      "paragraph": 1443,
+      "style": "",
+      "text": "«Сегодня у малыша: {первые 80 знаков}…»"
+    },
+    {
+      "paragraph": 1444,
+      "style": "",
+      "text": "День 6"
+    },
+    {
+      "paragraph": 1445,
+      "style": "",
+      "text": "«Практика дня»"
+    },
+    {
+      "paragraph": 1446,
+      "style": "",
+      "text": "Видео недели, в названии которого есть слова из списка «практика» (раздел А.10); если такого нет — практика из пула П (А.6)"
+    },
+    {
+      "paragraph": 1447,
+      "style": "",
+      "text": "—"
+    },
+    {
+      "paragraph": 1448,
+      "style": "",
+      "text": "«Практика дня: {название}, {N} мин»"
+    },
+    {
+      "paragraph": 1449,
+      "style": "",
+      "text": "День 7"
+    },
+    {
+      "paragraph": 1450,
+      "style": "",
+      "text": "«Итоги недели»"
+    },
+    {
+      "paragraph": 1451,
+      "style": "",
+      "text": "Собирается автоматически (шаблон ниже)"
+    },
+    {
+      "paragraph": 1452,
+      "style": "",
+      "text": "—"
+    },
+    {
+      "paragraph": 1453,
+      "style": "",
+      "text": "«Итоги недели: {x} из 6 материалов — осталось совсем чуть-чуть» или «…неделя закрыта ♥»"
+    },
+    {
+      "paragraph": 1454,
+      "style": "",
+      "text": "Изменение к разделу «Твой день»: «Правда или миф» идёт 3 раза в неделю (Дни 1, 3, 5) — по одному вопросу на каждую статью недели, и после ответа кнопка «Подробнее в статье» ведёт на эту статью. В остальные дни в блоке две карточки. Итого «Твой день» даёт до 100 ★ в неделю (самочувствие 35 + сюрприз 35 + вопросы 30), активная мама без курса получает до около 305 ★ в неделю."
+    },
+    {
+      "paragraph": 1455,
+      "style": "",
+      "text": "Шаблон «Итоги недели» (День 7): «Твоя {N} неделя: {x} из 6 материалов, {k} радостных дней, +{s} ★. {фраза}». Фраза: 6 из 6 — «Письмо от малыша уже ждёт в коллекции ♥»; 4–5 — «До письма совсем чуть-чуть, есть время до завтра»; 1–3 — «Отлично, что ты здесь. Выбери один материал на вечер»; 0 — «Новая неделя — новый старт. Мы рядом ♥». «Радостный день» = отметка «Радуюсь» или «Спокойно»; если отметок не было, часть про дни не показываем."
+    },
+    {
+      "paragraph": 1456,
+      "style": "",
+      "text": "Защита от пустых окон (порядок замен):"
+    },
+    {
+      "paragraph": 1457,
+      "style": "ListParagraph",
+      "text": "baby.description пусто → первое предложение baby.developmentDescription → карточка из пула В."
+    },
+    {
+      "paragraph": 1458,
+      "style": "ListParagraph",
+      "text": "mom[N] пусто → карточка из пула В."
+    },
+    {
+      "paragraph": 1459,
+      "style": "ListParagraph",
+      "text": "measurements пусто (недели 1–4) → строку размеров не показываем; «Угадай размер» на этой неделе не выдаём."
+    },
+    {
+      "paragraph": 1460,
+      "style": "ListParagraph",
+      "text": "Вопрос «Правда или миф» уже отвечен этой женщиной (пришла позже и отвечала в архиве, или сдвинула ПДР) → берём неотвеченный вопрос из того же триместра; если и таких нет — карточки 3 в этот день нет."
+    },
+    {
+      "paragraph": 1461,
+      "style": "ListParagraph",
+      "text": "Включена пауза сообщений о малыше → Дни 1 и 5 берут карточку из пула В, уведомления про малыша не уходят."
+    },
+    {
+      "paragraph": 1462,
+      "style": "ListParagraph",
+      "text": "Неделя больше 42 → берём данные 42 недели, но вместо Дня 1 показываем вопрос «Малыш уже родился?» [Да] [Ещё ждём]."
+    },
+    {
+      "paragraph": 2330,
+      "style": "Heading2",
+      "text": "Г. Пулы карточек: забота (В), идея на день (М), практика (П)"
+    },
+    {
+      "paragraph": 2331,
+      "style": "",
+      "text": "Правило выдачи: карточка не повторяется одной женщине, пока не показаны все карточки её триместра; потом пул начинается заново. Карточки с кнопкой ведут в указанный раздел приложения. Если сегодня отмечено «Устала», «Тревожно» или «Нехорошо», вместо карточки М показывается карточка В."
+    },
+    {
+      "paragraph": 2332,
+      "style": "",
+      "text": "Пул В — «Забота о себе» (День 2)"
+    },
+    {
+      "paragraph": 2474,
+      "style": "",
+      "text": "После практики из пула П показываем кнопку «Больше практик» → последнее видео с тегом «Движение и практики» или «Дыхание и расслабление» из открытых ей недель."
+    },
+    {
+      "paragraph": 2608,
+      "style": "Heading2",
+      "text": "З. Теги материалов: словарь для автоматической разметки"
+    },
+    {
+      "paragraph": 2609,
+      "style": "",
+      "text": "Теги ставятся скриптом по названию статьи или видео (поиск по основе слова, без учёта регистра), максимум 3 тега на материал в порядке таблицы. Материал без совпадений получает тег «Самочувствие». После прогона редактор просматривает таблицу в админке и правит единичные ошибки — на работу системы это не влияет."
+    },
+    {
+      "paragraph": 2610,
+      "style": "",
+      "text": "Тег"
+    },
+    {
+      "paragraph": 2611,
+      "style": "",
+      "text": "Ключевые слова в названии"
+    },
+    {
+      "paragraph": 2612,
+      "style": "",
+      "text": "Анализы и скрининги"
+    },
+    {
+      "paragraph": 2613,
+      "style": "",
+      "text": "анализ, скрининг, УЗИ, НИПТ, ГТТ, глюкозотолер, мазок, резус, кровоток, КТГ, стрептококк, антител, обследован"
+    },
+    {
+      "paragraph": 2614,
+      "style": "",
+      "text": "Спина и тело"
+    },
+    {
+      "paragraph": 2615,
+      "style": "",
+      "text": "спин, поясниц, крестец, таз, осанк, бандаж, симфизит, судорог, отёк/отек, варикоз, кожа, растяжк, обувь"
+    },
+    {
+      "paragraph": 2616,
+      "style": "",
+      "text": "Сон"
+    },
+    {
+      "paragraph": 2617,
+      "style": "",
+      "text": "сон, спать, спится, позу для сна, ночью, сонлив, подушк"
+    },
+    {
+      "paragraph": 2618,
+      "style": "",
+      "text": "Питание"
+    },
+    {
+      "paragraph": 2619,
+      "style": "",
+      "text": "питан, еда, есть, продукт, витамин, фолат, желез, кофе, изжог, тошнот, аппетит, ГСД, диабет, вес, завтрак"
+    },
+    {
+      "paragraph": 2620,
+      "style": "",
+      "text": "Эмоции"
+    },
+    {
+      "paragraph": 2621,
+      "style": "",
+      "text": "эмоц, тревог, страх, страшн, переживан, спокойн, уверенност, поддержк, советы окружающих, настроиться"
+    },
+    {
+      "paragraph": 2622,
+      "style": "",
+      "text": "Движение и практики"
+    },
+    {
+      "paragraph": 2623,
+      "style": "",
+      "text": "упражнен, разминк, растяжк, движен, подвижност, самомассаж, массаж, спорт, тренир, валик, четвереньк, коврик, активност"
+    },
+    {
+      "paragraph": 2624,
+      "style": "",
+      "text": "Дыхание и расслабление"
+    },
+    {
+      "paragraph": 2625,
+      "style": "",
+      "text": "дыхан, дышать, выдох, расслабл, самогипноз, образы, душ"
+    },
+    {
+      "paragraph": 2626,
+      "style": "",
+      "text": "Подготовка к родам"
+    },
+    {
+      "paragraph": 2627,
+      "style": "",
+      "text": "роддом, сумк, план родов, партнёрские роды, промежност, обезболиван, эпидурал, выбрать врача, контракт, подготовк"
+    },
+    {
+      "paragraph": 2628,
+      "style": "",
+      "text": "Роды"
+    },
+    {
+      "paragraph": 2629,
+      "style": "",
+      "text": "схватк, потуг, роды, родов, предвестник, слизистая пробк, воды, индукц, амниотом, кесарев, шейк, ПДР"
+    },
+    {
+      "paragraph": 2630,
+      "style": "",
+      "text": "ГВ"
+    },
+    {
+      "paragraph": 2631,
+      "style": "",
+      "text": "груд, кормлен, молозив, сцеживан, соск, прикладыван, нагрубан, докорм"
+    },
+    {
+      "paragraph": 2632,
+      "style": "",
+      "text": "Уход за малышом"
+    },
+    {
+      "paragraph": 2633,
+      "style": "",
+      "text": "новорождён, неонатолог, кожа к коже, дома к возвращению, вещи малышу, пустышк, бутылочк"
+    },
+    {
+      "paragraph": 2634,
+      "style": "",
+      "text": "Партнёр и семья"
+    },
+    {
+      "paragraph": 2635,
+      "style": "",
+      "text": "партнёр/партнер, близк, секс, муж, семь, помощь после родов"
+    },
+    {
+      "paragraph": 2636,
+      "style": "",
+      "text": "Самочувствие"
+    },
+    {
+      "paragraph": 2637,
+      "style": "",
+      "text": "самочувств, триместр, выделен, давлен, одышк, нос, зуб, дёсн, усталост, сил, путешеств, работ (и всё без совпадений)"
+    },
+    {
+      "paragraph": 2638,
+      "style": "",
+      "text": "Слова «практика» для Дня 6 (видео недели считается практикой, если в названии есть одно из): упражнен, самомассаж, массаж, практик, дыхан, дышать, расслабл, разминк, растяжк, движен, подвижност, выдох, точки. По данным приложения на 12.11.2026 видео-практики нет на неделях 21, 23–26, 28–30, 32, 33, 35, 38, 40, 41 — в эти недели День 6 берёт практику из пула П."
+    }
+  ]
+}

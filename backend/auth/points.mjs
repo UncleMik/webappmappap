@@ -41,9 +41,20 @@ async function limits(client, userId, occurredAt) {
     limitedBy: weekly === 0 ? 'week' : daily === 0 ? 'day' : null };
 }
 
-export function createPoints({ pool, userIds, forAll = false, lookupArticle = () => null, clock = Date.now }) {
+export function createPoints({ pool, userIds, forAll = false, lookupArticle = () => null, stars = null, clock = Date.now }) {
   const allowed = new Set(userIds);
-  const includes = userId => forAll || allowed.has(userId);
+  const legacyIncludes = userId => forAll || allowed.has(userId);
+  // Club's synchronous eligibility hook includes stars candidates. Awarding still
+  // checks the live feature flag, and legacy hooks keep their own allowlist.
+  const includes = userId => Boolean(stars) || legacyIncludes(userId);
+  const contexts = new WeakMap();
+  const newContext = client => contexts.get(client);
+  async function accountLock(client,userId) {
+    if(stars && await stars.isEnabled(userId)) {
+      // External callers use pooled clients too: never retain their account context.
+      if(!newContext(client))await stars.contextFor(client,userId);
+    } else await lockAccount(client,userId);
+  }
 
   function eligibleArticle(id) {
     const article = lookupArticle(id);
@@ -53,6 +64,9 @@ export function createPoints({ pool, userIds, forAll = false, lookupArticle = ()
   }
 
   async function withAccount(token, expectedAccountId, run) {
+    if (stars && await stars.isEnabled(expectedAccountId)) return stars.withAccount(token,expectedAccountId,async(client,c)=>{
+      contexts.set(client,c); try{return await run(client,c.userId,c.sessionHash);}finally{contexts.delete(client);}
+    });
     if (!token) throw signedOut();
     const sessionHash = hashToken(token);
     return transaction(pool, async client => {
@@ -60,24 +74,26 @@ export function createPoints({ pool, userIds, forAll = false, lookupArticle = ()
         FROM auth_sessions s JOIN auth_users u ON u.id=s.user_id
         WHERE s.token_hash=$1 AND s.revoked_at IS NULL AND s.expires_at>$2 FOR SHARE OF s,u`,
       [sessionHash, new Date(clock())]);
-      if (!session || +session.expires_at <= clock()) throw signedOut();
+      if (!session || +new Date(session.expires_at) <= +new Date(clock())) throw signedOut();
       const userId = session.user_id;
       if (!isUuid(expectedAccountId) || expectedAccountId !== userId) {
         throw new AuthError(409, 'account_changed', 'Аккаунт изменился. Обновите страницу.');
       }
       const result = await run(client, userId, sessionHash);
-      if (+session.expires_at <= clock()) throw signedOut();
+      if (+new Date(session.expires_at) <= +new Date(clock())) throw signedOut();
       return result;
     });
   }
 
   async function startArticle(client, userId, sessionHash, articleId, now) {
     eligibleArticle(articleId);
+    if(newContext(client)) await stars.materialAccess(client,newContext(client),'article',articleId);
     const { rows: [earned] } = await client.query(
       'SELECT 1 FROM auth_points_ledger WHERE user_id=$1 AND article_id=$2', [userId, articleId]);
     if (earned) return { status: 'already_earned' };
-    const quota = await limits(client, userId, now);
-    if (!quota.available) return { status: 'limited', limitedBy: quota.limitedBy };
+    if(newContext(client)){const {rows}=await client.query("SELECT 1 FROM auth_stars_material_progress WHERE user_id=$1 AND kind='article' AND material_id=$2",[userId,articleId]);if(rows.length)return {status:'already_earned'};}
+    const quota = newContext(client) ? {available:(await stars.wallet(client,newContext(client))).dailyRemaining,limitedBy:'day'} : await limits(client, userId, now);
+    if (!newContext(client) && !quota.available) return { status: 'limited', limitedBy: quota.limitedBy };
 
     const required = ARTICLE_READING_MS;
     const { rows: [previous] } = await client.query(`SELECT attempt_id,active_ms,last_seen_at
@@ -95,7 +111,7 @@ export function createPoints({ pool, userIds, forAll = false, lookupArticle = ()
         last_seen_at=EXCLUDED.last_seen_at, required_ms=EXCLUDED.required_ms,
         awarded_amount=NULL, limited_by=NULL`, [userId, articleId, sessionHash, attemptId, now, required, active]);
     return { status: 'reading', attemptId, remainingMs: required - active,
-      availableAmount: Math.min(ARTICLE_POINTS, quota.available) };
+      availableAmount: Math.min(newContext(client)?(newContext(client).settings.rewards?.article??10):ARTICLE_POINTS, quota.available) };
   }
 
   async function advanceArticle(client, userId, sessionHash, { articleId, attemptId, reachedEnd }, now) {
@@ -118,23 +134,31 @@ export function createPoints({ pool, userIds, forAll = false, lookupArticle = ()
     }
 
     eligibleArticle(articleId);
-    const quota = await limits(client, userId, now);
-    const amount = Math.min(ARTICLE_POINTS, quota.available);
-    if (amount > 0) {
+    if(newContext(client)) await stars.materialAccess(client,newContext(client),'article',articleId);
+    const quota = newContext(client) ? {available:(await stars.wallet(client,newContext(client))).dailyRemaining,limitedBy:'day'} : await limits(client, userId, now);
+    const completion = newContext(client) ? await stars.completeMaterial(client,newContext(client),{kind:'article',id:articleId}) : null;
+    const amount = completion ? completion.reward?.actualAmount||0 : Math.min(ARTICLE_POINTS,quota.available);
+    if (amount > 0 && !completion) {
       await client.query(`INSERT INTO auth_points_ledger(user_id,article_id,occurred_at,moscow_day,amount)
         VALUES ($1,$2,$3,$4,$5)`, [userId, articleId, now, quota.day, amount]);
     }
     await client.query(`UPDATE auth_points_article_reads
       SET active_ms=$3,last_seen_at=$4,awarded_amount=$5,limited_by=$6
       WHERE user_id=$1 AND article_id=$2`, [userId, articleId, active, now, amount, quota.limitedBy]);
-    return amount > 0 ? { status: 'earned', amount } : { status: 'limited', limitedBy: quota.limitedBy };
+    return amount > 0 ? { status: 'earned', amount, ...(completion?{completion}: {}) } : { status: 'limited', limitedBy: quota.limitedBy, ...(completion?{amount:0,completion}: {}) };
   }
 
   return {
-    videoWatching: createVideoPoints({ withAccount, includes, lockAccount, limits, clock }),
+    videoWatching: createVideoPoints({ withAccount, includes: userId => legacyIncludes(userId), lockAccount:accountLock, limits, clock, stars, context: newContext }),
     includes,
-    lockAccount,
+    lockAccount: accountLock,
     async awardClubMessage(client, userId, messageId, occurredAt) {
+      if(stars && await stars.isEnabled(userId)){const c=newContext(client)||await stars.contextFor(client,userId);
+        const {rows:old}=await client.query('SELECT 1 FROM auth_points_ledger WHERE user_id=$1 AND source_message_id IS NOT NULL AND moscow_day=$2',[userId,c.moscowDay]);
+        if(old.length)return;
+        const {rows:[message]}=await client.query('SELECT id FROM club_messages WHERE id=$1 AND author_id=$2',[messageId,userId]);
+        if(message) await stars.credit(client,c,{code:'club_message',ref:c.moscowDay,amount:c.settings.rewards?.clubMessage??5,capped:true,metadata:{messageId:String(messageId)}});return;}
+      if(!legacyIncludes(userId))return;
       const quota = await limits(client, userId, occurredAt);
       if (quota.chatCredited || !quota.available) return;
       await client.query(`INSERT INTO auth_points_ledger(user_id,source_message_id,occurred_at,moscow_day,amount)
@@ -150,8 +174,8 @@ export function createPoints({ pool, userIds, forAll = false, lookupArticle = ()
         throw new AuthError(400, 'invalid_article_reading', 'Неверный запрос зачёта чтения.');
       }
       return withAccount(token, expectedAccountId, async (client, userId, sessionHash) => {
-        if (!includes(userId)) throw new AuthError(403, 'points_unavailable', 'Баллы недоступны.');
-        await lockAccount(client, userId);
+        if (!newContext(client) && !legacyIncludes(userId)) throw new AuthError(403, 'points_unavailable', 'Баллы недоступны.');
+        await accountLock(client, userId);
         const now = new Date(clock());
         return start ? startArticle(client, userId, sessionHash, articleId, now)
           : advanceArticle(client, userId, sessionHash, data, now);
@@ -159,7 +183,8 @@ export function createPoints({ pool, userIds, forAll = false, lookupArticle = ()
     },
     async read(token, expectedAccountId, before) {
       return withAccount(token, expectedAccountId, async (client, userId) => {
-        if (!includes(userId)) return { accountId: userId, enabled: false };
+        if(newContext(client))return {accountId:userId,enabled:true,...await stars.wallet(client,newContext(client),{before:before??null})};
+        if (!legacyIncludes(userId)) return { accountId: userId, enabled: false };
         const { rows } = await client.query(`SELECT totals.balance,page.id,page.amount,page.occurred_at,page.article_id,page.video_id,page.poll_id
           FROM (SELECT COALESCE(sum(amount),0) AS balance FROM auth_points_ledger WHERE user_id=$1) totals
           LEFT JOIN LATERAL (

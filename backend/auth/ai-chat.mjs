@@ -4,6 +4,7 @@ import { AuthError, hashToken } from './security.mjs';
 import { transaction } from './store.mjs';
 import { validateAiAttachment, MAX_AI_BODY_BYTES } from './ai-attachment.mjs';
 import { createAiVoice } from './ai-voice.mjs';
+import { createAiUrgent, urgentContinuation, validUrgentContinuation } from './ai-urgent.mjs';
 
 const uuid = value => typeof value === 'string' && /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(value);
 const sha = value => createHash('sha256').update(value).digest('hex');
@@ -76,7 +77,7 @@ function conversationOnly(question) {
   return conversationPhrase.test(normalized);
 }
 
-function day(now) { return new Date(now + 3 * 3_600_000).toISOString().slice(0, 10); }
+function day(now) { return new Date(Number(new Date(now)) + 3 * 3_600_000).toISOString().slice(0, 10); }
 function reset(dayValue) { return new Date(Date.parse(`${dayValue}T00:00:00Z`) + 21 * 3_600_000).toISOString(); }
 function sourceMap(path) {
   const map = JSON.parse(readFileSync(path, 'utf8'));
@@ -107,7 +108,7 @@ function profileFor(user, now) {
   if (p.stage === 'pregnancy') {
     const due = Date.parse(`${p.dueDate}T00:00:00Z`);
     if (!Number.isFinite(due)) throw unavailable();
-    const days = Math.max(0, Math.min(300, Math.floor((now + 3 * 3_600_000 - due) / 86_400_000 + 280)));
+    const days = Math.max(0, Math.min(300, Math.floor((Number(new Date(now)) + 3 * 3_600_000 - due) / 86_400_000 + 280)));
     return { stage: 'pregnant', gestationalWeek: Math.floor(days / 7), gestationalDays: days };
   }
   if (p.stage === 'mother') {
@@ -148,7 +149,7 @@ async function signedSession(pool, token, userId, clock) {
   });
 }
 
-export function createAiChat({ pool, service, courseMaterials, sourceMapPath, url, secret, clock = Date.now, fetchImpl = fetch }) {
+export function createAiChat({ pool, service, courseMaterials, sourceMapPath, url, secret, clock = Date.now, fetchImpl = fetch, starsAi, starsAccess, settings, urgent = createAiUrgent({ pool, settings }) }) {
   let fileInFlight = false;
   if (!pool || !service || !courseMaterials || !sourceMapPath || !url || !secret) throw new Error('AI chat configuration incomplete');
   const endpoint = new URL(url);
@@ -160,7 +161,10 @@ export function createAiChat({ pool, service, courseMaterials, sourceMapPath, ur
     if (!user) throw signedOut();
     if (!uuid(expected) || expected.toLowerCase() !== user.id.toLowerCase()) throw changed();
     if (!user.profile?.completedAt) throw new AuthError(403, 'onboarding_required', 'Заполните профиль.');
-    const ctx = await courseMaterials.aiContext(user.id);
+    const rawContext = await courseMaterials.aiContext(user.id);
+    const ctx = { ...rawContext, lessons: [...rawContext.lessons] };
+    const weekAccess = starsAccess ? await starsAccess.context(token, expected) : null;
+    if (weekAccess) ctx.lessons = ctx.lessons.filter(l => !l.week || l.productId || starsAccess.canWeek(weekAccess, l.week));
     const dailyLimit = ctx.courses.length ? PAID_DAILY_LIMIT : FREE_DAILY_LIMIT;
     const map = sourceMap(sourceMapPath);
     const available = new Set(ctx.lessons.map(l => l.lessonId));
@@ -189,7 +193,7 @@ export function createAiChat({ pool, service, courseMaterials, sourceMapPath, ur
     const rightsHash = sha(JSON.stringify({ profile: [user.profile.stage, user.profile.dueDate, user.profile.birthDate],
       courses: ctx.courses.map(c => c.productId).sort(),
       lessons: ctx.lessons.map(l => [l.lessonId, l.sectionId, l.productId, l.contentHash]).sort((a, b) => a[0] - b[0]),
-      sources: canonicalKnowledgeSources.sort((a, b) => a.source.localeCompare(b.source)), mapHash: sha(JSON.stringify(map)) }));
+      sources: canonicalKnowledgeSources.sort((a, b) => a.source.localeCompare(b.source)), mapHash: sha(JSON.stringify(map)), ...(weekAccess?.enforced && !weekAccess.legacy ? { weekAccess } : {}) }));
     const currentSources = new Map([
       ...allowedLessons.map(l => [String(l.lessonId), { id: String(l.lessonId), title: l.title, url: l.url }]),
       ...allowedKnowledgeSources.map(s => [`${s.course}:${s.source}`,
@@ -199,6 +203,7 @@ export function createAiChat({ pool, service, courseMaterials, sourceMapPath, ur
     return { user, ctx, allowedKnowledgeSources, allowedLessons, currentSources, rightsHash, dailyLimit };
   }
   async function quota(userId, limit) {
+    if (starsAi) return starsAi.quota(pool, { userId, tier: limit === 30 ? "course" : "free", now: clock() });
     const capturedNow = clock(), today = day(capturedNow);
     const { rows: [row] } = await pool.query('SELECT used FROM ai_chat_daily_usage WHERE user_id=$1 AND day_moscow=$2', [userId, today]);
     const used = row?.used || 0;
@@ -217,18 +222,31 @@ export function createAiChat({ pool, service, courseMaterials, sourceMapPath, ur
   async function authorizeVoice(token, expected) {
     const a = await access(token, expected);
     const currentQuota = await quota(a.user.id, a.dailyLimit);
-    if (currentQuota.remaining <= 0) throw dailyLimitError(currentQuota);
+    if ((currentQuota.totalRemaining ?? currentQuota.remaining) <= 0) throw dailyLimitError(currentQuota);
     return a;
   }
-  const transcribe = createAiVoice({ authorize: authorizeVoice, secret, clock, fetchImpl,
+  const transcribe = createAiVoice({ authorize: authorizeVoice, secret, clock: () => Number(new Date(clock())), fetchImpl,
     acquire() {
       if (fileInFlight) throw new AuthError(503, 'ai_voice_busy', 'Лара сейчас обрабатывает другой файл. Попробуйте позже.');
       fileInFlight = true;
       return () => { fileInFlight = false; };
     } });
-  async function failStale(userId, client = pool) {
-    await client.query(`UPDATE ai_chat_requests SET status='failed',failure_code='request_expired' WHERE user_id=$1
-      AND status='pending' AND accepted_at<=$2`, [userId, new Date(clock() - IN_FLIGHT_MS)]);
+  async function failStale(userId, client) {
+    if (!client) return transaction(pool, connection => failStale(userId, connection));
+    await client.query('SELECT id FROM auth_users WHERE id=$1 FOR UPDATE', [userId]);
+    const { rows } = await client.query(`UPDATE ai_chat_requests SET status='failed',failure_code='request_expired' WHERE user_id=$1
+      AND status='pending' AND accepted_at<=$2 RETURNING request_id,accepted_at`, [userId, new Date(clock() - IN_FLIGHT_MS)]);
+    for (const row of rows) await refundFailed(client, userId, row);
+  }
+  async function refundFailed(client, userId, row) {
+    if (!starsAi) return;
+    if (await starsAi.refund(client, { userId, requestId: row.request_id })) return;
+    const { rows } = await client.query('SELECT 1 FROM auth_stars_ai_reservations WHERE user_id=$1 AND request_id=$2', [userId, row.request_id]);
+    if (rows.length || !await starsAi.isEnabled(client, { userId })) return;
+    // A pre-migration request charged exactly one free unit. Only the transaction
+    // changing pending -> failed reaches here, so an absent reservation is safe.
+    await client.query('UPDATE ai_chat_daily_usage SET used=GREATEST(0,used-1) WHERE user_id=$1 AND day_moscow=$2',
+      [userId, day(row.accepted_at)]);
   }
   function conversationId(value) {
     if (!uuid(value)) throw new AuthError(400, 'invalid_ai_conversation', 'Обновите список чатов.');
@@ -337,6 +355,9 @@ export function createAiChat({ pool, service, courseMaterials, sourceMapPath, ur
     const text = data.text.trim(), requestId = data.requestId.toLowerCase();
     const question = file ? `${text}\n\nФайл анализа: ${file.attachment.name}` : text;
     const questionHash = file ? sha(JSON.stringify([question, file.attachment.mimeType, file.digest])) : sha(text);
+    const urgentScreen = await urgent.evaluate({ text, userId: a.user.id });
+    const continuationContext = { account: a.user.id, requestId, hash: questionHash, revision: urgentScreen?.revision, conversationId: data.conversationId || '' };
+    const needsUrgentScreen = urgentScreen && !validUrgentContinuation(secret, continuationContext, data.urgentContinue, clock());
     const existing = await transaction(pool, async client => {
       // Serialize request IDs and quota updates for this account, including concurrent retries.
       const { rows: [account] } = await client.query('SELECT id FROM auth_users WHERE id=$1 FOR UPDATE', [a.user.id]);
@@ -352,111 +373,146 @@ export function createAiChat({ pool, service, courseMaterials, sourceMapPath, ur
           throw new AuthError(409, 'request_id_conflict', 'Обновите страницу и повторите вопрос.');
         return old;
       }
+      if (needsUrgentScreen) {
+        // No request, conversation or quota write for a static urgent response.
+        if (data.conversationId !== undefined) await findConversation(a.user.id, data.conversationId, client);
+        const expires = Number(new Date(clock())) + 600000;
+        return { urgentOnly: true, urgent: { ...urgentScreen,
+          continueToken: { expires, signature: urgentContinuation(secret, { ...continuationContext, expires }) } } };
+      }
       const conversation = await findConversation(a.user.id, data.conversationId, client, true);
       const { rows: [busy] } = await client.query(`SELECT id FROM ai_chat_requests WHERE user_id=$1
         AND status='pending' AND accepted_at>$2 LIMIT 1`, [a.user.id, new Date(clock() - IN_FLIGHT_MS)]);
       if (busy) throw new AuthError(409, 'ai_busy', 'Лара отвечает на предыдущий вопрос. Подождите немного.');
-      const acceptedNow = clock(), today = day(acceptedNow);
-      const { rows: [usage] } = await client.query(`INSERT INTO ai_chat_daily_usage(user_id,day_moscow,used)
-        VALUES($1,$2,1) ON CONFLICT(user_id,day_moscow) DO UPDATE SET used=ai_chat_daily_usage.used+1
-        WHERE ai_chat_daily_usage.used<$3 RETURNING used`, [a.user.id, today, a.dailyLimit]);
-      if (!usage) throw new AuthError(429, 'ai_daily_limit', 'Сегодня доступные вопросы закончились. Возвращайтесь завтра.');
+      const acceptedNow = Number(new Date(clock())), today = day(acceptedNow);
+      let economyEnabled = false;
+      if (starsAi) {
+        const reservation = await starsAi.reserve(client, { userId: a.user.id, tier: a.dailyLimit === 30 ? 'course' : 'free', now: acceptedNow }, { requestId, cost: file ? 2 : 1 });
+        // History retention must not turn an old charged UUID into a free new question.
+        if (reservation.duplicate) throw new AuthError(409, 'request_id_conflict', 'Обновите страницу и повторите вопрос.');
+        economyEnabled = reservation.economyEnabled;
+      }
+      else {
+        const { rows: [usage] } = await client.query(`INSERT INTO ai_chat_daily_usage(user_id,day_moscow,used)
+          VALUES($1,$2,1) ON CONFLICT(user_id,day_moscow) DO UPDATE SET used=ai_chat_daily_usage.used+1
+          WHERE ai_chat_daily_usage.used<$3 RETURNING used`, [a.user.id, today, a.dailyLimit]);
+        if (!usage) throw new AuthError(429, 'ai_daily_limit', 'Сегодня доступные вопросы закончились. Возвращайтесь завтра.');
+      }
       const { rows: [saved] } = await client.query(`INSERT INTO ai_chat_requests(user_id,request_id,question,question_hash,rights_hash,status,accepted_at,conversation_id)
         VALUES($1,$2,$3,$4,$5,'pending',$6,$7) RETURNING *`, [a.user.id, requestId, question, questionHash, a.rightsHash, new Date(acceptedNow), conversation.id]);
       await client.query(`UPDATE ai_chat_conversations SET updated_at=$3,
         title=CASE WHEN NOT legacy AND title_expires_at IS NULL THEN $4 ELSE title END,
         title_expires_at=CASE WHEN NOT legacy AND title_expires_at IS NULL THEN $5 ELSE title_expires_at END WHERE user_id=$1 AND id=$2`, [a.user.id, conversation.id, new Date(acceptedNow), firstTitle(text), new Date(acceptedNow + RETENTION_MS)]);
-      return { ...saved, newlyAccepted: true };
+      return { ...saved, newlyAccepted: true, economyEnabled };
     }).catch(async error => {
       // transaction() has rolled back and released its client before this read.
       if (error instanceof AuthError && error.code === 'ai_daily_limit')
         throw dailyLimitError(await quota(a.user.id, a.dailyLimit));
       throw error;
     });
+    if (existing.urgentOnly) return { accountId: a.user.id, requestId, status: 'urgent', urgent: existing.urgent,
+      quota: await quota(a.user.id, a.dailyLimit) };
     if (existing.question_hash !== questionHash) throw new AuthError(409, 'request_id_conflict', 'Обновите страницу и повторите вопрос.');
     if (existing.rights_hash !== a.rightsHash) throw new AuthError(409, 'ai_access_changed', 'Доступ к материалам изменился. Обновите страницу.');
     if (!existing.newlyAccepted) return { accountId: a.user.id, ...await conversationFields(a.user.id, existing.conversation_id), requestId, status: existing.status,
       ...failureFields(existing), messages: messages(existing, a.currentSources), quota: await quota(a.user.id, a.dailyLimit) };
-    const { rows: prior } = await pool.query(`SELECT question,answer FROM ai_chat_requests WHERE user_id=$1 AND status='completed'
-      AND rights_hash=$2 AND accepted_at>=$3 AND id<$4 AND conversation_id=$5 ORDER BY id DESC LIMIT 10`,
-    [a.user.id, a.rightsHash, new Date(clock() - RETENTION_MS), existing.id, existing.conversation_id]);
-    const latestPairs = [];
-    let historyChars = 0;
-    for (const row of prior) {
-      const question = row.question.slice(0, 6000), answer = row.answer.slice(0, 6000);
-      if (historyChars + question.length + answer.length > MODEL_HISTORY_CHARS) break;
-      latestPairs.push([{ role: 'user', content: question }, { role: 'assistant', content: answer }]);
-      historyChars += question.length + answer.length;
-    }
-    const historyForModel = latestPairs.reverse().flat();
-    const skipMaterials = !file && conversationOnly(text);
-    const sources = skipMaterials ? [] : relevantSources(text, a.ctx.lessons);
-    const body = Buffer.from(JSON.stringify({ requestId, question: text, ...(file ? { attachment: file.attachment } : {}), profile: profileFor(a.user, clock()),
-      history: historyForModel, allowedKnowledgeSources: skipMaterials ? [] : a.allowedKnowledgeSources,
-      allowedLessons: skipMaterials ? [] : a.allowedLessons, sources }));
-    const timestamp = String(Math.floor(clock() / 1000));
-    const signature = createHmac('sha256', secret).update(timestamp).update('\n').update(body).digest('hex');
-    let reply, failureCode = 'bridge_unavailable';
     try {
-      if (body.length > (file ? MAX_AI_BODY_BYTES : 500_000)) {
+      const { rows: prior } = await pool.query(`SELECT question,answer FROM ai_chat_requests WHERE user_id=$1 AND status='completed'
+        AND rights_hash=$2 AND accepted_at>=$3 AND id<$4 AND conversation_id=$5 ORDER BY id DESC LIMIT 10`,
+      [a.user.id, a.rightsHash, new Date(clock() - RETENTION_MS), existing.id, existing.conversation_id]);
+      const latestPairs = [];
+      let historyChars = 0;
+      for (const row of prior) {
+        const question = row.question.slice(0, 6000), answer = row.answer.slice(0, 6000);
+        if (historyChars + question.length + answer.length > MODEL_HISTORY_CHARS) break;
+        latestPairs.push([{ role: 'user', content: question }, { role: 'assistant', content: answer }]);
+        historyChars += question.length + answer.length;
+      }
+      const historyForModel = latestPairs.reverse().flat();
+      const skipMaterials = !file && conversationOnly(text);
+      const sources = skipMaterials ? [] : relevantSources(text, a.ctx.lessons);
+      const body = Buffer.from(JSON.stringify({ requestId, question: text, ...(file ? { attachment: file.attachment } : {}), profile: profileFor(a.user, clock()),
+        history: historyForModel, allowedKnowledgeSources: skipMaterials ? [] : a.allowedKnowledgeSources,
+        allowedLessons: skipMaterials ? [] : a.allowedLessons, sources }));
+      const timestamp = String(Math.floor(clock() / 1000));
+      const signature = createHmac('sha256', secret).update(timestamp).update('\n').update(body).digest('hex');
+      let reply, failureCode = 'bridge_unavailable';
+      try {
+        if (body.length > (file ? MAX_AI_BODY_BYTES : 500_000)) {
+          failureCode = 'invalid_response';
+          throw unavailable();
+        }
+        const response = await fetchImpl(endpoint, { method: 'POST', body, signal: AbortSignal.timeout(65_000),
+          headers: { 'Content-Type': 'application/json', 'X-Lara-Timestamp': timestamp, 'X-Lara-Signature': signature } });
         failureCode = 'invalid_response';
-        throw unavailable();
+        if (response.body?.getReader) {
+          const reader = response.body.getReader(), chunks = [];
+          let bytes = 0;
+          try {
+            for (;;) {
+              const { done, value } = await reader.read();
+              if (done) break;
+              bytes += value.byteLength;
+              if (bytes > MAX_REPLY_BYTES) { await reader.cancel(); throw unavailable(); }
+              chunks.push(value);
+            }
+          } finally { reader.releaseLock(); }
+          reply = JSON.parse(Buffer.concat(chunks).toString('utf8'));
+        } else reply = await response.json(); // Test adapters without a Response stream.
+        if (!response.ok) {
+          // Only fixed messages cross the public boundary; never return or persist provider details.
+          const known = { invalid_attachment: 422, attachment_unreadable: 422, busy: 503,
+            provider_unavailable: 502, timeout: 504, unknown_failure: 502 };
+          failureCode = Object.hasOwn(known, reply?.error) && known[reply.error] === response.status
+            ? reply.error : 'unknown_failure';
+          throw unavailable();
+        }
+        if (reply?.requestId !== requestId || typeof reply.answer !== 'string' || !reply.answer.trim()
+          || reply.answer.length > 20_000 || !Array.isArray(reply.sources) || reply.sources.length > 20) throw unavailable();
+      } catch (error) {
+        if (error?.name === 'TimeoutError' || error?.name === 'AbortError') failureCode = 'timeout';
+        const failed = await transaction(pool, async client => {
+          await client.query('SELECT id FROM auth_users WHERE id=$1 FOR UPDATE', [a.user.id]);
+          const { rows: [row] } = await client.query(`UPDATE ai_chat_requests SET status='failed',failure_code=$3
+            WHERE user_id=$1 AND request_id=$2 AND status='pending' RETURNING *`, [a.user.id, requestId, failureCode]);
+          if (row) await refundFailed(client, a.user.id, row);
+          return row;
+        });
+        const current = await access(token, expected);
+        if (current.rightsHash !== a.rightsHash) throw new AuthError(409, 'ai_access_changed', 'Доступ к материалам изменился. Обновите страницу.');
+        if (!failed) return terminalResult(token, expected, a.user.id, requestId);
+        return { accountId: a.user.id, ...await conversationFields(a.user.id, existing.conversation_id), requestId, status: 'failed', ...failureFields(failed),
+          messages: messages(failed, current.currentSources), quota: await quota(a.user.id, a.dailyLimit) };
       }
-      const response = await fetchImpl(endpoint, { method: 'POST', body, signal: AbortSignal.timeout(65_000),
-        headers: { 'Content-Type': 'application/json', 'X-Lara-Timestamp': timestamp, 'X-Lara-Signature': signature } });
-      failureCode = 'invalid_response';
-      if (response.body?.getReader) {
-        const reader = response.body.getReader(), chunks = [];
-        let bytes = 0;
-        try {
-          for (;;) {
-            const { done, value } = await reader.read();
-            if (done) break;
-            bytes += value.byteLength;
-            if (bytes > MAX_REPLY_BYTES) { await reader.cancel(); throw unavailable(); }
-            chunks.push(value);
-          }
-        } finally { reader.releaseLock(); }
-        reply = JSON.parse(Buffer.concat(chunks).toString('utf8'));
-      } else reply = await response.json(); // Test adapters without a Response stream.
-      if (!response.ok) {
-        // Only fixed messages cross the public boundary; never return or persist provider details.
-        const known = { invalid_attachment: 422, attachment_unreadable: 422, busy: 503,
-          provider_unavailable: 502, timeout: 504, unknown_failure: 502 };
-        failureCode = Object.hasOwn(known, reply?.error) && known[reply.error] === response.status
-          ? reply.error : 'unknown_failure';
-        throw unavailable();
-      }
-      if (reply?.requestId !== requestId || typeof reply.answer !== 'string' || !reply.answer.trim()
-        || reply.answer.length > 20_000 || !Array.isArray(reply.sources) || reply.sources.length > 20) throw unavailable();
-    } catch (error) {
-      if (error?.name === 'TimeoutError' || error?.name === 'AbortError') failureCode = 'timeout';
-      const { rows: [failed] } = await pool.query(`UPDATE ai_chat_requests SET status='failed',failure_code=$3
-        WHERE user_id=$1 AND request_id=$2 AND status='pending' RETURNING *`, [a.user.id, requestId, failureCode]);
       const current = await access(token, expected);
       if (current.rightsHash !== a.rightsHash) throw new AuthError(409, 'ai_access_changed', 'Доступ к материалам изменился. Обновите страницу.');
-      if (!failed) return terminalResult(token, expected, a.user.id, requestId);
-      return { accountId: a.user.id, ...await conversationFields(a.user.id, existing.conversation_id), requestId, status: 'failed', ...failureFields(failed),
-        messages: messages(failed, current.currentSources), quota: await quota(a.user.id, a.dailyLimit) };
+      const knownSources = a.currentSources;
+      const safeSources = !skipMaterials && reply.sourcePolicy === 'used_v1' ? [...new Map(reply.sources
+        .map(ref => knownSources.get(String(ref?.id))).filter(Boolean).map(s => [s.url, s])).values()]
+        .slice(0, 3).map(source => ({ ...source, selection: 'answer' })) : [];
+      const saved = await transaction(pool, async client => {
+        const { rows: [session] } = await client.query(`SELECT s.user_id FROM auth_sessions s JOIN auth_users u ON u.id=s.user_id
+          WHERE s.token_hash=$1 AND s.revoked_at IS NULL AND s.expires_at>$2 FOR SHARE OF s,u`,
+        [hashToken(token), new Date(clock())]);
+        if (!session || session.user_id !== a.user.id) throw signedOut();
+        const { rows: [row] } = await client.query(`UPDATE ai_chat_requests SET status='completed',failure_code=NULL,answer=$3,sources=$4::jsonb
+          WHERE user_id=$1 AND request_id=$2 AND status='pending' RETURNING *`,
+        [a.user.id, requestId, reply.answer, JSON.stringify(safeSources)]);
+        return row;
+      });
+      if (!saved) return terminalResult(token, expected, a.user.id, requestId);
+      return { accountId: a.user.id, ...await conversationFields(a.user.id, existing.conversation_id), requestId, status: 'completed', messages: messages(saved, current.currentSources), quota: await quota(a.user.id, a.dailyLimit) };
+    } catch (error) {
+      // Late ACL/session failures and local preparation errors must release the
+      // accepted request too; successful committed replies are never refunded.
+      if (starsAi && existing.economyEnabled) await transaction(pool, async client => {
+        await client.query('SELECT id FROM auth_users WHERE id=$1 FOR UPDATE', [a.user.id]);
+        const { rows: [failed] } = await client.query(`UPDATE ai_chat_requests SET status='failed',failure_code='unknown_failure'
+          WHERE user_id=$1 AND request_id=$2 AND status='pending' RETURNING *`, [a.user.id, requestId]);
+        if (failed) await refundFailed(client, a.user.id, failed);
+      });
+      throw error;
     }
-    const current = await access(token, expected);
-    if (current.rightsHash !== a.rightsHash) throw new AuthError(409, 'ai_access_changed', 'Доступ к материалам изменился. Обновите страницу.');
-    const knownSources = a.currentSources;
-    const safeSources = !skipMaterials && reply.sourcePolicy === 'used_v1' ? [...new Map(reply.sources
-      .map(ref => knownSources.get(String(ref?.id))).filter(Boolean).map(s => [s.url, s])).values()]
-      .slice(0, 3).map(source => ({ ...source, selection: 'answer' })) : [];
-    const saved = await transaction(pool, async client => {
-      const { rows: [session] } = await client.query(`SELECT s.user_id FROM auth_sessions s JOIN auth_users u ON u.id=s.user_id
-        WHERE s.token_hash=$1 AND s.revoked_at IS NULL AND s.expires_at>$2 FOR SHARE OF s,u`,
-      [hashToken(token), new Date(clock())]);
-      if (!session || session.user_id !== a.user.id) throw signedOut();
-      const { rows: [row] } = await client.query(`UPDATE ai_chat_requests SET status='completed',failure_code=NULL,answer=$3,sources=$4::jsonb
-        WHERE user_id=$1 AND request_id=$2 AND status='pending' RETURNING *`,
-      [a.user.id, requestId, reply.answer, JSON.stringify(safeSources)]);
-      return row;
-    });
-    if (!saved) return terminalResult(token, expected, a.user.id, requestId);
-    return { accountId: a.user.id, ...await conversationFields(a.user.id, existing.conversation_id), requestId, status: 'completed', messages: messages(saved, current.currentSources), quota: await quota(a.user.id, a.dailyLimit) };
   }
   async function cleanup() {
     await pool.query('DELETE FROM ai_chat_requests WHERE accepted_at<$1', [new Date(clock() - RETENTION_MS)]);

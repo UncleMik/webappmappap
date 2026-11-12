@@ -54,8 +54,8 @@ export function trackArticlePoints(scroller, articleId) {
       const result = await authRequest('points/articles', body, { headers: { 'X-Webpril-Account': accountId } });
       if (id !== generation || !pageVisible()) return;
       if (window.webprilSessionAccountId !== accountId) { finish(); return; }
-      if (result.status === 'earned') { finish('Начислено +' + pointsText(result.amount) + '.'); return; }
-      if (result.status === 'already_earned') { finish('Баллы за эту статью уже начислены.'); return; }
+      if (result.status === 'earned') { finish(result.amount > 0 ? `+${result.amount} ★ за чтение.` : 'Статья засчитана в прогресс без новых звёздочек.'); window.dispatchEvent(new CustomEvent('stars:changed')); return; }
+      if (result.status === 'already_earned') { finish('Эта статья уже засчитана.'); return; }
       if (result.status === 'limited') {
         finish(result.limitedBy === 'week'
           ? 'Недельный лимит исчерпан. Откройте статью снова с понедельника.'

@@ -8,4 +8,5 @@ _site/
 .playwright-cli/
 output/playwright/
 output/auth-qa/
+output/verification/
 backend/seed/uploads/

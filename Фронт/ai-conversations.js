@@ -1,4 +1,4 @@
-// Drawer owns presentation and native modal focus; chat data stays in ai.js.
+// Drawer owns presentation and native modal focus; chat data stays in ai.js?v=20261112-stars.
 export function createConversationMenu({ onOpen, onNew, onSelect, onMore, onRetry }) {
   const dialog = document.querySelector('#conversations-dialog');
   const openButton = document.querySelector('#conversations-open');

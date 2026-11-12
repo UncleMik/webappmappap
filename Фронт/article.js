@@ -6,7 +6,7 @@ if (params.has('courseLesson')) {
   document.title = toolbar.textContent = 'Урок';
   scroller.setAttribute('aria-label', 'Содержание урока');
   try {
-    await import('./course-lesson.js?v=20261110-community-lesson');
+    await import('./course-lesson.js?v=20261112-stars');
   } catch {
     window.showArticleLoadError(scroller, 'Не удалось открыть урок. Попробуйте ещё раз.');
   }
@@ -64,7 +64,10 @@ let article;
 try {
   article = articleId === 'mom-week' ? library[articleId] : await window.loadSchoolArticle(library[articleId]?.id || articleId);
 } catch (error) {
-  if (error.status === 404) showArticleNotFound();
+  if (error.code === 'week_locked') {
+    scroller.replaceChildren(); const message=document.createElement('p');message.className='article-load-status';message.textContent='Эта неделя пока закрыта. Материал откроется по вашему сроку.';
+    const link=document.createElement('a');link.href='index.html';link.className='reader-button';link.textContent='На Сегодня: открыть следующую неделю';scroller.append(message,link);
+  } else if (error.status === 404) showArticleNotFound();
   else window.showArticleLoadError(scroller);
   document.querySelector('.reader-progress').hidden = true;
   return;
@@ -205,7 +208,7 @@ if (article.pregnancy) {
 updateProgress();
 document.querySelector('.reader-progress').hidden = false;
 if (article.pregnancy) {
-  import('./article-points.js?v=20261110-reading-30').then(({ trackArticlePoints }) => {
+  import('./article-points.js?v=20261112-stars').then(({ trackArticlePoints }) => {
     trackArticlePoints(scroller, article.id);
   }).catch(() => {});
 }

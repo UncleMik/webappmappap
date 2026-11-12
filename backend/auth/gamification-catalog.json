@@ -1,0 +1,5220 @@
+{
+  "version": 1,
+  "hints": [
+    {
+      "id": "hint-checkin",
+      "feature": "checkin",
+      "text": "«Отметь, как ты сегодня, — мы подберём что-то для тебя. +5 ★»",
+      "babyRelated": false,
+      "status": "unpublished",
+      "medical": true,
+      "medicalApproved": false
+    },
+    {
+      "id": "hint-week_ring",
+      "feature": "week_ring",
+      "text": "«Пройди 6 материалов недели — и получишь письмо и +50 ★»",
+      "babyRelated": true,
+      "status": "unpublished",
+      "medical": true,
+      "medicalApproved": false
+    },
+    {
+      "id": "hint-surprise_tap",
+      "feature": "surprise_tap",
+      "text": "«Каждый день здесь сюрприз. Нажми, чтобы открыть»",
+      "babyRelated": true,
+      "status": "unpublished",
+      "medical": true,
+      "medicalApproved": false
+    },
+    {
+      "id": "hint-myth",
+      "feature": "myth",
+      "text": "«Проверь интуицию: правда это или миф? Отвечает врач школы»",
+      "babyRelated": true,
+      "status": "unpublished",
+      "medical": true,
+      "medicalApproved": false
+    },
+    {
+      "id": "hint-peek_next_week",
+      "feature": "peek_next_week",
+      "text": "«Следующую неделю можно открыть раньше за звёздочки»",
+      "babyRelated": true,
+      "status": "unpublished",
+      "medical": true,
+      "medicalApproved": false
+    },
+    {
+      "id": "hint-quests",
+      "feature": "quests",
+      "text": "«Отмечай события календаря — и ничего не забудешь. +15 ★ за каждое»",
+      "babyRelated": true,
+      "status": "unpublished",
+      "medical": true,
+      "medicalApproved": false
+    },
+    {
+      "id": "hint-time_capsule",
+      "feature": "time_capsule",
+      "text": "«Напиши письмо себе будущей — откроем его, когда малышу исполнится месяц»",
+      "babyRelated": true,
+      "status": "unpublished",
+      "medical": true,
+      "medicalApproved": false
+    },
+    {
+      "id": "hint-surprise_scratch",
+      "feature": "surprise_scratch",
+      "text": "«Новое: сотри карточку пальцем — под ней сюрприз дня»",
+      "babyRelated": true,
+      "status": "unpublished",
+      "medical": true,
+      "medicalApproved": false
+    },
+    {
+      "id": "hint-streak",
+      "feature": "streak",
+      "text": "«Это твоя цепочка недель. Одну пропущенную за триместр мы простим ♥»",
+      "babyRelated": false,
+      "status": "unpublished",
+      "medical": true,
+      "medicalApproved": false
+    },
+    {
+      "id": "hint-guess_size",
+      "feature": "guess_size",
+      "text": "«Новая игра: угадай, сколько сейчас весит малыш»",
+      "babyRelated": true,
+      "status": "unpublished",
+      "medical": true,
+      "medicalApproved": false
+    },
+    {
+      "id": "hint-surprise_flip",
+      "feature": "surprise_flip",
+      "text": "«Новое: переверни карточку — что там сегодня?»",
+      "babyRelated": true,
+      "status": "unpublished",
+      "medical": true,
+      "medicalApproved": false
+    },
+    {
+      "id": "hint-surprise_pick3",
+      "feature": "surprise_pick3",
+      "text": "«Новое: выбери одну из трёх карточек»",
+      "babyRelated": true,
+      "status": "unpublished",
+      "medical": true,
+      "medicalApproved": false
+    },
+    {
+      "id": "hint-first_kick",
+      "feature": "first_kick",
+      "text": "«Почувствовала первые толчки? Отметь этот момент!»",
+      "babyRelated": true,
+      "status": "unpublished",
+      "medical": true,
+      "medicalApproved": false
+    },
+    {
+      "id": "hint-kicks_daily",
+      "feature": "kicks_daily",
+      "text": "«Записывай шевеления — так ты лучше узнаешь режим малыша. +5 ★ в день»",
+      "babyRelated": true,
+      "status": "unpublished",
+      "medical": true,
+      "medicalApproved": false
+    },
+    {
+      "id": "hint-bag_checklist",
+      "feature": "bag_checklist",
+      "text": "«Соберём сумку в роддом по списку — без спешки»",
+      "babyRelated": true,
+      "status": "unpublished",
+      "medical": true,
+      "medicalApproved": false
+    },
+    {
+      "id": "hint-birth_questions",
+      "feature": "birth_questions",
+      "text": "«Вот вопросы, которые стоит задать врачу до родов»",
+      "babyRelated": true,
+      "status": "unpublished",
+      "medical": true,
+      "medicalApproved": false
+    }
+  ],
+  "tags": [
+    {
+      "tag": "Анализы и скрининги",
+      "keywords": [
+        "анализ",
+        "скрининг",
+        "узи",
+        "нипт",
+        "гтт",
+        "глюкозотолер",
+        "мазок",
+        "резус",
+        "кровоток",
+        "ктг",
+        "стрептококк",
+        "антител",
+        "обследован"
+      ]
+    },
+    {
+      "tag": "Спина и тело",
+      "keywords": [
+        "спин",
+        "поясниц",
+        "крестец",
+        "таз",
+        "осанк",
+        "бандаж",
+        "симфизит",
+        "судорог",
+        "отёк",
+        "отек",
+        "варикоз",
+        "кожа",
+        "растяжк",
+        "обувь"
+      ]
+    },
+    {
+      "tag": "Сон",
+      "keywords": [
+        "сон",
+        "спать",
+        "спится",
+        "позу для сна",
+        "ночью",
+        "сонлив",
+        "подушк"
+      ]
+    },
+    {
+      "tag": "Питание",
+      "keywords": [
+        "питан",
+        "еда",
+        "есть",
+        "продукт",
+        "витамин",
+        "фолат",
+        "желез",
+        "кофе",
+        "изжог",
+        "тошнот",
+        "аппетит",
+        "гсд",
+        "диабет",
+        "вес",
+        "завтрак"
+      ]
+    },
+    {
+      "tag": "Эмоции",
+      "keywords": [
+        "эмоц",
+        "тревог",
+        "страх",
+        "страшн",
+        "переживан",
+        "спокойн",
+        "уверенност",
+        "поддержк",
+        "советы окружающих",
+        "настроиться"
+      ]
+    },
+    {
+      "tag": "Движение и практики",
+      "keywords": [
+        "упражнен",
+        "разминк",
+        "растяжк",
+        "движен",
+        "подвижност",
+        "самомассаж",
+        "массаж",
+        "спорт",
+        "тренир",
+        "валик",
+        "четвереньк",
+        "коврик",
+        "активност"
+      ]
+    },
+    {
+      "tag": "Дыхание и расслабление",
+      "keywords": [
+        "дыхан",
+        "дышать",
+        "выдох",
+        "расслабл",
+        "самогипноз",
+        "образы",
+        "душ"
+      ]
+    },
+    {
+      "tag": "Подготовка к родам",
+      "keywords": [
+        "роддом",
+        "сумк",
+        "план родов",
+        "партнёрские роды",
+        "промежност",
+        "обезболиван",
+        "эпидурал",
+        "выбрать врача",
+        "контракт",
+        "подготовк"
+      ]
+    },
+    {
+      "tag": "Роды",
+      "keywords": [
+        "схватк",
+        "потуг",
+        "роды",
+        "родов",
+        "предвестник",
+        "слизистая пробк",
+        "воды",
+        "индукц",
+        "амниотом",
+        "кесарев",
+        "шейк",
+        "пдр"
+      ]
+    },
+    {
+      "tag": "ГВ",
+      "keywords": [
+        "груд",
+        "кормлен",
+        "молозив",
+        "сцеживан",
+        "соск",
+        "прикладыван",
+        "нагрубан",
+        "докорм"
+      ]
+    },
+    {
+      "tag": "Уход за малышом",
+      "keywords": [
+        "новорождён",
+        "неонатолог",
+        "кожа к коже",
+        "дома к возвращению",
+        "вещи малышу",
+        "пустышк",
+        "бутылочк"
+      ]
+    },
+    {
+      "tag": "Партнёр и семья",
+      "keywords": [
+        "партнёр",
+        "партнер",
+        "близк",
+        "секс",
+        "муж",
+        "семь",
+        "помощь после родов"
+      ]
+    },
+    {
+      "tag": "Самочувствие",
+      "keywords": [
+        "самочувств",
+        "триместр",
+        "выделен",
+        "давлен",
+        "одышк",
+        "нос",
+        "зуб",
+        "дёсн",
+        "усталост",
+        "сил",
+        "путешеств",
+        "работ"
+      ]
+    }
+  ],
+  "features": [
+    {
+      "id": "checkin",
+      "minDays": 0,
+      "minWeek": 1,
+      "maxWeek": 42,
+      "novelty": false,
+      "priority": 0
+    },
+    {
+      "id": "week_ring",
+      "minDays": 0,
+      "minWeek": 1,
+      "maxWeek": 42,
+      "novelty": false,
+      "priority": 0
+    },
+    {
+      "id": "ai_limit",
+      "minDays": 0,
+      "minWeek": 1,
+      "maxWeek": 42,
+      "novelty": false,
+      "priority": 0
+    },
+    {
+      "id": "poll",
+      "minDays": 2,
+      "minWeek": 1,
+      "maxWeek": 42,
+      "novelty": false,
+      "priority": 0
+    },
+    {
+      "id": "surprise_tap",
+      "minDays": 1,
+      "minWeek": 1,
+      "maxWeek": 42,
+      "novelty": false,
+      "priority": 0
+    },
+    {
+      "id": "myth",
+      "minDays": 3,
+      "minWeek": 1,
+      "maxWeek": 42,
+      "novelty": false,
+      "priority": 0
+    },
+    {
+      "id": "peek_next_week",
+      "minDays": 3,
+      "minWeek": 1,
+      "maxWeek": 41,
+      "novelty": false,
+      "priority": 0
+    },
+    {
+      "id": "time_capsule",
+      "minDays": 10,
+      "minWeek": 20,
+      "maxWeek": 36,
+      "novelty": true,
+      "priority": 4
+    },
+    {
+      "id": "surprise_scratch",
+      "minDays": 10,
+      "minWeek": 14,
+      "maxWeek": 36,
+      "novelty": true,
+      "priority": 5
+    },
+    {
+      "id": "streak",
+      "minDays": 14,
+      "minWeek": 1,
+      "maxWeek": 36,
+      "novelty": true,
+      "priority": 6
+    },
+    {
+      "id": "guess_size",
+      "minDays": 14,
+      "minWeek": 22,
+      "maxWeek": 36,
+      "novelty": true,
+      "priority": 7
+    },
+    {
+      "id": "surprise_flip",
+      "minDays": 14,
+      "minWeek": 20,
+      "maxWeek": 36,
+      "novelty": true,
+      "priority": 8
+    },
+    {
+      "id": "surprise_pick3",
+      "minDays": 21,
+      "minWeek": 30,
+      "maxWeek": 36,
+      "novelty": true,
+      "priority": 9
+    },
+    {
+      "id": "quests",
+      "minDays": 4,
+      "minWeek": 1,
+      "maxWeek": 42,
+      "novelty": false,
+      "priority": 0
+    },
+    {
+      "id": "first_kick",
+      "minDays": 0,
+      "minWeek": 16,
+      "maxWeek": 24,
+      "novelty": false,
+      "priority": 0
+    },
+    {
+      "id": "kicks_daily",
+      "minDays": 3,
+      "minWeek": 28,
+      "maxWeek": 42,
+      "novelty": false,
+      "priority": 0
+    },
+    {
+      "id": "bag_checklist",
+      "minDays": 0,
+      "minWeek": 32,
+      "maxWeek": 42,
+      "novelty": false,
+      "priority": 0
+    },
+    {
+      "id": "birth_questions",
+      "minDays": 0,
+      "minWeek": 35,
+      "maxWeek": 42,
+      "novelty": false,
+      "priority": 0
+    }
+  ],
+  "letters": [
+    {
+      "id": "letter-1",
+      "week": 1,
+      "text": "«Привет, это я — ты, только через 9 месяцев. Сейчас кажется, что ничего не происходит, но календарь уже пошёл. Береги себя — нам предстоит что-то очень хорошее»",
+      "status": "unpublished",
+      "medical": true,
+      "medicalApproved": false
+    },
+    {
+      "id": "letter-2",
+      "week": 2,
+      "text": "«Твоё тело сейчас тихо готовится к встрече. Ничего не нужно делать идеально: достаточно высыпаться и не забывать о себе. Поверь, однажды ты будешь вспоминать эти дни с улыбкой»",
+      "status": "unpublished",
+      "medical": true,
+      "medicalApproved": false
+    },
+    {
+      "id": "letter-3",
+      "week": 3,
+      "text": "«Всё начинается с одной клетки — ты пока не знаешь, а чудо уже может быть в пути. Что бы ни показал тест, ты уже делаешь главное: заботишься о себе»",
+      "status": "unpublished",
+      "medical": true,
+      "medicalApproved": false
+    },
+    {
+      "id": "letter-4",
+      "week": 4,
+      "text": "«Две полоски? Дыши. Сердце бьётся чаще, в голове сто вопросов — это нормально. Я знаю, чем всё закончится, и скажу одно: ты справишься ♥»",
+      "status": "unpublished",
+      "medical": true,
+      "medicalApproved": false
+    },
+    {
+      "id": "letter-5",
+      "week": 5,
+      "text": "«Мам, привет! У меня всё только начинается: сейчас закладывается моё сердце. Если тебе всё время хочется спать — это ты трудишься для нас обоих. Отдыхай»",
+      "status": "unpublished",
+      "medical": true,
+      "medicalApproved": false
+    },
+    {
+      "id": "letter-6",
+      "week": 6,
+      "text": "«Мам, моё сердце уже бьётся! Так быстро-быстро, что иногда его видно на УЗИ. Если тебя подташнивает — прости, это тоже ненадолго»",
+      "status": "unpublished",
+      "medical": true,
+      "medicalApproved": false
+    },
+    {
+      "id": "letter-7",
+      "week": 7,
+      "text": "«Мой мозг растёт очень быстро, а на ручках уже намечаются кисти. Скоро эти ладошки будут держать твой палец. А пока — спасибо, что ты есть»",
+      "status": "unpublished",
+      "medical": true,
+      "medicalApproved": false
+    },
+    {
+      "id": "letter-8",
+      "week": 8,
+      "text": "«У меня появляются пальчики! Пока с перепонками, как у маленького лягушонка. Иди к врачу спокойно: у нас всё по плану»",
+      "status": "unpublished",
+      "medical": true,
+      "medicalApproved": false
+    },
+    {
+      "id": "letter-9",
+      "week": 9,
+      "text": "«Мам, теперь врачи называют меня плодом — звучит солидно! У меня появляются веки и рот. Когда-нибудь я им тебе улыбнусь»",
+      "status": "unpublished",
+      "medical": true,
+      "medicalApproved": false
+    },
+    {
+      "id": "letter-10",
+      "week": 10,
+      "text": "«Я уже двигаюсь, правда! Просто пока слишком маленький, чтобы ты почувствовала. Но знай: там, внутри, я уже плаваю и кувыркаюсь»",
+      "status": "unpublished",
+      "medical": true,
+      "medicalApproved": false
+    },
+    {
+      "id": "letter-11",
+      "week": 11,
+      "text": "«У меня заработала печень, а в дёснах прячутся будущие зубки. Скоро скрининг — там ты меня, может, увидишь. Помашешь мне?»",
+      "status": "unpublished",
+      "medical": true,
+      "medicalApproved": false
+    },
+    {
+      "id": "letter-12",
+      "week": 12,
+      "text": "«Мам, все мои главные органы уже на месте — теперь они будут расти и тренироваться. Самое трудное начало позади. Мы молодцы»",
+      "status": "unpublished",
+      "medical": true,
+      "medicalApproved": false
+    },
+    {
+      "id": "letter-13",
+      "week": 13,
+      "text": "«У меня появляются голосовые связки. Кричать пока не умею, но когда научусь — ты услышишь первой. Кстати, сделай фото на память — нас уже двое!»",
+      "status": "unpublished",
+      "medical": true,
+      "medicalApproved": false
+    },
+    {
+      "id": "letter-14",
+      "week": 14,
+      "text": "«Мам, первая глава позади! Я уже глотаю водичку и тренирую почки. Говорят, впереди самый уютный триместр — давай пользоваться»",
+      "status": "unpublished",
+      "medical": true,
+      "medicalApproved": false
+    },
+    {
+      "id": "letter-15",
+      "week": 15,
+      "text": "«Я умею подносить пальчик ко рту — тренируюсь на будущее. А ещё меня покрывает нежный пушок. Тепло и уютно, спасибо тебе»",
+      "status": "unpublished",
+      "medical": true,
+      "medicalApproved": false
+    },
+    {
+      "id": "letter-16",
+      "week": 16,
+      "text": "«Мои кулачки уже сжимаются, а глазки двигаются под веками. Скоро ты почувствуешь, как я толкаюсь. Не пропусти!»",
+      "status": "unpublished",
+      "medical": true,
+      "medicalApproved": false
+    },
+    {
+      "id": "letter-17",
+      "week": 17,
+      "text": "«Мам, я начинаю слышать. Расскажи мне что-нибудь сегодня — про себя, про папу, про то, как ждёшь меня. Мне всё интересно»",
+      "status": "unpublished",
+      "medical": true,
+      "medicalApproved": false
+    },
+    {
+      "id": "letter-18",
+      "week": 18,
+      "text": "«У меня уже есть суставы, я сгибаю ручки и ножки. На УЗИ может быть видно, как я растягиваюсь. Позирую тебе!»",
+      "status": "unpublished",
+      "medical": true,
+      "medicalApproved": false
+    },
+    {
+      "id": "letter-19",
+      "week": 19,
+      "text": "«Меня защищает первородная смазка — как специальный крем. А ты пользуешься кремом для животика? Мне нравится, когда ты гладишь меня»",
+      "status": "unpublished",
+      "medical": true,
+      "medicalApproved": false
+    },
+    {
+      "id": "letter-20",
+      "week": 20,
+      "text": "«Половина пути, мам! Теперь ты чувствуешь мои толчки — это я говорю «привет». И ещё я умею сосать пальчик»",
+      "status": "unpublished",
+      "medical": true,
+      "medicalApproved": false
+    },
+    {
+      "id": "letter-21",
+      "week": 21,
+      "text": "«У меня появились брови и ресницы, и я умею моргать! Когда мы встретимся, я буду так тебе подмигивать»",
+      "status": "unpublished",
+      "medical": true,
+      "medicalApproved": false
+    },
+    {
+      "id": "letter-22",
+      "week": 22,
+      "text": "«Тренируюсь дышать! Пока понарошку — кислород мне даёшь ты. Давай тренироваться вместе: ты делаешь глубокий вдох, а я повторяю за тобой»",
+      "status": "unpublished",
+      "medical": true,
+      "medicalApproved": false
+    },
+    {
+      "id": "letter-23",
+      "week": 23,
+      "text": "«В моих лёгких появилось особое вещество — оно поможет мне дышать после рождения. Видишь, я уже готовлюсь к встрече. А ты?»",
+      "status": "unpublished",
+      "medical": true,
+      "medicalApproved": false
+    },
+    {
+      "id": "letter-24",
+      "week": 24,
+      "text": "«Моя кожа пока тоненькая и морщинистая, но я расту каждый день. Спасибо, что сходила на анализы — это и забота обо мне тоже»",
+      "status": "unpublished",
+      "medical": true,
+      "medicalApproved": false
+    },
+    {
+      "id": "letter-25",
+      "week": 25,
+      "text": "«Иногда я икаю — если ты чувствуешь ритмичные толчки, это оно. А ещё я умею хватать свою ножку. У нас тут весело!»",
+      "status": "unpublished",
+      "medical": true,
+      "medicalApproved": false
+    },
+    {
+      "id": "letter-26",
+      "week": 26,
+      "text": "«Мам, я запоминаю твой голос. После рождения я узнаю его из тысячи. Спой мне что-нибудь перед сном?»",
+      "status": "unpublished",
+      "medical": true,
+      "medicalApproved": false
+    },
+    {
+      "id": "letter-27",
+      "week": 27,
+      "text": "«У меня появляется жирок, складочки разглаживаются — становлюсь пухленьким. Вторая глава заканчивается, и я так рад, что мы вместе»",
+      "status": "unpublished",
+      "medical": true,
+      "medicalApproved": false
+    },
+    {
+      "id": "letter-28",
+      "week": 28,
+      "text": "«Мам, мы вошли в последнюю главу! Я уже умею открывать глаза. Послушай сегодня, как я шевелюсь — это наш с тобой разговор»",
+      "status": "unpublished",
+      "medical": true,
+      "medicalApproved": false
+    },
+    {
+      "id": "letter-29",
+      "week": 29,
+      "text": "«Скоро я, скорее всего, перевернусь головкой вниз — так удобнее идти к тебе навстречу. А ты уже подумала, кто будет помогать нам после родов?»",
+      "status": "unpublished",
+      "medical": true,
+      "medicalApproved": false
+    },
+    {
+      "id": "letter-30",
+      "week": 30,
+      "text": "«У меня растут волосы! Интересно, на кого я буду похож — на тебя или на папу? Давай поспорим, а потом проверим»",
+      "status": "unpublished",
+      "medical": true,
+      "medicalApproved": false
+    },
+    {
+      "id": "letter-31",
+      "week": 31,
+      "text": "«Мой кишечник уже тренируется — всё по-взрослому. Мам, пора потихоньку собирать сумку — положи туда что-нибудь мягкое для меня?»",
+      "status": "unpublished",
+      "medical": true,
+      "medicalApproved": false
+    },
+    {
+      "id": "letter-32",
+      "week": 32,
+      "text": "«У меня уже есть ноготки на пальчиках ног, а пушок с тела исчезает. Кажется, я почти готов к фотосессии 😊»",
+      "status": "unpublished",
+      "medical": true,
+      "medicalApproved": false
+    },
+    {
+      "id": "letter-33",
+      "week": 33,
+      "text": "«Моя печень запасает железо на первые месяцы. Я предусмотрительный, всё в тебя! А если сны стали яркими — может, тебе снюсь я?»",
+      "status": "unpublished",
+      "medical": true,
+      "medicalApproved": false
+    },
+    {
+      "id": "letter-34",
+      "week": 34,
+      "text": "«Мам, ты передаёшь мне свою защиту, чтобы я родился сильным. Мои ногти уже доросли до кончиков пальцев. Спасибо тебе за всё»",
+      "status": "unpublished",
+      "medical": true,
+      "medicalApproved": false
+    },
+    {
+      "id": "letter-35",
+      "week": 35,
+      "text": "«Учусь сосать и глотать — готовлюсь к нашему первому обеду. Тесновато тут стало, но мне всё равно хорошо рядом с тобой»",
+      "status": "unpublished",
+      "medical": true,
+      "medicalApproved": false
+    },
+    {
+      "id": "letter-36",
+      "week": 36,
+      "text": "«Мои кости крепнут, а головка остаётся гибкой — так надо, чтобы нам с тобой было легче встретиться. Дома всё готово к моему приезду?»",
+      "status": "unpublished",
+      "medical": true,
+      "medicalApproved": false
+    },
+    {
+      "id": "letter-37",
+      "week": 37,
+      "text": "«Мам, я доношенный! Теперь я могу прийти в любой день. Не волнуйся: я выберу самый лучший момент»",
+      "status": "unpublished",
+      "medical": true,
+      "medicalApproved": false
+    },
+    {
+      "id": "letter-38",
+      "week": 38,
+      "text": "«Я уже умею крепко хватать — скоро докажу это на твоём пальце. Осталось совсем чуть-чуть. Отдыхай и спи побольше, пока можно!»",
+      "status": "unpublished",
+      "medical": true,
+      "medicalApproved": false
+    },
+    {
+      "id": "letter-39",
+      "week": 39,
+      "text": "«Я полностью готов, мам. Если все вокруг спрашивают «ну что, ещё нет?» — отвечай, что мы с тобой сами решим. До встречи!»",
+      "status": "unpublished",
+      "medical": true,
+      "medicalApproved": false
+    },
+    {
+      "id": "letter-40",
+      "week": 40,
+      "text": "«Мам, ПДР — это просто дата в календаре, а у меня свои часы. Я приду, когда буду готов. Я уже слышу, как сильно ты меня ждёшь ♥» (особое письмо: приходит в День 1 40 недели всем, даже без «6 из 6»)",
+      "status": "unpublished",
+      "medical": true,
+      "medicalApproved": false
+    },
+    {
+      "id": "letter-41",
+      "week": 41,
+      "text": "«Я всё ещё тут, и это нормально. Врачи присматривают за нами внимательнее — слушайся их и себя. Мы очень близко»",
+      "status": "unpublished",
+      "medical": true,
+      "medicalApproved": false
+    },
+    {
+      "id": "letter-42",
+      "week": 42,
+      "text": "«Мам, скоро-скоро. Что бы ни решил врач, мы вместе и мы справимся. До встречи — совсем чуть-чуть ♥»",
+      "status": "unpublished",
+      "medical": true,
+      "medicalApproved": false
+    }
+  ],
+  "questions": [
+    {
+      "id": "myth-1-1",
+      "kind": "myth",
+      "week": 1,
+      "slot": 1,
+      "prompt": "Срок беременности считают от дня зачатия",
+      "options": [
+        "Правда",
+        "Миф"
+      ],
+      "answer": 1,
+      "explanation": "Акушерский срок считают от первого дня последней менструации — примерно за 2 недели до зачатия.",
+      "articleId": "pregnancy-001",
+      "status": "unpublished",
+      "medical": true,
+      "medicalApproved": false
+    },
+    {
+      "id": "myth-1-2",
+      "kind": "myth",
+      "week": 1,
+      "slot": 2,
+      "prompt": "Фолиевую кислоту стоит начинать ещё на этапе планирования",
+      "options": [
+        "Правда",
+        "Миф"
+      ],
+      "answer": 0,
+      "explanation": "Фолаты нужны в первые недели, когда формируется нервная трубка, поэтому их обычно советуют начинать заранее. Дозу подскажет врач.",
+      "articleId": "pregnancy-002",
+      "status": "unpublished",
+      "medical": true,
+      "medicalApproved": false
+    },
+    {
+      "id": "myth-1-3",
+      "kind": "myth",
+      "week": 1,
+      "slot": 3,
+      "prompt": "Перед беременностью нужно сдать десятки анализов",
+      "options": [
+        "Правда",
+        "Миф"
+      ],
+      "answer": 1,
+      "explanation": "Обычно хватает базового набора, который назначит врач. Лишние обследования чаще добавляют тревоги, чем пользы.",
+      "articleId": "pregnancy-003",
+      "status": "unpublished",
+      "medical": true,
+      "medicalApproved": false
+    },
+    {
+      "id": "myth-2-1",
+      "kind": "myth",
+      "week": 2,
+      "slot": 1,
+      "prompt": "Овуляция всегда бывает на 14-й день цикла",
+      "options": [
+        "Правда",
+        "Миф"
+      ],
+      "answer": 1,
+      "explanation": "14-й день — среднее для 28-дневного цикла. У каждой женщины и даже в разные месяцы дата может сдвигаться.",
+      "articleId": "pregnancy-004",
+      "status": "unpublished",
+      "medical": true,
+      "medicalApproved": false
+    },
+    {
+      "id": "myth-2-2",
+      "kind": "myth",
+      "week": 2,
+      "slot": 2,
+      "prompt": "Фертильное окно — это только один день",
+      "options": [
+        "Правда",
+        "Миф"
+      ],
+      "answer": 1,
+      "explanation": "Сперматозоиды живут до нескольких дней, поэтому фертильные дни — это несколько дней до овуляции и сам день овуляции.",
+      "articleId": "pregnancy-005",
+      "status": "unpublished",
+      "medical": true,
+      "medicalApproved": false
+    },
+    {
+      "id": "myth-2-3",
+      "kind": "myth",
+      "week": 2,
+      "slot": 3,
+      "prompt": "При планировании лучше полностью бросить спорт",
+      "options": [
+        "Правда",
+        "Миф"
+      ],
+      "answer": 1,
+      "explanation": "Умеренная активность помогает организму. Обсудить с врачом стоит только очень интенсивные нагрузки.",
+      "articleId": "pregnancy-006",
+      "status": "unpublished",
+      "medical": true,
+      "medicalApproved": false
+    },
+    {
+      "id": "myth-3-1",
+      "kind": "myth",
+      "week": 3,
+      "slot": 1,
+      "prompt": "Сразу после зачатия женщина чувствует беременность",
+      "options": [
+        "Правда",
+        "Миф"
+      ],
+      "answer": 1,
+      "explanation": "В первые дни чаще всего ничего не ощущается — это нормально и ни о чём плохом не говорит.",
+      "articleId": "pregnancy-007",
+      "status": "unpublished",
+      "medical": true,
+      "medicalApproved": false
+    },
+    {
+      "id": "myth-3-2",
+      "kind": "myth",
+      "week": 3,
+      "slot": 2,
+      "prompt": "Узнав о беременности, нужно срочно перевернуть всю жизнь",
+      "options": [
+        "Правда",
+        "Миф"
+      ],
+      "answer": 1,
+      "explanation": "Достаточно убрать алкоголь и курение, обсудить с врачом лекарства и больше отдыхать. Привычная жизнь в основном остаётся.",
+      "articleId": "pregnancy-008",
+      "status": "unpublished",
+      "medical": true,
+      "medicalApproved": false
+    },
+    {
+      "id": "myth-3-3",
+      "kind": "myth",
+      "week": 3,
+      "slot": 3,
+      "prompt": "Привычную еду придётся полностью поменять",
+      "options": [
+        "Правда",
+        "Миф"
+      ],
+      "answer": 1,
+      "explanation": "Большинство продуктов можно оставить. Важнее разнообразие и безопасная обработка продуктов.",
+      "articleId": "pregnancy-009",
+      "status": "unpublished",
+      "medical": true,
+      "medicalApproved": false
+    },
+    {
+      "id": "myth-4-1",
+      "kind": "myth",
+      "week": 4,
+      "slot": 1,
+      "prompt": "Тест на беременность покажет точно в любой день цикла",
+      "options": [
+        "Правда",
+        "Миф"
+      ],
+      "answer": 1,
+      "explanation": "До задержки тест может быть ложноотрицательным. Надёжнее делать его с первого дня задержки или повторить через 2–3 дня.",
+      "articleId": "pregnancy-010",
+      "status": "unpublished",
+      "medical": true,
+      "medicalApproved": false
+    },
+    {
+      "id": "myth-4-2",
+      "kind": "myth",
+      "week": 4,
+      "slot": 2,
+      "prompt": "Увидев две полоски, к врачу нужно идти в тот же день",
+      "options": [
+        "Правда",
+        "Миф"
+      ],
+      "answer": 1,
+      "explanation": "Если ничего не беспокоит, записаться можно спокойно в ближайшие недели. Сразу — если есть боль или кровянистые выделения.",
+      "articleId": "pregnancy-011",
+      "status": "unpublished",
+      "medical": true,
+      "medicalApproved": false
+    },
+    {
+      "id": "myth-4-3",
+      "kind": "myth",
+      "week": 4,
+      "slot": 3,
+      "prompt": "ПДР можно посчитать самой",
+      "options": [
+        "Правда",
+        "Миф"
+      ],
+      "answer": 0,
+      "explanation": "К дате первого дня последних месячных добавляют 280 дней. Потом врач уточнит срок по УЗИ.",
+      "articleId": "pregnancy-012",
+      "status": "unpublished",
+      "medical": true,
+      "medicalApproved": false
+    },
+    {
+      "id": "myth-5-1",
+      "kind": "myth",
+      "week": 5,
+      "slot": 1,
+      "prompt": "К акушеру-гинекологу нужно идти в первую же неделю задержки",
+      "options": [
+        "Правда",
+        "Миф"
+      ],
+      "answer": 1,
+      "explanation": "Для первого визита важнее успеть до 10–12 недель. Раньше — если есть жалобы или хронические заболевания.",
+      "articleId": "pregnancy-013",
+      "status": "unpublished",
+      "medical": true,
+      "medicalApproved": false
+    },
+    {
+      "id": "myth-5-2",
+      "kind": "myth",
+      "week": 5,
+      "slot": 2,
+      "prompt": "Первое УЗИ нужно сделать как можно раньше",
+      "options": [
+        "Правда",
+        "Миф"
+      ],
+      "answer": 1,
+      "explanation": "Слишком раннее УЗИ часто ничего не показывает и только добавляет тревоги. Срок подскажет врач.",
+      "articleId": "pregnancy-014",
+      "status": "unpublished",
+      "medical": true,
+      "medicalApproved": false
+    },
+    {
+      "id": "myth-5-3",
+      "kind": "myth",
+      "week": 5,
+      "slot": 3,
+      "prompt": "Беременным нужно пить все витамины подряд «на всякий случай»",
+      "options": [
+        "Правда",
+        "Миф"
+      ],
+      "answer": 1,
+      "explanation": "Реально нужны лишь некоторые (например, фолаты и йод), остальное — по анализам и назначению врача.",
+      "articleId": "pregnancy-015",
+      "status": "unpublished",
+      "medical": true,
+      "medicalApproved": false
+    },
+    {
+      "id": "myth-6-1",
+      "kind": "myth",
+      "week": 6,
+      "slot": 1,
+      "prompt": "Утреннюю тошноту можно облегчить частым питанием маленькими порциями",
+      "options": [
+        "Правда",
+        "Миф"
+      ],
+      "answer": 0,
+      "explanation": "Небольшие перекусы и достаточно воды помогают многим. Если рвота частая и невозможно пить — нужен врач.",
+      "articleId": "pregnancy-016",
+      "status": "unpublished",
+      "medical": true,
+      "medicalApproved": false
+    },
+    {
+      "id": "myth-6-2",
+      "kind": "myth",
+      "week": 6,
+      "slot": 2,
+      "prompt": "Если любимая еда разонравилась, с организмом что-то не так",
+      "options": [
+        "Правда",
+        "Миф"
+      ],
+      "answer": 1,
+      "explanation": "Изменения аппетита и вкуса — обычная часть начала беременности из-за гормонов.",
+      "articleId": "pregnancy-017",
+      "status": "unpublished",
+      "medical": true,
+      "medicalApproved": false
+    },
+    {
+      "id": "myth-6-3",
+      "kind": "myth",
+      "week": 6,
+      "slot": 3,
+      "prompt": "Беременным нельзя всё из длинных списков в интернете",
+      "options": [
+        "Правда",
+        "Миф"
+      ],
+      "answer": 1,
+      "explanation": "Реальных запретов немного: сырые мясо и рыба, непастеризованные продукты, алкоголь. Многое запрещают зря.",
+      "articleId": "pregnancy-018",
+      "status": "unpublished",
+      "medical": true,
+      "medicalApproved": false
+    },
+    {
+      "id": "myth-7-1",
+      "kind": "myth",
+      "week": 7,
+      "slot": 1,
+      "prompt": "Сильная сонливость в начале беременности — норма",
+      "options": [
+        "Правда",
+        "Миф"
+      ],
+      "answer": 0,
+      "explanation": "Прогестерон и большая работа организма делают своё дело. Обычно ко второму триместру становится легче.",
+      "articleId": "pregnancy-019",
+      "status": "unpublished",
+      "medical": true,
+      "medicalApproved": false
+    },
+    {
+      "id": "myth-7-2",
+      "kind": "myth",
+      "week": 7,
+      "slot": 2,
+      "prompt": "Вздутие и запоры в начале беременности бывают часто",
+      "options": [
+        "Правда",
+        "Миф"
+      ],
+      "answer": 0,
+      "explanation": "Гормоны замедляют работу кишечника. Помогают вода, клетчатка и движение.",
+      "articleId": "pregnancy-020",
+      "status": "unpublished",
+      "medical": true,
+      "medicalApproved": false
+    },
+    {
+      "id": "myth-7-3",
+      "kind": "myth",
+      "week": 7,
+      "slot": 3,
+      "prompt": "Если сил стало меньше, надо просто терпеть и работать как раньше",
+      "options": [
+        "Правда",
+        "Миф"
+      ],
+      "answer": 1,
+      "explanation": "Лучше перестроить день: перерывы, перекусы, самые сложные задачи — на время, когда сил больше.",
+      "articleId": "pregnancy-021",
+      "status": "unpublished",
+      "medical": true,
+      "medicalApproved": false
+    },
+    {
+      "id": "myth-8-1",
+      "kind": "myth",
+      "week": 8,
+      "slot": 1,
+      "prompt": "Часть анализов при постановке на учёт можно спокойно пропустить",
+      "options": [
+        "Правда",
+        "Миф"
+      ],
+      "answer": 1,
+      "explanation": "Стартовые анализы помогают вовремя заметить анемию, инфекции и несовместимость по резусу. Если что-то смущает — спросите врача, зачем оно.",
+      "articleId": "pregnancy-022",
+      "status": "unpublished",
+      "medical": true,
+      "medicalApproved": false
+    },
+    {
+      "id": "myth-8-2",
+      "kind": "myth",
+      "week": 8,
+      "slot": 2,
+      "prompt": "Зубы во время беременности лечить нельзя",
+      "options": [
+        "Правда",
+        "Миф"
+      ],
+      "answer": 1,
+      "explanation": "Лечить можно и нужно, особенно удобно во втором триместре. Достаточно предупредить стоматолога о беременности.",
+      "articleId": "pregnancy-023",
+      "status": "unpublished",
+      "medical": true,
+      "medicalApproved": false
+    },
+    {
+      "id": "myth-8-3",
+      "kind": "myth",
+      "week": 8,
+      "slot": 3,
+      "prompt": "Привычный уход за кожей придётся полностью отменить",
+      "options": [
+        "Правда",
+        "Миф"
+      ],
+      "answer": 1,
+      "explanation": "Большинство средств можно оставить. Стоит уточнить лишь отдельные активные компоненты, например ретиноиды.",
+      "articleId": "pregnancy-024",
+      "status": "unpublished",
+      "medical": true,
+      "medicalApproved": false
+    },
+    {
+      "id": "myth-9-1",
+      "kind": "myth",
+      "week": 9,
+      "slot": 1,
+      "prompt": "От кофе придётся отказаться полностью",
+      "options": [
+        "Правда",
+        "Миф"
+      ],
+      "answer": 1,
+      "explanation": "Обычно допустимо до 200 мг кофеина в день — это примерно 1–2 чашки кофе.",
+      "articleId": "pregnancy-025",
+      "status": "unpublished",
+      "medical": true,
+      "medicalApproved": false
+    },
+    {
+      "id": "myth-9-2",
+      "kind": "myth",
+      "week": 9,
+      "slot": 2,
+      "prompt": "При нормально протекающей беременности секс вреден малышу",
+      "options": [
+        "Правда",
+        "Миф"
+      ],
+      "answer": 1,
+      "explanation": "Малыша защищают околоплодные воды и шейка матки. Ограничения бывают только по особым показаниям врача.",
+      "articleId": "pregnancy-026",
+      "status": "unpublished",
+      "medical": true,
+      "medicalApproved": false
+    },
+    {
+      "id": "myth-9-3",
+      "kind": "myth",
+      "week": 9,
+      "slot": 3,
+      "prompt": "Баня и очень горячая ванна на раннем сроке безопасны, если нравится",
+      "options": [
+        "Правда",
+        "Миф"
+      ],
+      "answer": 1,
+      "explanation": "Сильный перегрев в первом триместре нежелателен. Тёплый, а не горячий душ — хорошая замена.",
+      "articleId": "pregnancy-027",
+      "status": "unpublished",
+      "medical": true,
+      "medicalApproved": false
+    },
+    {
+      "id": "myth-10-1",
+      "kind": "myth",
+      "week": 10,
+      "slot": 1,
+      "prompt": "На беременность нужно набрать строго указанную цифру килограммов",
+      "options": [
+        "Правда",
+        "Миф"
+      ],
+      "answer": 1,
+      "explanation": "Норма прибавки зависит от веса до беременности и у всех разная. Важнее плавность, чем точная цифра.",
+      "articleId": "pregnancy-028",
+      "status": "unpublished",
+      "medical": true,
+      "medicalApproved": false
+    },
+    {
+      "id": "myth-10-2",
+      "kind": "myth",
+      "week": 10,
+      "slot": 2,
+      "prompt": "Если занималась спортом до беременности, его часто можно продолжать",
+      "options": [
+        "Правда",
+        "Миф"
+      ],
+      "answer": 0,
+      "explanation": "Привычные тренировки обычно продолжают с поправкой на самочувствие, исключая риск ударов и падений.",
+      "articleId": "pregnancy-029",
+      "status": "unpublished",
+      "medical": true,
+      "medicalApproved": false
+    },
+    {
+      "id": "myth-10-3",
+      "kind": "myth",
+      "week": 10,
+      "slot": 3,
+      "prompt": "НИПТ полностью заменяет обычный скрининг",
+      "options": [
+        "Правда",
+        "Миф"
+      ],
+      "answer": 1,
+      "explanation": "НИПТ ищет хромосомные отклонения, а скрининговое УЗИ оценивает ещё и развитие малыша. Врач подскажет, что нужно именно вам.",
+      "articleId": "pregnancy-030",
+      "status": "unpublished",
+      "medical": true,
+      "medicalApproved": false
+    },
+    {
+      "id": "myth-11-1",
+      "kind": "myth",
+      "week": 11,
+      "slot": 1,
+      "prompt": "К первому скринингу можно прийти в любой неделе первого триместра",
+      "options": [
+        "Правда",
+        "Миф"
+      ],
+      "answer": 1,
+      "explanation": "У первого скрининга есть своё окно — примерно 11–14 недель. Раньше или позже его результаты менее точны.",
+      "articleId": "pregnancy-031",
+      "status": "unpublished",
+      "medical": true,
+      "medicalApproved": false
+    },
+    {
+      "id": "myth-11-2",
+      "kind": "myth",
+      "week": 11,
+      "slot": 2,
+      "prompt": "Летать на самолёте беременным запрещено",
+      "options": [
+        "Правда",
+        "Миф"
+      ],
+      "answer": 1,
+      "explanation": "При нормальной беременности летать обычно можно. У авиакомпаний свои ограничения по сроку — уточняйте заранее.",
+      "articleId": "pregnancy-032",
+      "status": "unpublished",
+      "medical": true,
+      "medicalApproved": false
+    },
+    {
+      "id": "myth-11-3",
+      "kind": "myth",
+      "week": 11,
+      "slot": 3,
+      "prompt": "Работа за компьютером вредит малышу из-за излучения",
+      "options": [
+        "Правда",
+        "Миф"
+      ],
+      "answer": 1,
+      "explanation": "Излучение компьютера не опасно. Важнее удобный стул и разминка каждый час.",
+      "articleId": "pregnancy-033",
+      "status": "unpublished",
+      "medical": true,
+      "medicalApproved": false
+    },
+    {
+      "id": "myth-12-1",
+      "kind": "myth",
+      "week": 12,
+      "slot": 1,
+      "prompt": "Ко второму триместру тошнота и усталость часто ослабевают",
+      "options": [
+        "Правда",
+        "Миф"
+      ],
+      "answer": 0,
+      "explanation": "У многих самочувствие заметно улучшается к 13–16 неделе, хотя у каждой по-своему.",
+      "articleId": "pregnancy-034",
+      "status": "unpublished",
+      "medical": true,
+      "medicalApproved": false
+    },
+    {
+      "id": "myth-12-2",
+      "kind": "myth",
+      "week": 12,
+      "slot": 2,
+      "prompt": "Результат скрининга лучше расшифровать самой в интернете",
+      "options": [
+        "Правда",
+        "Миф"
+      ],
+      "answer": 1,
+      "explanation": "Риски в скрининге считаются из многих показателей сразу. Расшифровка со стороны пугает зря — её делает врач.",
+      "articleId": "pregnancy-035",
+      "status": "unpublished",
+      "medical": true,
+      "medicalApproved": false
+    },
+    {
+      "id": "myth-12-3",
+      "kind": "myth",
+      "week": 12,
+      "slot": 3,
+      "prompt": "Группу крови и резус определяют просто «для галочки»",
+      "options": [
+        "Правда",
+        "Миф"
+      ],
+      "answer": 1,
+      "explanation": "При отрицательном резусе врач следит за антителами и вовремя делает профилактику — это защищает малыша.",
+      "articleId": "pregnancy-036",
+      "status": "unpublished",
+      "medical": true,
+      "medicalApproved": false
+    },
+    {
+      "id": "myth-13-1",
+      "kind": "myth",
+      "week": 13,
+      "slot": 1,
+      "prompt": "Второй триместр часто называют самым комфортным",
+      "options": [
+        "Правда",
+        "Миф"
+      ],
+      "answer": 0,
+      "explanation": "Тошнота уходит, сил становится больше, а живот ещё не мешает. Хорошее время для поездок и дел.",
+      "articleId": "pregnancy-037",
+      "status": "unpublished",
+      "medical": true,
+      "medicalApproved": false
+    },
+    {
+      "id": "myth-13-2",
+      "kind": "myth",
+      "week": 13,
+      "slot": 2,
+      "prompt": "Во втором триместре нужно есть за двоих",
+      "options": [
+        "Правда",
+        "Миф"
+      ],
+      "answer": 1,
+      "explanation": "Потребность в энергии растёт немного — примерно на один перекус в день. Важнее качество еды, а не объём.",
+      "articleId": "pregnancy-038",
+      "status": "unpublished",
+      "medical": true,
+      "medicalApproved": false
+    },
+    {
+      "id": "myth-13-3",
+      "kind": "myth",
+      "week": 13,
+      "slot": 3,
+      "prompt": "Специальная одежда для беременных нужна с первых недель",
+      "options": [
+        "Правда",
+        "Миф"
+      ],
+      "answer": 1,
+      "explanation": "Пока удобно в своей одежде — в ней и ходите. Главное, чтобы ничего не давило на живот и грудь.",
+      "articleId": "pregnancy-039",
+      "status": "unpublished",
+      "medical": true,
+      "medicalApproved": false
+    },
+    {
+      "id": "myth-14-1",
+      "kind": "myth",
+      "week": 14,
+      "slot": 1,
+      "prompt": "Спать на животе на этом сроке опасно для малыша",
+      "options": [
+        "Правда",
+        "Миф"
+      ],
+      "answer": 1,
+      "explanation": "Пока удобно, можно. Малыша защищают воды и матка, а с ростом живота вы сами перейдёте на бок.",
+      "articleId": "pregnancy-040",
+      "status": "unpublished",
+      "medical": true,
+      "medicalApproved": false
+    },
+    {
+      "id": "myth-14-2",
+      "kind": "myth",
+      "week": 14,
+      "slot": 2,
+      "prompt": "Пигментные пятна на коже во время беременности — обычное явление",
+      "options": [
+        "Правда",
+        "Миф"
+      ],
+      "answer": 0,
+      "explanation": "Из-за гормонов кожа темнеет у многих. Помогает солнцезащитный крем, а после родов пятна часто бледнеют.",
+      "articleId": "pregnancy-041",
+      "status": "unpublished",
+      "medical": true,
+      "medicalApproved": false
+    },
+    {
+      "id": "myth-14-3",
+      "kind": "myth",
+      "week": 14,
+      "slot": 3,
+      "prompt": "Во втором триместре лучше больше лежать и меньше двигаться",
+      "options": [
+        "Правда",
+        "Миф"
+      ],
+      "answer": 1,
+      "explanation": "Регулярное спокойное движение — прогулки, плавание, гимнастика — помогает спине, сну и настроению, если врач не запретил.",
+      "articleId": "pregnancy-042",
+      "status": "unpublished",
+      "medical": true,
+      "medicalApproved": false
+    },
+    {
+      "id": "myth-15-1",
+      "kind": "myth",
+      "week": 15,
+      "slot": 1,
+      "prompt": "Любые выделения во время беременности — повод срочно ехать к врачу",
+      "options": [
+        "Правда",
+        "Миф"
+      ],
+      "answer": 1,
+      "explanation": "Светлые без запаха и зуда — норма, их обычно становится больше. Срочно — если кровь, водянистые или с неприятным запахом.",
+      "articleId": "pregnancy-043",
+      "status": "unpublished",
+      "medical": true,
+      "medicalApproved": false
+    },
+    {
+      "id": "myth-15-2",
+      "kind": "myth",
+      "week": 15,
+      "slot": 2,
+      "prompt": "Во время беременности дёсна чаще кровоточат",
+      "options": [
+        "Правда",
+        "Миф"
+      ],
+      "answer": 0,
+      "explanation": "Гормоны делают дёсны чувствительнее. Помогают мягкая щётка, нить и плановый визит к стоматологу.",
+      "articleId": "pregnancy-044",
+      "status": "unpublished",
+      "medical": true,
+      "medicalApproved": false
+    },
+    {
+      "id": "myth-15-3",
+      "kind": "myth",
+      "week": 15,
+      "slot": 3,
+      "prompt": "Беременным лучше не пристёгиваться ремнём безопасности",
+      "options": [
+        "Правда",
+        "Миф"
+      ],
+      "answer": 1,
+      "explanation": "Пристёгиваться нужно всегда: нижнюю лямку — под животом по бёдрам, верхнюю — между грудью и сбоку от живота.",
+      "articleId": "pregnancy-045",
+      "status": "unpublished",
+      "medical": true,
+      "medicalApproved": false
+    },
+    {
+      "id": "myth-16-1",
+      "kind": "myth",
+      "week": 16,
+      "slot": 1,
+      "prompt": "Все чувствуют первые шевеления в одну и ту же неделю",
+      "options": [
+        "Правда",
+        "Миф"
+      ],
+      "answer": 1,
+      "explanation": "При первой беременности чаще около 18–22 недель, при повторной — раньше. Влияют и расположение плаценты, и телосложение.",
+      "articleId": "pregnancy-046",
+      "status": "unpublished",
+      "medical": true,
+      "medicalApproved": false
+    },
+    {
+      "id": "myth-16-2",
+      "kind": "myth",
+      "week": 16,
+      "slot": 2,
+      "prompt": "На плановом приёме можно задавать врачу любые вопросы, даже «глупые»",
+      "options": [
+        "Правда",
+        "Миф"
+      ],
+      "answer": 0,
+      "explanation": "Запишите их заранее в заметки — на приёме легко забыть. Врачу важно знать о ваших сомнениях.",
+      "articleId": "pregnancy-047",
+      "status": "unpublished",
+      "medical": true,
+      "medicalApproved": false
+    },
+    {
+      "id": "myth-16-3",
+      "kind": "myth",
+      "week": 16,
+      "slot": 3,
+      "prompt": "Давление дома можно мерить сразу после подъёма по лестнице",
+      "options": [
+        "Правда",
+        "Миф"
+      ],
+      "answer": 1,
+      "explanation": "Перед измерением нужно 5 минут посидеть спокойно, рука на столе на уровне сердца. Записывайте цифры для врача.",
+      "articleId": "pregnancy-048",
+      "status": "unpublished",
+      "medical": true,
+      "medicalApproved": false
+    },
+    {
+      "id": "myth-17-1",
+      "kind": "myth",
+      "week": 17,
+      "slot": 1,
+      "prompt": "Боль в спине у беременных можно уменьшить без таблеток",
+      "options": [
+        "Правда",
+        "Миф"
+      ],
+      "answer": 0,
+      "explanation": "Помогают движение, удобная обувь, тёплый душ и правильный подъём тяжестей. Сильная или ритмичная боль — повод позвонить врачу.",
+      "articleId": "pregnancy-049",
+      "status": "unpublished",
+      "medical": true,
+      "medicalApproved": false
+    },
+    {
+      "id": "myth-17-2",
+      "kind": "myth",
+      "week": 17,
+      "slot": 2,
+      "prompt": "Бандаж нужен каждой беременной",
+      "options": [
+        "Правда",
+        "Миф"
+      ],
+      "answer": 1,
+      "explanation": "Бандаж помогает не всем и не всегда. Если спина в порядке, он не обязателен; подбирают его по ощущениям.",
+      "articleId": "pregnancy-050",
+      "status": "unpublished",
+      "medical": true,
+      "medicalApproved": false
+    },
+    {
+      "id": "myth-17-3",
+      "kind": "myth",
+      "week": 17,
+      "slot": 3,
+      "prompt": "Вставать с кровати лучше через бок, а не «рывком» со спины",
+      "options": [
+        "Правда",
+        "Миф"
+      ],
+      "answer": 0,
+      "explanation": "Так меньше нагрузка на пресс и поясницу: повернуться на бок, опустить ноги и подняться с опорой на руки.",
+      "articleId": "pregnancy-051",
+      "status": "unpublished",
+      "medical": true,
+      "medicalApproved": false
+    },
+    {
+      "id": "myth-18-1",
+      "kind": "myth",
+      "week": 18,
+      "slot": 1,
+      "prompt": "Ко второму скринингу нужно сложно готовиться: диета, полный мочевой пузырь",
+      "options": [
+        "Правда",
+        "Миф"
+      ],
+      "answer": 1,
+      "explanation": "Особой подготовки обычно не нужно. Возьмите с собой прошлые заключения и вопросы к врачу.",
+      "articleId": "pregnancy-052",
+      "status": "unpublished",
+      "medical": true,
+      "medicalApproved": false
+    },
+    {
+      "id": "myth-18-2",
+      "kind": "myth",
+      "week": 18,
+      "slot": 2,
+      "prompt": "Низкое расположение плаценты на втором УЗИ часто меняется к родам",
+      "options": [
+        "Правда",
+        "Миф"
+      ],
+      "answer": 0,
+      "explanation": "По мере роста матки плацента часто «поднимается». Врач перепроверит её позже.",
+      "articleId": "pregnancy-053",
+      "status": "unpublished",
+      "medical": true,
+      "medicalApproved": false
+    },
+    {
+      "id": "myth-18-3",
+      "kind": "myth",
+      "week": 18,
+      "slot": 3,
+      "prompt": "Пол малыша на УЗИ определяют без ошибок",
+      "options": [
+        "Правда",
+        "Миф"
+      ],
+      "answer": 1,
+      "explanation": "Ошибки случаются: мешают положение малыша и срок. До рождения на 100% уверены быть нельзя.",
+      "articleId": "pregnancy-054",
+      "status": "unpublished",
+      "medical": true,
+      "medicalApproved": false
+    },
+    {
+      "id": "myth-19-1",
+      "kind": "myth",
+      "week": 19,
+      "slot": 1,
+      "prompt": "Первые шевеления легко перепутать с работой кишечника",
+      "options": [
+        "Правда",
+        "Миф"
+      ],
+      "answer": 0,
+      "explanation": "Они похожи на лёгкое порхание или пузырьки. Со временем толчки станут понятнее.",
+      "articleId": "pregnancy-055",
+      "status": "unpublished",
+      "medical": true,
+      "medicalApproved": false
+    },
+    {
+      "id": "myth-19-2",
+      "kind": "myth",
+      "week": 19,
+      "slot": 2,
+      "prompt": "Препараты железа нужны всем беременным",
+      "options": [
+        "Правда",
+        "Миф"
+      ],
+      "answer": 1,
+      "explanation": "Их назначают по анализам — если есть дефицит. Пить «на всякий случай» не стоит.",
+      "articleId": "pregnancy-056",
+      "status": "unpublished",
+      "medical": true,
+      "medicalApproved": false
+    },
+    {
+      "id": "myth-19-3",
+      "kind": "myth",
+      "week": 19,
+      "slot": 3,
+      "prompt": "Ночные судороги в ногах помогает снять мягкое растяжение икры",
+      "options": [
+        "Правда",
+        "Миф"
+      ],
+      "answer": 0,
+      "explanation": "Потяните носок на себя и помассируйте икру. Если судороги частые — расскажите врачу.",
+      "articleId": "pregnancy-057",
+      "status": "unpublished",
+      "medical": true,
+      "medicalApproved": false
+    },
+    {
+      "id": "myth-20-1",
+      "kind": "myth",
+      "week": 20,
+      "slot": 1,
+      "prompt": "В середине беременности ещё рано думать о роддоме и помощи после родов",
+      "options": [
+        "Правда",
+        "Миф"
+      ],
+      "answer": 1,
+      "explanation": "Сейчас как раз удобно начать: сил достаточно, и спешить не придётся.",
+      "articleId": "pregnancy-058",
+      "status": "unpublished",
+      "medical": true,
+      "medicalApproved": false
+    },
+    {
+      "id": "myth-20-2",
+      "kind": "myth",
+      "week": 20,
+      "slot": 2,
+      "prompt": "Давление на каждом приёме меряют просто по привычке",
+      "options": [
+        "Правда",
+        "Миф"
+      ],
+      "answer": 1,
+      "explanation": "Это один из самых важных способов вовремя заметить преэклампсию.",
+      "articleId": "pregnancy-059",
+      "status": "unpublished",
+      "medical": true,
+      "medicalApproved": false
+    },
+    {
+      "id": "myth-20-3",
+      "kind": "myth",
+      "week": 20,
+      "slot": 3,
+      "prompt": "Готовиться к родам с 20 недель — хорошее время",
+      "options": [
+        "Правда",
+        "Миф"
+      ],
+      "answer": 0,
+      "explanation": "Информация успевает улечься, а дыхание и позы — стать привычкой к третьему триместру.",
+      "articleId": "pregnancy-060",
+      "status": "unpublished",
+      "medical": true,
+      "medicalApproved": false
+    },
+    {
+      "id": "myth-21-1",
+      "kind": "myth",
+      "week": 21,
+      "slot": 1,
+      "prompt": "Удобнее всего спать на боку с подушкой между коленями",
+      "options": [
+        "Правда",
+        "Миф"
+      ],
+      "answer": 0,
+      "explanation": "Так разгружаются поясница и таз. Левый или правый бок — как вам приятнее.",
+      "articleId": "pregnancy-061",
+      "status": "unpublished",
+      "medical": true,
+      "medicalApproved": false
+    },
+    {
+      "id": "myth-21-2",
+      "kind": "myth",
+      "week": 21,
+      "slot": 2,
+      "prompt": "Мышцы тазового дна нужно только качать",
+      "options": [
+        "Правда",
+        "Миф"
+      ],
+      "answer": 1,
+      "explanation": "Для родов не менее важно уметь их расслаблять. Хорошая тренировка — и сжатие, и расслабление.",
+      "articleId": "pregnancy-062",
+      "status": "unpublished",
+      "medical": true,
+      "medicalApproved": false
+    },
+    {
+      "id": "myth-21-3",
+      "kind": "myth",
+      "week": 21,
+      "slot": 3,
+      "prompt": "Ощущения от секса во второй половине беременности могут меняться — это нормально",
+      "options": [
+        "Правда",
+        "Миф"
+      ],
+      "answer": 0,
+      "explanation": "Меняются кровоток и чувствительность, иногда после бывает лёгкий тонус. Кровь или боль — повод позвонить врачу.",
+      "articleId": "pregnancy-063",
+      "status": "unpublished",
+      "medical": true,
+      "medicalApproved": false
+    },
+    {
+      "id": "myth-22-1",
+      "kind": "myth",
+      "week": 22,
+      "slot": 1,
+      "prompt": "Если живот иногда ненадолго твердеет и расслабляется — это уже роды",
+      "options": [
+        "Правда",
+        "Миф"
+      ],
+      "answer": 1,
+      "explanation": "Редкие безболезненные сокращения бывают тренировочными. Регулярные, болезненные или с выделениями — срочно к врачу.",
+      "articleId": "pregnancy-064",
+      "status": "unpublished",
+      "medical": true,
+      "medicalApproved": false
+    },
+    {
+      "id": "myth-22-2",
+      "kind": "myth",
+      "week": 22,
+      "slot": 2,
+      "prompt": "Поясница устаёт из-за изменившейся осанки",
+      "options": [
+        "Правда",
+        "Миф"
+      ],
+      "answer": 0,
+      "explanation": "Центр тяжести смещается вперёд, и спина работает больше. Помогают перерывы и мягкие упражнения.",
+      "articleId": "pregnancy-065",
+      "status": "unpublished",
+      "medical": true,
+      "medicalApproved": false
+    },
+    {
+      "id": "myth-22-3",
+      "kind": "myth",
+      "week": 22,
+      "slot": 3,
+      "prompt": "Подушка для беременных — обязательная покупка",
+      "options": [
+        "Правда",
+        "Миф"
+      ],
+      "answer": 1,
+      "explanation": "Она удобна многим, но тот же эффект дают обычные подушки под животом и между коленями.",
+      "articleId": "pregnancy-066",
+      "status": "unpublished",
+      "medical": true,
+      "medicalApproved": false
+    },
+    {
+      "id": "myth-23-1",
+      "kind": "myth",
+      "week": 23,
+      "slot": 1,
+      "prompt": "При тяжести после еды помогает есть чаще и меньше",
+      "options": [
+        "Правда",
+        "Миф"
+      ],
+      "answer": 0,
+      "explanation": "Растущая матка подпирает желудок. 5–6 небольших приёмов пищи часто переносятся легче трёх больших.",
+      "articleId": "pregnancy-067",
+      "status": "unpublished",
+      "medical": true,
+      "medicalApproved": false
+    },
+    {
+      "id": "myth-23-2",
+      "kind": "myth",
+      "week": 23,
+      "slot": 2,
+      "prompt": "Плохой сон во второй половине беременности неизбежен",
+      "options": [
+        "Правда",
+        "Миф"
+      ],
+      "answer": 1,
+      "explanation": "Помогают режим, прохладная спальня, подушки и лёгкий ужин. Хороший сон вполне возможен.",
+      "articleId": "pregnancy-068",
+      "status": "unpublished",
+      "medical": true,
+      "medicalApproved": false
+    },
+    {
+      "id": "myth-23-3",
+      "kind": "myth",
+      "week": 23,
+      "slot": 3,
+      "prompt": "При боли в спине лучше совсем не двигаться",
+      "options": [
+        "Правда",
+        "Миф"
+      ],
+      "answer": 1,
+      "explanation": "Мягкие упражнения на четвереньках и с фитболом часто разгружают спину лучше покоя.",
+      "articleId": "pregnancy-069",
+      "status": "unpublished",
+      "medical": true,
+      "medicalApproved": false
+    },
+    {
+      "id": "myth-24-1",
+      "kind": "myth",
+      "week": 24,
+      "slot": 1,
+      "prompt": "Глюкозотолерантный тест нужен только тем, у кого уже есть диабет",
+      "options": [
+        "Правда",
+        "Миф"
+      ],
+      "answer": 1,
+      "explanation": "Тест нужен как раз чтобы выявить гестационный диабет, который часто никак не ощущается.",
+      "articleId": "pregnancy-070",
+      "status": "unpublished",
+      "medical": true,
+      "medicalApproved": false
+    },
+    {
+      "id": "myth-24-2",
+      "kind": "myth",
+      "week": 24,
+      "slot": 2,
+      "prompt": "Перед ГТТ нужно сесть на строгую диету без углеводов",
+      "options": [
+        "Правда",
+        "Миф"
+      ],
+      "answer": 1,
+      "explanation": "Наоборот, 3 дня до теста лучше есть как обычно, а сам тест сдавать натощак. Иначе результат искажается.",
+      "articleId": "pregnancy-071",
+      "status": "unpublished",
+      "medical": true,
+      "medicalApproved": false
+    },
+    {
+      "id": "myth-24-3",
+      "kind": "myth",
+      "week": 24,
+      "slot": 3,
+      "prompt": "Лёгкие отёки ног к вечеру бывают у многих беременных",
+      "options": [
+        "Правда",
+        "Миф"
+      ],
+      "answer": 0,
+      "explanation": "Помогают отдых с приподнятыми ногами и движение. Резкие отёки лица и рук, головная боль — срочно к врачу.",
+      "articleId": "pregnancy-072",
+      "status": "unpublished",
+      "medical": true,
+      "medicalApproved": false
+    },
+    {
+      "id": "myth-25-1",
+      "kind": "myth",
+      "week": 25,
+      "slot": 1,
+      "prompt": "От изжоги спасает сода",
+      "options": [
+        "Правда",
+        "Миф"
+      ],
+      "answer": 1,
+      "explanation": "Сода облегчает ненадолго и не подходит для регулярного приёма. Лучше дробное питание, не ложиться сразу после еды и средство, которое подберёт врач.",
+      "articleId": "pregnancy-073",
+      "status": "unpublished",
+      "medical": true,
+      "medicalApproved": false
+    },
+    {
+      "id": "myth-25-2",
+      "kind": "myth",
+      "week": 25,
+      "slot": 2,
+      "prompt": "Варикоз во время беременности нельзя никак предупредить",
+      "options": [
+        "Правда",
+        "Миф"
+      ],
+      "answer": 1,
+      "explanation": "Нагрузку на ноги снижают движение, отдых с приподнятыми ногами и при необходимости компрессионный трикотаж.",
+      "articleId": "pregnancy-074",
+      "status": "unpublished",
+      "medical": true,
+      "medicalApproved": false
+    },
+    {
+      "id": "myth-25-3",
+      "kind": "myth",
+      "week": 25,
+      "slot": 3,
+      "prompt": "Компрессионный трикотаж можно подобрать на глаз",
+      "options": [
+        "Правда",
+        "Миф"
+      ],
+      "answer": 1,
+      "explanation": "Класс компрессии и размер подбирают по замерам и совету врача, иначе он может не помочь.",
+      "articleId": "pregnancy-075",
+      "status": "unpublished",
+      "medical": true,
+      "medicalApproved": false
+    },
+    {
+      "id": "myth-26-1",
+      "kind": "myth",
+      "week": 26,
+      "slot": 1,
+      "prompt": "Тренировочные схватки могут появляться задолго до родов",
+      "options": [
+        "Правда",
+        "Миф"
+      ],
+      "answer": 0,
+      "explanation": "Это нерегулярные и обычно безболезненные сокращения. Если они частые и болезненные — врач нужен срочно.",
+      "articleId": "pregnancy-076",
+      "status": "unpublished",
+      "medical": true,
+      "medicalApproved": false
+    },
+    {
+      "id": "myth-26-2",
+      "kind": "myth",
+      "week": 26,
+      "slot": 2,
+      "prompt": "Спать можно только на левом боку",
+      "options": [
+        "Правда",
+        "Миф"
+      ],
+      "answer": 1,
+      "explanation": "Подходит любой бок. На поздних сроках лучше не засыпать подолгу на спине, а если проснулись на спине — просто повернитесь.",
+      "articleId": "pregnancy-077",
+      "status": "unpublished",
+      "medical": true,
+      "medicalApproved": false
+    },
+    {
+      "id": "myth-26-3",
+      "kind": "myth",
+      "week": 26,
+      "slot": 3,
+      "prompt": "К концу беременности обувь может стать на размер больше",
+      "options": [
+        "Правда",
+        "Миф"
+      ],
+      "answer": 0,
+      "explanation": "Из-за отёков и расслабления связок стопа меняется. Выбирайте удобную обувь на низком устойчивом каблуке.",
+      "articleId": "pregnancy-078",
+      "status": "unpublished",
+      "medical": true,
+      "medicalApproved": false
+    },
+    {
+      "id": "myth-27-1",
+      "kind": "myth",
+      "week": 27,
+      "slot": 1,
+      "prompt": "До третьего триместра полезно успеть выбрать роддом и курсы",
+      "options": [
+        "Правда",
+        "Миф"
+      ],
+      "answer": 0,
+      "explanation": "Пока сил достаточно, проще съездить на экскурсию и спокойно всё обдумать.",
+      "articleId": "pregnancy-079",
+      "status": "unpublished",
+      "medical": true,
+      "medicalApproved": false
+    },
+    {
+      "id": "myth-27-2",
+      "kind": "myth",
+      "week": 27,
+      "slot": 2,
+      "prompt": "При отрицательном резусе беременность обязательно будет сложной",
+      "options": [
+        "Правда",
+        "Миф"
+      ],
+      "answer": 1,
+      "explanation": "С вовремя сданными анализами и профилактикой она обычно протекает спокойно.",
+      "articleId": "pregnancy-080",
+      "status": "unpublished",
+      "medical": true,
+      "medicalApproved": false
+    },
+    {
+      "id": "myth-27-3",
+      "kind": "myth",
+      "week": 27,
+      "slot": 3,
+      "prompt": "Все документы и анализы всё равно есть в консультации, свою папку вести не нужно",
+      "options": [
+        "Правда",
+        "Миф"
+      ],
+      "answer": 1,
+      "explanation": "Своя папка с результатами и обменной картой выручит в роддоме или на приёме у другого врача.",
+      "articleId": "pregnancy-081",
+      "status": "unpublished",
+      "medical": true,
+      "medicalApproved": false
+    },
+    {
+      "id": "myth-28-1",
+      "kind": "myth",
+      "week": 28,
+      "slot": 1,
+      "prompt": "В третьем триместре приёмы у врача становятся чаще",
+      "options": [
+        "Правда",
+        "Миф"
+      ],
+      "answer": 0,
+      "explanation": "Обычно раз в 2 недели, а ближе к родам — еженедельно. Так врач ничего не пропустит.",
+      "articleId": "pregnancy-082",
+      "status": "unpublished",
+      "medical": true,
+      "medicalApproved": false
+    },
+    {
+      "id": "myth-28-2",
+      "kind": "myth",
+      "week": 28,
+      "slot": 2,
+      "prompt": "У каждого малыша свой режим активности, и его стоит знать",
+      "options": [
+        "Правда",
+        "Миф"
+      ],
+      "answer": 0,
+      "explanation": "Важна не точная цифра шевелений, а его привычный ритм. Заметно затих — сразу звоните врачу.",
+      "articleId": "pregnancy-083",
+      "status": "unpublished",
+      "medical": true,
+      "medicalApproved": false
+    },
+    {
+      "id": "myth-28-3",
+      "kind": "myth",
+      "week": 28,
+      "slot": 3,
+      "prompt": "Давление в третьем триместре можно не контролировать, если самочувствие хорошее",
+      "options": [
+        "Правда",
+        "Миф"
+      ],
+      "answer": 1,
+      "explanation": "Повышенное давление часто никак не ощущается, а именно сейчас его важно заметить вовремя.",
+      "articleId": "pregnancy-084",
+      "status": "unpublished",
+      "medical": true,
+      "medicalApproved": false
+    },
+    {
+      "id": "myth-29-1",
+      "kind": "myth",
+      "week": 29,
+      "slot": 1,
+      "prompt": "Малыш в животе уже спит и бодрствует по своему расписанию",
+      "options": [
+        "Правда",
+        "Миф"
+      ],
+      "answer": 0,
+      "explanation": "И часто активизируется, когда мама ложится отдохнуть — настоящий ночной танцор 🙂",
+      "articleId": "pregnancy-085",
+      "status": "unpublished",
+      "medical": true,
+      "medicalApproved": false
+    },
+    {
+      "id": "myth-29-2",
+      "kind": "myth",
+      "week": 29,
+      "slot": 2,
+      "prompt": "Одышка при подъёме по лестнице на этом сроке — часто вариант нормы",
+      "options": [
+        "Правда",
+        "Миф"
+      ],
+      "answer": 0,
+      "explanation": "Матка подпирает диафрагму. Но одышка в покое, боль в груди или синие губы — срочно к врачу.",
+      "articleId": "pregnancy-086",
+      "status": "unpublished",
+      "medical": true,
+      "medicalApproved": false
+    },
+    {
+      "id": "myth-29-3",
+      "kind": "myth",
+      "week": 29,
+      "slot": 3,
+      "prompt": "Перед родами нужно успеть сделать ремонт, генеральную уборку и все дела",
+      "options": [
+        "Правда",
+        "Миф"
+      ],
+      "answer": 1,
+      "explanation": "Малышу нужна спокойная и отдохнувшая мама, а не идеальная квартира. Делите дела и просите помощи.",
+      "articleId": "pregnancy-087",
+      "status": "unpublished",
+      "medical": true,
+      "medicalApproved": false
+    },
+    {
+      "id": "myth-30-1",
+      "kind": "myth",
+      "week": 30,
+      "slot": 1,
+      "prompt": "План родов — бесполезная формальность",
+      "options": [
+        "Правда",
+        "Миф"
+      ],
+      "answer": 1,
+      "explanation": "Он помогает заранее подумать о своих желаниях и обсудить их с врачом и партнёром. Главное — оставить в нём гибкость.",
+      "articleId": "pregnancy-088",
+      "status": "unpublished",
+      "medical": true,
+      "medicalApproved": false
+    },
+    {
+      "id": "myth-30-2",
+      "kind": "myth",
+      "week": 30,
+      "slot": 2,
+      "prompt": "Рожать можно только лёжа на спине",
+      "options": [
+        "Правда",
+        "Миф"
+      ],
+      "answer": 1,
+      "explanation": "В схватках часто легче двигаться и менять позы: стоя, на фитболе, на четвереньках. Попробуйте их заранее.",
+      "articleId": "pregnancy-089",
+      "status": "unpublished",
+      "medical": true,
+      "medicalApproved": false
+    },
+    {
+      "id": "myth-30-3",
+      "kind": "myth",
+      "week": 30,
+      "slot": 3,
+      "prompt": "Дышать в родах тело «само разберётся», тренироваться заранее не нужно",
+      "options": [
+        "Правда",
+        "Миф"
+      ],
+      "answer": 1,
+      "explanation": "Отработанное дыхание легче вспомнить на пике схватки. Несколько минут в день заметно помогают.",
+      "articleId": "pregnancy-090",
+      "status": "unpublished",
+      "medical": true,
+      "medicalApproved": false
+    },
+    {
+      "id": "myth-31-1",
+      "kind": "myth",
+      "week": 31,
+      "slot": 1,
+      "prompt": "Сумку в роддом собирают за неделю до ПДР",
+      "options": [
+        "Правда",
+        "Миф"
+      ],
+      "answer": 1,
+      "explanation": "Лучше собрать к 34–36 неделе: роды могут начаться раньше, и собираться в спешке не придётся.",
+      "articleId": "pregnancy-091",
+      "status": "unpublished",
+      "medical": true,
+      "medicalApproved": false
+    },
+    {
+      "id": "myth-31-2",
+      "kind": "myth",
+      "week": 31,
+      "slot": 2,
+      "prompt": "Партнёру не нужно готовиться к родам, достаточно просто прийти",
+      "options": [
+        "Правда",
+        "Миф"
+      ],
+      "answer": 1,
+      "explanation": "Подготовленный партнёр знает приёмы массажа, понимает этапы родов и больше помогает, чем тревожится.",
+      "articleId": "pregnancy-092",
+      "status": "unpublished",
+      "medical": true,
+      "medicalApproved": false
+    },
+    {
+      "id": "myth-31-3",
+      "kind": "myth",
+      "week": 31,
+      "slot": 3,
+      "prompt": "Роддом стоит выбирать только по отзывам в интернете",
+      "options": [
+        "Правда",
+        "Миф"
+      ],
+      "answer": 1,
+      "explanation": "Важнее спросить о партнёрских родах, обезболивании, совместном пребывании и поддержке ГВ — и сравнить ответы.",
+      "articleId": "pregnancy-093",
+      "status": "unpublished",
+      "medical": true,
+      "medicalApproved": false
+    },
+    {
+      "id": "myth-32-1",
+      "kind": "myth",
+      "week": 32,
+      "slot": 1,
+      "prompt": "УЗИ в третьем триместре делают всем одинаково",
+      "options": [
+        "Правда",
+        "Миф"
+      ],
+      "answer": 1,
+      "explanation": "Его назначает врач по показаниям, иногда с доплером. Спросите, что именно хочет посмотреть ваш врач.",
+      "articleId": "pregnancy-094",
+      "status": "unpublished",
+      "medical": true,
+      "medicalApproved": false
+    },
+    {
+      "id": "myth-32-2",
+      "kind": "myth",
+      "week": 32,
+      "slot": 2,
+      "prompt": "Вес малыша по УЗИ — точная цифра",
+      "options": [
+        "Правда",
+        "Миф"
+      ],
+      "answer": 1,
+      "explanation": "Это оценка по формуле, погрешность может быть 10–15% в обе стороны.",
+      "articleId": "pregnancy-095",
+      "status": "unpublished",
+      "medical": true,
+      "medicalApproved": false
+    },
+    {
+      "id": "myth-32-3",
+      "kind": "myth",
+      "week": 32,
+      "slot": 3,
+      "prompt": "По размеру живота можно понять, крупный ли малыш",
+      "options": [
+        "Правда",
+        "Миф"
+      ],
+      "answer": 1,
+      "explanation": "Размер живота зависит и от телосложения, мышц, количества вод. Сравнивать себя с другими не стоит.",
+      "articleId": "pregnancy-096",
+      "status": "unpublished",
+      "medical": true,
+      "medicalApproved": false
+    },
+    {
+      "id": "myth-33-1",
+      "kind": "myth",
+      "week": 33,
+      "slot": 1,
+      "prompt": "Тренировочные схватки можно использовать для репетиции дыхания",
+      "options": [
+        "Правда",
+        "Миф"
+      ],
+      "answer": 0,
+      "explanation": "Пока живот напряжён, сделайте медленный длинный выдох и расслабьте плечи — хорошая тренировка.",
+      "articleId": "pregnancy-097",
+      "status": "unpublished",
+      "medical": true,
+      "medicalApproved": false
+    },
+    {
+      "id": "myth-33-2",
+      "kind": "myth",
+      "week": 33,
+      "slot": 2,
+      "prompt": "Если появилось молозиво, грудь нужно сцеживать и «закалять»",
+      "options": [
+        "Правда",
+        "Миф"
+      ],
+      "answer": 1,
+      "explanation": "Молозиво до родов — норма. Специально готовить грудь не нужно; сцеживать — только по совету врача.",
+      "articleId": "pregnancy-098",
+      "status": "unpublished",
+      "medical": true,
+      "medicalApproved": false
+    },
+    {
+      "id": "myth-33-3",
+      "kind": "myth",
+      "week": 33,
+      "slot": 3,
+      "prompt": "Для малыша в роддом нужен целый чемодан вещей",
+      "options": [
+        "Правда",
+        "Миф"
+      ],
+      "answer": 1,
+      "explanation": "Обычно хватает подгузников, нескольких боди, шапочки, носочков и комплекта на выписку. Уточните список своего роддома.",
+      "articleId": "pregnancy-099",
+      "status": "unpublished",
+      "medical": true,
+      "medicalApproved": false
+    },
+    {
+      "id": "myth-34-1",
+      "kind": "myth",
+      "week": 34,
+      "slot": 1,
+      "prompt": "Массаж промежности в конце беременности может снизить риск разрывов",
+      "options": [
+        "Правда",
+        "Миф"
+      ],
+      "answer": 0,
+      "explanation": "Исследования показывают пользу, особенно в первых родах. Начинают около 34 недели, если врач не возражает.",
+      "articleId": "pregnancy-100",
+      "status": "unpublished",
+      "medical": true,
+      "medicalApproved": false
+    },
+    {
+      "id": "myth-34-2",
+      "kind": "myth",
+      "week": 34,
+      "slot": 2,
+      "prompt": "Контакт «кожа к коже» сразу после родов — просто красивая традиция",
+      "options": [
+        "Правда",
+        "Миф"
+      ],
+      "answer": 1,
+      "explanation": "Он помогает малышу согреться, стабилизирует дыхание и помогает начать грудное вскармливание.",
+      "articleId": "pregnancy-101",
+      "status": "unpublished",
+      "medical": true,
+      "medicalApproved": false
+    },
+    {
+      "id": "myth-34-3",
+      "kind": "myth",
+      "week": 34,
+      "slot": 3,
+      "prompt": "Всё о родах муж узнает на месте, заранее обсуждать нечего",
+      "options": [
+        "Правда",
+        "Миф"
+      ],
+      "answer": 1,
+      "explanation": "Лучше заранее договориться: кто везёт в роддом, кто сидит с старшими детьми, кому и когда сообщать.",
+      "articleId": "pregnancy-102",
+      "status": "unpublished",
+      "medical": true,
+      "medicalApproved": false
+    },
+    {
+      "id": "myth-35-1",
+      "kind": "myth",
+      "week": 35,
+      "slot": 1,
+      "prompt": "Организм заранее готовится к родам, и это можно заметить",
+      "options": [
+        "Правда",
+        "Миф"
+      ],
+      "answer": 0,
+      "explanation": "Может опуститься живот, чаще хотеться в туалет, появиться тянущее чувство внизу живота. У каждой по-своему.",
+      "articleId": "pregnancy-103",
+      "status": "unpublished",
+      "medical": true,
+      "medicalApproved": false
+    },
+    {
+      "id": "myth-35-2",
+      "kind": "myth",
+      "week": 35,
+      "slot": 2,
+      "prompt": "Анализ на стрептококк группы B нужен для защиты малыша в родах",
+      "options": [
+        "Правда",
+        "Миф"
+      ],
+      "answer": 0,
+      "explanation": "Если бактерия найдена, в родах дают антибиотик, и малыш не заражается. У мамы при этом обычно нет никаких симптомов.",
+      "articleId": "pregnancy-104",
+      "status": "unpublished",
+      "medical": true,
+      "medicalApproved": false
+    },
+    {
+      "id": "myth-35-3",
+      "kind": "myth",
+      "week": 35,
+      "slot": 3,
+      "prompt": "В сумку в роддом главное — одежда, документы можно привезти потом",
+      "options": [
+        "Правда",
+        "Миф"
+      ],
+      "answer": 1,
+      "explanation": "Без паспорта, полиса и обменной карты в роддоме будет сложнее. Документы — первое, что кладём.",
+      "articleId": "pregnancy-105",
+      "status": "unpublished",
+      "medical": true,
+      "medicalApproved": false
+    },
+    {
+      "id": "myth-36-1",
+      "kind": "myth",
+      "week": 36,
+      "slot": 1,
+      "prompt": "К 36 неделе малыш уже не может поменять положение",
+      "options": [
+        "Правда",
+        "Миф"
+      ],
+      "answer": 1,
+      "explanation": "Иногда поворачиваются и позже. Если малыш лежит не головкой вниз, врач расскажет о вариантах.",
+      "articleId": "pregnancy-106",
+      "status": "unpublished",
+      "medical": true,
+      "medicalApproved": false
+    },
+    {
+      "id": "myth-36-2",
+      "kind": "myth",
+      "week": 36,
+      "slot": 2,
+      "prompt": "На последних приёмах врач просто ждёт родов и ничего не оценивает",
+      "options": [
+        "Правда",
+        "Миф"
+      ],
+      "answer": 1,
+      "explanation": "Он следит за давлением, положением малыша, сердцебиением и состоянием шейки матки.",
+      "articleId": "pregnancy-107",
+      "status": "unpublished",
+      "medical": true,
+      "medicalApproved": false
+    },
+    {
+      "id": "myth-36-3",
+      "kind": "myth",
+      "week": 36,
+      "slot": 3,
+      "prompt": "К возвращению из роддома дома должен быть готов целый детский магазин",
+      "options": [
+        "Правда",
+        "Миф"
+      ],
+      "answer": 1,
+      "explanation": "Хватит места для сна, подгузников, нескольких комплектов одежды и аптечки. Остальное можно докупить потом.",
+      "articleId": "pregnancy-108",
+      "status": "unpublished",
+      "medical": true,
+      "medicalApproved": false
+    },
+    {
+      "id": "myth-37-1",
+      "kind": "myth",
+      "week": 37,
+      "slot": 1,
+      "prompt": "С 37 недели беременность считается доношенной",
+      "options": [
+        "Правда",
+        "Миф"
+      ],
+      "answer": 0,
+      "explanation": "Органы малыша готовы к жизни снаружи, и роды могут начаться в любой день.",
+      "articleId": "pregnancy-109",
+      "status": "unpublished",
+      "medical": true,
+      "medicalApproved": false
+    },
+    {
+      "id": "myth-37-2",
+      "kind": "myth",
+      "week": 37,
+      "slot": 2,
+      "prompt": "Отход слизистой пробки означает, что роды начнутся в ближайшие часы",
+      "options": [
+        "Правда",
+        "Миф"
+      ],
+      "answer": 1,
+      "explanation": "После этого до родов может пройти и несколько дней. А иногда пробку вообще не замечают.",
+      "articleId": "pregnancy-110",
+      "status": "unpublished",
+      "medical": true,
+      "medicalApproved": false
+    },
+    {
+      "id": "myth-37-3",
+      "kind": "myth",
+      "week": 37,
+      "slot": 3,
+      "prompt": "Настоящие схватки отличаются регулярностью и нарастанием",
+      "options": [
+        "Правда",
+        "Миф"
+      ],
+      "answer": 0,
+      "explanation": "Они идут через равные промежутки, становятся длиннее и сильнее и не проходят от отдыха или смены позы.",
+      "articleId": "pregnancy-111",
+      "status": "unpublished",
+      "medical": true,
+      "medicalApproved": false
+    },
+    {
+      "id": "myth-38-1",
+      "kind": "myth",
+      "week": 38,
+      "slot": 1,
+      "prompt": "Предвестники родов — сигнал сразу ехать в роддом",
+      "options": [
+        "Правда",
+        "Миф"
+      ],
+      "answer": 1,
+      "explanation": "Предвестники могут быть за дни и недели до родов. Ехать — при регулярных схватках, излитии вод, крови или снижении шевелений.",
+      "articleId": "pregnancy-112",
+      "status": "unpublished",
+      "medical": true,
+      "medicalApproved": false
+    },
+    {
+      "id": "myth-38-2",
+      "kind": "myth",
+      "week": 38,
+      "slot": 2,
+      "prompt": "Роды всегда начинаются со схваток",
+      "options": [
+        "Правда",
+        "Миф"
+      ],
+      "answer": 1,
+      "explanation": "Иногда сначала отходят воды. В этом случае в роддом едут, даже если схваток ещё нет.",
+      "articleId": "pregnancy-113",
+      "status": "unpublished",
+      "medical": true,
+      "medicalApproved": false
+    },
+    {
+      "id": "myth-38-3",
+      "kind": "myth",
+      "week": 38,
+      "slot": 3,
+      "prompt": "В самом начале схваток дома можно принять душ, перекусить и отдыхать",
+      "options": [
+        "Правда",
+        "Миф"
+      ],
+      "answer": 0,
+      "explanation": "Если воды целы и врач не давал других указаний, ранний период спокойнее пережить в привычной обстановке.",
+      "articleId": "pregnancy-114",
+      "status": "unpublished",
+      "medical": true,
+      "medicalApproved": false
+    },
+    {
+      "id": "myth-39-1",
+      "kind": "myth",
+      "week": 39,
+      "slot": 1,
+      "prompt": "Первый период родов — самый длинный",
+      "options": [
+        "Правда",
+        "Миф"
+      ],
+      "answer": 0,
+      "explanation": "От первых схваток до полного раскрытия шейки может пройти много часов, особенно в первых родах.",
+      "articleId": "pregnancy-115",
+      "status": "unpublished",
+      "medical": true,
+      "medicalApproved": false
+    },
+    {
+      "id": "myth-39-2",
+      "kind": "myth",
+      "week": 39,
+      "slot": 2,
+      "prompt": "Боль в схватках можно облегчить без лекарств",
+      "options": [
+        "Правда",
+        "Миф"
+      ],
+      "answer": 0,
+      "explanation": "Помогают дыхание, движение, тёплая вода, массаж и поддержка рядом. А лекарственное обезболивание можно обсудить с врачом.",
+      "articleId": "pregnancy-116",
+      "status": "unpublished",
+      "medical": true,
+      "medicalApproved": false
+    },
+    {
+      "id": "myth-39-3",
+      "kind": "myth",
+      "week": 39,
+      "slot": 3,
+      "prompt": "Об обезболивании в родах бесполезно думать заранее",
+      "options": [
+        "Правда",
+        "Миф"
+      ],
+      "answer": 1,
+      "explanation": "Полезно знать варианты и порядок их получения в своём роддоме, чтобы в родах спокойно сделать выбор.",
+      "articleId": "pregnancy-117",
+      "status": "unpublished",
+      "medical": true,
+      "medicalApproved": false
+    },
+    {
+      "id": "myth-40-1",
+      "kind": "myth",
+      "week": 40,
+      "slot": 1,
+      "prompt": "Если в ПДР роды не начались, что-то пошло не так",
+      "options": [
+        "Правда",
+        "Миф"
+      ],
+      "answer": 1,
+      "explanation": "В саму дату ПДР рожает лишь малая часть женщин. Роды в пределах нескольких недель до и после неё — норма.",
+      "articleId": "pregnancy-118",
+      "status": "unpublished",
+      "medical": true,
+      "medicalApproved": false
+    },
+    {
+      "id": "myth-40-2",
+      "kind": "myth",
+      "week": 40,
+      "slot": 2,
+      "prompt": "ПДР — точный срок, к которому малыш обязан родиться",
+      "options": [
+        "Правда",
+        "Миф"
+      ],
+      "answer": 1,
+      "explanation": "Это расчётная середина интервала, а не срок годности. Врач следит за состоянием, а не за календарём.",
+      "articleId": "pregnancy-119",
+      "status": "unpublished",
+      "medical": true,
+      "medicalApproved": false
+    },
+    {
+      "id": "myth-40-3",
+      "kind": "myth",
+      "week": 40,
+      "slot": 3,
+      "prompt": "Острая еда и долгие прогулки надёжно запускают роды",
+      "options": [
+        "Правда",
+        "Миф"
+      ],
+      "answer": 1,
+      "explanation": "Надёжных домашних способов нет, а некоторые могут навредить. Прогулки полезны просто для самочувствия.",
+      "articleId": "pregnancy-120",
+      "status": "unpublished",
+      "medical": true,
+      "medicalApproved": false
+    },
+    {
+      "id": "myth-41-1",
+      "kind": "myth",
+      "week": 41,
+      "slot": 1,
+      "prompt": "На 41 неделе врач обычно чаще проверяет маму и малыша",
+      "options": [
+        "Правда",
+        "Миф"
+      ],
+      "answer": 0,
+      "explanation": "Могут назначить КТГ и УЗИ, чтобы убедиться, что малышу хорошо, и вместе решить, можно ли подождать.",
+      "articleId": "pregnancy-121",
+      "status": "unpublished",
+      "medical": true,
+      "medicalApproved": false
+    },
+    {
+      "id": "myth-41-2",
+      "kind": "myth",
+      "week": 41,
+      "slot": 2,
+      "prompt": "После ПДР шевеления могут пропасть — это нормально",
+      "options": [
+        "Правда",
+        "Миф"
+      ],
+      "answer": 1,
+      "explanation": "Малышу теснее, движения меняются, но пропадать они не должны. Заметно меньше шевелений — сразу в роддом.",
+      "articleId": "pregnancy-122",
+      "status": "unpublished",
+      "medical": true,
+      "medicalApproved": false
+    },
+    {
+      "id": "myth-41-3",
+      "kind": "myth",
+      "week": 41,
+      "slot": 3,
+      "prompt": "Индукция родов всегда означает кесарево",
+      "options": [
+        "Правда",
+        "Миф"
+      ],
+      "answer": 1,
+      "explanation": "Большинство индуцированных родов заканчивается естественно. Спросите врача, какой метод и почему предлагают именно вам.",
+      "articleId": "pregnancy-123",
+      "status": "unpublished",
+      "medical": true,
+      "medicalApproved": false
+    },
+    {
+      "id": "myth-42-1",
+      "kind": "myth",
+      "week": 42,
+      "slot": 1,
+      "prompt": "На 42 неделе остаётся только ждать",
+      "options": [
+        "Правда",
+        "Миф"
+      ],
+      "answer": 1,
+      "explanation": "На этом сроке врач вместе с вами составляет план действий. Важно не пропускать назначенные осмотры.",
+      "articleId": "pregnancy-124",
+      "status": "unpublished",
+      "medical": true,
+      "medicalApproved": false
+    },
+    {
+      "id": "myth-42-2",
+      "kind": "myth",
+      "week": 42,
+      "slot": 2,
+      "prompt": "На индукцию нужно брать с собой ту же сумку, что и на обычные роды",
+      "options": [
+        "Правда",
+        "Миф"
+      ],
+      "answer": 0,
+      "explanation": "Документы, вещи для себя и малыша — всё то же. Плюс что-то для досуга: процесс может занять время.",
+      "articleId": "pregnancy-125",
+      "status": "unpublished",
+      "medical": true,
+      "medicalApproved": false
+    },
+    {
+      "id": "myth-42-3",
+      "kind": "myth",
+      "week": 42,
+      "slot": 3,
+      "prompt": "Если ожидание затянулось, настроиться на роды уже невозможно",
+      "options": [
+        "Правда",
+        "Миф"
+      ],
+      "answer": 1,
+      "explanation": "Помогают отдых, дыхательные практики, любимые дела и разговор с близкими. Вы всё ещё можете войти в роды спокойно.",
+      "articleId": "pregnancy-126",
+      "status": "unpublished",
+      "medical": true,
+      "medicalApproved": false
+    }
+  ],
+  "care": [
+    {
+      "id": "care-1",
+      "text": "«Сегодня у тебя официальное разрешение ничего не успевать. Подписано: отдел заботы о мамах ♥»",
+      "trimester": "Все",
+      "status": "unpublished",
+      "medical": true,
+      "medicalApproved": false
+    },
+    {
+      "id": "care-2",
+      "text": "«Попроси близких взять на себя одно дело. Одно — это не много»",
+      "trimester": "Все",
+      "status": "unpublished",
+      "medical": true,
+      "medicalApproved": false
+    },
+    {
+      "id": "care-3",
+      "text": "«Включи любимую песню и просто послушай её до конца»",
+      "trimester": "Все",
+      "status": "unpublished",
+      "medical": true,
+      "medicalApproved": false
+    },
+    {
+      "id": "care-4",
+      "text": "«Стакан воды прямо сейчас — самый простой способ сказать себе «я о тебе помню»»",
+      "trimester": "Все",
+      "status": "unpublished",
+      "medical": true,
+      "medicalApproved": false
+    },
+    {
+      "id": "care-5",
+      "text": "«Напиши подруге, с которой давно не говорила»",
+      "trimester": "Все",
+      "status": "unpublished",
+      "medical": true,
+      "medicalApproved": false
+    },
+    {
+      "id": "care-6",
+      "text": "«Ты уже делаешь очень важную работу — растишь человека. Остальное подождёт»",
+      "trimester": "Все",
+      "status": "unpublished",
+      "medical": true,
+      "medicalApproved": false
+    },
+    {
+      "id": "care-7",
+      "text": "«Отложи сегодня одно несрочное дело. Мир выдержит»",
+      "trimester": "Все",
+      "status": "unpublished",
+      "medical": true,
+      "medicalApproved": false
+    },
+    {
+      "id": "care-8",
+      "text": "«Выйди на 10 минут подышать свежим воздухом»",
+      "trimester": "Все",
+      "status": "unpublished",
+      "medical": true,
+      "medicalApproved": false
+    },
+    {
+      "id": "care-9",
+      "text": "«Сделай себе что-то вкусное и съешь без телефона в руках»",
+      "trimester": "Все",
+      "status": "unpublished",
+      "medical": true,
+      "medicalApproved": false
+    },
+    {
+      "id": "care-10",
+      "text": "«Ложись сегодня на полчаса раньше. Это тоже забота о малыше»",
+      "trimester": "Все",
+      "status": "unpublished",
+      "medical": true,
+      "medicalApproved": false
+    },
+    {
+      "id": "care-11",
+      "text": "«Тошнит? Держи рядом сухарики или орешки — перекус до подъёма часто помогает»",
+      "trimester": "I",
+      "status": "unpublished",
+      "medical": true,
+      "medicalApproved": false
+    },
+    {
+      "id": "care-12",
+      "text": "«Хочется спать днём — поспи. 20 минут тоже считаются»",
+      "trimester": "I",
+      "status": "unpublished",
+      "medical": true,
+      "medicalApproved": false
+    },
+    {
+      "id": "care-13",
+      "text": "«Не обязательно рассказывать всем прямо сейчас. Это твоя новость и твоё время»",
+      "trimester": "I",
+      "status": "unpublished",
+      "medical": true,
+      "medicalApproved": false
+    },
+    {
+      "id": "care-14",
+      "text": "«Разреши себе сомневаться и тревожиться — и радоваться тоже. Всё это нормально»",
+      "trimester": "I",
+      "status": "unpublished",
+      "medical": true,
+      "medicalApproved": false
+    },
+    {
+      "id": "care-15",
+      "text": "«Сегодня без интернет-форумов с страшными историями. Вопросы — в AI врача» (кнопка «Спросить» → AI врач)",
+      "trimester": "I",
+      "status": "unpublished",
+      "medical": true,
+      "medicalApproved": false
+    },
+    {
+      "id": "care-16",
+      "text": "«Самое время сделать красивые фото животика — потом будет приятно перелистывать»",
+      "trimester": "II",
+      "status": "unpublished",
+      "medical": true,
+      "medicalApproved": false
+    },
+    {
+      "id": "care-17",
+      "text": "«Нанеси крем на живот и погладь малыша. Это ваши первые объятия»",
+      "trimester": "II",
+      "status": "unpublished",
+      "medical": true,
+      "medicalApproved": false
+    },
+    {
+      "id": "care-18",
+      "text": "«Поговори с малышом вслух — он уже начинает слышать»",
+      "trimester": "II",
+      "status": "unpublished",
+      "medical": true,
+      "medicalApproved": false
+    },
+    {
+      "id": "care-19",
+      "text": "«Устройте с партнёром свидание — как раньше, только без вина 😊»",
+      "trimester": "II",
+      "status": "unpublished",
+      "medical": true,
+      "medicalApproved": false
+    },
+    {
+      "id": "care-20",
+      "text": "«Подложи подушку между коленями на ночь — спина скажет спасибо»",
+      "trimester": "II",
+      "status": "unpublished",
+      "medical": true,
+      "medicalApproved": false
+    },
+    {
+      "id": "care-21",
+      "text": "«Напиши на бумажке три вещи, которые сегодня были хорошими»",
+      "trimester": "II",
+      "status": "unpublished",
+      "medical": true,
+      "medicalApproved": false
+    },
+    {
+      "id": "care-22",
+      "text": "«Отдохни 15 минут с ногами на подушке — ноги к вечеру тоже устают»",
+      "trimester": "II",
+      "status": "unpublished",
+      "medical": true,
+      "medicalApproved": false
+    },
+    {
+      "id": "care-23",
+      "text": "«Тебе можно просить помощи. После родов — тем более. Начни с одной просьбы сегодня»",
+      "trimester": "III",
+      "status": "unpublished",
+      "medical": true,
+      "medicalApproved": false
+    },
+    {
+      "id": "care-24",
+      "text": "«Дневной сон сейчас — не лень, а подготовка к родам»",
+      "trimester": "III",
+      "status": "unpublished",
+      "medical": true,
+      "medicalApproved": false
+    },
+    {
+      "id": "care-25",
+      "text": "«Пусть кто-то сделает тебе массаж стоп или плеч. Можно и попросить!»",
+      "trimester": "III",
+      "status": "unpublished",
+      "medical": true,
+      "medicalApproved": false
+    },
+    {
+      "id": "care-26",
+      "text": "«Приготовь пару обедов в морозилку — потом скажешь себе спасибо»",
+      "trimester": "III",
+      "status": "unpublished",
+      "medical": true,
+      "medicalApproved": false
+    },
+    {
+      "id": "care-27",
+      "text": "«Положи руки на живот и посчитай 10 спокойных выдохов. Малыш чувствует твоё спокойствие»",
+      "trimester": "III",
+      "status": "unpublished",
+      "medical": true,
+      "medicalApproved": false
+    },
+    {
+      "id": "care-28",
+      "text": "«Не сравнивай свой живот с чужими. У вас с малышом свой путь»",
+      "trimester": "III",
+      "status": "unpublished",
+      "medical": true,
+      "medicalApproved": false
+    },
+    {
+      "id": "care-29",
+      "text": "«Сегодня можно просто полежать с сериалом. Да, целый вечер»",
+      "trimester": "III",
+      "status": "unpublished",
+      "medical": true,
+      "medicalApproved": false
+    },
+    {
+      "id": "care-30",
+      "text": "«Воспомни, как ты узнала о беременности. Сколько уже пройдено! Ты молодец ♥»",
+      "trimester": "III",
+      "status": "unpublished",
+      "medical": true,
+      "medicalApproved": false
+    }
+  ],
+  "ideas": [
+    {
+      "id": "idea-1",
+      "text": "«Сегодня хороший день, чтобы начать пить воду по чуть-чуть в течение дня и прогуляться 20 минут»",
+      "status": "unpublished",
+      "medical": true,
+      "medicalApproved": false,
+      "minWeek": 1,
+      "maxWeek": 4
+    },
+    {
+      "id": "idea-2",
+      "text": "«Отличный день, чтобы записаться к врачу на первый приём, если ещё не записалась»",
+      "status": "unpublished",
+      "medical": true,
+      "medicalApproved": false,
+      "minWeek": 5,
+      "maxWeek": 5
+    },
+    {
+      "id": "idea-3",
+      "text": "«Идея дня: прогулка 30 минут в спокойном темпе — и поделись шагами в клубе»",
+      "status": "unpublished",
+      "medical": true,
+      "medicalApproved": false,
+      "minWeek": 6,
+      "maxWeek": 6
+    },
+    {
+      "id": "idea-4",
+      "text": "«Составь список вопросов к врачу на ближайший приём — записанное не забудется»",
+      "status": "unpublished",
+      "medical": true,
+      "medicalApproved": false,
+      "minWeek": 7,
+      "maxWeek": 7
+    },
+    {
+      "id": "idea-5",
+      "text": "«Сегодня — отличный день завести папку для анализов и заключений»",
+      "status": "unpublished",
+      "medical": true,
+      "medicalApproved": false,
+      "minWeek": 8,
+      "maxWeek": 8
+    },
+    {
+      "id": "idea-6",
+      "text": "«Сфотографируйся в профиль у зеркала — и повторяй раз в месяц. Потом из этого получится чудесный ролик»",
+      "status": "unpublished",
+      "medical": true,
+      "medicalApproved": false,
+      "minWeek": 9,
+      "maxWeek": 9
+    },
+    {
+      "id": "idea-7",
+      "text": "«Расскажи новость кому-то из близких — или напиши в чат I триместра, как ты себя чувствуешь»",
+      "status": "unpublished",
+      "medical": true,
+      "medicalApproved": false,
+      "minWeek": 10,
+      "maxWeek": 10
+    },
+    {
+      "id": "idea-8",
+      "text": "«День для лёгкой разминки: 10 минут практики недели — и ты уже сделала многое»",
+      "status": "unpublished",
+      "medical": true,
+      "medicalApproved": false,
+      "minWeek": 11,
+      "maxWeek": 11
+    },
+    {
+      "id": "idea-9",
+      "text": "«Триместр почти позади. Отпразднуй — любимым десертом или прогулкой»",
+      "status": "unpublished",
+      "medical": true,
+      "medicalApproved": false,
+      "minWeek": 12,
+      "maxWeek": 12
+    },
+    {
+      "id": "idea-10",
+      "text": "«Самое время присмотреть удобную одежду и бельё на ближайшие месяцы. Маленький шопинг для себя разрешён!»",
+      "status": "unpublished",
+      "medical": true,
+      "medicalApproved": false,
+      "minWeek": 13,
+      "maxWeek": 13
+    },
+    {
+      "id": "idea-11",
+      "text": "«Первая глава позади — запишись на плавание или йогу для беременных, если давно хотела»",
+      "status": "unpublished",
+      "medical": true,
+      "medicalApproved": false,
+      "minWeek": 14,
+      "maxWeek": 14
+    },
+    {
+      "id": "idea-12",
+      "text": "«Идея дня: придумайте с партнёром по три имени и сравните списки»",
+      "status": "unpublished",
+      "medical": true,
+      "medicalApproved": false,
+      "minWeek": 15,
+      "maxWeek": 15
+    },
+    {
+      "id": "idea-13",
+      "text": "«Сегодня стоит дойти до стоматолога — во втором триместре самое удобное время»",
+      "status": "unpublished",
+      "medical": true,
+      "medicalApproved": false,
+      "minWeek": 16,
+      "maxWeek": 16
+    },
+    {
+      "id": "idea-14",
+      "text": "«Сегодня день семейных историй: спроси маму или бабушку, как они ждали своих детей»",
+      "status": "unpublished",
+      "medical": true,
+      "medicalApproved": false,
+      "minWeek": 17,
+      "maxWeek": 17
+    },
+    {
+      "id": "idea-15",
+      "text": "«Отличный день, чтобы нашагать 5 000 шагов и похвастаться в клубе 👟»",
+      "status": "unpublished",
+      "medical": true,
+      "medicalApproved": false,
+      "minWeek": 18,
+      "maxWeek": 18
+    },
+    {
+      "id": "idea-16",
+      "text": "«Составь плейлист любимых песен — он пригодится и сейчас, и в родах»",
+      "status": "unpublished",
+      "medical": true,
+      "medicalApproved": false,
+      "minWeek": 19,
+      "maxWeek": 19
+    },
+    {
+      "id": "idea-17",
+      "text": "«Половина пути! Сегодня отличный день, чтобы начать подготовку к родам — и написать капсулу времени»",
+      "status": "unpublished",
+      "medical": true,
+      "medicalApproved": false,
+      "minWeek": 20,
+      "maxWeek": 20
+    },
+    {
+      "id": "idea-18",
+      "text": "«Идея дня: сходите вдвоём в кафе или на фотосессию с животиком 📸»",
+      "status": "unpublished",
+      "medical": true,
+      "medicalApproved": false,
+      "minWeek": 21,
+      "maxWeek": 21
+    },
+    {
+      "id": "idea-19",
+      "text": "«Самое время сравнить роддома: выпиши 2–3 варианта и вопросы к ним»",
+      "status": "unpublished",
+      "medical": true,
+      "medicalApproved": false,
+      "minWeek": 22,
+      "maxWeek": 22
+    },
+    {
+      "id": "idea-20",
+      "text": "«Сегодня отличный день для первых покупок для малыша. Начни с чего-то маленького и милого ♥»",
+      "status": "unpublished",
+      "medical": true,
+      "medicalApproved": false,
+      "minWeek": 23,
+      "maxWeek": 23
+    },
+    {
+      "id": "idea-21",
+      "text": "«Идея дня: лёгкая прогулка после еды — полезно для сахара в крови и настроения»",
+      "status": "unpublished",
+      "medical": true,
+      "medicalApproved": false,
+      "minWeek": 24,
+      "maxWeek": 24
+    },
+    {
+      "id": "idea-22",
+      "text": "«Расскажи в чате II триместра, что тебя на этой неделе рассмешило или удивило»",
+      "status": "unpublished",
+      "medical": true,
+      "medicalApproved": false,
+      "minWeek": 25,
+      "maxWeek": 25
+    },
+    {
+      "id": "idea-23",
+      "text": "«Сегодня стоит присмотреть удобную обувь на последние месяцы — ноги скажут спасибо»",
+      "status": "unpublished",
+      "medical": true,
+      "medicalApproved": false,
+      "minWeek": 26,
+      "maxWeek": 26
+    },
+    {
+      "id": "idea-24",
+      "text": "«Идея дня: собери в одну папку все документы и анализы — скоро она понадобится»",
+      "status": "unpublished",
+      "medical": true,
+      "medicalApproved": false,
+      "minWeek": 27,
+      "maxWeek": 27
+    },
+    {
+      "id": "idea-25",
+      "text": "«Начинаем третью главу! Сегодня — отличный день, чтобы записать шевеления и познакомиться с режимом малыша»",
+      "status": "unpublished",
+      "medical": true,
+      "medicalApproved": false,
+      "minWeek": 28,
+      "maxWeek": 28
+    },
+    {
+      "id": "idea-26",
+      "text": "«Договорись, кто и чем будет помогать первые недели после родов: еда, уборка, старшие дети»",
+      "status": "unpublished",
+      "medical": true,
+      "medicalApproved": false,
+      "minWeek": 29,
+      "maxWeek": 29
+    },
+    {
+      "id": "idea-27",
+      "text": "«Сегодня идеальный день для шопинга для малыша: коляска, автокресло и первые вещички 👶»",
+      "status": "unpublished",
+      "medical": true,
+      "medicalApproved": false,
+      "minWeek": 30,
+      "maxWeek": 30
+    },
+    {
+      "id": "idea-28",
+      "text": "«Время собирать сумку в роддом. Начни с документов — это 5 минут»",
+      "status": "unpublished",
+      "medical": true,
+      "medicalApproved": false,
+      "minWeek": 31,
+      "maxWeek": 31
+    },
+    {
+      "id": "idea-29",
+      "text": "«Стираем и гладим детские вещи? Сегодня самое время — пусть пахнут домом»",
+      "status": "unpublished",
+      "medical": true,
+      "medicalApproved": false,
+      "minWeek": 32,
+      "maxWeek": 32
+    },
+    {
+      "id": "idea-30",
+      "text": "«Идея дня: составьте с партнёром план «что делать, когда начнётся»: кто везёт, что берём»",
+      "status": "unpublished",
+      "medical": true,
+      "medicalApproved": false,
+      "minWeek": 33,
+      "maxWeek": 33
+    },
+    {
+      "id": "idea-31",
+      "text": "«Сегодня день для репетиции: потренируйте дыхание и массаж вместе с партнёром»",
+      "status": "unpublished",
+      "medical": true,
+      "medicalApproved": false,
+      "minWeek": 34,
+      "maxWeek": 34
+    },
+    {
+      "id": "idea-32",
+      "text": "«Проверь сумку по чек-листу и поставь её у двери. Всё, ты готова!»",
+      "status": "unpublished",
+      "medical": true,
+      "medicalApproved": false,
+      "minWeek": 35,
+      "maxWeek": 35
+    },
+    {
+      "id": "idea-33",
+      "text": "«Идея дня: подготовь уголок для малыша дома — столик для пеленания и место для сна»",
+      "status": "unpublished",
+      "medical": true,
+      "medicalApproved": false,
+      "minWeek": 36,
+      "maxWeek": 36
+    },
+    {
+      "id": "idea-34",
+      "text": "«Сегодня ты молодец и можешь ничего не делать. Всё главное уже готово ♥»",
+      "status": "unpublished",
+      "medical": true,
+      "medicalApproved": false,
+      "minWeek": 37,
+      "maxWeek": 37
+    },
+    {
+      "id": "idea-35",
+      "text": "«Отличный день для спокойной прогулки и любимого фильма вечером»",
+      "status": "unpublished",
+      "medical": true,
+      "medicalApproved": false,
+      "minWeek": 38,
+      "maxWeek": 38
+    },
+    {
+      "id": "idea-36",
+      "text": "«Расскажи в чате III триместра, как ты отвечаешь на «ну что, ещё нет?» — там поймут 😄»",
+      "status": "unpublished",
+      "medical": true,
+      "medicalApproved": false,
+      "minWeek": 39,
+      "maxWeek": 39
+    },
+    {
+      "id": "idea-37",
+      "text": "«Сегодня — день маленьких радостей: ванна для ног, любимая еда, тёплый плед»",
+      "status": "unpublished",
+      "medical": true,
+      "medicalApproved": false,
+      "minWeek": 40,
+      "maxWeek": 40
+    },
+    {
+      "id": "idea-38",
+      "text": "«Отдыхай, слушай себя и врача. Совсем скоро встреча ♥»",
+      "status": "unpublished",
+      "medical": true,
+      "medicalApproved": false,
+      "minWeek": 41,
+      "maxWeek": 42
+    }
+  ],
+  "practices": [
+    {
+      "id": "practice-1",
+      "text": "«Сядь удобно. Вдох на 4 счёта, медленный выдох на 6. Повтори 5 раз»",
+      "status": "unpublished",
+      "medical": true,
+      "medicalApproved": false
+    },
+    {
+      "id": "practice-2",
+      "text": "«Положи ладони на нижние рёбра и дыши так, чтобы они расходились в стороны. 5 вдохов»",
+      "status": "unpublished",
+      "medical": true,
+      "medicalApproved": false
+    },
+    {
+      "id": "practice-3",
+      "text": "«Подними плечи к ушам на вдохе и расслабленно урони на выдохе. 5 раз»",
+      "status": "unpublished",
+      "medical": true,
+      "medicalApproved": false
+    },
+    {
+      "id": "practice-4",
+      "text": "«Медленные круги тазом стоя или на фитболе: 5 в одну сторону, 5 в другую»",
+      "status": "unpublished",
+      "medical": true,
+      "medicalApproved": false
+    },
+    {
+      "id": "practice-5",
+      "text": "«Встань на четвереньки и мягко прогни и выгни спину «кошечкой». 5 раз в своём темпе»",
+      "status": "unpublished",
+      "medical": true,
+      "medicalApproved": false
+    },
+    {
+      "id": "practice-6",
+      "text": "«Расслабь челюсть: приоткрой рот и сделай три длинных выдоха со звуком «а-а-а»»",
+      "status": "unpublished",
+      "medical": true,
+      "medicalApproved": false
+    },
+    {
+      "id": "practice-7",
+      "text": "«Помассируй круговыми движениями виски и основание черепа — 15 секунд каждую зону»",
+      "status": "unpublished",
+      "medical": true,
+      "medicalApproved": false
+    },
+    {
+      "id": "practice-8",
+      "text": "«Покрути стопами по 10 раз в каждую сторону — ногам станет легче»",
+      "status": "unpublished",
+      "medical": true,
+      "medicalApproved": false
+    },
+    {
+      "id": "practice-9",
+      "text": "«Ляг на бок, подушка между коленями. Отпусти плечи, лицо, живот — по очереди, на каждом выдохе»",
+      "status": "unpublished",
+      "medical": true,
+      "medicalApproved": false
+    },
+    {
+      "id": "practice-10",
+      "text": "«Вспомни место, где тебе спокойно. Побудь там 30 секунд с закрытыми глазами»",
+      "status": "unpublished",
+      "medical": true,
+      "medicalApproved": false
+    },
+    {
+      "id": "practice-11",
+      "text": "«Руки на живот. Скажи малышу три слова, которые хочешь, чтобы он услышал первыми»",
+      "status": "unpublished",
+      "medical": true,
+      "medicalApproved": false
+    },
+    {
+      "id": "practice-12",
+      "text": "«Длинный выдох через сложенные трубочкой губы, как в схватке. 5 раз — это уже тренировка к родам» (только с 28 недели)",
+      "status": "unpublished",
+      "medical": true,
+      "medicalApproved": false
+    }
+  ],
+  "replies": [
+    {
+      "id": "reply-1",
+      "text": "«Как здорово! Пусть это чувство останется с тобой на весь день ♥»",
+      "mood": "Радуюсь",
+      "trimester": "I",
+      "status": "unpublished",
+      "medical": true,
+      "medicalApproved": false
+    },
+    {
+      "id": "reply-2",
+      "text": "«Радость — лучший спутник на этом пути. Малышу тоже хорошо»",
+      "mood": "Радуюсь",
+      "trimester": "I",
+      "status": "unpublished",
+      "medical": true,
+      "medicalApproved": false
+    },
+    {
+      "id": "reply-3",
+      "text": "«Ура! Запомни этот день — он ещё попадёт в итоги недели»",
+      "mood": "Радуюсь",
+      "trimester": "I",
+      "status": "unpublished",
+      "medical": true,
+      "medicalApproved": false
+    },
+    {
+      "id": "reply-4",
+      "text": "«Отлично! Второй триместр умеет радовать»",
+      "mood": "Радуюсь",
+      "trimester": "II",
+      "status": "unpublished",
+      "medical": true,
+      "medicalApproved": false
+    },
+    {
+      "id": "reply-5",
+      "text": "«Как же приятно это слышать! Поделись радостью с малышом — погладь живот»",
+      "mood": "Радуюсь",
+      "trimester": "II",
+      "status": "unpublished",
+      "medical": true,
+      "medicalApproved": false
+    },
+    {
+      "id": "reply-6",
+      "text": "«Супер! В такие дни хорошо делать фото животика»",
+      "mood": "Радуюсь",
+      "trimester": "II",
+      "status": "unpublished",
+      "medical": true,
+      "medicalApproved": false
+    },
+    {
+      "id": "reply-7",
+      "text": "«Как здорово! Малыш сейчас тоже чувствует твоё хорошее настроение»",
+      "mood": "Радуюсь",
+      "trimester": "III",
+      "status": "unpublished",
+      "medical": true,
+      "medicalApproved": false
+    },
+    {
+      "id": "reply-8",
+      "text": "«Ура! Совсем скоро встреча ♥»",
+      "mood": "Радуюсь",
+      "trimester": "III",
+      "status": "unpublished",
+      "medical": true,
+      "medicalApproved": false
+    },
+    {
+      "id": "reply-9",
+      "text": "«Вот это настрой! С таким настроением и в роды идти легче»",
+      "mood": "Радуюсь",
+      "trimester": "III",
+      "status": "unpublished",
+      "medical": true,
+      "medicalApproved": false
+    },
+    {
+      "id": "reply-10",
+      "text": "«Спокойствие — отличная опора. Хорошего дня!»",
+      "mood": "Спокойно",
+      "trimester": "I",
+      "status": "unpublished",
+      "medical": true,
+      "medicalApproved": false
+    },
+    {
+      "id": "reply-11",
+      "text": "«Ровный день — тоже хороший день. Вот что на этой неделе с малышом»",
+      "mood": "Спокойно",
+      "trimester": "I",
+      "status": "unpublished",
+      "medical": true,
+      "medicalApproved": false
+    },
+    {
+      "id": "reply-12",
+      "text": "«Так держать! Можно добавить лёгкую прогулку»",
+      "mood": "Спокойно",
+      "trimester": "I",
+      "status": "unpublished",
+      "medical": true,
+      "medicalApproved": false
+    },
+    {
+      "id": "reply-13",
+      "text": "«Хороший день, чтобы немного подвигаться. Практика недели — если захочется»",
+      "mood": "Спокойно",
+      "trimester": "II",
+      "status": "unpublished",
+      "medical": true,
+      "medicalApproved": false
+    },
+    {
+      "id": "reply-14",
+      "text": "«Спокойствие тебе идёт. Самое время спланировать приятное на выходные»",
+      "mood": "Спокойно",
+      "trimester": "II",
+      "status": "unpublished",
+      "medical": true,
+      "medicalApproved": false
+    },
+    {
+      "id": "reply-15",
+      "text": "«Ровно и хорошо — идеально. Вот статья недели, если есть минутка»",
+      "mood": "Спокойно",
+      "trimester": "II",
+      "status": "unpublished",
+      "medical": true,
+      "medicalApproved": false
+    },
+    {
+      "id": "reply-16",
+      "text": "«Спокойствие перед родами — на вес золота. Потренируем дыхание?»",
+      "mood": "Спокойно",
+      "trimester": "III",
+      "status": "unpublished",
+      "medical": true,
+      "medicalApproved": false
+    },
+    {
+      "id": "reply-17",
+      "text": "«Хороший день, чтобы спокойно проверить сумку в роддом»",
+      "mood": "Спокойно",
+      "trimester": "III",
+      "status": "unpublished",
+      "medical": true,
+      "medicalApproved": false
+    },
+    {
+      "id": "reply-18",
+      "text": "«Так и продолжай — ты всё делаешь правильно ♥»",
+      "mood": "Спокойно",
+      "trimester": "III",
+      "status": "unpublished",
+      "medical": true,
+      "medicalApproved": false
+    },
+    {
+      "id": "reply-19",
+      "text": "«В начале беременности тело делает огромную работу — усталость это нормально. Поспи, если можно»",
+      "mood": "Устала",
+      "trimester": "I",
+      "status": "unpublished",
+      "medical": true,
+      "medicalApproved": false
+    },
+    {
+      "id": "reply-20",
+      "text": "«Сегодня можно сделать только самое важное. Остальное подождёт»",
+      "mood": "Устала",
+      "trimester": "I",
+      "status": "unpublished",
+      "medical": true,
+      "medicalApproved": false
+    },
+    {
+      "id": "reply-21",
+      "text": "«Сонливость ко второму триместру обычно отступает. А пока — береги себя»",
+      "mood": "Устала",
+      "trimester": "I",
+      "status": "unpublished",
+      "medical": true,
+      "medicalApproved": false
+    },
+    {
+      "id": "reply-22",
+      "text": "«Ноги и спина стали работать больше. 15 минут отдыха с подушкой — и станет легче»",
+      "mood": "Устала",
+      "trimester": "II",
+      "status": "unpublished",
+      "medical": true,
+      "medicalApproved": false
+    },
+    {
+      "id": "reply-23",
+      "text": "«Устать — не стыдно. Вот короткая практика расслабления»",
+      "mood": "Устала",
+      "trimester": "II",
+      "status": "unpublished",
+      "medical": true,
+      "medicalApproved": false
+    },
+    {
+      "id": "reply-24",
+      "text": "«Дай себе сегодня ранний отбой. Малыш скажет спасибо»",
+      "mood": "Устала",
+      "trimester": "II",
+      "status": "unpublished",
+      "medical": true,
+      "medicalApproved": false
+    },
+    {
+      "id": "reply-25",
+      "text": "«Третий триместр забирает много сил, это нормально. Сегодня можно ничего не успевать»",
+      "mood": "Устала",
+      "trimester": "III",
+      "status": "unpublished",
+      "medical": true,
+      "medicalApproved": false
+    },
+    {
+      "id": "reply-26",
+      "text": "«Отдох сейчас — это подготовка к родам. Вот дыхание для отдыха»",
+      "mood": "Устала",
+      "trimester": "III",
+      "status": "unpublished",
+      "medical": true,
+      "medicalApproved": false
+    },
+    {
+      "id": "reply-27",
+      "text": "«Попроси сегодня кого-то сделать что-то за тебя. Ты заслужила»",
+      "mood": "Устала",
+      "trimester": "III",
+      "status": "unpublished",
+      "medical": true,
+      "medicalApproved": false
+    },
+    {
+      "id": "reply-28",
+      "text": "«В начале тревога бывает почти у всех. В чате I триместра сейчас такие же мамы — ты не одна»",
+      "mood": "Тревожно",
+      "trimester": "I",
+      "status": "unpublished",
+      "medical": true,
+      "medicalApproved": false
+    },
+    {
+      "id": "reply-29",
+      "text": "«Тревога означает, что тебе важно. Запиши один вопрос, который беспокоит, — и задай его врачу»",
+      "mood": "Тревожно",
+      "trimester": "I",
+      "status": "unpublished",
+      "medical": true,
+      "medicalApproved": false
+    },
+    {
+      "id": "reply-30",
+      "text": "«Давай начнём с дыхания: медленный вдох и длинный выдох. А потом — вот практика на эту тему»",
+      "mood": "Тревожно",
+      "trimester": "I",
+      "status": "unpublished",
+      "medical": true,
+      "medicalApproved": false
+    },
+    {
+      "id": "reply-31",
+      "text": "«Тревожиться в беременность — нормально. В чате II триместра мамы делятся и поддерживают друг друга»",
+      "mood": "Тревожно",
+      "trimester": "II",
+      "status": "unpublished",
+      "medical": true,
+      "medicalApproved": false
+    },
+    {
+      "id": "reply-32",
+      "text": "«Что именно беспокоит? Иногда помогает просто назвать это вслух»",
+      "mood": "Тревожно",
+      "trimester": "II",
+      "status": "unpublished",
+      "medical": true,
+      "medicalApproved": false
+    },
+    {
+      "id": "reply-33",
+      "text": "«Вот статья про эмоции — может, станет немного спокойнее»",
+      "mood": "Тревожно",
+      "trimester": "II",
+      "status": "unpublished",
+      "medical": true,
+      "medicalApproved": false
+    },
+    {
+      "id": "reply-34",
+      "text": "«Перед родами тревога бывает почти у всех. В чате III триместра сейчас такие же мамы — ты не одна»",
+      "mood": "Тревожно",
+      "trimester": "III",
+      "status": "unpublished",
+      "medical": true,
+      "medicalApproved": false
+    },
+    {
+      "id": "reply-35",
+      "text": "«Страх перед родами смягчается, когда знаешь, что будет. Вот материал недели про роды»",
+      "mood": "Тревожно",
+      "trimester": "III",
+      "status": "unpublished",
+      "medical": true,
+      "medicalApproved": false
+    },
+    {
+      "id": "reply-36",
+      "text": "«Давай подышим вместе: вдох на 4, выдох на 6. Ты справишься ♥»",
+      "mood": "Тревожно",
+      "trimester": "III",
+      "status": "unpublished",
+      "medical": true,
+      "medicalApproved": false
+    },
+    {
+      "id": "reply-37",
+      "text": "«Сочувствуем. Если есть сильная боль или кровь — сразу звони врачу. Тошнота и слабость часто бывают в начале, можно спросить AI врача»",
+      "mood": "Нехорошо",
+      "trimester": "I",
+      "status": "unpublished",
+      "medical": true,
+      "medicalApproved": false
+    },
+    {
+      "id": "reply-38",
+      "text": "«Непростой день. Отдохни и наблюдай за собой. Если станет хуже — к врачу»",
+      "mood": "Нехорошо",
+      "trimester": "I",
+      "status": "unpublished",
+      "medical": true,
+      "medicalApproved": false
+    },
+    {
+      "id": "reply-39",
+      "text": "«Рвота более 3 раз в день или не получается пить — повод позвонить врачу сегодня»",
+      "mood": "Нехорошо",
+      "trimester": "I",
+      "status": "unpublished",
+      "medical": true,
+      "medicalApproved": false
+    },
+    {
+      "id": "reply-40",
+      "text": "«Сочувствуем. Если есть боль, кровь, подтекание или сильная головная боль — сразу звони врачу»",
+      "mood": "Нехорошо",
+      "trimester": "II",
+      "status": "unpublished",
+      "medical": true,
+      "medicalApproved": false
+    },
+    {
+      "id": "reply-41",
+      "text": "«Спина или ноги? Вот материал, который может помочь. Если не проходит — скажи врачу»",
+      "mood": "Нехорошо",
+      "trimester": "II",
+      "status": "unpublished",
+      "medical": true,
+      "medicalApproved": false
+    },
+    {
+      "id": "reply-42",
+      "text": "«Береги себя сегодня. Можно задать вопрос AI врачу»",
+      "mood": "Нехорошо",
+      "trimester": "II",
+      "status": "unpublished",
+      "medical": true,
+      "medicalApproved": false
+    },
+    {
+      "id": "reply-43",
+      "text": "«Сочувствуем. Если есть боль, кровь, подтекание или малыш затих — сразу звони врачу. Можно задать вопрос AI врачу»",
+      "mood": "Нехорошо",
+      "trimester": "III",
+      "status": "unpublished",
+      "medical": true,
+      "medicalApproved": false
+    },
+    {
+      "id": "reply-44",
+      "text": "«Отдохни на боку и послушай шевеления. Если тревожно — лучше позвонить врачу»",
+      "mood": "Нехорошо",
+      "trimester": "III",
+      "status": "unpublished",
+      "medical": true,
+      "medicalApproved": false
+    },
+    {
+      "id": "reply-45",
+      "text": "«Резкие отёки, головная боль, «мушки» перед глазами — сразу к врачу. Остальное можно обсудить с AI врачом»",
+      "mood": "Нехорошо",
+      "trimester": "III",
+      "status": "unpublished",
+      "medical": true,
+      "medicalApproved": false
+    }
+  ],
+  "weekly": {
+    "1": {
+      "id": "weekly-1",
+      "week": 1,
+      "baby": "Зачатие ещё впереди, но календарь беременности уже начался — с первого дня менструации.",
+      "development": "Пока малыша ещё нет: акушерский срок отсчитывают с первого дня последней менструации, до зачатия. В яичнике созревает яйцеклетка, из которой после оплодотворения начнётся развитие новой жизни.",
+      "measurements": "",
+      "momTitle": "Считается началом беременности, хотя зачатия ещё нет",
+      "mom": "Первая акушерская неделя беременности начинается с первого дня менструации, несмотря на то, что зачатия еще даже не произошло.  Матка отторгает верхний слой эндометрия и готовится вырастить новый, в котором позже сможет закрепиться эмбрион. Поэтому привычные спазмы и усталость сейчас связаны с циклом. Акушерский календарь уже идёт, хотя встреча яйцеклетки и сперматозоида ещё впереди.",
+      "status": "unpublished",
+      "medical": true,
+      "medicalApproved": false
+    },
+    "2": {
+      "id": "weekly-2",
+      "week": 2,
+      "baby": "Яйцеклетка готовится к встрече со сперматозоидом. Их соединение даст начало новой жизни.",
+      "development": "Организм готовится к зачатию. При 28-дневном цикле примерно к концу этой недели происходит овуляция: яйцеклетка выходит из яичника и может встретиться со сперматозоидом. Дата овуляции бывает разной.",
+      "measurements": "",
+      "momTitle": "Тело создаёт условия для встречи",
+      "mom": "Перед овуляцией выделения могут стать похожими на сырой яичный белок: прозрачными, скользкими и тягучими. Так эстрогены меняют свойства слизи шейки матки, облегчая продвижение сперматозоидов. Одновременно внутри матки нарастает эндометрий — будущая среда для прикрепления эмбриона. Тело готовится к зачатию ещё до того, как оно произойдёт.",
+      "status": "unpublished",
+      "medical": true,
+      "medicalApproved": false
+    },
+    "3": {
+      "id": "weekly-3",
+      "week": 3,
+      "baby": "Всё начинается с одной клетки. Она делится, пока будущий эмбрион движется к матке.",
+      "development": "После оплодотворения появляется первая клетка будущего малыша — зигота. Она делится, и образовавшаяся группа клеток движется по маточной трубе к матке. Уже заложен набор наследственной информации. Размер микроскопический, вес пока не оценивают.",
+      "measurements": "",
+      "momTitle": "В яичнике появляется временная железа",
+      "mom": "После овуляции на месте лопнувшего фолликула появляется жёлтое тело — временная железа в яичнике. Она вырабатывает прогестерон, который поддерживает внутренний слой матки. Если зачатие произошло, жёлтое тело продолжит помогать беременности, пока эту задачу не возьмёт плацента. Получается, сначала важнейшую поддержку обеспечивает яичник!",
+      "status": "unpublished",
+      "medical": true,
+      "medicalApproved": false
+    },
+    "4": {
+      "id": "weekly-4",
+      "week": 4,
+      "baby": "Крошечная группа клеток закрепляется в матке. Из них сформируются малыш и часть плаценты.",
+      "development": "Ваш малыш по размеру — как маковое зёрнышко. Будущий малыш пока представляет собой крошечную группу клеток, которая закрепляется в слизистой матки. Одни клетки дадут начало эмбриону, другие — части плаценты. Формируются структуры, поддерживающие его развитие. Вес пока не оценивают.",
+      "measurements": "",
+      "momTitle": "Матка уже участвует в питании эмбриона",
+      "mom": "Плацента ещё формируется, а питание эмбриону нужно уже сейчас. Внутренний слой матки содержит железы, выделяющие богатый питательными веществами секрет. Он помогает обеспечивать самые ранние этапы развития. Поэтому эндометрий — гораздо больше, чем место прикрепления: материнские ткани участвуют в поддержке беременности с самого начала.",
+      "status": "unpublished",
+      "medical": true,
+      "medicalApproved": false
+    },
+    "5": {
+      "id": "weekly-5",
+      "week": 5,
+      "baby": "Малыш крошечный, но внутри уже закладываются сердце, сосуды и будущая нервная система.",
+      "development": "Ваш малыш по размеру — как кунжутное семечко. Рост — примерно 2 мм, вес пока не оценивают. Закладываются нервная система, сердце и кровеносные сосуды. Из трёх слоёв клеток постепенно будут формироваться органы и ткани. Продолжается развитие будущей плаценты.",
+      "measurements": "Размер ≈ 2 мм",
+      "momTitle": "Почему хочется спать ещё до появления живота",
+      "mom": "Перестройка уже идёт: меняется гормональный фон, развивается плацента, организм адаптирует кровообращение. Сонливость и непривычная усталость нередко появляются раньше внешних признаков. При этом их сила ничего не говорит о том, насколько хорошо развивается малыш: беременность не ощущается одинаково, ведь каждая женщина уникальна.",
+      "status": "unpublished",
+      "medical": true,
+      "medicalApproved": false
+    },
+    "6": {
+      "id": "weekly-6",
+      "week": 6,
+      "baby": "Сердце уже сокращается! Его работу иногда удаётся увидеть на УЗИ.",
+      "development": "Ваш малыш по размеру — как горошина. Рост — примерно 6 мм, вес пока не оценивают. Появляются зачатки ручек и ножек. Закрывается нервная трубка — основа головного и спинного мозга. Сердце уже сокращается; сердечную деятельность иногда удаётся увидеть на УЗИ.",
+      "measurements": "Размер ≈ 6 мм",
+      "momTitle": "Внутри вас растёт новый орган",
+      "mom": "Пока беременность незаметна снаружи. А внутри продолжает формироваться плацента — временный орган, который будет снабжать малыша кислородом и питательными веществами. Её ткани уже активно вырабатывают ХГЧ — гормон, на который реагирует тест. Организм перестраивается задолго до появления животика: отсюда сонливость, чувствительная грудь и первые приступы тошноты.",
+      "status": "unpublished",
+      "medical": true,
+      "medicalApproved": false
+    },
+    "7": {
+      "id": "weekly-7",
+      "week": 7,
+      "baby": "Мозг растёт особенно быстро. Будущие ручки удлиняются, на них уже намечаются кисти.",
+      "development": "Ваш малыш по размеру — как виноградина. Рост — примерно 1 см, вес пока не оценивают. Особенно быстро растёт мозг, поэтому голова выглядит крупной. Удлиняются будущие ручки, намечаются кисти. Формируются структуры глаз, носа и ушей.",
+      "measurements": "Размер ≈ 1 см",
+      "momTitle": "В туалет хочется чаще",
+      "mom": "Уже сейчас к почкам поступает больше крови, и они активнее её фильтруют. Мочи может образовываться больше — отсюда неожиданные походы в туалет, особенно ночью. Но учащенное мочеиспускание не должно мешать обычной жизни: если чувствуете жжение или боль, обязательно обратитесь к врачу.",
+      "status": "unpublished",
+      "medical": true,
+      "medicalApproved": false
+    },
+    "8": {
+      "id": "weekly-8",
+      "week": 8,
+      "baby": "Уже намечаются пальчики, пока соединённые перепонками. Крошечное тело постепенно начинает выпрямляться.",
+      "development": "Ваш малыш по размеру — как малина. Рост — примерно 1,2–1,6 см, вес пока не оценивают. Намечаются пальчики, пока соединённые перепонками. Развиваются внутреннее ухо и язык, заметнее становится нос. Туловище постепенно выпрямляется.",
+      "measurements": "Размер ≈ 1,2–1,6 см",
+      "momTitle": "Любимая еда вдруг стала невкусной",
+      "mom": "Во время беременности могут меняться восприятие вкуса и реакция на запахи. Вместе с тошнотой это способно перевернуть привычное меню. Но желание солёного или кислого не указывает на пол малыша – это распространенный миф. Также конкретная пищевая прихоть не доказывает нехватку тех или иных витаминов, чаще это связано с гормональной перестройкой.",
+      "status": "unpublished",
+      "medical": true,
+      "medicalApproved": false
+    },
+    "9": {
+      "id": "weekly-9",
+      "week": 9,
+      "baby": "Формируются веки и рот. Продолжают развиваться кисти и стопы. Теперь врачи называют малыша плодом, а не эмбрионом.",
+      "development": "Ваш малыш по размеру — как клубника. Рост — примерно 2 см, вес пока не оценивают. Лицо становится более узнаваемым: формируются веки, рот и язык. Развиваются кисти и стопы, продолжается формирование сердца, мозга, лёгких и почек.",
+      "measurements": "Размер ≈ 2 см",
+      "momTitle": "Почему к вечеру живот больше",
+      "mom": "На раннем сроке такую разницу часто создаёт кишечник. Гормональные изменения замедляют продвижение его содержимого, способствуя запорам и скоплению газов. Матка тоже растёт, но в течение дня она не увеличивается настолько резко. Поэтому вечерний объём живота ещё не показывает размеры малыша.",
+      "status": "unpublished",
+      "medical": true,
+      "medicalApproved": false
+    },
+    "10": {
+      "id": "weekly-10",
+      "week": 10,
+      "baby": "Пальчики разделяются, малыш уже двигается! Но эти движения пока слишком слабы для ваших ощущений.",
+      "development": "Ваш малыш по размеру — как небольшой абрикос. Рост — примерно 3–3,5 см, вес — примерно 8 г. Пальчики становятся отдельными, исчезают перепонки между ними. Развиваются суставы рук и ног. Малыш совершает небольшие движения, которые иногда видны на УЗИ, но ещё не ощущаются мамой.",
+      "measurements": "Размер ≈ 3–3,5 см",
+      "momTitle": "Матка начинает активный рост",
+      "mom": "Матка не просто растягивается, как воздушный шар. Её мышечные клетки увеличиваются, а ткани и сосуды перестраиваются под беременность. Ее активный рост начинается под действием гормонов. Снаружи изменений может быть немного, но внутри уже стремительно увеличивается орган, которому предстоит вместить в себя ребёнка, плаценту и околоплодные воды.",
+      "status": "unpublished",
+      "medical": true,
+      "medicalApproved": false
+    },
+    "11": {
+      "id": "weekly-11",
+      "week": 11,
+      "baby": "Его печень уже участвует в образовании клеток крови, а в деснах закладываются зачатки будущих молочных зубов.",
+      "development": "Ваш малыш по размеру — как инжир. Рост — примерно 5 см, вес — примерно 8 г. Теперь в медицинской терминологии его называют плодом. Голова ещё крупная по отношению к телу. Продолжается развитие наружных половых органов, в печени образуются клетки крови.",
+      "measurements": "Размер ≈ 5 см · Вес ≈ 8 г",
+      "momTitle": "Плацента принимает новую работу",
+      "mom": "Внутри постепенно меняется источник гормональной поддержки: плацента принимает выработку прогестерона у жёлтого тела в яичнике. Передача этой функции происходит в течение нескольких недель и обычно завершается к концу первого триместра. Пока вы замечаете главным образом сонливость или тошноту, временный орган осваивает всё больше работы.",
+      "status": "unpublished",
+      "medical": true,
+      "medicalApproved": false
+    },
+    "12": {
+      "id": "weekly-12",
+      "week": 12,
+      "baby": "Основные органы уже заложены, но продолжают созревать. На пальчиках начинают формироваться ногти.",
+      "development": "Ваш малыш по размеру — как слива. Рост — примерно 5–6 см, вес — примерно 14 г. На пальчиках начинают формироваться ногти. Профиль лица становится чётче, кишечник располагается в брюшной полости. Основные органы уже заложены, но их созревание продолжается.",
+      "measurements": "Размер ≈ 5–6 см · Вес ≈ 14 г",
+      "momTitle": "Матка выходит за пределы таза",
+      "mom": "Растущая матка подходит к верхнему краю лобковой кости и начинает выходить из малого таза. Поэтому талия постепенно меняется, а низ живота может сильно округляться. При первой беременности это нередко становится заметно позже, чем при повторной. Один и тот же срок выглядит по-разному: на форму живота влияют телосложение, мышцы и работа кишечника.",
+      "status": "unpublished",
+      "medical": true,
+      "medicalApproved": false
+    },
+    "13": {
+      "id": "weekly-13",
+      "week": 13,
+      "baby": "Развиваются голосовые связки, хотя первый крик ещё впереди. Кости постепенно становятся твёрже.",
+      "development": "Ваш малыш по размеру — как персик. Рост — примерно 7,5 см, вес — примерно 30 г. Развиваются голосовые связки, кости постепенно становятся твёрже. Печень и поджелудочная железа начинают выполнять свои функции. На голове и в области бровей появляются тонкие волоски.",
+      "measurements": "Размер ≈ 7,5 см · Вес ≈ 30 г",
+      "momTitle": "Крови больше, а гемоглобин ниже",
+      "mom": "Крови становится больше, но концентрация гемоглобина может снизиться. Парадокс объясняется просто: жидкая часть крови — плазма — увеличивается быстрее, чем количество красных клеток. Кровь словно становится более разбавленной. Это часть адаптации к беременности, однако низкий гемоглобин нельзя считать нормой: обычно показатели оценивает врач и назначает препараты железа.",
+      "status": "unpublished",
+      "medical": true,
+      "medicalApproved": false
+    },
+    "14": {
+      "id": "weekly-14",
+      "week": 14,
+      "baby": "Малыш заглатывает околоплодные воды, а почки вырабатывают мочу. Внутри пузыря уже происходит обмен жидкостью.",
+      "development": "Ваш малыш по размеру — как киви. Рост — примерно 8,5 см, вес — примерно 45 г. Шея становится заметнее. Малыш заглатывает небольшие порции околоплодных вод, а его почки вырабатывают мочу. Он двигает ручками и ножками, хотя мама обычно ещё этого не чувствует.",
+      "measurements": "Размер ≈ 8,5 см · Вес ≈ 45 г",
+      "momTitle": "Беременность меняет даже дёсны",
+      "mom": "Дёсны резко начали кровоточить? Гормональные изменения делают их чувствительнее, поэтому воспаление возникает легче. Это не означает, что малыш «забирает кальций из зубов». Причина часто в реакции тканей на бактерии и ослаблении кровеносных сосудов. Как правило, ситуацию спасают бережная чистка и препараты, содержащие витамин С и рутин (по согласованию с врачом!).",
+      "status": "unpublished",
+      "medical": true,
+      "medicalApproved": false
+    },
+    "15": {
+      "id": "weekly-15",
+      "week": 15,
+      "baby": "Малыш уже может подносить пальчик ко рту. Тело начинает покрываться нежным пушком лануго.",
+      "development": "Ваш малыш по размеру — как яблоко. Рост — примерно 10 см, вес — примерно 80 г. Тело растёт быстрее головы, и пропорции постепенно меняются. Кожу начинает покрывать тонкий пушок — лануго. Малыш двигается и уже может подносить большой палец ко рту.",
+      "measurements": "Размер ≈ 10 см · Вес ≈ 80 г",
+      "momTitle": "Откуда берётся полоска на животе",
+      "mom": "На животе может проявиться тёмная вертикальная полоска. Гормональные изменения усиливают выработку пигмента меланина — того самого, который определяет цвет кожи. По этой же причине темнеют ареолы, а на лице иногда появляются пигментные пятна. Полоска не предсказывает пол ребёнка и возникает не у всех; после родов пигментация обычно постепенно бледнеет.",
+      "status": "unpublished",
+      "medical": true,
+      "medicalApproved": false
+    },
+    "16": {
+      "id": "weekly-16",
+      "week": 16,
+      "baby": "Кисти сжимаются в кулачки, движения становятся согласованнее. Глаза двигаются под закрытыми веками.",
+      "development": "Ваш малыш по размеру — как авокадо. Рост — примерно 12 см, вес — примерно 110 г. Движения рук и ног становятся более согласованными, кисти сжимаются в кулачки. Глаза способны медленно двигаться под закрытыми веками. Уши приближаются к своему обычному положению.",
+      "measurements": "Размер ≈ 12 см · Вес ≈ 110 г",
+      "momTitle": "Первое молоко появляется уже сейчас",
+      "mom": "До родов ещё несколько месяцев, а грудь уже может начинать вырабатывать молозиво. Это первое молоко, богатое защитными компонентами, появляется в груди примерно с середины беременности. Чаще процесс незаметен: то есть вы не заметите выделений из груди. Но внутри активно идут процессы, грудь плавно «готовится» к вскармливанию ребенка. ",
+      "status": "unpublished",
+      "medical": true,
+      "medicalApproved": false
+    },
+    "17": {
+      "id": "weekly-17",
+      "week": 17,
+      "baby": "Малыш активно меняет положение в утробе. Совершенствуется слух: малыш начинает воспринимать звуки окружающего мира и матери.",
+      "development": "Ваш малыш по размеру — как гранат. Рост — примерно 13 см, вес — примерно 150 г. Почки работают и выделяют мочу, которая становится частью околоплодных вод. Наружные половые органы уже сформированы. Малыш продолжает активно двигаться и менять положение.",
+      "measurements": "Размер ≈ 13 см · Вес ≈ 150 г",
+      "momTitle": "Растяжки зависят не только от размера живота",
+      "mom": "Могут появиться первые растяжки, причем это может случиться даже при небольшой прибавке веса. На них влияют растяжение кожи, гормональные изменения и наследственность. Сначала полоски бывают розовыми или фиолетовыми, затем обычно светлеют. Крем помогает повысить эластичность кожи, но не гарантирует их предотвращение. ",
+      "status": "unpublished",
+      "medical": true,
+      "medicalApproved": false
+    },
+    "18": {
+      "id": "weekly-18",
+      "week": 18,
+      "baby": "Малыш может хорошо сгибать ручки и ножки. На пальцах уже есть фаланги, формируются суставы.",
+      "development": "Ваш малыш по размеру — как сладкий перец. Рост — примерно 14 см, вес — примерно 200 г. Развивается слух, совершенствуются сосательный и глотательный рефлексы. Он сгибает ручки и ножки, поворачивается. Некоторые мамы уже замечают первые шевеления.",
+      "measurements": "Размер ≈ 14 см · Вес ≈ 200 г",
+      "momTitle": "Плацента может смягчать первые толчки",
+      "mom": "Первые шевеления зависят не только от активности малыша, но и от расположения плаценты. Если она прикреплена спереди, между ребёнком и стенкой живота, слабые толчки могут ощущаться менее отчётливо. Первые движения обычно замечают в 16–24 недели. Пока вы ждёте пинка, малыш уже давно двигается — просто не каждое движение доходит до ваших ощущений.",
+      "status": "unpublished",
+      "medical": true,
+      "medicalApproved": false
+    },
+    "19": {
+      "id": "weekly-19",
+      "week": 19,
+      "baby": "Кожу начинает покрывать первородная смазка. Она защищает малыша при постоянном контакте с водами.",
+      "development": "Ваш малыш по размеру — как крупный помидор. Рост — примерно 15 см, вес — примерно 260 г. Кожа начинает покрываться первородной смазкой — светлым жироподобным веществом, которое защищает её в околоплодных водах. Под кожей накапливается бурый жир, нужный для сохранения тепла после рождения.",
+      "measurements": "Размер ≈ 15 см · Вес ≈ 260 г",
+      "momTitle": "Нос может заложить без простуды",
+      "mom": "Во время беременности слизистая может отекать из-за гормональных изменений и усиленного кровоснабжения. Поэтому свободное дыхание носом иногда сменяется заложенностью, особенно ночью. Это называют ринитом беременных. Но не всякий насморк связан с беременностью: при температуре, боли в пазухах, обильных выделениях из носа нужна врачебная оценка.",
+      "status": "unpublished",
+      "medical": true,
+      "medicalApproved": false
+    },
+    "20": {
+      "id": "weekly-20",
+      "week": 20,
+      "baby": "Уже сосёт пальчик и активно двигается. Вы можете почувствовать его толчки!",
+      "development": "Ваш малыш по размеру — как банан. Рост — примерно 26 см, вес — примерно 320 г. Он двигает конечностями и может сосать пальчик. Периоды активности сменяются отдыхом. С этой недели указываем полный рост: раньше учитывался размер от головы до копчика.",
+      "measurements": "Рост ≈ 26 см · Вес ≈ 320 г",
+      "momTitle": "Теперь вы чувствуете малыша",
+      "mom": "Лёгкие «пузырьки» и трепетание постепенно превращаются в узнаваемые толчки: обычно, уже на этом сроке мама чувствует малыша! В тишине, сидя или лёжа, их проще заметить, чем на ходу. Теперь связь с ребёнком становится осязаемой. Но при первой беременности первые шевеления нередко появляются и позже 20 недель. Если к 24 неделям вы их ни разу не почувствовали, сообщите врачу.",
+      "status": "unpublished",
+      "medical": true,
+      "medicalApproved": false
+    },
+    "21": {
+      "id": "weekly-21",
+      "week": 21,
+      "baby": "Полностью сформировались брови и ресницы, малыш моргает. Кожа постепенно приобретает телесный оттенок и немного уплотняется.",
+      "development": "Ваш малыш по размеру — как морковь. Рост — примерно 27 см, вес — примерно 390 г. Ножки становятся более пропорциональными телу. Кожу покрывает нежный пушок, помогающий удерживать защитную смазку. Продолжают развиваться слух и сосательный рефлекс.",
+      "measurements": "Рост ≈ 27 см · Вес ≈ 390 г",
+      "momTitle": "Внутри живота идёт обмен жидкостью",
+      "mom": "Околоплодные воды постоянно участвуют в обмене. Малыш их заглатывает, а его почки выделяют мочу, которая становится важным источником вод. Этот обмен помогает поддерживать среду для движения и развития. Количество вод зависит от нескольких процессов, поэтому его оценивают на УЗИ, а не по внешнему размеру живота. Большой живот — вовсе не признак многоводия, ровно, как и наоборот, — маленький живот не говорит о маловодии. ",
+      "status": "unpublished",
+      "medical": true,
+      "medicalApproved": false
+    },
+    "22": {
+      "id": "weekly-22",
+      "week": 22,
+      "baby": "Малыш тренирует дыхательные движения, заглатывая воды. Но кислород пока получает через плаценту, а не лёгкие.",
+      "development": "Ваш малыш по размеру — как батат. Рост — примерно 28 см, вес — примерно 460 г. Брови и волоски на голове становятся заметнее. Развиваются лёгкие, малыш совершает тренировочные дыхательные движения. Кислород он получает через плаценту, а не вдыхает из окружающих вод.",
+      "measurements": "Рост ≈ 28 см · Вес ≈ 460 г",
+      "momTitle": "Сердце увеличивает производительность",
+      "mom": "Ваше сердце уже перекачивает больше крови за минуту, чем до беременности. Усиленное кровоснабжение нужно матке и плаценте, так как активно меняется работа почек, кожи и других органов. Пульс может стать немного чаще, а привычная нагрузка — ощущаться иначе. Выраженное сердцебиение, особенно вместе с болью, слабостью или одышкой, требует медицинской оценки.",
+      "status": "unpublished",
+      "medical": true,
+      "medicalApproved": false
+    },
+    "23": {
+      "id": "weekly-23",
+      "week": 23,
+      "baby": "В лёгких появляется сурфактант — вещество, которое после рождения поможет им оставаться расправленными.",
+      "development": "Ваш малыш по размеру — как крупное манго. Рост — примерно 29 см, вес — примерно 540 г. В лёгких начинается выработка сурфактанта — вещества, которое после рождения поможет воздушным мешочкам оставаться раскрытыми. Поджелудочная железа вырабатывает инсулин.",
+      "measurements": "Рост ≈ 29 см · Вес ≈ 540 г",
+      "momTitle": "Первые отеки: обувь может стать тесной",
+      "mom": "Растущая матка может пережимать некоторые сосуды и затруднять возвращение крови от ног к сердцу, а организм удерживает больше жидкости — она накапливается в тканях стоп и лодыжек. Отеки встречаются у каждой второй беременной. Здесь важно следить за давлением и наличием белка в моче, чтобы исключить развитие преэклампсии. ",
+      "status": "unpublished",
+      "medical": true,
+      "medicalApproved": false
+    },
+    "24": {
+      "id": "weekly-24",
+      "week": 24,
+      "baby": "Кожа все ещё морщинистая и достаточно тонкая: жира пока немного. Через неё просвечивают сосуды.",
+      "development": "Ваш малыш по размеру — как початок кукурузы. Рост — примерно 30 см, вес — примерно 630 г. Кожа ещё тонкая и морщинистая, через неё просвечивают сосуды. Жировой прослойки пока немного. Пропорции тела всё больше напоминают новорождённого, но лёгкие и другие органы продолжают созревать.",
+      "measurements": "Рост ≈ 30 см · Вес ≈ 630 г",
+      "momTitle": "Плацента влияет даже на уровень сахара",
+      "mom": "Её гормоны снижают чувствительность тканей к инсулину, и поджелудочной железе приходится вырабатывать его больше. Если этого недостаточно, повышается глюкоза. Это может никак не ощущаться и случается не только у любительниц сладкого. Поэтому глюкозотолерантный тест рекомендован всем беременным, даже при хорошем самочувствии.",
+      "status": "unpublished",
+      "medical": true,
+      "medicalApproved": false
+    },
+    "25": {
+      "id": "weekly-25",
+      "week": 25,
+      "baby": "Малыш может икать, а еще сжимать кулачки и даже ухватить свою ножку. Начинает проявляться предпочтение правой или левой руки.",
+      "development": "Ваш малыш по размеру — как цукини. Рост — примерно 35 см, вес — примерно 720 г. Он может отвечать движением на знакомый голос или вздрагивать от громкого звука. Иногда мама ощущает ритмичные лёгкие толчки — икоту малыша. Продолжают формироваться структуры позвоночника.",
+      "measurements": "Рост ≈ 35 см · Вес ≈ 720 г",
+      "momTitle": "Почему любой прием пищи может вызвать изжогу",
+      "mom": "Изжога появляется не потому, что у малыша растут волосы, это миф. Гормоны расслабляют мышечное кольцо между желудком и пищеводом, а растущая матка добавляет давление. Так, содержимое желудка попадает обратно в пищевод — отсюда жжение и кислый привкус. Облегчить изжогу помогают дробные порции, не ложиться сразу после еды, приподнятое изголовье и ограничение жирной, острой и кислой пищи.",
+      "status": "unpublished",
+      "medical": true,
+      "medicalApproved": false
+    },
+    "26": {
+      "id": "weekly-26",
+      "week": 26,
+      "baby": "Развивается память, ребёнок начинает запоминать голос матери и может различать его среди других.",
+      "development": "Ваш малыш по размеру — как огурец. Рост — примерно 36 см, вес — примерно 820 г. Брови и ресницы уже сформированы. Примерно в этот период начинают открываться веки. Окончательный цвет глаз пока неизвестен: после рождения он ещё может меняться.",
+      "measurements": "Рост ≈ 36 см · Вес ≈ 820 г",
+      "momTitle": "Ноги сводит ночью: судороги мышц и стоп",
+      "mom": "Магний участвует в работе мышц и нервов, а его дефицит может сопровождаться судорогами. Но ночной спазм икры или пальцев ног сам по себе не доказывает нехватку: у судорог беременных нет единственной установленной причины. Если они повторяются, обсудите с врачом питание и необходимость препаратов. Во время спазма осторожно потяните носок стопы на себя, без рывков.",
+      "status": "unpublished",
+      "medical": true,
+      "medicalApproved": false
+    },
+    "27": {
+      "id": "weekly-27",
+      "week": 27,
+      "baby": "Под кожей прибавляется жир, складочки постепенно разглаживаются. Малыш становится всё более округлым",
+      "development": "Ваш малыш по размеру — как кочан цветной капусты. Рост — примерно 37 см, вес — примерно 920 г. Он уже способен открывать глаза. Мозг продолжает усложняться, нервная система созревает. Постепенно увеличивается жировая прослойка, и кожа становится менее морщинистой.",
+      "measurements": "Рост ≈ 37 см · Вес ≈ 920 г",
+      "momTitle": "Тело учится держать равновесие",
+      "mom": "Живот меняет не только силуэт, но и условия равновесия. Поэтому привычная походка может измениться. Поясница быстрее устаёт, особенно если долго стоять неподвижно. Удерживать её идеально прямой весь день не требуется: мышцам обычно полезнее смена положения и посильное движение.",
+      "status": "unpublished",
+      "medical": true,
+      "medicalApproved": false
+    },
+    "28": {
+      "id": "weekly-28",
+      "week": 28,
+      "baby": "У мальчиков может начаться процесс опускания яичек в мошонку. У девочек — продолжается развитие репродуктивной системы.",
+      "development": "Ваш малыш по размеру — как баклажан. Рост — примерно 38 см, вес — примерно 1 кг. Он открывает веки и совершает дыхательные движения, тренируя мышцы для будущего дыхания. Нервная система всё активнее участвует в управлении работой организма.",
+      "measurements": "Рост ≈ 38 см · Вес ≈ 1 кг",
+      "momTitle": "Положение тела влияет на кровоток",
+      "mom": "Почему теперь советуют засыпать на боку? Лёжа на спине, увеличенная матка может сдавливать крупные сосуды и затруднять возвращение крови к сердцу. С 28 недель рекомендуется начинать сон на боку. Если проснулись на спине, просто повернитесь. Ставить будильник для проверки позы не нужно: контролировать себя всю ночь невозможно.",
+      "status": "unpublished",
+      "medical": true,
+      "medicalApproved": false
+    },
+    "29": {
+      "id": "weekly-29",
+      "week": 29,
+      "baby": "К этому сроку большинство детей уже занимают головное предлежание, так как голова тяжелее ягодиц.",
+      "development": "Ваш малыш по размеру — как мускатная тыква. Рост — примерно 39 см, вес — примерно 1,2 кг. Тренировочные дыхательные движения становятся ритмичнее. Костный мозг начинает участвовать в образовании красных клеток крови. Впереди период активного набора веса и дальнейшего созревания органов.",
+      "measurements": "Рост ≈ 39 см · Вес ≈ 1,2 кг",
+      "momTitle": "Густые волосы — тоже работа гормонов",
+      "mom": "Волосы стали гуще? Во время беременности меняется их цикл: больше волос задерживается в фазе роста и меньше выпадает. Поэтому хвост может казаться объёмнее. После родов часть этих волос выпадет — это временный процесс, такой «волосопад» надо будет просто пережить. ",
+      "status": "unpublished",
+      "medical": true,
+      "medicalApproved": false
+    },
+    "30": {
+      "id": "weekly-30",
+      "week": 30,
+      "baby": "На голове активно растут волосы, но их количество индивидуально. Малыш может родиться почти лысым!",
+      "development": "Ваш малыш по размеру — как кочан капусты. Рост — примерно 40 см, вес — примерно 1,3 кг. Он широко открывает глаза, зрение продолжает развиваться. На голове растут волосы, но их количество у всех разное. Под кожей прибавляется жир, постепенно сглаживающий складочки.",
+      "measurements": "Рост ≈ 40 см · Вес ≈ 1,3 кг",
+      "momTitle": "Почему немеют пальцы рук",
+      "mom": "Задержка жидкости может повышать давление в узком канале запястья и сдавливать проходящий там нерв. Отсюда покалывание, онемение и иногда боль в кисти. Причина не обязательно в том, что вы «отлежали руку». Если ощущения повторяются и доставляют сильный дискомфорт, расскажите врачу: существуют способы уменьшить нагрузку на нерв.",
+      "status": "unpublished",
+      "medical": true,
+      "medicalApproved": false
+    },
+    "31": {
+      "id": "weekly-31",
+      "week": 31,
+      "baby": "Кишечник уже «натренирован»: он регулярно сокращается, в нём накапливается первородный кал (меконий).",
+      "development": "Ваш малыш по размеру — как кокос. Рост — примерно 41 см, вес — примерно 1,5 кг. В мозге быстро образуются новые связи между нервными клетками. Малыш всё лучше различает знакомые голоса и может вздрагивать от резких звуков. Он активно двигается и сосёт пальчики.",
+      "measurements": "Рост ≈ 41 см · Вес ≈ 1,5 кг",
+      "momTitle": "Дыхание меняется раньше, чем вы думаете",
+      "mom": "Одышку и сбивчивое дыхание на этом сроке вызывает не только большой живот. Ещё с ранних сроков прогестерон меняет работу дыхательного центра: за один вдох лёгкие могут получать больше воздуха. Позже матка поднимает диафрагму, а грудная клетка приспосабливается. Поэтому привычная лестница утомляет сильнее. А вот внезапная одышка или нехватка воздуха в покое требуют срочной оценки врачом.",
+      "status": "unpublished",
+      "medical": true,
+      "medicalApproved": false
+    },
+    "32": {
+      "id": "weekly-32",
+      "week": 32,
+      "baby": "Пушок на теле постепенно исчезает. На маленьких пальчиках ног уже заметны ноготки.",
+      "development": "Ваш малыш по размеру — как пучок сельдерея. Рост — примерно 42 см, вес — примерно 1,7 кг. На пальцах ног заметны ноготки. Пушок, покрывавший тело, постепенно исчезает. Малыш продолжает набирать вес, а его органы готовятся к самостоятельной работе после рождения.",
+      "measurements": "Рост ≈ 42 см · Вес ≈ 1,7 кг",
+      "momTitle": "Мышцы живота уступают место матке",
+      "mom": "Живот растёт, и соединительная ткань между правой и левой прямыми мышцами живота растягивается. Расстояние между ними может увеличиться — это называют диастазом. Мышцы при этом не «порвались»: брюшная стенка адаптируется к объёму матки. Иногда при вставании заметен валик по центру живота, это вариант нормы. ",
+      "status": "unpublished",
+      "medical": true,
+      "medicalApproved": false
+    },
+    "33": {
+      "id": "weekly-33",
+      "week": 33,
+      "baby": "Печень накапливает железо на первые месяцы жизни. Лёгкие вырабатывают всё больше сурфактанта.",
+      "development": "Ваш малыш по размеру — как ананас. Рост — примерно 44 см, вес — примерно 1,9 кг. Печень накапливает железо, которое понадобится после рождения. Лёгкие вырабатывают всё больше сурфактанта. Малыш тренирует сосание и глотание, их согласованность постепенно улучшается.",
+      "measurements": "Рост ≈ 44 см · Вес ≈ 1,9 кг",
+      "momTitle": "Почему сны стали такими яркими",
+      "mom": "Снятся яркие, странные истории о родах и малыше? Во время беременности такие сны не редкость. Переживания могут отражаться в подобных сюжетах. Сон не предсказывает течение родов и не раскрывает состояние ребёнка. Если тревога мешает засыпать или сопровождает весь день, об этом стоит рассказать специалисту.",
+      "status": "unpublished",
+      "medical": true,
+      "medicalApproved": false
+    },
+    "34": {
+      "id": "weekly-34",
+      "week": 34,
+      "baby": "Ногти на руках достигают кончиков пальцев. Малыш обычно лежит, согнув и подтянув ножки.",
+      "development": "Ваш малыш по размеру — как дыня канталупа. Рост — примерно 45 см, вес — примерно 2,1 кг. Ногти на руках достигают кончиков пальцев. Малыш обычно лежит, согнув ножки и подтянув их к телу. Свободного места меньше, но движения по-прежнему должны ощущаться.",
+      "measurements": "Рост ≈ 45 см · Вес ≈ 2,1 кг",
+      "momTitle": "Вы передаёте малышу иммунную защиту",
+      "mom": "Вы уже передаёте малышу часть своей иммунной защиты. Через плаценту проходят определённые антитела из вашей крови; особенно активно этот перенос идёт в третьем триместре. Они помогают защищать ребёнка в первые месяцы после рождения, пока его иммунная система развивается. Это временная и неполная защита, поэтому она не заменяет будущие прививки.",
+      "status": "unpublished",
+      "medical": true,
+      "medicalApproved": false
+    },
+    "35": {
+      "id": "weekly-35",
+      "week": 35,
+      "baby": "Сосание и глотание становятся согласованнее. Малыш готовится к кормлению после вашей встречи.",
+      "development": "Ваш малыш по размеру — как медовая дыня. Рост — примерно 46 см, вес — примерно 2,3 кг. Сосание и глотание становятся более согласованными — это важная подготовка к кормлению. Жировая прослойка увеличивается и поможет сохранять тепло после рождения. Привычные шевеления сохраняются.",
+      "measurements": "Рост ≈ 46 см · Вес ≈ 2,3 кг",
+      "momTitle": "Сама матка к родам весит около килограмма",
+      "mom": "До беременности матка весит несколько десятков граммов, а к родам — около килограмма. И это без малыша, плаценты и вод! Так сильно увеличивается сама мышечная стенка, которой предстоит работать во время схваток. Прибавка на весах складывается не только из веса ребёнка и жировых запасов: заметную часть создают кровь и жидкость.",
+      "status": "unpublished",
+      "medical": true,
+      "medicalApproved": false
+    },
+    "36": {
+      "id": "weekly-36",
+      "week": 36,
+      "baby": "Кости интенсивно укрепляются, но череп остаётся гибким — это необходимо для безопасного прохождения головы через родовые пути.",
+      "development": "Ваш малыш по размеру — как салат ромэн. Рост — примерно 47 см, вес — примерно 2,5 кг. Кожа разглаживается, ручки и ножки становятся более округлыми. Большинство малышей к этому сроку располагаются головкой вниз. Лёгкие и нервная система продолжают созревать.",
+      "measurements": "Рост ≈ 47 см · Вес ≈ 2,5 кг",
+      "momTitle": "Легче дышать, но чаще хочется в туалет",
+      "mom": "Живот может опуститься, когда головка малыша располагается ниже в тазу. Иногда после этого легче дышать и меньше беспокоит давление под рёбрами, зато чаще хочется в туалет и сильнее ощущается тяжесть внизу. У одних это происходит заранее, у других — только в родах. По опущению живота нельзя определить, сколько дней осталось до встречи с малышом.",
+      "status": "unpublished",
+      "medical": true,
+      "medicalApproved": false
+    },
+    "37": {
+      "id": "weekly-37",
+      "week": 37,
+      "baby": "Малыш уже считается доношенным: все его жизненно важные органы и системы способны функционировать вне утробы матери.",
+      "development": "Ваш малыш по размеру — как лук-порей. Рост — примерно 49 см, вес — примерно 3 кг. Он уже крепко сжимает пальчики. Лицевые мышцы позволяют менять выражение лица, но эти движения ещё не связаны с эмоциями. После 37 полных недель рождение уже не считается преждевременным.",
+      "measurements": "Рост ≈ 49 см · Вес ≈ 3 кг",
+      "momTitle": "Шейка созревает, начинаются тренировочные схватки",
+      "mom": "Шейка матки готовится к родам: становится мягче и короче. Этот процесс может идти почти без ощущений. Поэтому отсутствие предвестников не означает, что внутри ничего не происходит.\nТренировочные схватки при этом ощущаются как нерегулярное напряжение внизу живота и в пояснице. В отличие от родовых, они не нарастают по силе и частоте и часто проходят после отдыха, смены положения или тёплого душа.",
+      "status": "unpublished",
+      "medical": true,
+      "medicalApproved": false
+    },
+    "38": {
+      "id": "weekly-38",
+      "week": 38,
+      "baby": "Улучшается координация движений. Уже проявляются безусловные рефлексы: хватательный и сосательный.",
+      "development": "Ваш малыш по размеру — как стебли ревеня. Рост — примерно 50 см, вес — примерно 3 кг. Большая часть пушка на теле уже исчезла. В кишечнике накопился меконий — первый стул, который обычно выходит после рождения. Ноготки на ногах достигают кончиков пальцев.",
+      "measurements": "Рост ≈ 50 см · Вес ≈ 3 кг",
+      "momTitle": "Может выйти слизистая пробка",
+      "mom": "Слизистая пробка — густая слизь в канале шейки матки, участвующая в защите от инфекции. По мере размягчения шейки она может выходить сразу или небольшими порциями. Иногда вы вовсе этого не замечаете. Пробка не работает как таймер: роды могут начать в любой день — как в течение суток, так и через 2-7 дней. А вот алая кровь или обильные водянистые выделения требуют срочного обращения в роддом.",
+      "status": "unpublished",
+      "medical": true,
+      "medicalApproved": false
+    },
+    "39": {
+      "id": "weekly-39",
+      "week": 39,
+      "baby": "Наступил период полной доношенности. Под кожей малыша продолжают накапливаться запасы согревающего жира.",
+      "development": "Ваш малыш по размеру — как арбуз. Рост — примерно 51 см, вес — примерно 3,3 кг. Он достиг периода полной доношенности. Под кожей продолжают накапливаться запасы жира. Защитная смазка может сохраняться в складочках тела. Малыш готовится к жизни вне маминого живота.",
+      "measurements": "Рост ≈ 51 см · Вес ≈ 3,3 кг",
+      "momTitle": "Воды могут отходить по каплям",
+      "mom": "Отхождение вод не всегда похоже на внезапную лужу из кино. Оболочки могут разорваться так, что жидкость будет подтекать понемногу, а схватки начнутся позже. Надёжно отличить воды от мочи или обычных выделений дома получается не всегда. Если бельё вновь и вновь намокает, свяжитесь с роддомом: важно проверить, целы ли плодные оболочки.",
+      "status": "unpublished",
+      "medical": true,
+      "medicalApproved": false
+    },
+    "40": {
+      "id": "weekly-40",
+      "week": 40,
+      "baby": "Малыш может реагировать на яркий свет, фокусировать взгляд на расстоянии примерно 20–30 см,",
+      "development": "Ваш малыш по размеру — как тыква. Рост — примерно 51 см, вес — примерно 3,4 кг. Размеры при рождении у здоровых детей заметно различаются. Малыш продолжает двигаться в привычном ритме: приближение родов не должно приводить к исчезновению или заметному ослаблению шевелений.",
+      "measurements": "Рост ≈ 51 см · Вес ≈ 3,4 кг",
+      "momTitle": "У организма нет будильника на ПДР",
+      "mom": "ПДР рассчитывают по сроку беременности и уточняют по УЗИ. Но день начала родов зависит от сложного взаимодействия сигналов матери, ребёнка и плаценты. Организм не обязан запустить схватки ровно в назначенную дату. Поэтому к этой неделе вам важно знать дальнейший план наблюдения и продолжать отслеживать привычные шевеления малыша.",
+      "status": "unpublished",
+      "medical": true,
+      "medicalApproved": false
+    },
+    "41": {
+      "id": "weekly-41",
+      "week": 41,
+      "baby": "Защитной смазки может становиться меньше. После рождения кожа иногда выглядит сухой и шелушится.",
+      "development": "Ваш малыш по размеру — как небольшая тыква или арбуз. Рост — примерно 51 см, вес — около 3–4 кг. Защитной смазки становится меньше, поэтому после рождения кожа иногда выглядит сухой и шелушится. Малыш продолжает двигаться. На этом сроке особенно важны наблюдение врача и согласованный план родов.",
+      "measurements": "Рост ≈ 51 см · Вес ≈ 3–4 кг",
+      "momTitle": "Нужна ли индукция родов",
+      "mom": "Плацента продолжает свою работу, но важно понимать, что ей становится сложнее. С увеличением срока беременности риски для ребёнка постепенно растут. Поэтому после 41-ой недели врач может поднять вопрос индукции родов: как и когда помочь организму запустить родовой процесс. ВОЗ рекомендует индукцию с 41+ недели при достоверно установленном сроке; план индивидуально обсуждают с врачом.",
+      "status": "unpublished",
+      "medical": true,
+      "medicalApproved": false
+    },
+    "42": {
+      "id": "weekly-42",
+      "week": 42,
+      "baby": "Ноготки могут быть длинными, защитной смазки — мало. Состояние малыша сейчас особенно важно оценивать врачам.",
+      "development": "Ваш малыш по размеру — как арбуз 3–4 кг. Рост — примерно 51 см, вес — около 3–4 кг; индивидуальные различия значительны. Защитной смазки может остаться мало, ноготки бывают длинными. С 42 полных недель беременность считается переношенной: важны медицинское наблюдение и согласованный план родоразрешения.",
+      "measurements": "Рост ≈ 51 см · Вес ≈ 3–4 кг",
+      "momTitle": "Самочувствие не показывает всей картины",
+      "mom": "Хорошее самочувствие не показывает, как работает плацента и достаточно ли малышу кислорода. При достижении 42+ недель беременность считается переношенной: здесь нужен конкретный план родоразрешения. Если плана ещё нет, свяжитесь с роддомом сегодня же. При уменьшении шевелений малыша или подозрительном затишье обращайтесь немедленно, даже если ничего не болит.",
+      "status": "unpublished",
+      "medical": true,
+      "medicalApproved": false
+    }
+  },
+  "quests": [
+    {
+      "id": "quest-5-0",
+      "week": 5,
+      "type": "study",
+      "title": "Первая реакция",
+      "text": "Радость, удивление, растерянность — у новости о беременности нет единственной «правильной» реакции.",
+      "conditional": false,
+      "status": "unpublished",
+      "medical": true,
+      "medicalApproved": false
+    },
+    {
+      "id": "quest-7-0",
+      "week": 7,
+      "type": "study",
+      "title": "О чём спросить врача",
+      "text": "Сон, работа, близость, лекарства — вопросы на приёме могут касаться повседневной жизни, а не только анализов.",
+      "conditional": false,
+      "status": "unpublished",
+      "medical": true,
+      "medicalApproved": false
+    },
+    {
+      "id": "quest-8-0",
+      "week": 8,
+      "type": "visit",
+      "title": "Постановка на учёт",
+      "text": "Желательно пройти первый полноценный приём и основные анализы до 10–12 недель.",
+      "conditional": false,
+      "status": "unpublished",
+      "medical": true,
+      "medicalApproved": false
+    },
+    {
+      "id": "quest-8-1",
+      "week": 8,
+      "type": "tests",
+      "title": "Стартовые анализы",
+      "text": "Желательно пройти первый полноценный приём и основные анализы до 10–12 недель.",
+      "conditional": false,
+      "status": "unpublished",
+      "medical": true,
+      "medicalApproved": false
+    },
+    {
+      "id": "quest-9-0",
+      "week": 9,
+      "type": "study",
+      "title": "Заметка на память",
+      "text": "«Как я узнала», «Что подумала», «Кому рассказала» — иногда вся история начала беременности помещается в три строки.",
+      "conditional": false,
+      "status": "unpublished",
+      "medical": true,
+      "medicalApproved": false
+    },
+    {
+      "id": "quest-10-0",
+      "week": 10,
+      "type": "study",
+      "title": "Кому рассказать",
+      "text": "Кто-то делится новостью сразу, кто-то оставляет её в узком кругу. Сообщать всем одновременно необязательно.",
+      "conditional": false,
+      "status": "unpublished",
+      "medical": true,
+      "medicalApproved": false
+    },
+    {
+      "id": "quest-11-0",
+      "week": 11,
+      "type": "scan",
+      "title": "I скрининг",
+      "text": "Проводится в 11–13 недель 6 дней.",
+      "conditional": false,
+      "status": "unpublished",
+      "medical": true,
+      "medicalApproved": false
+    },
+    {
+      "id": "quest-11-1",
+      "week": 11,
+      "type": "tests",
+      "title": "Анализы",
+      "text": "Биохимическая часть I скрининга.",
+      "conditional": false,
+      "status": "unpublished",
+      "medical": true,
+      "medicalApproved": false
+    },
+    {
+      "id": "quest-13-0",
+      "week": 13,
+      "type": "study",
+      "title": "Фото на память",
+      "text": "Домашняя футболка, привычная комната, ты в этот момент жизни. Памятной фотографии необязательно быть постановочной.",
+      "conditional": false,
+      "status": "unpublished",
+      "medical": true,
+      "medicalApproved": false
+    },
+    {
+      "id": "quest-15-0",
+      "week": 15,
+      "type": "study",
+      "title": "История имени",
+      "text": "У имени может быть семейная история, красивое значение или просто любимое звучание. А окончательный вариант иногда появляется уже после знакомства.",
+      "conditional": false,
+      "status": "unpublished",
+      "medical": true,
+      "medicalApproved": false
+    },
+    {
+      "id": "quest-17-0",
+      "week": 17,
+      "type": "study",
+      "title": "Семейные истории",
+      "text": "Как выбирали имя тебе? Какие слова говорила бабушка? У ожидания малыша может появиться продолжение в семейных историях.",
+      "conditional": false,
+      "status": "unpublished",
+      "medical": true,
+      "medicalApproved": false
+    },
+    {
+      "id": "quest-18-0",
+      "week": 18,
+      "type": "scan",
+      "title": "II скрининг",
+      "text": "Проводится в 18–20 недель 6 дней.",
+      "conditional": false,
+      "status": "unpublished",
+      "medical": true,
+      "medicalApproved": false
+    },
+    {
+      "id": "quest-18-1",
+      "week": 18,
+      "type": "tests",
+      "title": "Контроль антител при Rh−",
+      "text": "При Rh-отрицательной крови контроль антител — в 18–20 недель.",
+      "conditional": true,
+      "status": "unpublished",
+      "medical": true,
+      "medicalApproved": false
+    },
+    {
+      "id": "quest-19-0",
+      "week": 19,
+      "type": "study",
+      "title": "Музыка для себя",
+      "text": "В плейлисте беременности могут соседствовать Моцарт и песни из студенчества. Здесь вполне есть место твоему обычному музыкальному вкусу.",
+      "conditional": false,
+      "status": "unpublished",
+      "medical": true,
+      "medicalApproved": false
+    },
+    {
+      "id": "quest-20-0",
+      "week": 20,
+      "type": "study",
+      "title": "Начать подготовку к родам",
+      "text": "Оптимально начать обучение примерно с 20–24 недель, чтобы проходить материалы без спешки.",
+      "conditional": false,
+      "status": "unpublished",
+      "medical": true,
+      "medicalApproved": false
+    },
+    {
+      "id": "quest-23-0",
+      "week": 23,
+      "type": "study",
+      "title": "Первые покупки",
+      "text": "Крошечные носочки умеют попадать в корзину раньше всего остального. Первая покупка может быть просто приятной мелочью, а не началом большого шопинга.",
+      "conditional": false,
+      "status": "unpublished",
+      "medical": true,
+      "medicalApproved": false
+    },
+    {
+      "id": "quest-24-0",
+      "week": 24,
+      "type": "tests",
+      "title": "ГТТ",
+      "text": "Проводится в 24–28 недель.",
+      "conditional": false,
+      "status": "unpublished",
+      "medical": true,
+      "medicalApproved": false
+    },
+    {
+      "id": "quest-27-0",
+      "week": 27,
+      "type": "study",
+      "title": "Советы окружающих",
+      "text": "«А вот я в своё время…» — начало незапрошенной консультации. «Спасибо, я учту» вполне может быть её завершением.",
+      "conditional": false,
+      "status": "unpublished",
+      "medical": true,
+      "medicalApproved": false
+    },
+    {
+      "id": "quest-28-0",
+      "week": 28,
+      "type": "tests",
+      "title": "Rh− контроль / антирезус-профилактика",
+      "text": "Контроль антител и решение вопроса об антирезусном иммуноглобулине — около 28 недель.",
+      "conditional": true,
+      "status": "unpublished",
+      "medical": true,
+      "medicalApproved": false
+    },
+    {
+      "id": "quest-29-0",
+      "week": 29,
+      "type": "study",
+      "title": "Помощь после родов",
+      "text": "Помощь — это не только подержать малыша. Готовый ужин, продукты у двери и чистая кухня тоже считаются.",
+      "conditional": false,
+      "status": "unpublished",
+      "medical": true,
+      "medicalApproved": false
+    },
+    {
+      "id": "quest-30-0",
+      "week": 30,
+      "type": "tests",
+      "title": "Анализы III триместра",
+      "text": "Повторные анализы III триместра выполняются по назначению врача в этом периоде.",
+      "conditional": false,
+      "status": "unpublished",
+      "medical": true,
+      "medicalApproved": false
+    },
+    {
+      "id": "quest-31-0",
+      "week": 31,
+      "type": "study",
+      "title": "Роддом изнутри",
+      "text": "Возможность сопровождения, посещения и бытовые условия зависят от роддома. За общим названием могут скрываться разные правила.",
+      "conditional": false,
+      "status": "unpublished",
+      "medical": true,
+      "medicalApproved": false
+    },
+    {
+      "id": "quest-32-0",
+      "week": 32,
+      "type": "ctg",
+      "title": "КТГ",
+      "text": "КТГ обычно начинают с 32 недель и далее повторяют по графику врача.",
+      "conditional": false,
+      "status": "unpublished",
+      "medical": true,
+      "medicalApproved": false
+    },
+    {
+      "id": "quest-32-1",
+      "week": 32,
+      "type": "bag",
+      "title": "Сумка в роддом",
+      "text": "Удобно начать собирать сумку с 32 недели и полностью подготовить её к 36 неделе.",
+      "conditional": false,
+      "status": "unpublished",
+      "medical": true,
+      "medicalApproved": false
+    },
+    {
+      "id": "quest-33-0",
+      "week": 33,
+      "type": "study",
+      "title": "Почему списки разные",
+      "text": "В одном роддоме часть вещей предоставляют, в другом просят принести свои. Поэтому универсальная «идеальная сумка» подходит не всем.",
+      "conditional": false,
+      "status": "unpublished",
+      "medical": true,
+      "medicalApproved": false
+    },
+    {
+      "id": "quest-34-0",
+      "week": 34,
+      "type": "scan",
+      "title": "III УЗИ",
+      "text": "Проводится примерно в 34–35 недель 6 дней.",
+      "conditional": false,
+      "status": "unpublished",
+      "medical": true,
+      "medicalApproved": false
+    },
+    {
+      "id": "quest-35-0",
+      "week": 35,
+      "type": "tests",
+      "title": "Стрептококк группы B",
+      "text": "Исследование проводится в 35–37 недель.",
+      "conditional": false,
+      "status": "unpublished",
+      "medical": true,
+      "medicalApproved": false
+    },
+    {
+      "id": "quest-37-0",
+      "week": 37,
+      "type": "study",
+      "title": "Первые фотографии малыша",
+      "text": "Семейное фото может остаться семейным. Рождение малыша не обязывает сразу публиковать снимки или рассылать их всем знакомым.",
+      "conditional": false,
+      "status": "unpublished",
+      "medical": true,
+      "medicalApproved": false
+    },
+    {
+      "id": "quest-39-0",
+      "week": 39,
+      "type": "study",
+      "title": "«Ну что, ещё нет?»",
+      "text": "Иногда последние недели превращаются в ежедневную пресс-конференцию. «Когда будут новости, мы расскажем» — уже полноценный ответ.",
+      "conditional": false,
+      "status": "unpublished",
+      "medical": true,
+      "medicalApproved": false
+    }
+  ],
+  "checklists": {
+    "bag": [
+      {
+        "id": "bag-2504-0",
+        "text": "паспорт",
+        "conditional": false,
+        "status": "unpublished",
+        "medical": true,
+        "medicalApproved": false
+      },
+      {
+        "id": "bag-2504-1",
+        "text": "полис ОМС",
+        "conditional": false,
+        "status": "unpublished",
+        "medical": true,
+        "medicalApproved": false
+      },
+      {
+        "id": "bag-2504-2",
+        "text": "СНИЛС",
+        "conditional": false,
+        "status": "unpublished",
+        "medical": true,
+        "medicalApproved": false
+      },
+      {
+        "id": "bag-2504-3",
+        "text": "обменная карта",
+        "conditional": false,
+        "status": "unpublished",
+        "medical": true,
+        "medicalApproved": false
+      },
+      {
+        "id": "bag-2504-4",
+        "text": "родовый сертификат (если есть)",
+        "conditional": true,
+        "status": "unpublished",
+        "medical": true,
+        "medicalApproved": false
+      },
+      {
+        "id": "bag-2504-5",
+        "text": "договор с роддомом (если есть)",
+        "conditional": true,
+        "status": "unpublished",
+        "medical": true,
+        "medicalApproved": false
+      },
+      {
+        "id": "bag-2504-6",
+        "text": "папка с последними анализами и УЗИ",
+        "conditional": false,
+        "status": "unpublished",
+        "medical": true,
+        "medicalApproved": false
+      },
+      {
+        "id": "bag-2505-0",
+        "text": "тапочки с моющейся подошвой",
+        "conditional": false,
+        "status": "unpublished",
+        "medical": true,
+        "medicalApproved": false
+      },
+      {
+        "id": "bag-2505-1",
+        "text": "сорочка или большая футболка",
+        "conditional": false,
+        "status": "unpublished",
+        "medical": true,
+        "medicalApproved": false
+      },
+      {
+        "id": "bag-2505-2",
+        "text": "вода без газа",
+        "conditional": false,
+        "status": "unpublished",
+        "medical": true,
+        "medicalApproved": false
+      },
+      {
+        "id": "bag-2505-3",
+        "text": "зарядка и длинный кабель",
+        "conditional": false,
+        "status": "unpublished",
+        "medical": true,
+        "medicalApproved": false
+      },
+      {
+        "id": "bag-2505-4",
+        "text": "резинка для волос",
+        "conditional": false,
+        "status": "unpublished",
+        "medical": true,
+        "medicalApproved": false
+      },
+      {
+        "id": "bag-2505-5",
+        "text": "гигиеническая помада",
+        "conditional": false,
+        "status": "unpublished",
+        "medical": true,
+        "medicalApproved": false
+      },
+      {
+        "id": "bag-2506-0",
+        "text": "послеродовые прокладки",
+        "conditional": false,
+        "status": "unpublished",
+        "medical": true,
+        "medicalApproved": false
+      },
+      {
+        "id": "bag-2506-1",
+        "text": "одноразовые трусы",
+        "conditional": false,
+        "status": "unpublished",
+        "medical": true,
+        "medicalApproved": false
+      },
+      {
+        "id": "bag-2506-2",
+        "text": "бюстгальтер для кормления",
+        "conditional": false,
+        "status": "unpublished",
+        "medical": true,
+        "medicalApproved": false
+      },
+      {
+        "id": "bag-2506-3",
+        "text": "вкладыши для груди",
+        "conditional": false,
+        "status": "unpublished",
+        "medical": true,
+        "medicalApproved": false
+      },
+      {
+        "id": "bag-2506-4",
+        "text": "халат",
+        "conditional": false,
+        "status": "unpublished",
+        "medical": true,
+        "medicalApproved": false
+      },
+      {
+        "id": "bag-2506-5",
+        "text": "зубная щётка и паста",
+        "conditional": false,
+        "status": "unpublished",
+        "medical": true,
+        "medicalApproved": false
+      },
+      {
+        "id": "bag-2506-6",
+        "text": "полотенце",
+        "conditional": false,
+        "status": "unpublished",
+        "medical": true,
+        "medicalApproved": false
+      },
+      {
+        "id": "bag-2506-7",
+        "text": "кружка и ложка",
+        "conditional": false,
+        "status": "unpublished",
+        "medical": true,
+        "medicalApproved": false
+      },
+      {
+        "id": "bag-2507-0",
+        "text": "подгузники для новорождённых",
+        "conditional": false,
+        "status": "unpublished",
+        "medical": true,
+        "medicalApproved": false
+      },
+      {
+        "id": "bag-2507-1",
+        "text": "влажные салфетки без отдушки",
+        "conditional": false,
+        "status": "unpublished",
+        "medical": true,
+        "medicalApproved": false
+      },
+      {
+        "id": "bag-2507-2",
+        "text": "2–3 боди или распашонки",
+        "conditional": false,
+        "status": "unpublished",
+        "medical": true,
+        "medicalApproved": false
+      },
+      {
+        "id": "bag-2507-3",
+        "text": "шапочка",
+        "conditional": false,
+        "status": "unpublished",
+        "medical": true,
+        "medicalApproved": false
+      },
+      {
+        "id": "bag-2507-4",
+        "text": "носочки",
+        "conditional": false,
+        "status": "unpublished",
+        "medical": true,
+        "medicalApproved": false
+      },
+      {
+        "id": "bag-2507-5",
+        "text": "вещи на выписку по погоде",
+        "conditional": false,
+        "status": "unpublished",
+        "medical": true,
+        "medicalApproved": false
+      },
+      {
+        "id": "bag-2508-0",
+        "text": "автокресло для новорождённого",
+        "conditional": false,
+        "status": "unpublished",
+        "medical": true,
+        "medicalApproved": false
+      },
+      {
+        "id": "bag-2508-1",
+        "text": "одежда для мамы по сезону",
+        "conditional": false,
+        "status": "unpublished",
+        "medical": true,
+        "medicalApproved": false
+      }
+    ],
+    "doctor": [
+      {
+        "id": "doctor-2510",
+        "text": "Когда мне ехать в роддом: через сколько минут между схватками?",
+        "conditional": false,
+        "status": "unpublished",
+        "medical": true,
+        "medicalApproved": false
+      },
+      {
+        "id": "doctor-2511",
+        "text": "Что делать, если отошли воды, а схваток нет?",
+        "conditional": false,
+        "status": "unpublished",
+        "medical": true,
+        "medicalApproved": false
+      },
+      {
+        "id": "doctor-2512",
+        "text": "Как посчитать шевеления и когда они повод приехать?",
+        "conditional": false,
+        "status": "unpublished",
+        "medical": true,
+        "medicalApproved": false
+      },
+      {
+        "id": "doctor-2513",
+        "text": "Какие есть варианты обезболивания и как их попросить?",
+        "conditional": false,
+        "status": "unpublished",
+        "medical": true,
+        "medicalApproved": false
+      },
+      {
+        "id": "doctor-2514",
+        "text": "Можно ли двигаться и менять позы в родах?",
+        "conditional": false,
+        "status": "unpublished",
+        "medical": true,
+        "medicalApproved": false
+      },
+      {
+        "id": "doctor-2515",
+        "text": "Разрешены ли партнёрские роды и что для этого нужно?",
+        "conditional": false,
+        "status": "unpublished",
+        "medical": true,
+        "medicalApproved": false
+      },
+      {
+        "id": "doctor-2516",
+        "text": "Когда предлагают индукцию и до какого срока можно ждать?",
+        "conditional": false,
+        "status": "unpublished",
+        "medical": true,
+        "medicalApproved": false
+      },
+      {
+        "id": "doctor-2517",
+        "text": "Есть ли у меня показания к кесареву или особенности, о которых нужно знать?",
+        "conditional": false,
+        "status": "unpublished",
+        "medical": true,
+        "medicalApproved": false
+      },
+      {
+        "id": "doctor-2518",
+        "text": "Будет ли контакт «кожа к коже» и первое прикладывание сразу после родов?",
+        "conditional": false,
+        "status": "unpublished",
+        "medical": true,
+        "medicalApproved": false
+      },
+      {
+        "id": "doctor-2519",
+        "text": "Совместное пребывание с малышом — как организовано?",
+        "conditional": false,
+        "status": "unpublished",
+        "medical": true,
+        "medicalApproved": false
+      },
+      {
+        "id": "doctor-2520",
+        "text": "Что взять с собой именно в этот роддом?",
+        "conditional": false,
+        "status": "unpublished",
+        "medical": true,
+        "medicalApproved": false
+      },
+      {
+        "id": "doctor-2521",
+        "text": "Какой номер телефона приёмного отделения и куда подъезжать?",
+        "conditional": false,
+        "status": "unpublished",
+        "medical": true,
+        "medicalApproved": false
+      }
+    ]
+  },
+  "materials": []
+}

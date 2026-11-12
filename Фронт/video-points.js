@@ -51,8 +51,9 @@ export function trackVideoPoints(video, videoId, note) {
         }
       } else {
         stopped = true;
-        note.textContent = result.status === 'earned' ? 'Начислено +' + result.amount + ' за просмотр.'
-          : result.status === 'already_earned' ? 'Баллы за этот ролик уже начислены.'
+        window.dispatchEvent(new CustomEvent('stars:changed'));
+        note.textContent = result.status === 'earned' ? (result.amount > 0 ? '+' + result.amount + ' ★ за просмотр.' : 'Видео засчитано в прогресс без новых звёздочек.')
+          : result.status === 'already_earned' ? 'Это видео уже засчитано.'
           : result.limitedBy === 'week' ? 'Недельный лимит баллов исчерпан.' : 'Дневной лимит баллов исчерпан.';
       }
     } catch (error) {

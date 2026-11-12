@@ -509,7 +509,8 @@
       return row;
     }, 'Действий пока нет.');
   }
-  const renderers = { articles: rows => { articles = rows; renderArticles(); },
+  const starsAdmin = window.WebprilStarsAdmin({root:$('#gamification'),api});
+  const renderers = { gamification: data => starsAdmin.render(data), articles: rows => { articles = rows; renderArticles(); },
     announcements: renderAnnouncements, polls: renderPolls, staff: renderStaff, history: renderHistory };
   async function reload() {
     const id = ++loading, selected = section;
@@ -549,6 +550,8 @@
       account = user;
       $('#identity').textContent = (user.role === 'owner' ? 'Владелец' : 'Редактор') + ' · ' + user.email;
       $('[data-tab=staff]').hidden = user.role !== 'owner';
+      $('[data-tab=gamification]').hidden = user.role !== 'owner';
+      if(user.role !== 'owner')$('#gamification').replaceChildren();
       $('#logout').hidden = false;
       workspace.hidden = false;
       if (wasHidden) { message(''); await reload(); }

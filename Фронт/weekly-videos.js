@@ -168,13 +168,18 @@
     return Object.freeze({
       id, week, title, duration, width, height,
       label: Math.floor(duration / 60) + ':' + String(duration % 60).padStart(2, '0'),
-      image: '/api/auth/videos/' + id + '/cover',
+      get image() { const account = window.webprilSessionAccountId || window.webprilAccount?.user?.id; return account ? '/api/auth/videos/' + id + '/cover?account=' + encodeURIComponent(account) : ''; },
       topics: Object.freeze(topics),
       chapters: previous?.chapters ?? [],
     });
   }));
 
+  const clearMedia = () => document.querySelectorAll('img[src],video[poster]').forEach(node => { if (node.getAttribute('src')?.includes('/api/auth/videos/')) node.removeAttribute('src'); if (node.getAttribute('poster')?.includes('/api/auth/videos/')) node.removeAttribute('poster'); });
+  let mediaOwner = window.webprilSessionAccountId || window.webprilAccount?.user?.id;
+  window.addEventListener('account:change',()=>{const current=window.webprilSessionAccountId||window.webprilAccount?.user?.id;if(mediaOwner&&mediaOwner!==current)clearMedia();mediaOwner=current;});window.addEventListener('webpril:session-ended',clearMedia);
   window.renderWeeklyVideoCards = (list, week) => {
+    const state = window.webprilGamificationWeeks?.find(item=>item.week===week);
+    if (state?.locked) { list.replaceChildren(); return 0; }
     const template = document.querySelector('#weekly-video-card');
     const cards = window.webprilWeeklyVideos.filter(item => item.week === week).map(item => {
       const card = template.content.firstElementChild.cloneNode(true);
@@ -183,7 +188,7 @@
       const image = card.querySelector('img');
       image.width = item.width;
       image.height = item.height;
-      image.src = item.image;
+      if (item.image) image.src = item.image;
       card.querySelector('h3').textContent = item.title;
       card.querySelector('.photo-duration').textContent = item.label;
       return card;

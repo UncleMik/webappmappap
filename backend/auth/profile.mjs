@@ -54,6 +54,7 @@ export function normalizeProfileEdit(existing, changes, confirmMother = false, n
   const allowed = new Set(['name', 'surname', 'birthday', 'city', 'phone', 'stage', 'dueDate', 'birthDate', 'goals']);
   if (!Object.keys(changes).length || Object.keys(changes).some(key => !allowed.has(key))) throw invalid('Проверьте данные профиля.');
   const result = { ...existing };
+  if (!result.initialDueDate && existing.dueDate) result.initialDueDate = existing.dueDate;
   if (Object.hasOwn(changes, 'name')) result.name = textField(changes.name, 'Имя', 80, true);
   if (Object.hasOwn(changes, 'surname')) result.surname = textField(changes.surname, 'Фамилия', 80);
   if (Object.hasOwn(changes, 'city')) result.city = textField(changes.city, 'Город', 100);
@@ -90,6 +91,10 @@ export function normalizeProfileEdit(existing, changes, confirmMother = false, n
     if (oldStage !== stage && !Object.hasOwn(changes, 'dueDate')) throw invalid('Укажите ПДР.');
     if (Object.hasOwn(changes, 'dueDate')) {
       const normalized = normalizeProfile({ name: result.name, stage, method: 'due', due: changes.dueDate, goals: result.goals }, now);
+      const original = existing.initialDueDate || existing.dueDate || normalized.dueDate;
+      if (Math.abs(calendarDate(normalized.dueDate, 'ПДР') - calendarDate(original, 'первоначальную ПДР')) > 14 * DAY)
+        throw invalid('ПДР можно изменить в пределах 14 дней от первоначальной. Для большего изменения обратитесь в поддержку.');
+      result.initialDueDate = original;
       result.dueDate = normalized.dueDate;
       result.method = 'due';
     }
@@ -143,5 +148,5 @@ export function normalizeProfile(data, now = Date.now()) {
     if (birth < Date.UTC(1900, 0, 1) || birth > today) throw invalid('Укажите прошедшую дату рождения малыша.');
     birthDate = iso(birth);
   }
-  return { name, stage: data.stage, method, dueDate, birthDate, goals: [...data.goals], completedAt: new Date(now).toISOString() };
+  return { name, stage: data.stage, method, dueDate, birthDate, ...(dueDate ? { initialDueDate: dueDate } : {}), goals: [...data.goals], completedAt: new Date(now).toISOString() };
 }

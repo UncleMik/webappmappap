@@ -147,7 +147,7 @@
     <ul class="points-history" id="points-history"></ul>
     <button type="button" class="points-more points-details" aria-expanded="false" aria-controls="points-history" hidden>Подробнее</button>
     <button type="button" class="points-more points-next" hidden>Показать ещё</button>
-    <section class="points-guide" aria-labelledby="points-guide-title">
+    <section class="points-guide" aria-labelledby="points-guide-title" data-legacy-points-guide>
       <h3 id="points-guide-title">Инструкция</h3>
       <div class="points-guide-scroll" role="region" tabindex="0" aria-labelledby="points-guide-title">
         <p><strong>Как получить баллы</strong></p>
@@ -163,17 +163,27 @@
       </div>
     </section>
   </dialog>
+  <template id="stars-instruction">
+    <h3>Инструкция</h3>
+    <p>Звёздочки не сгорают. Старый баланс сохраняется. За заполнение срока — 100 ★ один раз.</p>
+    <p>Самочувствие, сюрприз, первое сообщение в Клубе за день — по 5 ★. Ответ — 5 ★ и ещё 5 ★ за правильный. Статья — 10 ★ после конца и 30 секунд активного чтения; бесплатное видео — 20 ★ после 80% уникального просмотра; урок курса — 30 ★ после 80% каждого обязательного видео.</p>
+    <p>Дневной предел — 100 ★ без курса, 150 ★ с курсом; недельного предела нет. Начисляется остаток. Прогресс сохраняется при нулевой награде. Повтор не приносит награду.</p>
+    <p>Все материалы недели — 50 ★ и письмо; за недели до знакомства — только письмо. Заранее пройденная неделя приносит бонус по сроку. Изученное заранее не даёт награду за материал позже.</p>
+    <p>Голосование — 20 ★ и 10 ★ за вариант большинства после закрытия. При ничьей — всем лидирующим вариантам. Квест, первое шевеление и капсула — по 15 ★ один раз; триместр — 30 ★. Эти бонусы сверх дневного предела. Шевеления с 28-й недели — 5 ★ за день в дневном пределе.</p>
+    <p>Открыть можно только следующую неделю за 100 ★. Календарь доступен на весь срок. AI без курса: 5 бесплатных вопросов, 3 за 50 ★, до двух покупок и 6 купленных вопросов за день. С курсом: 30 бесплатных, 10 за 100 ★, одна покупка и до 10 купленных за день. Фото или файл — 2 вопроса. Запас не сгорает; сбой возвращает расход. День начинается в 00:00 МСК.</p>
+    <p>Звёздочки не продаются за деньги и не обмениваются на деньги, курсы или скидки. Пауза сообщений о малыше сохраняет обучение и накопления.</p>
+  </template>
   <script type="module" src="points.js?v=20261109-poll"></script>
   <script src="article-read-state.js?v=20261027-personal"></script>
-<script src="articles-api.js?v=20261110-admin"></script>
-<script src="weekly-content-api.js?v=20261008-weekly"></script>
-  <script src="mom-week.js?v=20261020-initial-content"></script>
-  <script src="baby-week.js?v=20261020-initial-content"></script>
+<script src="articles-api.js?v=20261112-stars"></script>
+<script src="weekly-content-api.js?v=20261112-stars"></script>
+  <script src="mom-week.js?v=20261112-stars"></script>
+  <script src="baby-week.js?v=20261112-stars"></script>
   <script src="app.js?v=20261109-reader-entry"></script>
   <script src="calendar-sheet.js?v=20261019-onboarding"></script>
-<script src="app-navigation.js?v=20261020-initial-content"></script>  <script src="helpers.js?v=20261110-favorite-pink"></script>
+<script src="app-navigation.js?v=20261112-stars"></script>  <script src="helpers.js?v=20261112-stars"></script>
 <script src="resource-prefetch.js?v=20261009"></script>
-  <script type="module" src="notifications.js?v=20261110-bell"></script>
-  <script defer src="weekly-poll.js?v=20261111-home-countdown"></script>
+  <script type="module" src="notifications.js?v=20261112-stars"></script>
+  <script defer src="weekly-poll.js?v=20261112-stars"></script>
 </body>
 </html>

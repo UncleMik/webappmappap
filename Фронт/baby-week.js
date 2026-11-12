@@ -23,6 +23,7 @@
   function renderToday() {
     if (!todayCard) return;
     const content = library[currentWeek];
+    if (!content) { todayCard.querySelector('.baby-description').textContent = 'Материалы откроются по вашему сроку'; return; }
     todayCard.href = `baby.html?week=${currentWeek}`;
     todayCard.querySelector('.baby-measurements').textContent = content.measurements;
     todayCard.querySelector('.baby-description').textContent = content.description;
@@ -87,6 +88,13 @@
     dots.setAttribute('aria-label', ['1–14 недели', '15–28 недели', '29–42 недели'][stage]);
     window.dispatchEvent(new CustomEvent('baby:week-change', { detail: { week } }));
     document.title = `Малыш · ${week}-я неделя`;
+    const locked = !content;
+    page.classList.toggle('week-is-locked', locked);
+    let lock = page.querySelector('.weekly-lock-message');
+    if (!lock) { lock = document.createElement('p'); lock.className = 'weekly-lock-message weekly-load-status'; heading.after(lock); }
+    lock.hidden = !locked;
+    lock.textContent = locked ? 'Эта неделя пока закрыта. Она откроется по вашему сроку. Следующую неделю можно открыть за звёздочки на странице «Сегодня».' : '';
+    if (locked) return;
     page.querySelector('#baby-overview-title').textContent = `${week} неделя`;
     page.querySelector('.overview-meta').hidden = true;
     const measurements = page.querySelector('.baby-week-measurements');
@@ -131,6 +139,7 @@
       page.querySelector(selector).hidden = !isCurrent;
     });
   }
+  window.addEventListener('stars:changed', () => { void window.loadWeeklyContent().then(data => { Object.assign(library,data.baby); render(Number(page.dataset.week)); }).catch(()=>{}); });
   function select(week, smooth = true) {
     week = normalize(week);
     if (week !== Number(page.dataset.week)) {

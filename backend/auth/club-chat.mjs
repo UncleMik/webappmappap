@@ -91,7 +91,8 @@ function createRoomChat({ pool, service, courseMaterials, store, points, ownerUs
     return transaction(pool, async client => {
       const { rows: [session] } = await client.query(`SELECT s.user_id,s.expires_at,u.profile
         FROM auth_sessions s JOIN auth_users u ON u.id=s.user_id
-        WHERE s.token_hash=$1 AND s.revoked_at IS NULL AND s.expires_at>$2 FOR SHARE OF s,u`,
+        WHERE s.token_hash=$1 AND s.revoked_at IS NULL AND s.expires_at>$2
+        FOR SHARE OF s ${sending ? 'FOR UPDATE OF u' : 'FOR SHARE OF u'}`,
       [hashToken(token), new Date(clock())]);
       if (!session) throw signedOut();
       if (session.user_id !== user.id) throw changed();

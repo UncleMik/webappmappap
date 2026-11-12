@@ -66,18 +66,29 @@ function challenge(value) {
 const positiveId = value => /^[1-9]\d*$/.test(value) && Number.isSafeInteger(Number(value));
 function limitQuota(error) {
   const q = error.code === 'ai_daily_limit' && error.quota;
-  if (!q || ![5, 30].includes(q.limit) || !Number.isInteger(q.used) || q.used < 0 || q.used > 30
+  if (!q || !Number.isInteger(q.limit) || q.limit < 0 || q.limit > 30 || !Number.isInteger(q.used) || q.used < 0 || q.used > 30
     || q.remaining !== Math.max(0, q.limit - q.used)
     || typeof q.resetsAt !== 'string' || !/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z$/.test(q.resetsAt)) return {};
   const serverTime = typeof q.serverTime === 'string' && /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z$/.test(q.serverTime)
     && Number.isFinite(Date.parse(q.serverTime)) ? { serverTime: q.serverTime } : {};
-  return { quota: { limit: q.limit, used: q.used, remaining: q.remaining, resetsAt: q.resetsAt, ...serverTime } };
+  const extra = {};
+  for (const key of ['freeRemaining', 'paidRemaining', 'paidDailyRemaining', 'paidUsed', 'totalRemaining', 'maximum'])
+    if (Number.isSafeInteger(q[key]) && q[key] >= 0) extra[key] = q[key];
+  return { quota: { limit: q.limit, used: q.used, remaining: q.remaining, resetsAt: q.resetsAt, ...serverTime, ...extra } };
 }
 const materialsUnavailable = () => new AuthError(503, 'course_materials_unavailable',
   'Материалы курсов временно недоступны. Попробуйте ещё раз.');
 
-export function createAuthServer({ service, store, courseChecks, courseMaterials, personalData, profilePhoto, clubChat, aiChat, points, weeklyPoll, adminHttp, admin, origin, enabled = false, trustProxy = false, mailPerMinute = 120, weeklyMedia = createWeeklyMedia() }) {
+export function createAuthServer({ service, store, courseChecks, courseMaterials, personalData, profilePhoto, clubChat, aiChat, points, weeklyPoll, stars, starsAccess, gamification, gamificationNotifications, adminHttp, admin, origin, enabled = false, trustProxy = false, mailPerMinute = 120, weeklyMedia = createWeeklyMedia() }) {
   let largeAiInFlight = false;
+  async function requireAccount(token, expected) {
+    const user = await service.session(token);
+    if (!user) throw new AuthError(401, 'sign_in_required', 'Войдите в аккаунт.');
+    if (typeof expected !== 'string' || expected.toLowerCase() !== user.id.toLowerCase())
+      throw new AuthError(409, 'account_changed', 'Аккаунт изменился. Обновите страницу.');
+    return user;
+  }
+
   return createServer({ requestTimeout: 90_000, headersTimeout: 10_000, maxHeaderSize: 8192 }, async (request, response) => {
     let ownsLargeSlot = false;
     const isAiSend = request.method === 'POST' && request.url === '/api/auth/ai/messages';
@@ -116,12 +127,40 @@ export function createAuthServer({ service, store, courseChecks, courseMaterials
         ? url.searchParams.get('v') : null;
       const clubRoomQuery = (url.pathname === '/api/auth/club' || url.pathname.startsWith('/api/auth/club/')) && url.searchParams.size === 1 && url.searchParams.has('room');
       const clubRoom = clubRoomQuery ? url.searchParams.get('room') : undefined;
+      const mediaAccount = ['GET', 'HEAD'].includes(request.method) && /^\/api\/auth\/videos\/[a-z0-9-]+\/(?:file|cover)$/.test(url.pathname)
+        && url.searchParams.size === 1 && /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(url.searchParams.get('account') || '')
+        ? url.searchParams.get('account') : null;
       const pointsBefore = pointsRead && url.searchParams.size === 1 && url.searchParams.get('before');
-      if (url.search && !photoVersion && !clubRoomQuery && !isPointsCursor(pointsBefore)) throw new AuthError(400, 'invalid_url', 'Неверный запрос.');
+      if (url.search && !mediaAccount && !photoVersion && !clubRoomQuery && !isPointsCursor(pointsBefore)) throw new AuthError(400, 'invalid_url', 'Неверный запрос.');
       if (request.method === 'GET' && url.pathname === '/api/auth/check') {
         const user = await service.session(readSessionCookie(request));
         if (!user) throw new AuthError(401, 'sign_in_required', 'Войдите в аккаунт.');
         send(204); return;
+      }
+      if (request.method === 'GET' && url.pathname === '/api/auth/internal/weekly-access') {
+        if (!['127.0.0.1', '::1', '::ffff:127.0.0.1'].includes(request.socket.remoteAddress))
+          throw new AuthError(403, 'access_denied', 'Доступ закрыт.');
+        const token = readSessionCookie(request), expected = request.headers['x-webpril-account'];
+        const user = await requireAccount(token, expected);
+        if (!user.profile?.completedAt) throw new AuthError(403, 'onboarding_required', 'Заполните профиль.');
+        const policy = starsAccess ? await starsAccess.context(token, expected)
+          : { accountId: user.id, currentWeek: 0, legacy: true, enforced: false, purchasedWeeks: [], preservedWeeks: [] };
+        const { accountId, currentWeek, legacy, enforced, purchasedWeeks, preservedWeeks } = policy;
+        send(200, { accountId, currentWeek, legacy, enforced, purchasedWeeks, preservedWeeks }); return;
+      }
+      const newReads = {
+        '/api/auth/stars': [stars, 'state'],
+        '/api/auth/gamification': [gamification, 'state'],
+        '/api/auth/gamification/letters': [gamification, 'letters'],
+        '/api/auth/notifications': [gamificationNotifications, 'list'],
+        '/api/auth/notifications/preferences': [gamificationNotifications, 'preferences'],
+      };
+      if (request.method === 'GET' && Object.hasOwn(newReads, url.pathname)) {
+        const [module, method] = newReads[url.pathname];
+        const token = readSessionCookie(request), expected = request.headers['x-webpril-account'];
+        await requireAccount(token, expected);
+        if (!module?.[method]) throw new AuthError(503, 'gamification_unavailable', 'Возможность временно недоступна.');
+        send(200, await module[method](token, expected)); return;
       }
       if (pointsRead) {
         if (!points) throw new AuthError(503, 'points_unavailable', 'Баллы временно недоступны.');
@@ -269,8 +308,18 @@ export function createAuthServer({ service, store, courseChecks, courseMaterials
         const match = /^\/api\/auth\/videos\/([a-z0-9-]+)(?:\/(file|cover))?$/.exec(url.pathname);
         const position = match && weeklyVideoPosition(match[1]);
         if (!position) { send(404, { error: 'video_not_found', message: 'Видео не найдено.' }); return; }
+        if (starsAccess) {
+          // Native src/poster cannot send headers. The UUID only binds the
+          // expected account; it never substitutes for the live session.
+          const expected = request.headers['x-webpril-account'] || mediaAccount;
+          const access = await starsAccess.context(readSessionCookie(request), expected);
+          starsAccess.assertWeek(access, starsAccess.videoWeek(position));
+        }
+        if (mediaAccount && mediaAccount.toLowerCase() !== user.id.toLowerCase())
+          throw new AuthError(409, 'account_changed', 'Аккаунт изменился. Обновите страницу.');
         if (match[2]) await weeklyMedia(request, response, position, match[2]);
-        else send(200, { source: '/api/auth/videos/' + match[1] + '/file' });
+        else send(200, { source: '/api/auth/videos/' + match[1] + '/file?account=' + user.id,
+          cover: '/api/auth/videos/' + match[1] + '/cover?account=' + user.id });
         return;
       }
       if (request.method !== 'POST') { send(405, { error: 'method_not_allowed' }, { Allow: 'GET, POST' }); return; }
@@ -290,12 +339,32 @@ export function createAuthServer({ service, store, courseChecks, courseMaterials
         }
       }
       const data = await readJson(request, isAiVoice ? MAX_AI_VOICE_BODY_BYTES : isAiSend ? MAX_AI_BODY_BYTES : url.pathname === '/api/auth/personal' ? 1_000_000
+        : url.pathname === '/api/auth/gamification/actions' ? 16000
         : url.pathname === '/api/auth/profile-photo' ? 512_000
           : url.pathname === '/api/auth/club/messages' ? 512_000 : 4096, isAiSend);
       const peer = request.socket.remoteAddress;
       const proxy = trustProxy && ['127.0.0.1', '::1', '::ffff:127.0.0.1'].includes(peer);
       const ip = proxy ? String(request.headers['x-real-ip'] || peer) : peer;
       await store.rateLimit('request_ip', ip, 600);
+      const newWrites = {
+        '/api/auth/stars/purchase': [stars, 'purchase'],
+        '/api/auth/stars/course-video': [stars, 'courseVideoWatching'],
+        '/api/auth/gamification/actions': [gamification, 'action'],
+        '/api/auth/gamification/preferences': [gamification, 'preferences'],
+        '/api/auth/notifications/read': [gamificationNotifications, 'read'],
+        '/api/auth/notifications/preferences': [gamificationNotifications, 'preferences'],
+        '/api/auth/notifications/subscribe': [gamificationNotifications, 'subscribe'],
+        '/api/auth/notifications/unsubscribe': [gamificationNotifications, 'unsubscribe'],
+        '/api/auth/notifications/visit': [gamificationNotifications, 'visit'],
+        '/api/auth/notifications/presentation': [gamificationNotifications, 'claimPresentation'],
+      };
+      if (Object.hasOwn(newWrites, url.pathname)) {
+        const [module, method] = newWrites[url.pathname];
+        const token = readSessionCookie(request), expected = request.headers['x-webpril-account'];
+        await requireAccount(token, expected);
+        if (!module?.[method]) throw new AuthError(503, 'gamification_unavailable', 'Возможность временно недоступна.');
+        send(200, await module[method](token, expected, data)); return;
+      }
       if (articleReading || videoWatching) {
         if (!points) throw new AuthError(503, 'points_unavailable', 'Баллы временно недоступны.');
         send(200, await points[videoWatching ? 'videoWatching' : 'articleReading'](readSessionCookie(request), request.headers['x-webpril-account'], data)); return;

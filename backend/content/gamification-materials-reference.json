@@ -1,0 +1,4459 @@
+{
+  "git_revision": "9f591a35f459b340e932566c0ecd7cc3a7ef7771",
+  "status": "repository_snapshot_not_live_database",
+  "note": "The weekly seed is an archived import. Reconcile the live content inventory before implementation. Suggested tags require editorial review.",
+  "materials": [
+    {
+      "kind": "article",
+      "id": "pregnancy-001",
+      "week": 1,
+      "title": "Почему беременность считают с первого дня последней менструации",
+      "suggested_tags": [
+        "Самочувствие"
+      ],
+      "review_status": "editor_review_required"
+    },
+    {
+      "kind": "article",
+      "id": "pregnancy-002",
+      "week": 1,
+      "title": "Фолаты при планировании беременности: зачем они нужны",
+      "suggested_tags": [
+        "Питание",
+        "Самочувствие"
+      ],
+      "review_status": "editor_review_required"
+    },
+    {
+      "kind": "article",
+      "id": "pregnancy-003",
+      "week": 1,
+      "title": "Как подготовить организм к беременности без десятков анализов и запретов",
+      "suggested_tags": [
+        "Анализы и скрининги",
+        "Самочувствие"
+      ],
+      "review_status": "editor_review_required"
+    },
+    {
+      "kind": "article",
+      "id": "pregnancy-004",
+      "week": 2,
+      "title": "Овуляция простыми словами: что происходит в организме женщины",
+      "suggested_tags": [
+        "Самочувствие"
+      ],
+      "review_status": "editor_review_required"
+    },
+    {
+      "kind": "article",
+      "id": "pregnancy-005",
+      "week": 2,
+      "title": "Как определить свои фертильные дни",
+      "suggested_tags": [
+        "Самочувствие"
+      ],
+      "review_status": "editor_review_required"
+    },
+    {
+      "kind": "article",
+      "id": "pregnancy-006",
+      "week": 2,
+      "title": "Спорт во время планирования: нужно ли снижать нагрузки",
+      "suggested_tags": [
+        "Движение и практики"
+      ],
+      "review_status": "editor_review_required"
+    },
+    {
+      "kind": "article",
+      "id": "pregnancy-007",
+      "week": 3,
+      "title": "Зачатие произошло: почему вы пока ничего не чувствуете",
+      "suggested_tags": [
+        "Самочувствие"
+      ],
+      "review_status": "editor_review_required"
+    },
+    {
+      "kind": "article",
+      "id": "pregnancy-008",
+      "week": 3,
+      "title": "Первые дни после зачатия: нужно ли уже менять привычный образ жизни",
+      "suggested_tags": [
+        "Самочувствие"
+      ],
+      "review_status": "editor_review_required"
+    },
+    {
+      "kind": "article",
+      "id": "pregnancy-009",
+      "week": 3,
+      "title": "Кофе, питание и привычные продукты: что можно оставить в рационе",
+      "suggested_tags": [
+        "Питание"
+      ],
+      "review_status": "editor_review_required"
+    },
+    {
+      "kind": "article",
+      "id": "pregnancy-010",
+      "week": 4,
+      "title": "Когда тест на беременность становится информативным",
+      "suggested_tags": [
+        "Самочувствие"
+      ],
+      "review_status": "editor_review_required"
+    },
+    {
+      "kind": "article",
+      "id": "pregnancy-011",
+      "week": 4,
+      "title": "Две полоски: что делать дальше — простой план без паники",
+      "suggested_tags": [
+        "Самочувствие"
+      ],
+      "review_status": "editor_review_required"
+    },
+    {
+      "kind": "article",
+      "id": "pregnancy-012",
+      "week": 4,
+      "title": "Как рассчитать предполагаемую дату родов самостоятельно",
+      "suggested_tags": [
+        "Роды"
+      ],
+      "review_status": "editor_review_required"
+    },
+    {
+      "kind": "article",
+      "id": "pregnancy-013",
+      "week": 5,
+      "title": "Когда лучше впервые записаться к акушеру-гинекологу",
+      "suggested_tags": [
+        "Самочувствие"
+      ],
+      "review_status": "editor_review_required"
+    },
+    {
+      "kind": "article",
+      "id": "pregnancy-014",
+      "week": 5,
+      "title": "Когда делать первое УЗИ и почему не нужно торопиться",
+      "suggested_tags": [
+        "Анализы и скрининги"
+      ],
+      "review_status": "editor_review_required"
+    },
+    {
+      "kind": "article",
+      "id": "pregnancy-015",
+      "week": 5,
+      "title": "Какие витамины действительно нужны беременной, а какие не стоит назначать себе самостоятельно",
+      "suggested_tags": [
+        "Питание"
+      ],
+      "review_status": "editor_review_required"
+    },
+    {
+      "kind": "article",
+      "id": "pregnancy-016",
+      "week": 6,
+      "title": "Тошнота по утрам: как сделать первые недели комфортнее",
+      "suggested_tags": [
+        "Питание"
+      ],
+      "review_status": "editor_review_required"
+    },
+    {
+      "kind": "article",
+      "id": "pregnancy-017",
+      "week": 6,
+      "title": "Изменился аппетит: что есть, если привычная еда вдруг перестала нравиться",
+      "suggested_tags": [
+        "Питание"
+      ],
+      "review_status": "editor_review_required"
+    },
+    {
+      "kind": "article",
+      "id": "pregnancy-018",
+      "week": 6,
+      "title": "Что действительно нельзя есть беременным, а что запрещают зря",
+      "suggested_tags": [
+        "Питание"
+      ],
+      "review_status": "editor_review_required"
+    },
+    {
+      "kind": "article",
+      "id": "pregnancy-019",
+      "week": 7,
+      "title": "Постоянно хочется спать: как пережить период сильной усталости",
+      "suggested_tags": [
+        "Сон",
+        "Самочувствие"
+      ],
+      "review_status": "editor_review_required"
+    },
+    {
+      "kind": "article",
+      "id": "pregnancy-020",
+      "week": 7,
+      "title": "Вздутие и запоры в начале беременности: почему это так часто бывает",
+      "suggested_tags": [
+        "Самочувствие"
+      ],
+      "review_status": "editor_review_required"
+    },
+    {
+      "kind": "article",
+      "id": "pregnancy-021",
+      "week": 7,
+      "title": "Как организовать рабочий день, если сил стало заметно меньше",
+      "suggested_tags": [
+        "Самочувствие"
+      ],
+      "review_status": "editor_review_required"
+    },
+    {
+      "kind": "article",
+      "id": "pregnancy-022",
+      "week": 8,
+      "title": "Первый большой список анализов: зачем беременной столько обследований",
+      "suggested_tags": [
+        "Анализы и скрининги"
+      ],
+      "review_status": "editor_review_required"
+    },
+    {
+      "kind": "article",
+      "id": "pregnancy-023",
+      "week": 8,
+      "title": "Можно ли лечить зубы во время беременности",
+      "suggested_tags": [
+        "Самочувствие"
+      ],
+      "review_status": "editor_review_required"
+    },
+    {
+      "kind": "article",
+      "id": "pregnancy-024",
+      "week": 8,
+      "title": "Уход за кожей во время беременности: какие средства можно продолжать использовать",
+      "suggested_tags": [
+        "Самочувствие"
+      ],
+      "review_status": "editor_review_required"
+    },
+    {
+      "kind": "article",
+      "id": "pregnancy-025",
+      "week": 9,
+      "title": "Кофе во время беременности: сколько допустимо",
+      "suggested_tags": [
+        "Питание",
+        "Самочувствие"
+      ],
+      "review_status": "editor_review_required"
+    },
+    {
+      "kind": "article",
+      "id": "pregnancy-026",
+      "week": 9,
+      "title": "Можно ли заниматься сексом во время нормально протекающей беременности",
+      "suggested_tags": [
+        "Спина и тело",
+        "Партнёр и семья",
+        "Самочувствие"
+      ],
+      "review_status": "editor_review_required"
+    },
+    {
+      "kind": "article",
+      "id": "pregnancy-027",
+      "week": 9,
+      "title": "Баня, сауна и горячая ванна: что меняется после наступления беременности",
+      "suggested_tags": [
+        "Самочувствие"
+      ],
+      "review_status": "editor_review_required"
+    },
+    {
+      "kind": "article",
+      "id": "pregnancy-028",
+      "week": 10,
+      "title": "Прибавка веса во время беременности: сколько действительно нужно набрать",
+      "suggested_tags": [
+        "Питание",
+        "Самочувствие"
+      ],
+      "review_status": "editor_review_required"
+    },
+    {
+      "kind": "article",
+      "id": "pregnancy-029",
+      "week": 10,
+      "title": "Можно ли продолжать тренироваться, если вы занимались спортом до беременности",
+      "suggested_tags": [
+        "Движение и практики",
+        "Самочувствие"
+      ],
+      "review_status": "editor_review_required"
+    },
+    {
+      "kind": "article",
+      "id": "pregnancy-030",
+      "week": 10,
+      "title": "НИПТ: что это за исследование и чем оно отличается от обычного скрининга",
+      "suggested_tags": [
+        "Анализы и скрининги"
+      ],
+      "review_status": "editor_review_required"
+    },
+    {
+      "kind": "article",
+      "id": "pregnancy-031",
+      "week": 11,
+      "title": "Первый скрининг: что будет происходить и как к нему подготовиться",
+      "suggested_tags": [
+        "Анализы и скрининги"
+      ],
+      "review_status": "editor_review_required"
+    },
+    {
+      "kind": "article",
+      "id": "pregnancy-032",
+      "week": 11,
+      "title": "Можно ли путешествовать и летать на самолёте во время беременности",
+      "suggested_tags": [
+        "Самочувствие"
+      ],
+      "review_status": "editor_review_required"
+    },
+    {
+      "kind": "article",
+      "id": "pregnancy-033",
+      "week": 11,
+      "title": "Беременность и работа за компьютером: как сделать рабочее место удобнее",
+      "suggested_tags": [
+        "Самочувствие"
+      ],
+      "review_status": "editor_review_required"
+    },
+    {
+      "kind": "article",
+      "id": "pregnancy-034",
+      "week": 12,
+      "title": "Первый триместр позади: что обычно меняется в самочувствии",
+      "suggested_tags": [
+        "Самочувствие"
+      ],
+      "review_status": "editor_review_required"
+    },
+    {
+      "kind": "article",
+      "id": "pregnancy-035",
+      "week": 12,
+      "title": "Как понимать результаты первого скрининга и почему не стоит расшифровывать их самостоятельно",
+      "suggested_tags": [
+        "Анализы и скрининги"
+      ],
+      "review_status": "editor_review_required"
+    },
+    {
+      "kind": "article",
+      "id": "pregnancy-036",
+      "week": 12,
+      "title": "Резус-фактор и группа крови: зачем их определяют во время беременности",
+      "suggested_tags": [
+        "Анализы и скрининги",
+        "Самочувствие"
+      ],
+      "review_status": "editor_review_required"
+    },
+    {
+      "kind": "article",
+      "id": "pregnancy-037",
+      "week": 13,
+      "title": "Второй триместр: почему его часто называют самым комфортным периодом беременности",
+      "suggested_tags": [
+        "Самочувствие"
+      ],
+      "review_status": "editor_review_required"
+    },
+    {
+      "kind": "article",
+      "id": "pregnancy-038",
+      "week": 13,
+      "title": "Питание во втором триместре: нужно ли теперь есть больше",
+      "suggested_tags": [
+        "Питание",
+        "Самочувствие"
+      ],
+      "review_status": "editor_review_required"
+    },
+    {
+      "kind": "article",
+      "id": "pregnancy-039",
+      "week": 13,
+      "title": "Как выбрать удобную одежду и бельё для растущего живота",
+      "suggested_tags": [
+        "Самочувствие"
+      ],
+      "review_status": "editor_review_required"
+    },
+    {
+      "kind": "article",
+      "id": "pregnancy-040",
+      "week": 14,
+      "title": "Можно ли беременным спать на животе",
+      "suggested_tags": [
+        "Сон"
+      ],
+      "review_status": "editor_review_required"
+    },
+    {
+      "kind": "article",
+      "id": "pregnancy-041",
+      "week": 14,
+      "title": "Пигментация и изменения кожи: нужен ли особенный уход",
+      "suggested_tags": [
+        "Самочувствие"
+      ],
+      "review_status": "editor_review_required"
+    },
+    {
+      "kind": "article",
+      "id": "pregnancy-042",
+      "week": 14,
+      "title": "Как сохранить привычную активность во втором триместре",
+      "suggested_tags": [
+        "Движение и практики",
+        "Самочувствие"
+      ],
+      "review_status": "editor_review_required"
+    },
+    {
+      "kind": "article",
+      "id": "pregnancy-043",
+      "week": 15,
+      "title": "Какие выделения считаются обычными во время беременности",
+      "suggested_tags": [
+        "Самочувствие"
+      ],
+      "review_status": "editor_review_required"
+    },
+    {
+      "kind": "article",
+      "id": "pregnancy-044",
+      "week": 15,
+      "title": "Уход за зубами и дёснами: почему во время беременности они требуют больше внимания",
+      "suggested_tags": [
+        "Самочувствие"
+      ],
+      "review_status": "editor_review_required"
+    },
+    {
+      "kind": "article",
+      "id": "pregnancy-045",
+      "week": 15,
+      "title": "Как правильно пользоваться ремнём безопасности в машине",
+      "suggested_tags": [
+        "Самочувствие"
+      ],
+      "review_status": "editor_review_required"
+    },
+    {
+      "kind": "article",
+      "id": "pregnancy-046",
+      "week": 16,
+      "title": "Когда ждать первые шевеления малыша и почему сроки у всех разные",
+      "suggested_tags": [
+        "Самочувствие"
+      ],
+      "review_status": "editor_review_required"
+    },
+    {
+      "kind": "article",
+      "id": "pregnancy-047",
+      "week": 16,
+      "title": "Что происходит на обычном приёме у гинеколога во втором триместре",
+      "suggested_tags": [
+        "Самочувствие"
+      ],
+      "review_status": "editor_review_required"
+    },
+    {
+      "kind": "article",
+      "id": "pregnancy-048",
+      "week": 16,
+      "title": "Как правильно измерять давление дома и нужно ли вести записи",
+      "suggested_tags": [
+        "Питание",
+        "Самочувствие"
+      ],
+      "review_status": "editor_review_required"
+    },
+    {
+      "kind": "article",
+      "id": "pregnancy-049",
+      "week": 17,
+      "title": "Спина начала уставать: как уменьшить нагрузку без лекарств",
+      "suggested_tags": [
+        "Спина и тело"
+      ],
+      "review_status": "editor_review_required"
+    },
+    {
+      "kind": "article",
+      "id": "pregnancy-050",
+      "week": 17,
+      "title": "Бандаж для беременных: нужен ли он каждой женщине",
+      "suggested_tags": [
+        "Спина и тело"
+      ],
+      "review_status": "editor_review_required"
+    },
+    {
+      "kind": "article",
+      "id": "pregnancy-051",
+      "week": 17,
+      "title": "Как правильно вставать, садиться и поднимать вещи с растущим животом",
+      "suggested_tags": [
+        "Самочувствие"
+      ],
+      "review_status": "editor_review_required"
+    },
+    {
+      "kind": "article",
+      "id": "pregnancy-052",
+      "week": 18,
+      "title": "Второй скрининг: как подготовиться и что будет смотреть врач",
+      "suggested_tags": [
+        "Анализы и скрининги"
+      ],
+      "review_status": "editor_review_required"
+    },
+    {
+      "kind": "article",
+      "id": "pregnancy-053",
+      "week": 18,
+      "title": "Плацента: зачем врач указывает её расположение в заключении УЗИ",
+      "suggested_tags": [
+        "Анализы и скрининги"
+      ],
+      "review_status": "editor_review_required"
+    },
+    {
+      "kind": "article",
+      "id": "pregnancy-054",
+      "week": 18,
+      "title": "Можно ли узнать пол малыша точно и почему на УЗИ иногда ошибаются",
+      "suggested_tags": [
+        "Анализы и скрининги"
+      ],
+      "review_status": "editor_review_required"
+    },
+    {
+      "kind": "article",
+      "id": "pregnancy-055",
+      "week": 19,
+      "title": "Первые шевеления: на что они похожи и почему их легко перепутать",
+      "suggested_tags": [
+        "Самочувствие"
+      ],
+      "review_status": "editor_review_required"
+    },
+    {
+      "kind": "article",
+      "id": "pregnancy-056",
+      "week": 19,
+      "title": "Железо во время беременности: всем ли нужны препараты",
+      "suggested_tags": [
+        "Питание",
+        "Самочувствие"
+      ],
+      "review_status": "editor_review_required"
+    },
+    {
+      "kind": "article",
+      "id": "pregnancy-057",
+      "week": 19,
+      "title": "Судороги в ногах: как сделать ночной сон комфортнее",
+      "suggested_tags": [
+        "Спина и тело",
+        "Сон"
+      ],
+      "review_status": "editor_review_required"
+    },
+    {
+      "kind": "article",
+      "id": "pregnancy-058",
+      "week": 20,
+      "title": "Половина беременности позади: что стоит сделать уже сейчас",
+      "suggested_tags": [
+        "Самочувствие"
+      ],
+      "review_status": "editor_review_required"
+    },
+    {
+      "kind": "article",
+      "id": "pregnancy-059",
+      "week": 20,
+      "title": "Зачем беременной измеряют давление практически на каждом приёме",
+      "suggested_tags": [
+        "Самочувствие"
+      ],
+      "review_status": "editor_review_required"
+    },
+    {
+      "kind": "article",
+      "id": "pregnancy-060",
+      "week": 20,
+      "title": "Почему 20 недель — хорошее время начинать подготовку к родам",
+      "suggested_tags": [
+        "Подготовка к родам"
+      ],
+      "review_status": "editor_review_required"
+    },
+    {
+      "kind": "article",
+      "id": "pregnancy-061",
+      "week": 21,
+      "title": "Как подобрать удобную позу для сна с растущим животом",
+      "suggested_tags": [
+        "Сон"
+      ],
+      "review_status": "editor_review_required"
+    },
+    {
+      "kind": "article",
+      "id": "pregnancy-062",
+      "week": 21,
+      "title": "Тазовое дно во время беременности: почему важно не только укреплять, но и расслаблять",
+      "suggested_tags": [
+        "Спина и тело",
+        "Дыхание и расслабление",
+        "Самочувствие"
+      ],
+      "review_status": "editor_review_required"
+    },
+    {
+      "kind": "article",
+      "id": "pregnancy-063",
+      "week": 21,
+      "title": "Секс во второй половине беременности: какие изменения могут быть абсолютно нормальными",
+      "suggested_tags": [
+        "Партнёр и семья",
+        "Самочувствие"
+      ],
+      "review_status": "editor_review_required"
+    },
+    {
+      "kind": "article",
+      "id": "pregnancy-064",
+      "week": 22,
+      "title": "Почему живот иногда становится твёрдым и быстро расслабляется",
+      "suggested_tags": [
+        "Дыхание и расслабление"
+      ],
+      "review_status": "editor_review_required"
+    },
+    {
+      "kind": "article",
+      "id": "pregnancy-065",
+      "week": 22,
+      "title": "Как меняется осанка беременной и почему начинает уставать поясница",
+      "suggested_tags": [
+        "Спина и тело"
+      ],
+      "review_status": "editor_review_required"
+    },
+    {
+      "kind": "article",
+      "id": "pregnancy-066",
+      "week": 22,
+      "title": "Подушка для беременных: действительно полезная вещь или маркетинг",
+      "suggested_tags": [
+        "Сон",
+        "Дыхание и расслабление"
+      ],
+      "review_status": "editor_review_required"
+    },
+    {
+      "kind": "article",
+      "id": "pregnancy-067",
+      "week": 23,
+      "title": "Как лучше организовать питание, если после еды появляется тяжесть",
+      "suggested_tags": [
+        "Питание"
+      ],
+      "review_status": "editor_review_required"
+    },
+    {
+      "kind": "article",
+      "id": "pregnancy-068",
+      "week": 23,
+      "title": "Как сохранить хороший сон во второй половине беременности",
+      "suggested_tags": [
+        "Сон",
+        "Самочувствие"
+      ],
+      "review_status": "editor_review_required"
+    },
+    {
+      "kind": "article",
+      "id": "pregnancy-069",
+      "week": 23,
+      "title": "Какие упражнения помогают мягко разгружать спину и таз",
+      "suggested_tags": [
+        "Спина и тело",
+        "Движение и практики"
+      ],
+      "review_status": "editor_review_required"
+    },
+    {
+      "kind": "article",
+      "id": "pregnancy-070",
+      "week": 24,
+      "title": "Глюкозотолерантный тест: зачем его делают беременным и как он проходит",
+      "suggested_tags": [
+        "Анализы и скрининги"
+      ],
+      "review_status": "editor_review_required"
+    },
+    {
+      "kind": "article",
+      "id": "pregnancy-071",
+      "week": 24,
+      "title": "Как подготовиться к глюкозотолерантному тесту, чтобы не пришлось пересдавать",
+      "suggested_tags": [
+        "Анализы и скрининги"
+      ],
+      "review_status": "editor_review_required"
+    },
+    {
+      "kind": "article",
+      "id": "pregnancy-072",
+      "week": 24,
+      "title": "Отёки ног к вечеру: почему обувь и кольца могут становиться теснее",
+      "suggested_tags": [
+        "Спина и тело"
+      ],
+      "review_status": "editor_review_required"
+    },
+    {
+      "kind": "article",
+      "id": "pregnancy-073",
+      "week": 25,
+      "title": "Изжога во время беременности: почему появляется и как облегчить состояние",
+      "suggested_tags": [
+        "Питание",
+        "Самочувствие"
+      ],
+      "review_status": "editor_review_required"
+    },
+    {
+      "kind": "article",
+      "id": "pregnancy-074",
+      "week": 25,
+      "title": "Варикоз во время беременности: как уменьшить нагрузку на ноги",
+      "suggested_tags": [
+        "Спина и тело",
+        "Самочувствие"
+      ],
+      "review_status": "editor_review_required"
+    },
+    {
+      "kind": "article",
+      "id": "pregnancy-075",
+      "week": 25,
+      "title": "Компрессионный трикотаж: кому он может быть полезен и как его выбирать",
+      "suggested_tags": [
+        "Самочувствие"
+      ],
+      "review_status": "editor_review_required"
+    },
+    {
+      "kind": "article",
+      "id": "pregnancy-076",
+      "week": 26,
+      "title": "Тренировочные сокращения матки: почему они могут появляться задолго до родов",
+      "suggested_tags": [
+        "Движение и практики",
+        "Роды"
+      ],
+      "review_status": "editor_review_required"
+    },
+    {
+      "kind": "article",
+      "id": "pregnancy-077",
+      "week": 26,
+      "title": "Почему ночью становится трудно найти удобную позу",
+      "suggested_tags": [
+        "Сон"
+      ],
+      "review_status": "editor_review_required"
+    },
+    {
+      "kind": "article",
+      "id": "pregnancy-078",
+      "week": 26,
+      "title": "Как выбрать обувь на последние месяцы беременности",
+      "suggested_tags": [
+        "Спина и тело",
+        "Самочувствие"
+      ],
+      "review_status": "editor_review_required"
+    },
+    {
+      "kind": "article",
+      "id": "pregnancy-079",
+      "week": 27,
+      "title": "Второй триместр заканчивается: что стоит успеть проверить и организовать",
+      "suggested_tags": [
+        "Самочувствие"
+      ],
+      "review_status": "editor_review_required"
+    },
+    {
+      "kind": "article",
+      "id": "pregnancy-080",
+      "week": 27,
+      "title": "Отрицательный резус-фактор: зачем врач контролирует антитела",
+      "suggested_tags": [
+        "Анализы и скрининги"
+      ],
+      "review_status": "editor_review_required"
+    },
+    {
+      "kind": "article",
+      "id": "pregnancy-081",
+      "week": 27,
+      "title": "Какие документы и результаты обследований стоит хранить в отдельной папке",
+      "suggested_tags": [
+        "Анализы и скрининги"
+      ],
+      "review_status": "editor_review_required"
+    },
+    {
+      "kind": "article",
+      "id": "pregnancy-082",
+      "week": 28,
+      "title": "Третий триместр начался: что теперь меняется в вашем расписании",
+      "suggested_tags": [
+        "Самочувствие"
+      ],
+      "review_status": "editor_review_required"
+    },
+    {
+      "kind": "article",
+      "id": "pregnancy-083",
+      "week": 28,
+      "title": "Шевеления малыша: как познакомиться с его привычным режимом активности",
+      "suggested_tags": [
+        "Движение и практики",
+        "Самочувствие"
+      ],
+      "review_status": "editor_review_required"
+    },
+    {
+      "kind": "article",
+      "id": "pregnancy-084",
+      "week": 28,
+      "title": "Почему в третьем триместре особенно полезно регулярно контролировать давление",
+      "suggested_tags": [
+        "Самочувствие"
+      ],
+      "review_status": "editor_review_required"
+    },
+    {
+      "kind": "article",
+      "id": "pregnancy-085",
+      "week": 29,
+      "title": "У малыша уже есть свой режим: когда он чаще спит и бодрствует",
+      "suggested_tags": [
+        "Питание"
+      ],
+      "review_status": "editor_review_required"
+    },
+    {
+      "kind": "article",
+      "id": "pregnancy-086",
+      "week": 29,
+      "title": "Одышка при ходьбе и подъёме по лестнице: как распределять нагрузку",
+      "suggested_tags": [
+        "Самочувствие"
+      ],
+      "review_status": "editor_review_required"
+    },
+    {
+      "kind": "article",
+      "id": "pregnancy-087",
+      "week": 29,
+      "title": "Как не перегружать себя делами перед рождением малыша",
+      "suggested_tags": [
+        "Самочувствие"
+      ],
+      "review_status": "editor_review_required"
+    },
+    {
+      "kind": "article",
+      "id": "pregnancy-088",
+      "week": 30,
+      "title": "План родов: что это такое и почему его полезно составить заранее",
+      "suggested_tags": [
+        "Подготовка к родам",
+        "Роды"
+      ],
+      "review_status": "editor_review_required"
+    },
+    {
+      "kind": "article",
+      "id": "pregnancy-089",
+      "week": 30,
+      "title": "Позы в схватках: какие варианты стоит попробовать ещё во время беременности",
+      "suggested_tags": [
+        "Роды",
+        "Самочувствие"
+      ],
+      "review_status": "editor_review_required"
+    },
+    {
+      "kind": "article",
+      "id": "pregnancy-090",
+      "week": 30,
+      "title": "Дыхание в родах: почему лучше потренироваться заранее",
+      "suggested_tags": [
+        "Движение и практики",
+        "Дыхание и расслабление"
+      ],
+      "review_status": "editor_review_required"
+    },
+    {
+      "kind": "article",
+      "id": "pregnancy-091",
+      "week": 31,
+      "title": "Когда начинать собирать сумку в роддом",
+      "suggested_tags": [
+        "Подготовка к родам"
+      ],
+      "review_status": "editor_review_required"
+    },
+    {
+      "kind": "article",
+      "id": "pregnancy-092",
+      "week": 31,
+      "title": "Как подготовить партнёра к совместным родам",
+      "suggested_tags": [
+        "Партнёр и семья"
+      ],
+      "review_status": "editor_review_required"
+    },
+    {
+      "kind": "article",
+      "id": "pregnancy-093",
+      "week": 31,
+      "title": "Как выбрать роддом: 7 вопросов, которые действительно стоит задать",
+      "suggested_tags": [
+        "Подготовка к родам"
+      ],
+      "review_status": "editor_review_required"
+    },
+    {
+      "kind": "article",
+      "id": "pregnancy-094",
+      "week": 32,
+      "title": "УЗИ третьего триместра: кому и зачем его назначают",
+      "suggested_tags": [
+        "Анализы и скрининги",
+        "Самочувствие"
+      ],
+      "review_status": "editor_review_required"
+    },
+    {
+      "kind": "article",
+      "id": "pregnancy-095",
+      "week": 32,
+      "title": "Вес малыша по УЗИ: почему это всегда приблизительная цифра",
+      "suggested_tags": [
+        "Анализы и скрининги",
+        "Питание"
+      ],
+      "review_status": "editor_review_required"
+    },
+    {
+      "kind": "article",
+      "id": "pregnancy-096",
+      "week": 32,
+      "title": "Живот маленький или очень большой: почему сравнивать себя с другими беременными бессмысленно",
+      "suggested_tags": [
+        "Самочувствие"
+      ],
+      "review_status": "editor_review_required"
+    },
+    {
+      "kind": "article",
+      "id": "pregnancy-097",
+      "week": 33,
+      "title": "Тренировочные схватки: как использовать их для тренировки дыхания и расслабления",
+      "suggested_tags": [
+        "Движение и практики",
+        "Дыхание и расслабление",
+        "Роды"
+      ],
+      "review_status": "editor_review_required"
+    },
+    {
+      "kind": "article",
+      "id": "pregnancy-098",
+      "week": 33,
+      "title": "Появилось молозиво: нужно ли готовить грудь к кормлению",
+      "suggested_tags": [
+        "ГВ"
+      ],
+      "review_status": "editor_review_required"
+    },
+    {
+      "kind": "article",
+      "id": "pregnancy-099",
+      "week": 33,
+      "title": "Что взять малышу в роддом и какие вещи на самом деле не понадобятся",
+      "suggested_tags": [
+        "Подготовка к родам"
+      ],
+      "review_status": "editor_review_required"
+    },
+    {
+      "kind": "article",
+      "id": "pregnancy-100",
+      "week": 34,
+      "title": "Массаж промежности перед родами: что о нём известно и как его выполнять",
+      "suggested_tags": [
+        "Питание",
+        "Движение и практики",
+        "Подготовка к родам"
+      ],
+      "review_status": "editor_review_required"
+    },
+    {
+      "kind": "article",
+      "id": "pregnancy-101",
+      "week": 34,
+      "title": "Контакт «кожа к коже»: что происходит в первые минуты после рождения",
+      "suggested_tags": [
+        "Спина и тело",
+        "Уход за малышом"
+      ],
+      "review_status": "editor_review_required"
+    },
+    {
+      "kind": "article",
+      "id": "pregnancy-102",
+      "week": 34,
+      "title": "Что обсудить с партнёром до родов: 10 решений, которые лучше принять заранее",
+      "suggested_tags": [
+        "Роды",
+        "Партнёр и семья"
+      ],
+      "review_status": "editor_review_required"
+    },
+    {
+      "kind": "article",
+      "id": "pregnancy-103",
+      "week": 35,
+      "title": "Организм начинает готовиться к родам: какие изменения можно заметить",
+      "suggested_tags": [
+        "Самочувствие"
+      ],
+      "review_status": "editor_review_required"
+    },
+    {
+      "kind": "article",
+      "id": "pregnancy-104",
+      "week": 35,
+      "title": "Анализ на стрептококк группы B: зачем его могут предложить перед родами",
+      "suggested_tags": [
+        "Анализы и скрининги"
+      ],
+      "review_status": "editor_review_required"
+    },
+    {
+      "kind": "article",
+      "id": "pregnancy-105",
+      "week": 35,
+      "title": "Сумка в роддом: финальный чек-лист мамы",
+      "suggested_tags": [
+        "Подготовка к родам"
+      ],
+      "review_status": "editor_review_required"
+    },
+    {
+      "kind": "article",
+      "id": "pregnancy-106",
+      "week": 36,
+      "title": "Как малыш располагается перед родами и почему положение ещё может меняться",
+      "suggested_tags": [
+        "Самочувствие"
+      ],
+      "review_status": "editor_review_required"
+    },
+    {
+      "kind": "article",
+      "id": "pregnancy-107",
+      "week": 36,
+      "title": "Что врач оценивает на последних приёмах перед родами",
+      "suggested_tags": [
+        "Самочувствие"
+      ],
+      "review_status": "editor_review_required"
+    },
+    {
+      "kind": "article",
+      "id": "pregnancy-108",
+      "week": 36,
+      "title": "Что должно быть готово дома к возвращению с новорождённым",
+      "suggested_tags": [
+        "Уход за малышом"
+      ],
+      "review_status": "editor_review_required"
+    },
+    {
+      "kind": "article",
+      "id": "pregnancy-109",
+      "week": 37,
+      "title": "37 недель: начинается финальный этап ожидания родов",
+      "suggested_tags": [
+        "Роды"
+      ],
+      "review_status": "editor_review_required"
+    },
+    {
+      "kind": "article",
+      "id": "pregnancy-110",
+      "week": 37,
+      "title": "Слизистая пробка: что это такое и обязательно ли вы заметите её отхождение",
+      "suggested_tags": [
+        "Роды"
+      ],
+      "review_status": "editor_review_required"
+    },
+    {
+      "kind": "article",
+      "id": "pregnancy-111",
+      "week": 37,
+      "title": "Как понять, что роды действительно начинаются",
+      "suggested_tags": [
+        "Роды"
+      ],
+      "review_status": "editor_review_required"
+    },
+    {
+      "kind": "article",
+      "id": "pregnancy-112",
+      "week": 38,
+      "title": "Предвестники родов: что действительно может измениться за несколько дней до встречи с малышом",
+      "suggested_tags": [
+        "Питание",
+        "Роды"
+      ],
+      "review_status": "editor_review_required"
+    },
+    {
+      "kind": "article",
+      "id": "pregnancy-113",
+      "week": 38,
+      "title": "Как могут начинаться роды: схватки, воды и другие варианты",
+      "suggested_tags": [
+        "Роды"
+      ],
+      "review_status": "editor_review_required"
+    },
+    {
+      "kind": "article",
+      "id": "pregnancy-114",
+      "week": 38,
+      "title": "Что делать дома в самом начале схваток",
+      "suggested_tags": [
+        "Самочувствие"
+      ],
+      "review_status": "editor_review_required"
+    },
+    {
+      "kind": "article",
+      "id": "pregnancy-115",
+      "week": 39,
+      "title": "Первый период родов: что происходит от первых схваток до полного раскрытия",
+      "suggested_tags": [
+        "Роды"
+      ],
+      "review_status": "editor_review_required"
+    },
+    {
+      "kind": "article",
+      "id": "pregnancy-116",
+      "week": 39,
+      "title": "Как облегчать схватки: дыхание, движение, массаж, вода и поддержка партнёра",
+      "suggested_tags": [
+        "Эмоции",
+        "Движение и практики",
+        "Дыхание и расслабление"
+      ],
+      "review_status": "editor_review_required"
+    },
+    {
+      "kind": "article",
+      "id": "pregnancy-117",
+      "week": 39,
+      "title": "Обезболивание в родах: какие варианты можно обсудить заранее",
+      "suggested_tags": [
+        "Подготовка к родам"
+      ],
+      "review_status": "editor_review_required"
+    },
+    {
+      "kind": "article",
+      "id": "pregnancy-118",
+      "week": 40,
+      "title": "ПДР наступила, а малыш пока не торопится: почему это нормально",
+      "suggested_tags": [
+        "Роды"
+      ],
+      "review_status": "editor_review_required"
+    },
+    {
+      "kind": "article",
+      "id": "pregnancy-119",
+      "week": 40,
+      "title": "ПДР — не срок годности: как вообще рассчитывают дату родов",
+      "suggested_tags": [
+        "Роды",
+        "Самочувствие"
+      ],
+      "review_status": "editor_review_required"
+    },
+    {
+      "kind": "article",
+      "id": "pregnancy-120",
+      "week": 40,
+      "title": "Можно ли приблизить начало родов естественными способами: разбираем популярные советы",
+      "suggested_tags": [
+        "Роды"
+      ],
+      "review_status": "editor_review_required"
+    },
+    {
+      "kind": "article",
+      "id": "pregnancy-121",
+      "week": 41,
+      "title": "41 неделя: что происходит на приёме, если роды пока не начались",
+      "suggested_tags": [
+        "Роды"
+      ],
+      "review_status": "editor_review_required"
+    },
+    {
+      "kind": "article",
+      "id": "pregnancy-122",
+      "week": 41,
+      "title": "Как врачи наблюдают маму и малыша после ПДР",
+      "suggested_tags": [
+        "Роды"
+      ],
+      "review_status": "editor_review_required"
+    },
+    {
+      "kind": "article",
+      "id": "pregnancy-123",
+      "week": 41,
+      "title": "Индукция родов простыми словами: зачем её могут предложить и как всё происходит",
+      "suggested_tags": [
+        "Роды"
+      ],
+      "review_status": "editor_review_required"
+    },
+    {
+      "kind": "article",
+      "id": "pregnancy-124",
+      "week": 42,
+      "title": "42 неделя: каким будет план действий вместе с врачом",
+      "suggested_tags": [
+        "Самочувствие"
+      ],
+      "review_status": "editor_review_required"
+    },
+    {
+      "kind": "article",
+      "id": "pregnancy-125",
+      "week": 42,
+      "title": "Подготовка к индукции: что взять с собой и чего ожидать в роддоме",
+      "suggested_tags": [
+        "Подготовка к родам",
+        "Роды"
+      ],
+      "review_status": "editor_review_required"
+    },
+    {
+      "kind": "article",
+      "id": "pregnancy-126",
+      "week": 42,
+      "title": "Совсем скоро встреча: как настроиться на роды, если ожидание затянулось",
+      "suggested_tags": [
+        "Эмоции",
+        "Роды"
+      ],
+      "review_status": "editor_review_required"
+    },
+    {
+      "kind": "video",
+      "id": "contractions-lesson",
+      "week": 1,
+      "title": "Витамины и дефициты во время беременности",
+      "duration_seconds": 454,
+      "suggested_tags": [
+        "Питание",
+        "Самочувствие"
+      ],
+      "review_status": "editor_review_required"
+    },
+    {
+      "kind": "video",
+      "id": "back-relief-video",
+      "week": 1,
+      "title": "Самомассаж головы и расслабление",
+      "duration_seconds": 295,
+      "suggested_tags": [
+        "Движение и практики",
+        "Дыхание и расслабление"
+      ],
+      "review_status": "editor_review_required"
+    },
+    {
+      "kind": "video",
+      "id": "birth-breathing-video",
+      "week": 1,
+      "title": "Практика поддержки и уверенности в себе",
+      "duration_seconds": 153,
+      "suggested_tags": [
+        "Эмоции",
+        "Самочувствие"
+      ],
+      "review_status": "editor_review_required"
+    },
+    {
+      "kind": "video",
+      "id": "week-video-004",
+      "week": 2,
+      "title": "Как продолжать заниматься спортом во время беременности",
+      "duration_seconds": 190,
+      "suggested_tags": [
+        "Движение и практики",
+        "Самочувствие"
+      ],
+      "review_status": "editor_review_required"
+    },
+    {
+      "kind": "video",
+      "id": "week-video-005",
+      "week": 2,
+      "title": "Продукты для завтрака, перекусов и домашней готовки",
+      "duration_seconds": 350,
+      "suggested_tags": [
+        "Питание"
+      ],
+      "review_status": "editor_review_required"
+    },
+    {
+      "kind": "video",
+      "id": "week-video-006",
+      "week": 2,
+      "title": "Настрой на занятие и спокойное дыхание",
+      "duration_seconds": 355,
+      "suggested_tags": [
+        "Эмоции",
+        "Дыхание и расслабление"
+      ],
+      "review_status": "editor_review_required"
+    },
+    {
+      "kind": "video",
+      "id": "week-video-007",
+      "week": 3,
+      "title": "Зачем нужны осмотры и мазки во время беременности",
+      "duration_seconds": 276,
+      "suggested_tags": [
+        "Самочувствие"
+      ],
+      "review_status": "editor_review_required"
+    },
+    {
+      "kind": "video",
+      "id": "week-video-008",
+      "week": 3,
+      "title": "Почему появляются сильные эмоции и как их проживать",
+      "duration_seconds": 346,
+      "suggested_tags": [
+        "Эмоции",
+        "Самочувствие"
+      ],
+      "review_status": "editor_review_required"
+    },
+    {
+      "kind": "video",
+      "id": "week-video-009",
+      "week": 3,
+      "title": "Разминка стоп, коленей и таза стоя",
+      "duration_seconds": 344,
+      "suggested_tags": [
+        "Спина и тело",
+        "Движение и практики"
+      ],
+      "review_status": "editor_review_required"
+    },
+    {
+      "kind": "video",
+      "id": "week-video-010",
+      "week": 4,
+      "title": "Первый триместр: прием, обследования и самочувствие",
+      "duration_seconds": 480,
+      "suggested_tags": [
+        "Анализы и скрининги",
+        "Самочувствие"
+      ],
+      "review_status": "editor_review_required"
+    },
+    {
+      "kind": "video",
+      "id": "week-video-011",
+      "week": 4,
+      "title": "Как заменить пугающие мысли о родах",
+      "duration_seconds": 77,
+      "suggested_tags": [
+        "Самочувствие"
+      ],
+      "review_status": "editor_review_required"
+    },
+    {
+      "kind": "video",
+      "id": "week-video-012",
+      "week": 4,
+      "title": "Учимся дышать ребрами и двигать грудным отделом",
+      "duration_seconds": 312,
+      "suggested_tags": [
+        "Дыхание и расслабление",
+        "ГВ"
+      ],
+      "review_status": "editor_review_required"
+    },
+    {
+      "kind": "video",
+      "id": "week-video-013",
+      "week": 5,
+      "title": "Зачем назначают прогестерон",
+      "duration_seconds": 201,
+      "suggested_tags": [
+        "Самочувствие"
+      ],
+      "review_status": "editor_review_required"
+    },
+    {
+      "kind": "video",
+      "id": "week-video-014",
+      "week": 5,
+      "title": "Массаж шеи и зоны декольте",
+      "duration_seconds": 366,
+      "suggested_tags": [
+        "Движение и практики"
+      ],
+      "review_status": "editor_review_required"
+    },
+    {
+      "kind": "video",
+      "id": "week-video-015",
+      "week": 5,
+      "title": "Как отпустить чужую страшную историю о родах",
+      "duration_seconds": 44,
+      "suggested_tags": [
+        "Эмоции"
+      ],
+      "review_status": "editor_review_required"
+    },
+    {
+      "kind": "video",
+      "id": "week-video-016",
+      "week": 6,
+      "title": "Боли в животе и промежности во время беременности",
+      "duration_seconds": 361,
+      "suggested_tags": [
+        "Подготовка к родам",
+        "Самочувствие"
+      ],
+      "review_status": "editor_review_required"
+    },
+    {
+      "kind": "video",
+      "id": "week-video-017",
+      "week": 6,
+      "title": "Самомассаж лица с уходовым средством",
+      "duration_seconds": 427,
+      "suggested_tags": [
+        "Движение и практики"
+      ],
+      "review_status": "editor_review_required"
+    },
+    {
+      "kind": "video",
+      "id": "week-video-018",
+      "week": 6,
+      "title": "Практика работы с тревожным переживанием",
+      "duration_seconds": 384,
+      "suggested_tags": [
+        "Эмоции",
+        "Самочувствие"
+      ],
+      "review_status": "editor_review_required"
+    },
+    {
+      "kind": "video",
+      "id": "week-video-019",
+      "week": 7,
+      "title": "Что называют тонусом матки",
+      "duration_seconds": 210,
+      "suggested_tags": [
+        "Самочувствие"
+      ],
+      "review_status": "editor_review_required"
+    },
+    {
+      "kind": "video",
+      "id": "week-video-020",
+      "week": 7,
+      "title": "Мягкая растяжка шеи, плеч и боков",
+      "duration_seconds": 319,
+      "suggested_tags": [
+        "Спина и тело",
+        "Движение и практики"
+      ],
+      "review_status": "editor_review_required"
+    },
+    {
+      "kind": "video",
+      "id": "week-video-021",
+      "week": 7,
+      "title": "Образы и внимание для расслабления",
+      "duration_seconds": 342,
+      "suggested_tags": [
+        "Дыхание и расслабление"
+      ],
+      "review_status": "editor_review_required"
+    },
+    {
+      "kind": "video",
+      "id": "week-video-022",
+      "week": 8,
+      "title": "Молочница во время беременности",
+      "duration_seconds": 121,
+      "suggested_tags": [
+        "Самочувствие"
+      ],
+      "review_status": "editor_review_required"
+    },
+    {
+      "kind": "video",
+      "id": "week-video-023",
+      "week": 8,
+      "title": "Анемия: признаки и обследования",
+      "duration_seconds": 331,
+      "suggested_tags": [
+        "Анализы и скрининги"
+      ],
+      "review_status": "editor_review_required"
+    },
+    {
+      "kind": "video",
+      "id": "week-video-024",
+      "week": 8,
+      "title": "Работа с валиком для бедер и ягодиц",
+      "duration_seconds": 325,
+      "suggested_tags": [
+        "Движение и практики",
+        "Самочувствие"
+      ],
+      "review_status": "editor_review_required"
+    },
+    {
+      "kind": "video",
+      "id": "week-video-025",
+      "week": 9,
+      "title": "Прибавка веса во время беременности",
+      "duration_seconds": 217,
+      "suggested_tags": [
+        "Питание",
+        "Самочувствие"
+      ],
+      "review_status": "editor_review_required"
+    },
+    {
+      "kind": "video",
+      "id": "week-video-026",
+      "week": 9,
+      "title": "Самомассаж щек и нижней части лица",
+      "duration_seconds": 429,
+      "suggested_tags": [
+        "Движение и практики"
+      ],
+      "review_status": "editor_review_required"
+    },
+    {
+      "kind": "video",
+      "id": "week-video-027",
+      "week": 9,
+      "title": "Самогипноз и простая практика воображения",
+      "duration_seconds": 369,
+      "suggested_tags": [
+        "Дыхание и расслабление"
+      ],
+      "review_status": "editor_review_required"
+    },
+    {
+      "kind": "video",
+      "id": "week-video-028",
+      "week": 10,
+      "title": "УЗИ и скрининги во время беременности",
+      "duration_seconds": 366,
+      "suggested_tags": [
+        "Анализы и скрининги",
+        "Самочувствие"
+      ],
+      "review_status": "editor_review_required"
+    },
+    {
+      "kind": "video",
+      "id": "week-video-029",
+      "week": 10,
+      "title": "Упражнения для рук и ног стоя",
+      "duration_seconds": 359,
+      "suggested_tags": [
+        "Движение и практики"
+      ],
+      "review_status": "editor_review_required"
+    },
+    {
+      "kind": "video",
+      "id": "week-video-030",
+      "week": 10,
+      "title": "Нарисовать свой страх и разобраться с ним",
+      "duration_seconds": 94,
+      "suggested_tags": [
+        "Эмоции"
+      ],
+      "review_status": "editor_review_required"
+    },
+    {
+      "kind": "video",
+      "id": "week-video-031",
+      "week": 11,
+      "title": "Резус-фактор и антирезусный иммуноглобулин",
+      "duration_seconds": 309,
+      "suggested_tags": [
+        "Анализы и скрининги"
+      ],
+      "review_status": "editor_review_required"
+    },
+    {
+      "kind": "video",
+      "id": "week-video-032",
+      "week": 11,
+      "title": "Самомассаж лба и расслабление лица",
+      "duration_seconds": 428,
+      "suggested_tags": [
+        "Движение и практики",
+        "Дыхание и расслабление"
+      ],
+      "review_status": "editor_review_required"
+    },
+    {
+      "kind": "video",
+      "id": "week-video-033",
+      "week": 11,
+      "title": "Подвижность таза и расслабление мышц тазового дна",
+      "duration_seconds": 343,
+      "suggested_tags": [
+        "Спина и тело",
+        "Движение и практики",
+        "Дыхание и расслабление"
+      ],
+      "review_status": "editor_review_required"
+    },
+    {
+      "kind": "video",
+      "id": "week-video-034",
+      "week": 12,
+      "title": "Как работает плацента",
+      "duration_seconds": 351,
+      "suggested_tags": [
+        "Самочувствие"
+      ],
+      "review_status": "editor_review_required"
+    },
+    {
+      "kind": "video",
+      "id": "week-video-035",
+      "week": 12,
+      "title": "Расслабление крестца и движения тазом",
+      "duration_seconds": 443,
+      "suggested_tags": [
+        "Спина и тело",
+        "Движение и практики",
+        "Дыхание и расслабление"
+      ],
+      "review_status": "editor_review_required"
+    },
+    {
+      "kind": "video",
+      "id": "week-video-036",
+      "week": 12,
+      "title": "Как настроить себя на расслабление в родах",
+      "duration_seconds": 331,
+      "suggested_tags": [
+        "Дыхание и расслабление"
+      ],
+      "review_status": "editor_review_required"
+    },
+    {
+      "kind": "video",
+      "id": "week-video-037",
+      "week": 13,
+      "title": "Второй триместр и обследования",
+      "duration_seconds": 307,
+      "suggested_tags": [
+        "Анализы и скрининги",
+        "Самочувствие"
+      ],
+      "review_status": "editor_review_required"
+    },
+    {
+      "kind": "video",
+      "id": "week-video-038",
+      "week": 13,
+      "title": "Упражнения для бедер с опорой на стену",
+      "duration_seconds": 318,
+      "suggested_tags": [
+        "Движение и практики"
+      ],
+      "review_status": "editor_review_required"
+    },
+    {
+      "kind": "video",
+      "id": "week-video-039",
+      "week": 13,
+      "title": "С чего начать выбор роддома",
+      "duration_seconds": 385,
+      "suggested_tags": [
+        "Подготовка к родам"
+      ],
+      "review_status": "editor_review_required"
+    },
+    {
+      "kind": "video",
+      "id": "week-video-040",
+      "week": 14,
+      "title": "Давление во время беременности",
+      "duration_seconds": 285,
+      "suggested_tags": [
+        "Самочувствие"
+      ],
+      "review_status": "editor_review_required"
+    },
+    {
+      "kind": "video",
+      "id": "week-video-041",
+      "week": 14,
+      "title": "Мягкие упражнения для поясницы на четвереньках",
+      "duration_seconds": 396,
+      "suggested_tags": [
+        "Спина и тело",
+        "Движение и практики"
+      ],
+      "review_status": "editor_review_required"
+    },
+    {
+      "kind": "video",
+      "id": "week-video-042",
+      "week": 14,
+      "title": "Как создать условия для расслабления в родах",
+      "duration_seconds": 319,
+      "suggested_tags": [
+        "Дыхание и расслабление"
+      ],
+      "review_status": "editor_review_required"
+    },
+    {
+      "kind": "video",
+      "id": "week-video-043",
+      "week": 15,
+      "title": "Варикоз во время беременности",
+      "duration_seconds": 254,
+      "suggested_tags": [
+        "Спина и тело",
+        "Самочувствие"
+      ],
+      "review_status": "editor_review_required"
+    },
+    {
+      "kind": "video",
+      "id": "week-video-044",
+      "week": 15,
+      "title": "Подвижность таза и упражнения лежа на боку",
+      "duration_seconds": 377,
+      "suggested_tags": [
+        "Спина и тело",
+        "Движение и практики",
+        "Самочувствие"
+      ],
+      "review_status": "editor_review_required"
+    },
+    {
+      "kind": "video",
+      "id": "week-video-045",
+      "week": 15,
+      "title": "Как спросить врача о пользе и рисках процедуры",
+      "duration_seconds": 388,
+      "suggested_tags": [
+        "Самочувствие"
+      ],
+      "review_status": "editor_review_required"
+    },
+    {
+      "kind": "video",
+      "id": "week-video-046",
+      "week": 16,
+      "title": "На что обращать внимание в шевелениях малыша",
+      "duration_seconds": 238,
+      "suggested_tags": [
+        "Самочувствие"
+      ],
+      "review_status": "editor_review_required"
+    },
+    {
+      "kind": "video",
+      "id": "week-video-047",
+      "week": 16,
+      "title": "Подвижность грудного отдела на четвереньках",
+      "duration_seconds": 331,
+      "suggested_tags": [
+        "Движение и практики",
+        "ГВ",
+        "Самочувствие"
+      ],
+      "review_status": "editor_review_required"
+    },
+    {
+      "kind": "video",
+      "id": "week-video-048",
+      "week": 16,
+      "title": "Что зависит от вас и от врачей во время родов",
+      "duration_seconds": 381,
+      "suggested_tags": [
+        "Роды"
+      ],
+      "review_status": "editor_review_required"
+    },
+    {
+      "kind": "video",
+      "id": "week-video-049",
+      "week": 17,
+      "title": "Короткая шейка матки и пессарий",
+      "duration_seconds": 223,
+      "suggested_tags": [
+        "Роды"
+      ],
+      "review_status": "editor_review_required"
+    },
+    {
+      "kind": "video",
+      "id": "week-video-050",
+      "week": 17,
+      "title": "Упражнения для рук и ягодиц на коврике",
+      "duration_seconds": 329,
+      "suggested_tags": [
+        "Движение и практики"
+      ],
+      "review_status": "editor_review_required"
+    },
+    {
+      "kind": "video",
+      "id": "week-video-051",
+      "week": 17,
+      "title": "Как обсудить партнерские роды с близкими",
+      "duration_seconds": 468,
+      "suggested_tags": [
+        "Подготовка к родам",
+        "Роды",
+        "Партнёр и семья"
+      ],
+      "review_status": "editor_review_required"
+    },
+    {
+      "kind": "video",
+      "id": "week-video-052",
+      "week": 18,
+      "title": "Что означает единственная артерия пуповины",
+      "duration_seconds": 143,
+      "suggested_tags": [
+        "Самочувствие"
+      ],
+      "review_status": "editor_review_required"
+    },
+    {
+      "kind": "video",
+      "id": "week-video-053",
+      "week": 18,
+      "title": "Дыхание и движения для рук",
+      "duration_seconds": 386,
+      "suggested_tags": [
+        "Движение и практики",
+        "Дыхание и расслабление"
+      ],
+      "review_status": "editor_review_required"
+    },
+    {
+      "kind": "video",
+      "id": "week-video-054",
+      "week": 18,
+      "title": "Условия роддома и варианты контракта",
+      "duration_seconds": 361,
+      "suggested_tags": [
+        "Подготовка к родам"
+      ],
+      "review_status": "editor_review_required"
+    },
+    {
+      "kind": "video",
+      "id": "week-video-055",
+      "week": 19,
+      "title": "Симфизит, зуд кожи и заложенность носа",
+      "duration_seconds": 390,
+      "suggested_tags": [
+        "Спина и тело",
+        "Самочувствие"
+      ],
+      "review_status": "editor_review_required"
+    },
+    {
+      "kind": "video",
+      "id": "week-video-056",
+      "week": 19,
+      "title": "Мягкие движения стоя и расслабление плеч",
+      "duration_seconds": 442,
+      "suggested_tags": [
+        "Движение и практики",
+        "Дыхание и расслабление"
+      ],
+      "review_status": "editor_review_required"
+    },
+    {
+      "kind": "video",
+      "id": "week-video-057",
+      "week": 19,
+      "title": "Как обсудить с врачом альтернативы вмешательству",
+      "duration_seconds": 320,
+      "suggested_tags": [
+        "Самочувствие"
+      ],
+      "review_status": "editor_review_required"
+    },
+    {
+      "kind": "video",
+      "id": "week-video-058",
+      "week": 20,
+      "title": "Что важно знать о преждевременных родах",
+      "duration_seconds": 270,
+      "suggested_tags": [
+        "Самочувствие"
+      ],
+      "review_status": "editor_review_required"
+    },
+    {
+      "kind": "video",
+      "id": "week-video-059",
+      "week": 20,
+      "title": "Упражнения для тазобедренных суставов на четвереньках",
+      "duration_seconds": 445,
+      "suggested_tags": [
+        "Спина и тело",
+        "Движение и практики"
+      ],
+      "review_status": "editor_review_required"
+    },
+    {
+      "kind": "video",
+      "id": "week-video-060",
+      "week": 20,
+      "title": "Как выбрать врача и оценить отзывы",
+      "duration_seconds": 310,
+      "suggested_tags": [
+        "Подготовка к родам"
+      ],
+      "review_status": "editor_review_required"
+    },
+    {
+      "kind": "video",
+      "id": "week-video-061",
+      "week": 21,
+      "title": "Преэклампсия и наблюдение во время беременности",
+      "duration_seconds": 323,
+      "suggested_tags": [
+        "Самочувствие"
+      ],
+      "review_status": "editor_review_required"
+    },
+    {
+      "kind": "video",
+      "id": "week-video-062",
+      "week": 21,
+      "title": "Что уточнить об условиях и поддержке во время родов",
+      "duration_seconds": 341,
+      "suggested_tags": [
+        "Эмоции",
+        "Роды"
+      ],
+      "review_status": "editor_review_required"
+    },
+    {
+      "kind": "video",
+      "id": "week-video-063",
+      "week": 21,
+      "title": "Как сцеживать молоко руками",
+      "duration_seconds": 116,
+      "suggested_tags": [
+        "Самочувствие"
+      ],
+      "review_status": "editor_review_required"
+    },
+    {
+      "kind": "video",
+      "id": "week-video-064",
+      "week": 22,
+      "title": "Гестационный диабет и основы питания",
+      "duration_seconds": 371,
+      "suggested_tags": [
+        "Питание"
+      ],
+      "review_status": "editor_review_required"
+    },
+    {
+      "kind": "video",
+      "id": "week-video-065",
+      "week": 22,
+      "title": "Что уточнить в роддоме о партнерских родах",
+      "duration_seconds": 376,
+      "suggested_tags": [
+        "Подготовка к родам",
+        "Партнёр и семья"
+      ],
+      "review_status": "editor_review_required"
+    },
+    {
+      "kind": "video",
+      "id": "week-video-066",
+      "week": 22,
+      "title": "Практикуем дыхание и отдых между схватками",
+      "duration_seconds": 440,
+      "suggested_tags": [
+        "Дыхание и расслабление",
+        "Роды"
+      ],
+      "review_status": "editor_review_required"
+    },
+    {
+      "kind": "video",
+      "id": "week-video-067",
+      "week": 23,
+      "title": "Как выбирать и готовить продукты при ГСД",
+      "duration_seconds": 388,
+      "suggested_tags": [
+        "Питание"
+      ],
+      "review_status": "editor_review_required"
+    },
+    {
+      "kind": "video",
+      "id": "week-video-068",
+      "week": 23,
+      "title": "Узкий таз и выбор способа родоразрешения",
+      "duration_seconds": 240,
+      "suggested_tags": [
+        "Спина и тело"
+      ],
+      "review_status": "editor_review_required"
+    },
+    {
+      "kind": "video",
+      "id": "week-video-069",
+      "week": 23,
+      "title": "Зачем готовиться к грудному вскармливанию заранее",
+      "duration_seconds": 358,
+      "suggested_tags": [
+        "ГВ"
+      ],
+      "review_status": "editor_review_required"
+    },
+    {
+      "kind": "video",
+      "id": "week-video-070",
+      "week": 24,
+      "title": "Отеки во время беременности",
+      "duration_seconds": 275,
+      "suggested_tags": [
+        "Спина и тело",
+        "Самочувствие"
+      ],
+      "review_status": "editor_review_required"
+    },
+    {
+      "kind": "video",
+      "id": "week-video-071",
+      "week": 24,
+      "title": "Как принимать решение об обезболивании по своему состоянию",
+      "duration_seconds": 384,
+      "suggested_tags": [
+        "Подготовка к родам"
+      ],
+      "review_status": "editor_review_required"
+    },
+    {
+      "kind": "video",
+      "id": "week-video-072",
+      "week": 24,
+      "title": "Как расположить малыша у груди",
+      "duration_seconds": 329,
+      "suggested_tags": [
+        "ГВ"
+      ],
+      "review_status": "editor_review_required"
+    },
+    {
+      "kind": "video",
+      "id": "week-video-073",
+      "week": 25,
+      "title": "Судороги и беспокойные ноги",
+      "duration_seconds": 203,
+      "suggested_tags": [
+        "Спина и тело",
+        "Эмоции"
+      ],
+      "review_status": "editor_review_required"
+    },
+    {
+      "kind": "video",
+      "id": "week-video-074",
+      "week": 25,
+      "title": "Что делает неонатолог сразу после рождения малыша",
+      "duration_seconds": 328,
+      "suggested_tags": [
+        "Уход за малышом"
+      ],
+      "review_status": "editor_review_required"
+    },
+    {
+      "kind": "video",
+      "id": "week-video-076",
+      "week": 26,
+      "title": "Что означает нарушение кровотока по УЗИ",
+      "duration_seconds": 245,
+      "suggested_tags": [
+        "Анализы и скрининги"
+      ],
+      "review_status": "editor_review_required"
+    },
+    {
+      "kind": "video",
+      "id": "week-video-077",
+      "week": 26,
+      "title": "Как устроен роддом: приемное отделение и оборудование",
+      "duration_seconds": 467,
+      "suggested_tags": [
+        "Подготовка к родам"
+      ],
+      "review_status": "editor_review_required"
+    },
+    {
+      "kind": "video",
+      "id": "week-video-078",
+      "week": 26,
+      "title": "Как помочь малышу глубоко захватить грудь",
+      "duration_seconds": 326,
+      "suggested_tags": [
+        "ГВ"
+      ],
+      "review_status": "editor_review_required"
+    },
+    {
+      "kind": "video",
+      "id": "week-video-079",
+      "week": 27,
+      "title": "Геморрой во время беременности",
+      "duration_seconds": 352,
+      "suggested_tags": [
+        "Самочувствие"
+      ],
+      "review_status": "editor_review_required"
+    },
+    {
+      "kind": "video",
+      "id": "week-video-080",
+      "week": 27,
+      "title": "Как меняются ощущения во время схваток и потуг",
+      "duration_seconds": 383,
+      "suggested_tags": [
+        "Роды"
+      ],
+      "review_status": "editor_review_required"
+    },
+    {
+      "kind": "video",
+      "id": "week-video-081",
+      "week": 27,
+      "title": "Как партнёр может помочь массажем",
+      "duration_seconds": 202,
+      "suggested_tags": [
+        "Движение и практики",
+        "Партнёр и семья"
+      ],
+      "review_status": "editor_review_required"
+    },
+    {
+      "kind": "video",
+      "id": "week-video-082",
+      "week": 28,
+      "title": "Третий триместр и подготовка к роддому",
+      "duration_seconds": 348,
+      "suggested_tags": [
+        "Подготовка к родам",
+        "Самочувствие"
+      ],
+      "review_status": "editor_review_required"
+    },
+    {
+      "kind": "video",
+      "id": "week-video-083",
+      "week": 28,
+      "title": "Как партнеру подготовиться к роддому",
+      "duration_seconds": 328,
+      "suggested_tags": [
+        "Подготовка к родам",
+        "Партнёр и семья"
+      ],
+      "review_status": "editor_review_required"
+    },
+    {
+      "kind": "video",
+      "id": "week-video-084",
+      "week": 28,
+      "title": "Удобное кормление полулежа после родов",
+      "duration_seconds": 341,
+      "suggested_tags": [
+        "Роды",
+        "ГВ"
+      ],
+      "review_status": "editor_review_required"
+    },
+    {
+      "kind": "video",
+      "id": "week-video-085",
+      "week": 29,
+      "title": "Многоводие и маловодие",
+      "duration_seconds": 471,
+      "suggested_tags": [
+        "Самочувствие"
+      ],
+      "review_status": "editor_review_required"
+    },
+    {
+      "kind": "video",
+      "id": "week-video-086",
+      "week": 29,
+      "title": "Как ребенок рождается и что такое потуги",
+      "duration_seconds": 422,
+      "suggested_tags": [
+        "Роды"
+      ],
+      "review_status": "editor_review_required"
+    },
+    {
+      "kind": "video",
+      "id": "week-video-087",
+      "week": 29,
+      "title": "Молозиво и первые способы докорма",
+      "duration_seconds": 388,
+      "suggested_tags": [
+        "ГВ"
+      ],
+      "review_status": "editor_review_required"
+    },
+    {
+      "kind": "video",
+      "id": "week-video-088",
+      "week": 30,
+      "title": "Как проходят роды при гестационном диабете",
+      "duration_seconds": 466,
+      "suggested_tags": [
+        "Питание",
+        "Роды"
+      ],
+      "review_status": "editor_review_required"
+    },
+    {
+      "kind": "video",
+      "id": "week-video-089",
+      "week": 30,
+      "title": "Что влияет на восприятие боли в родах",
+      "duration_seconds": 462,
+      "suggested_tags": [
+        "Самочувствие"
+      ],
+      "review_status": "editor_review_required"
+    },
+    {
+      "kind": "video",
+      "id": "week-video-090",
+      "week": 30,
+      "title": "Как приложить новорожденного к груди",
+      "duration_seconds": 354,
+      "suggested_tags": [
+        "ГВ",
+        "Уход за малышом"
+      ],
+      "review_status": "editor_review_required"
+    },
+    {
+      "kind": "video",
+      "id": "week-video-091",
+      "week": 31,
+      "title": "Как предупредить боль и травмы сосков",
+      "duration_seconds": 315,
+      "suggested_tags": [
+        "ГВ"
+      ],
+      "review_status": "editor_review_required"
+    },
+    {
+      "kind": "video",
+      "id": "week-video-092",
+      "week": 31,
+      "title": "Родильный зал, фитбол и оборудование для родов",
+      "duration_seconds": 390,
+      "suggested_tags": [
+        "Роды"
+      ],
+      "review_status": "editor_review_required"
+    },
+    {
+      "kind": "video",
+      "id": "week-video-093",
+      "week": 31,
+      "title": "Как использовать голос и выдох в родах",
+      "duration_seconds": 434,
+      "suggested_tags": [
+        "Дыхание и расслабление"
+      ],
+      "review_status": "editor_review_required"
+    },
+    {
+      "kind": "video",
+      "id": "week-video-094",
+      "week": 32,
+      "title": "Разрывы и эпизиотомия: что важно понимать заранее",
+      "duration_seconds": 472,
+      "suggested_tags": [
+        "Самочувствие"
+      ],
+      "review_status": "editor_review_required"
+    },
+    {
+      "kind": "video",
+      "id": "week-video-095",
+      "week": 32,
+      "title": "Слизистая пробка и тренировочные схватки",
+      "duration_seconds": 379,
+      "suggested_tags": [
+        "Движение и практики",
+        "Роды"
+      ],
+      "review_status": "editor_review_required"
+    },
+    {
+      "kind": "video",
+      "id": "week-video-096",
+      "week": 32,
+      "title": "Накладки, бутылочки и пустышки: вопросы до родов",
+      "duration_seconds": 322,
+      "suggested_tags": [
+        "Роды",
+        "Уход за малышом"
+      ],
+      "review_status": "editor_review_required"
+    },
+    {
+      "kind": "video",
+      "id": "week-video-097",
+      "week": 33,
+      "title": "Обвитие пуповиной и роды",
+      "duration_seconds": 288,
+      "suggested_tags": [
+        "Роды"
+      ],
+      "review_status": "editor_review_required"
+    },
+    {
+      "kind": "video",
+      "id": "week-video-098",
+      "week": 33,
+      "title": "Начало родов и первые схватки",
+      "duration_seconds": 472,
+      "suggested_tags": [
+        "Роды"
+      ],
+      "review_status": "editor_review_required"
+    },
+    {
+      "kind": "video",
+      "id": "week-video-099",
+      "week": 33,
+      "title": "Положения для кормления в роддоме",
+      "duration_seconds": 399,
+      "suggested_tags": [
+        "Подготовка к родам",
+        "ГВ"
+      ],
+      "review_status": "editor_review_required"
+    },
+    {
+      "kind": "video",
+      "id": "week-video-100",
+      "week": 34,
+      "title": "Зачем сдавать мазок на стрептококк группы В",
+      "duration_seconds": 164,
+      "suggested_tags": [
+        "Анализы и скрининги"
+      ],
+      "review_status": "editor_review_required"
+    },
+    {
+      "kind": "video",
+      "id": "week-video-101",
+      "week": 34,
+      "title": "Эпидуральная анестезия: как проходит и что учитывать",
+      "duration_seconds": 478,
+      "suggested_tags": [
+        "Подготовка к родам"
+      ],
+      "review_status": "editor_review_required"
+    },
+    {
+      "kind": "video",
+      "id": "week-video-102",
+      "week": 34,
+      "title": "Массаж промежности перед родами",
+      "duration_seconds": 204,
+      "suggested_tags": [
+        "Движение и практики",
+        "Подготовка к родам",
+        "Самочувствие"
+      ],
+      "review_status": "editor_review_required"
+    },
+    {
+      "kind": "video",
+      "id": "week-video-103",
+      "week": 35,
+      "title": "Осмотр и КТГ при поступлении в роддом",
+      "duration_seconds": 300,
+      "suggested_tags": [
+        "Анализы и скрининги",
+        "Подготовка к родам"
+      ],
+      "review_status": "editor_review_required"
+    },
+    {
+      "kind": "video",
+      "id": "week-video-104",
+      "week": 35,
+      "title": "Как партнер помогает во время активных схваток",
+      "duration_seconds": 389,
+      "suggested_tags": [
+        "Партнёр и семья"
+      ],
+      "review_status": "editor_review_required"
+    },
+    {
+      "kind": "video",
+      "id": "week-video-105",
+      "week": 35,
+      "title": "Если новорожденный сонный и редко просит грудь",
+      "duration_seconds": 318,
+      "suggested_tags": [
+        "Сон",
+        "ГВ",
+        "Уход за малышом"
+      ],
+      "review_status": "editor_review_required"
+    },
+    {
+      "kind": "video",
+      "id": "week-video-106",
+      "week": 36,
+      "title": "Как распознать излитие околоплодных вод",
+      "duration_seconds": 372,
+      "suggested_tags": [
+        "Самочувствие"
+      ],
+      "review_status": "editor_review_required"
+    },
+    {
+      "kind": "video",
+      "id": "week-video-107",
+      "week": 36,
+      "title": "Как врачи помогают шейке матки подготовиться к родам",
+      "duration_seconds": 320,
+      "suggested_tags": [
+        "Роды"
+      ],
+      "review_status": "editor_review_required"
+    },
+    {
+      "kind": "video",
+      "id": "week-video-108",
+      "week": 36,
+      "title": "Точки для самомассажа во время схваток",
+      "duration_seconds": 74,
+      "suggested_tags": [
+        "Движение и практики"
+      ],
+      "review_status": "editor_review_required"
+    },
+    {
+      "kind": "video",
+      "id": "week-video-109",
+      "week": 37,
+      "title": "От чего зависит длительность потуг и как выбирать позу",
+      "duration_seconds": 343,
+      "suggested_tags": [
+        "Роды",
+        "Самочувствие"
+      ],
+      "review_status": "editor_review_required"
+    },
+    {
+      "kind": "video",
+      "id": "week-video-110",
+      "week": 37,
+      "title": "Первый контакт с малышом и начало кормления",
+      "duration_seconds": 362,
+      "suggested_tags": [
+        "ГВ"
+      ],
+      "review_status": "editor_review_required"
+    },
+    {
+      "kind": "video",
+      "id": "week-video-111",
+      "week": 37,
+      "title": "Практика дыхания для интенсивных схваток",
+      "duration_seconds": 351,
+      "suggested_tags": [
+        "Дыхание и расслабление"
+      ],
+      "review_status": "editor_review_required"
+    },
+    {
+      "kind": "video",
+      "id": "week-video-112",
+      "week": 38,
+      "title": "Как отличать предвестники родов от повода ехать в роддом",
+      "duration_seconds": 369,
+      "suggested_tags": [
+        "Питание",
+        "Подготовка к родам",
+        "Роды"
+      ],
+      "review_status": "editor_review_required"
+    },
+    {
+      "kind": "video",
+      "id": "week-video-113",
+      "week": 38,
+      "title": "Как поддержать кормление при раздельном пребывании",
+      "duration_seconds": 319,
+      "suggested_tags": [
+        "ГВ"
+      ],
+      "review_status": "editor_review_required"
+    },
+    {
+      "kind": "video",
+      "id": "week-video-114",
+      "week": 38,
+      "title": "Настраиваемся на роды вместе с малышом",
+      "duration_seconds": 53,
+      "suggested_tags": [
+        "Роды"
+      ],
+      "review_status": "editor_review_required"
+    },
+    {
+      "kind": "video",
+      "id": "week-video-115",
+      "week": 39,
+      "title": "Как тело готовится к родам и что означает ПДР",
+      "duration_seconds": 436,
+      "suggested_tags": [
+        "Роды"
+      ],
+      "review_status": "editor_review_required"
+    },
+    {
+      "kind": "video",
+      "id": "week-video-116",
+      "week": 39,
+      "title": "Как помочь груди при нагрубании после родов",
+      "duration_seconds": 443,
+      "suggested_tags": [
+        "Роды",
+        "ГВ"
+      ],
+      "review_status": "editor_review_required"
+    },
+    {
+      "kind": "video",
+      "id": "week-video-117",
+      "week": 39,
+      "title": "Дыхание и положения тела во время потуг",
+      "duration_seconds": 405,
+      "suggested_tags": [
+        "Дыхание и расслабление",
+        "Роды"
+      ],
+      "review_status": "editor_review_required"
+    },
+    {
+      "kind": "video",
+      "id": "week-video-118",
+      "week": 40,
+      "title": "Что происходит после рождения малыша",
+      "duration_seconds": 349,
+      "suggested_tags": [
+        "Самочувствие"
+      ],
+      "review_status": "editor_review_required"
+    },
+    {
+      "kind": "video",
+      "id": "week-video-119",
+      "week": 40,
+      "title": "Как подготовиться к уходу за собой в роддоме",
+      "duration_seconds": 468,
+      "suggested_tags": [
+        "Подготовка к родам"
+      ],
+      "review_status": "editor_review_required"
+    },
+    {
+      "kind": "video",
+      "id": "week-video-120",
+      "week": 40,
+      "title": "Как смягчить переполненную грудь перед кормлением",
+      "duration_seconds": 321,
+      "suggested_tags": [
+        "ГВ"
+      ],
+      "review_status": "editor_review_required"
+    },
+    {
+      "kind": "video",
+      "id": "week-video-121",
+      "week": 41,
+      "title": "Механические методы, амниотомия и окситоцин",
+      "duration_seconds": 349,
+      "suggested_tags": [
+        "Роды"
+      ],
+      "review_status": "editor_review_required"
+    },
+    {
+      "kind": "video",
+      "id": "week-video-122",
+      "week": 41,
+      "title": "Как уточнить у врача, можно ли подождать",
+      "duration_seconds": 380,
+      "suggested_tags": [
+        "Самочувствие"
+      ],
+      "review_status": "editor_review_required"
+    },
+    {
+      "kind": "video",
+      "id": "week-video-123",
+      "week": 41,
+      "title": "Палаты после кесарева сечения и послеродовое отделение",
+      "duration_seconds": 416,
+      "suggested_tags": [
+        "Роды"
+      ],
+      "review_status": "editor_review_required"
+    },
+    {
+      "kind": "video",
+      "id": "week-video-124",
+      "week": 42,
+      "title": "Кормление молозивом и взвешивание малыша",
+      "duration_seconds": 331,
+      "suggested_tags": [
+        "ГВ"
+      ],
+      "review_status": "editor_review_required"
+    },
+    {
+      "kind": "video",
+      "id": "week-video-125",
+      "week": 42,
+      "title": "Почему после родов наблюдают за кровопотерей",
+      "duration_seconds": 256,
+      "suggested_tags": [
+        "Роды"
+      ],
+      "review_status": "editor_review_required"
+    },
+    {
+      "kind": "video",
+      "id": "week-video-126",
+      "week": 42,
+      "title": "Душ и другие способы расслабления в родах",
+      "duration_seconds": 315,
+      "suggested_tags": [
+        "Дыхание и расслабление"
+      ],
+      "review_status": "editor_review_required"
+    }
+  ],
+  "weeks": [
+    {
+      "week": 1,
+      "article_ids": [
+        "pregnancy-001",
+        "pregnancy-002",
+        "pregnancy-003"
+      ],
+      "video_ids": [
+        "contractions-lesson",
+        "back-relief-video",
+        "birth-breathing-video"
+      ],
+      "available_material_count_in_snapshot": 6,
+      "letter_week": 1,
+      "myth_article_ids": [
+        "pregnancy-001",
+        "pregnancy-002",
+        "pregnancy-003"
+      ]
+    },
+    {
+      "week": 2,
+      "article_ids": [
+        "pregnancy-004",
+        "pregnancy-005",
+        "pregnancy-006"
+      ],
+      "video_ids": [
+        "week-video-004",
+        "week-video-005",
+        "week-video-006"
+      ],
+      "available_material_count_in_snapshot": 6,
+      "letter_week": 2,
+      "myth_article_ids": [
+        "pregnancy-004",
+        "pregnancy-005",
+        "pregnancy-006"
+      ]
+    },
+    {
+      "week": 3,
+      "article_ids": [
+        "pregnancy-007",
+        "pregnancy-008",
+        "pregnancy-009"
+      ],
+      "video_ids": [
+        "week-video-007",
+        "week-video-008",
+        "week-video-009"
+      ],
+      "available_material_count_in_snapshot": 6,
+      "letter_week": 3,
+      "myth_article_ids": [
+        "pregnancy-007",
+        "pregnancy-008",
+        "pregnancy-009"
+      ]
+    },
+    {
+      "week": 4,
+      "article_ids": [
+        "pregnancy-010",
+        "pregnancy-011",
+        "pregnancy-012"
+      ],
+      "video_ids": [
+        "week-video-010",
+        "week-video-011",
+        "week-video-012"
+      ],
+      "available_material_count_in_snapshot": 6,
+      "letter_week": 4,
+      "myth_article_ids": [
+        "pregnancy-010",
+        "pregnancy-011",
+        "pregnancy-012"
+      ]
+    },
+    {
+      "week": 5,
+      "article_ids": [
+        "pregnancy-013",
+        "pregnancy-014",
+        "pregnancy-015"
+      ],
+      "video_ids": [
+        "week-video-013",
+        "week-video-014",
+        "week-video-015"
+      ],
+      "available_material_count_in_snapshot": 6,
+      "letter_week": 5,
+      "myth_article_ids": [
+        "pregnancy-013",
+        "pregnancy-014",
+        "pregnancy-015"
+      ]
+    },
+    {
+      "week": 6,
+      "article_ids": [
+        "pregnancy-016",
+        "pregnancy-017",
+        "pregnancy-018"
+      ],
+      "video_ids": [
+        "week-video-016",
+        "week-video-017",
+        "week-video-018"
+      ],
+      "available_material_count_in_snapshot": 6,
+      "letter_week": 6,
+      "myth_article_ids": [
+        "pregnancy-016",
+        "pregnancy-017",
+        "pregnancy-018"
+      ]
+    },
+    {
+      "week": 7,
+      "article_ids": [
+        "pregnancy-019",
+        "pregnancy-020",
+        "pregnancy-021"
+      ],
+      "video_ids": [
+        "week-video-019",
+        "week-video-020",
+        "week-video-021"
+      ],
+      "available_material_count_in_snapshot": 6,
+      "letter_week": 7,
+      "myth_article_ids": [
+        "pregnancy-019",
+        "pregnancy-020",
+        "pregnancy-021"
+      ]
+    },
+    {
+      "week": 8,
+      "article_ids": [
+        "pregnancy-022",
+        "pregnancy-023",
+        "pregnancy-024"
+      ],
+      "video_ids": [
+        "week-video-022",
+        "week-video-023",
+        "week-video-024"
+      ],
+      "available_material_count_in_snapshot": 6,
+      "letter_week": 8,
+      "myth_article_ids": [
+        "pregnancy-022",
+        "pregnancy-023",
+        "pregnancy-024"
+      ]
+    },
+    {
+      "week": 9,
+      "article_ids": [
+        "pregnancy-025",
+        "pregnancy-026",
+        "pregnancy-027"
+      ],
+      "video_ids": [
+        "week-video-025",
+        "week-video-026",
+        "week-video-027"
+      ],
+      "available_material_count_in_snapshot": 6,
+      "letter_week": 9,
+      "myth_article_ids": [
+        "pregnancy-025",
+        "pregnancy-026",
+        "pregnancy-027"
+      ]
+    },
+    {
+      "week": 10,
+      "article_ids": [
+        "pregnancy-028",
+        "pregnancy-029",
+        "pregnancy-030"
+      ],
+      "video_ids": [
+        "week-video-028",
+        "week-video-029",
+        "week-video-030"
+      ],
+      "available_material_count_in_snapshot": 6,
+      "letter_week": 10,
+      "myth_article_ids": [
+        "pregnancy-028",
+        "pregnancy-029",
+        "pregnancy-030"
+      ]
+    },
+    {
+      "week": 11,
+      "article_ids": [
+        "pregnancy-031",
+        "pregnancy-032",
+        "pregnancy-033"
+      ],
+      "video_ids": [
+        "week-video-031",
+        "week-video-032",
+        "week-video-033"
+      ],
+      "available_material_count_in_snapshot": 6,
+      "letter_week": 11,
+      "myth_article_ids": [
+        "pregnancy-031",
+        "pregnancy-032",
+        "pregnancy-033"
+      ]
+    },
+    {
+      "week": 12,
+      "article_ids": [
+        "pregnancy-034",
+        "pregnancy-035",
+        "pregnancy-036"
+      ],
+      "video_ids": [
+        "week-video-034",
+        "week-video-035",
+        "week-video-036"
+      ],
+      "available_material_count_in_snapshot": 6,
+      "letter_week": 12,
+      "myth_article_ids": [
+        "pregnancy-034",
+        "pregnancy-035",
+        "pregnancy-036"
+      ]
+    },
+    {
+      "week": 13,
+      "article_ids": [
+        "pregnancy-037",
+        "pregnancy-038",
+        "pregnancy-039"
+      ],
+      "video_ids": [
+        "week-video-037",
+        "week-video-038",
+        "week-video-039"
+      ],
+      "available_material_count_in_snapshot": 6,
+      "letter_week": 13,
+      "myth_article_ids": [
+        "pregnancy-037",
+        "pregnancy-038",
+        "pregnancy-039"
+      ]
+    },
+    {
+      "week": 14,
+      "article_ids": [
+        "pregnancy-040",
+        "pregnancy-041",
+        "pregnancy-042"
+      ],
+      "video_ids": [
+        "week-video-040",
+        "week-video-041",
+        "week-video-042"
+      ],
+      "available_material_count_in_snapshot": 6,
+      "letter_week": 14,
+      "myth_article_ids": [
+        "pregnancy-040",
+        "pregnancy-041",
+        "pregnancy-042"
+      ]
+    },
+    {
+      "week": 15,
+      "article_ids": [
+        "pregnancy-043",
+        "pregnancy-044",
+        "pregnancy-045"
+      ],
+      "video_ids": [
+        "week-video-043",
+        "week-video-044",
+        "week-video-045"
+      ],
+      "available_material_count_in_snapshot": 6,
+      "letter_week": 15,
+      "myth_article_ids": [
+        "pregnancy-043",
+        "pregnancy-044",
+        "pregnancy-045"
+      ]
+    },
+    {
+      "week": 16,
+      "article_ids": [
+        "pregnancy-046",
+        "pregnancy-047",
+        "pregnancy-048"
+      ],
+      "video_ids": [
+        "week-video-046",
+        "week-video-047",
+        "week-video-048"
+      ],
+      "available_material_count_in_snapshot": 6,
+      "letter_week": 16,
+      "myth_article_ids": [
+        "pregnancy-046",
+        "pregnancy-047",
+        "pregnancy-048"
+      ]
+    },
+    {
+      "week": 17,
+      "article_ids": [
+        "pregnancy-049",
+        "pregnancy-050",
+        "pregnancy-051"
+      ],
+      "video_ids": [
+        "week-video-049",
+        "week-video-050",
+        "week-video-051"
+      ],
+      "available_material_count_in_snapshot": 6,
+      "letter_week": 17,
+      "myth_article_ids": [
+        "pregnancy-049",
+        "pregnancy-050",
+        "pregnancy-051"
+      ]
+    },
+    {
+      "week": 18,
+      "article_ids": [
+        "pregnancy-052",
+        "pregnancy-053",
+        "pregnancy-054"
+      ],
+      "video_ids": [
+        "week-video-052",
+        "week-video-053",
+        "week-video-054"
+      ],
+      "available_material_count_in_snapshot": 6,
+      "letter_week": 18,
+      "myth_article_ids": [
+        "pregnancy-052",
+        "pregnancy-053",
+        "pregnancy-054"
+      ]
+    },
+    {
+      "week": 19,
+      "article_ids": [
+        "pregnancy-055",
+        "pregnancy-056",
+        "pregnancy-057"
+      ],
+      "video_ids": [
+        "week-video-055",
+        "week-video-056",
+        "week-video-057"
+      ],
+      "available_material_count_in_snapshot": 6,
+      "letter_week": 19,
+      "myth_article_ids": [
+        "pregnancy-055",
+        "pregnancy-056",
+        "pregnancy-057"
+      ]
+    },
+    {
+      "week": 20,
+      "article_ids": [
+        "pregnancy-058",
+        "pregnancy-059",
+        "pregnancy-060"
+      ],
+      "video_ids": [
+        "week-video-058",
+        "week-video-059",
+        "week-video-060"
+      ],
+      "available_material_count_in_snapshot": 6,
+      "letter_week": 20,
+      "myth_article_ids": [
+        "pregnancy-058",
+        "pregnancy-059",
+        "pregnancy-060"
+      ]
+    },
+    {
+      "week": 21,
+      "article_ids": [
+        "pregnancy-061",
+        "pregnancy-062",
+        "pregnancy-063"
+      ],
+      "video_ids": [
+        "week-video-061",
+        "week-video-062",
+        "week-video-063"
+      ],
+      "available_material_count_in_snapshot": 6,
+      "letter_week": 21,
+      "myth_article_ids": [
+        "pregnancy-061",
+        "pregnancy-062",
+        "pregnancy-063"
+      ]
+    },
+    {
+      "week": 22,
+      "article_ids": [
+        "pregnancy-064",
+        "pregnancy-065",
+        "pregnancy-066"
+      ],
+      "video_ids": [
+        "week-video-064",
+        "week-video-065",
+        "week-video-066"
+      ],
+      "available_material_count_in_snapshot": 6,
+      "letter_week": 22,
+      "myth_article_ids": [
+        "pregnancy-064",
+        "pregnancy-065",
+        "pregnancy-066"
+      ]
+    },
+    {
+      "week": 23,
+      "article_ids": [
+        "pregnancy-067",
+        "pregnancy-068",
+        "pregnancy-069"
+      ],
+      "video_ids": [
+        "week-video-067",
+        "week-video-068",
+        "week-video-069"
+      ],
+      "available_material_count_in_snapshot": 6,
+      "letter_week": 23,
+      "myth_article_ids": [
+        "pregnancy-067",
+        "pregnancy-068",
+        "pregnancy-069"
+      ]
+    },
+    {
+      "week": 24,
+      "article_ids": [
+        "pregnancy-070",
+        "pregnancy-071",
+        "pregnancy-072"
+      ],
+      "video_ids": [
+        "week-video-070",
+        "week-video-071",
+        "week-video-072"
+      ],
+      "available_material_count_in_snapshot": 6,
+      "letter_week": 24,
+      "myth_article_ids": [
+        "pregnancy-070",
+        "pregnancy-071",
+        "pregnancy-072"
+      ]
+    },
+    {
+      "week": 25,
+      "article_ids": [
+        "pregnancy-073",
+        "pregnancy-074",
+        "pregnancy-075"
+      ],
+      "video_ids": [
+        "week-video-073",
+        "week-video-074"
+      ],
+      "available_material_count_in_snapshot": 5,
+      "letter_week": 25,
+      "myth_article_ids": [
+        "pregnancy-073",
+        "pregnancy-074",
+        "pregnancy-075"
+      ]
+    },
+    {
+      "week": 26,
+      "article_ids": [
+        "pregnancy-076",
+        "pregnancy-077",
+        "pregnancy-078"
+      ],
+      "video_ids": [
+        "week-video-076",
+        "week-video-077",
+        "week-video-078"
+      ],
+      "available_material_count_in_snapshot": 6,
+      "letter_week": 26,
+      "myth_article_ids": [
+        "pregnancy-076",
+        "pregnancy-077",
+        "pregnancy-078"
+      ]
+    },
+    {
+      "week": 27,
+      "article_ids": [
+        "pregnancy-079",
+        "pregnancy-080",
+        "pregnancy-081"
+      ],
+      "video_ids": [
+        "week-video-079",
+        "week-video-080",
+        "week-video-081"
+      ],
+      "available_material_count_in_snapshot": 6,
+      "letter_week": 27,
+      "myth_article_ids": [
+        "pregnancy-079",
+        "pregnancy-080",
+        "pregnancy-081"
+      ]
+    },
+    {
+      "week": 28,
+      "article_ids": [
+        "pregnancy-082",
+        "pregnancy-083",
+        "pregnancy-084"
+      ],
+      "video_ids": [
+        "week-video-082",
+        "week-video-083",
+        "week-video-084"
+      ],
+      "available_material_count_in_snapshot": 6,
+      "letter_week": 28,
+      "myth_article_ids": [
+        "pregnancy-082",
+        "pregnancy-083",
+        "pregnancy-084"
+      ]
+    },
+    {
+      "week": 29,
+      "article_ids": [
+        "pregnancy-085",
+        "pregnancy-086",
+        "pregnancy-087"
+      ],
+      "video_ids": [
+        "week-video-085",
+        "week-video-086",
+        "week-video-087"
+      ],
+      "available_material_count_in_snapshot": 6,
+      "letter_week": 29,
+      "myth_article_ids": [
+        "pregnancy-085",
+        "pregnancy-086",
+        "pregnancy-087"
+      ]
+    },
+    {
+      "week": 30,
+      "article_ids": [
+        "pregnancy-088",
+        "pregnancy-089",
+        "pregnancy-090"
+      ],
+      "video_ids": [
+        "week-video-088",
+        "week-video-089",
+        "week-video-090"
+      ],
+      "available_material_count_in_snapshot": 6,
+      "letter_week": 30,
+      "myth_article_ids": [
+        "pregnancy-088",
+        "pregnancy-089",
+        "pregnancy-090"
+      ]
+    },
+    {
+      "week": 31,
+      "article_ids": [
+        "pregnancy-091",
+        "pregnancy-092",
+        "pregnancy-093"
+      ],
+      "video_ids": [
+        "week-video-091",
+        "week-video-092",
+        "week-video-093"
+      ],
+      "available_material_count_in_snapshot": 6,
+      "letter_week": 31,
+      "myth_article_ids": [
+        "pregnancy-091",
+        "pregnancy-092",
+        "pregnancy-093"
+      ]
+    },
+    {
+      "week": 32,
+      "article_ids": [
+        "pregnancy-094",
+        "pregnancy-095",
+        "pregnancy-096"
+      ],
+      "video_ids": [
+        "week-video-094",
+        "week-video-095",
+        "week-video-096"
+      ],
+      "available_material_count_in_snapshot": 6,
+      "letter_week": 32,
+      "myth_article_ids": [
+        "pregnancy-094",
+        "pregnancy-095",
+        "pregnancy-096"
+      ]
+    },
+    {
+      "week": 33,
+      "article_ids": [
+        "pregnancy-097",
+        "pregnancy-098",
+        "pregnancy-099"
+      ],
+      "video_ids": [
+        "week-video-097",
+        "week-video-098",
+        "week-video-099"
+      ],
+      "available_material_count_in_snapshot": 6,
+      "letter_week": 33,
+      "myth_article_ids": [
+        "pregnancy-097",
+        "pregnancy-098",
+        "pregnancy-099"
+      ]
+    },
+    {
+      "week": 34,
+      "article_ids": [
+        "pregnancy-100",
+        "pregnancy-101",
+        "pregnancy-102"
+      ],
+      "video_ids": [
+        "week-video-100",
+        "week-video-101",
+        "week-video-102"
+      ],
+      "available_material_count_in_snapshot": 6,
+      "letter_week": 34,
+      "myth_article_ids": [
+        "pregnancy-100",
+        "pregnancy-101",
+        "pregnancy-102"
+      ]
+    },
+    {
+      "week": 35,
+      "article_ids": [
+        "pregnancy-103",
+        "pregnancy-104",
+        "pregnancy-105"
+      ],
+      "video_ids": [
+        "week-video-103",
+        "week-video-104",
+        "week-video-105"
+      ],
+      "available_material_count_in_snapshot": 6,
+      "letter_week": 35,
+      "myth_article_ids": [
+        "pregnancy-103",
+        "pregnancy-104",
+        "pregnancy-105"
+      ]
+    },
+    {
+      "week": 36,
+      "article_ids": [
+        "pregnancy-106",
+        "pregnancy-107",
+        "pregnancy-108"
+      ],
+      "video_ids": [
+        "week-video-106",
+        "week-video-107",
+        "week-video-108"
+      ],
+      "available_material_count_in_snapshot": 6,
+      "letter_week": 36,
+      "myth_article_ids": [
+        "pregnancy-106",
+        "pregnancy-107",
+        "pregnancy-108"
+      ]
+    },
+    {
+      "week": 37,
+      "article_ids": [
+        "pregnancy-109",
+        "pregnancy-110",
+        "pregnancy-111"
+      ],
+      "video_ids": [
+        "week-video-109",
+        "week-video-110",
+        "week-video-111"
+      ],
+      "available_material_count_in_snapshot": 6,
+      "letter_week": 37,
+      "myth_article_ids": [
+        "pregnancy-109",
+        "pregnancy-110",
+        "pregnancy-111"
+      ]
+    },
+    {
+      "week": 38,
+      "article_ids": [
+        "pregnancy-112",
+        "pregnancy-113",
+        "pregnancy-114"
+      ],
+      "video_ids": [
+        "week-video-112",
+        "week-video-113",
+        "week-video-114"
+      ],
+      "available_material_count_in_snapshot": 6,
+      "letter_week": 38,
+      "myth_article_ids": [
+        "pregnancy-112",
+        "pregnancy-113",
+        "pregnancy-114"
+      ]
+    },
+    {
+      "week": 39,
+      "article_ids": [
+        "pregnancy-115",
+        "pregnancy-116",
+        "pregnancy-117"
+      ],
+      "video_ids": [
+        "week-video-115",
+        "week-video-116",
+        "week-video-117"
+      ],
+      "available_material_count_in_snapshot": 6,
+      "letter_week": 39,
+      "myth_article_ids": [
+        "pregnancy-115",
+        "pregnancy-116",
+        "pregnancy-117"
+      ]
+    },
+    {
+      "week": 40,
+      "article_ids": [
+        "pregnancy-118",
+        "pregnancy-119",
+        "pregnancy-120"
+      ],
+      "video_ids": [
+        "week-video-118",
+        "week-video-119",
+        "week-video-120"
+      ],
+      "available_material_count_in_snapshot": 6,
+      "letter_week": 40,
+      "myth_article_ids": [
+        "pregnancy-118",
+        "pregnancy-119",
+        "pregnancy-120"
+      ]
+    },
+    {
+      "week": 41,
+      "article_ids": [
+        "pregnancy-121",
+        "pregnancy-122",
+        "pregnancy-123"
+      ],
+      "video_ids": [
+        "week-video-121",
+        "week-video-122",
+        "week-video-123"
+      ],
+      "available_material_count_in_snapshot": 6,
+      "letter_week": 41,
+      "myth_article_ids": [
+        "pregnancy-121",
+        "pregnancy-122",
+        "pregnancy-123"
+      ]
+    },
+    {
+      "week": 42,
+      "article_ids": [
+        "pregnancy-124",
+        "pregnancy-125",
+        "pregnancy-126"
+      ],
+      "video_ids": [
+        "week-video-124",
+        "week-video-125",
+        "week-video-126"
+      ],
+      "available_material_count_in_snapshot": 6,
+      "letter_week": 42,
+      "myth_article_ids": [
+        "pregnancy-124",
+        "pregnancy-125",
+        "pregnancy-126"
+      ]
+    }
+  ],
+  "weekly_cards_and_calendar_import_snapshot": {
+    "baby": {
+      "1": {
+        "measurements": "",
+        "measurementNote": "",
+        "description": "Зачатие ещё впереди, но календарь беременности уже начался — с первого дня менструации.",
+        "illustration": "/uploads/weekly/fbbbf86a3529bab60b6567132477ab48883a705d80f5465b88079aa9d8460c8a.webp",
+        "developmentDescription": "Пока малыша ещё нет: акушерский срок отсчитывают с первого дня последней менструации, до зачатия. В яичнике созревает яйцеклетка, из которой после оплодотворения начнётся развитие новой жизни."
+      },
+      "2": {
+        "measurements": "",
+        "measurementNote": "",
+        "description": "Яйцеклетка готовится к встрече со сперматозоидом. Их соединение даст начало новой жизни.",
+        "illustration": "/uploads/weekly/af32a65822a75cc3db670263f11ebf361af01dadb6435af49ad066059fc599b8.webp",
+        "developmentDescription": "Организм готовится к зачатию. При 28-дневном цикле примерно к концу этой недели происходит овуляция: яйцеклетка выходит из яичника и может встретиться со сперматозоидом. Дата овуляции бывает разной."
+      },
+      "3": {
+        "measurements": "",
+        "measurementNote": "",
+        "description": "Всё начинается с одной клетки. Она делится, пока будущий эмбрион движется к матке.",
+        "illustration": "/uploads/weekly/985d21d225f263e0a5045a8e55b37b7c2e214add9cd9f37b887fa772237d0081.webp",
+        "developmentDescription": "После оплодотворения появляется первая клетка будущего малыша — зигота. Она делится, и образовавшаяся группа клеток движется по маточной трубе к матке. Уже заложен набор наследственной информации. Размер микроскопический, вес пока не оценивают."
+      },
+      "4": {
+        "measurements": "",
+        "measurementNote": "",
+        "description": "Крошечная группа клеток закрепляется в матке. Из них сформируются малыш и часть плаценты.",
+        "comparison": "маковое зёрнышко",
+        "comparisonImage": "/uploads/weekly/bf85967a4fe6dcdb3d6182097effefdf7a755b1c977007f4dff005ecab1d6c14.webp",
+        "illustration": "/uploads/weekly/aedd7c4b094ca465194bfe9e08fa8c281c2bcc54902f527b4014853a8b6a0a1e.webp",
+        "developmentDescription": "Ваш малыш по размеру — как маковое зёрнышко. Будущий малыш пока представляет собой крошечную группу клеток, которая закрепляется в слизистой матки. Одни клетки дадут начало эмбриону, другие — части плаценты. Формируются структуры, поддерживающие его развитие. Вес пока не оценивают."
+      },
+      "5": {
+        "measurements": "Размер ≈ 2 мм",
+        "measurementNote": "От макушки до копчика",
+        "description": "Малыш крошечный, но внутри уже закладываются сердце, сосуды и будущая нервная система.",
+        "comparison": "кунжутное семечко",
+        "comparisonImage": "/uploads/weekly/81a461bdd09117d88b4c17cecf7e002ecbd3cfe9ad0cf2020366d03467893a58.webp",
+        "illustration": "/uploads/weekly/7e6f8aa76de45a86281bd3431a713451a287ce76b3f9aef9b7f0ccd8698f09fa.webp",
+        "developmentDescription": "Ваш малыш по размеру — как кунжутное семечко. Рост — примерно 2 мм, вес пока не оценивают. Закладываются нервная система, сердце и кровеносные сосуды. Из трёх слоёв клеток постепенно будут формироваться органы и ткани. Продолжается развитие будущей плаценты."
+      },
+      "6": {
+        "measurements": "Размер ≈ 6 мм",
+        "measurementNote": "От макушки до копчика",
+        "description": "Сердце уже сокращается! Его работу иногда удаётся увидеть на УЗИ.",
+        "comparison": "горошина",
+        "comparisonImage": "/uploads/weekly/db6f88f19ca446cd6dda3c0ac376c16182f3054dab8be78bf766d6b333174f47.webp",
+        "illustration": "/uploads/weekly/f922564c8ebc07b2f6a26cd58101c40d4037754d2515faecc3a41ed3bd5a841a.webp",
+        "developmentDescription": "Ваш малыш по размеру — как горошина. Рост — примерно 6 мм, вес пока не оценивают. Появляются зачатки ручек и ножек. Закрывается нервная трубка — основа головного и спинного мозга. Сердце уже сокращается; сердечную деятельность иногда удаётся увидеть на УЗИ."
+      },
+      "7": {
+        "measurements": "Размер ≈ 1 см",
+        "measurementNote": "От макушки до копчика",
+        "description": "Мозг растёт особенно быстро. Будущие ручки удлиняются, на них уже намечаются кисти.",
+        "comparison": "виноградина",
+        "comparisonImage": "/uploads/weekly/812b41e2ea15c57ae1884b5345e952803a55496908a02e1374bbe863a8624fb4.webp",
+        "illustration": "/uploads/weekly/7a080b61fbb50a68eb1f7748d33b34cbb5c7f0da5753a16f6df27c217e6b3001.webp",
+        "developmentDescription": "Ваш малыш по размеру — как виноградина. Рост — примерно 1 см, вес пока не оценивают. Особенно быстро растёт мозг, поэтому голова выглядит крупной. Удлиняются будущие ручки, намечаются кисти. Формируются структуры глаз, носа и ушей."
+      },
+      "8": {
+        "measurements": "Размер ≈ 1,2–1,6 см",
+        "measurementNote": "От макушки до копчика",
+        "description": "Уже намечаются пальчики, пока соединённые перепонками. Крошечное тело постепенно начинает выпрямляться.",
+        "comparison": "малина",
+        "comparisonImage": "/uploads/weekly/4167313b8572ac22ef18a694cdb8cf10f8fee303d3d410742a159bd9daf39610.webp",
+        "illustration": "/uploads/weekly/5e649457a20f994a6535afefa534bf696b8b8c353a11be658bc271900b4497ac.webp",
+        "developmentDescription": "Ваш малыш по размеру — как малина. Рост — примерно 1,2–1,6 см, вес пока не оценивают. Намечаются пальчики, пока соединённые перепонками. Развиваются внутреннее ухо и язык, заметнее становится нос. Туловище постепенно выпрямляется."
+      },
+      "9": {
+        "measurements": "Размер ≈ 2 см",
+        "measurementNote": "От макушки до копчика",
+        "description": "Формируются веки и рот. Продолжают развиваться кисти и стопы. Теперь врачи называют малыша плодом, а не эмбрионом.",
+        "comparison": "клубника",
+        "comparisonImage": "/uploads/weekly/1b72e2e652036d0344111dd4e37f196b848ef9fd98edeca916da2554ac9a8f8f.webp",
+        "illustration": "/uploads/weekly/94898b9efd6ad7e1c07662877b00421c4ac600c322c3890065673bf087189f35.webp",
+        "developmentDescription": "Ваш малыш по размеру — как клубника. Рост — примерно 2 см, вес пока не оценивают. Лицо становится более узнаваемым: формируются веки, рот и язык. Развиваются кисти и стопы, продолжается формирование сердца, мозга, лёгких и почек."
+      },
+      "10": {
+        "measurements": "Размер ≈ 3–3,5 см",
+        "measurementNote": "От макушки до копчика",
+        "description": "Пальчики разделяются, малыш уже двигается! Но эти движения пока слишком слабы для ваших ощущений.",
+        "comparison": "небольшой абрикос",
+        "comparisonImage": "/uploads/weekly/ec29c80c7a9ccf61f8877e9c587d829f61dc16cd0829078e7e50769b929acbff.webp",
+        "illustration": "/uploads/weekly/5ff740ba99c5952d19fb618f3baaadd80a112a8329bdc6749c57846c150a1166.webp",
+        "developmentDescription": "Ваш малыш по размеру — как небольшой абрикос. Рост — примерно 3–3,5 см, вес — примерно 8 г. Пальчики становятся отдельными, исчезают перепонки между ними. Развиваются суставы рук и ног. Малыш совершает небольшие движения, которые иногда видны на УЗИ, но ещё не ощущаются мамой."
+      },
+      "11": {
+        "measurements": "Размер ≈ 5 см · Вес ≈ 8 г",
+        "measurementNote": "От макушки до копчика",
+        "description": "Его печень уже участвует в образовании клеток крови, а в деснах закладываются зачатки будущих молочных зубов.",
+        "comparison": "инжир",
+        "comparisonImage": "/uploads/weekly/96d20aa48dcfdc91806b87806db50da7c3feb73059d641abed0b22701f796c54.webp",
+        "illustration": "/uploads/weekly/7d0924ed6bc6e35cd944a0ca6474d408a60b9dd48d3d6c595411492dc3f8747e.webp",
+        "developmentDescription": "Ваш малыш по размеру — как инжир. Рост — примерно 5 см, вес — примерно 8 г. Теперь в медицинской терминологии его называют плодом. Голова ещё крупная по отношению к телу. Продолжается развитие наружных половых органов, в печени образуются клетки крови."
+      },
+      "12": {
+        "measurements": "Размер ≈ 5–6 см · Вес ≈ 14 г",
+        "measurementNote": "От макушки до копчика",
+        "description": "Основные органы уже заложены, но продолжают созревать. На пальчиках начинают формироваться ногти.",
+        "comparison": "слива",
+        "comparisonImage": "/uploads/weekly/69fcfa99e49c0241dea284b19cf07cf1de257b57b3daf2a253fd0afec2a30081.webp",
+        "illustration": "/uploads/weekly/ee667d60fc59220907e01d16d6cfaa77f9073b5cc56e3a013043a3ae1b790ff1.webp",
+        "developmentDescription": "Ваш малыш по размеру — как слива. Рост — примерно 5–6 см, вес — примерно 14 г. На пальчиках начинают формироваться ногти. Профиль лица становится чётче, кишечник располагается в брюшной полости. Основные органы уже заложены, но их созревание продолжается."
+      },
+      "13": {
+        "measurements": "Размер ≈ 7,5 см · Вес ≈ 30 г",
+        "measurementNote": "От макушки до копчика",
+        "description": "Развиваются голосовые связки, хотя первый крик ещё впереди. Кости постепенно становятся твёрже.",
+        "comparison": "персик",
+        "comparisonImage": "/uploads/weekly/caaa917838b848d7a9c8ba464d29bbcf513a03f01521b249e0498de82e2317c2.webp",
+        "illustration": "/uploads/weekly/996cbbee3f69d217dee627b4768dbe3e4528cbd767b64b02a462f0268bdfaa08.webp",
+        "developmentDescription": "Ваш малыш по размеру — как персик. Рост — примерно 7,5 см, вес — примерно 30 г. Развиваются голосовые связки, кости постепенно становятся твёрже. Печень и поджелудочная железа начинают выполнять свои функции. На голове и в области бровей появляются тонкие волоски."
+      },
+      "14": {
+        "measurements": "Размер ≈ 8,5 см · Вес ≈ 45 г",
+        "measurementNote": "От макушки до копчика",
+        "description": "Малыш заглатывает околоплодные воды, а почки вырабатывают мочу. Внутри пузыря уже происходит обмен жидкостью.",
+        "comparison": "киви",
+        "comparisonImage": "/uploads/weekly/af7f1703aecdc6a901545c1a932ebda0de4b5f67bcdae89d8fc95a5d0ce726d0.webp",
+        "illustration": "/uploads/weekly/4f90bc1ca12fe7c33ab16bd67bf50ac8e2af01af2929ad00970b8117908a051a.webp",
+        "developmentDescription": "Ваш малыш по размеру — как киви. Рост — примерно 8,5 см, вес — примерно 45 г. Шея становится заметнее. Малыш заглатывает небольшие порции околоплодных вод, а его почки вырабатывают мочу. Он двигает ручками и ножками, хотя мама обычно ещё этого не чувствует."
+      },
+      "15": {
+        "measurements": "Размер ≈ 10 см · Вес ≈ 80 г",
+        "measurementNote": "От макушки до копчика",
+        "description": "Малыш уже может подносить пальчик ко рту. Тело начинает покрываться нежным пушком лануго.",
+        "comparison": "яблоко",
+        "comparisonImage": "/uploads/weekly/dc02b3d9299732a4c79312a01828c2458e03914ef760c63aa39cfeeae6975c56.webp",
+        "illustration": "/uploads/weekly/1b8bd411b34040c7de96236c57d1a2c42bb84d28986e389d15a5a003171e05b4.webp",
+        "developmentDescription": "Ваш малыш по размеру — как яблоко. Рост — примерно 10 см, вес — примерно 80 г. Тело растёт быстрее головы, и пропорции постепенно меняются. Кожу начинает покрывать тонкий пушок — лануго. Малыш двигается и уже может подносить большой палец ко рту."
+      },
+      "16": {
+        "measurements": "Размер ≈ 12 см · Вес ≈ 110 г",
+        "measurementNote": "От макушки до копчика",
+        "description": "Кисти сжимаются в кулачки, движения становятся согласованнее. Глаза двигаются под закрытыми веками.",
+        "comparison": "авокадо",
+        "comparisonImage": "/uploads/weekly/c0162a97500388f3a393731e73857070da71b483067df00a5bff91481919150f.webp",
+        "illustration": "/uploads/weekly/b0a4c2bcdef34a5c481c18154490d2e0c5e17e8aaccb1c7527133309167d0977.webp",
+        "developmentDescription": "Ваш малыш по размеру — как авокадо. Рост — примерно 12 см, вес — примерно 110 г. Движения рук и ног становятся более согласованными, кисти сжимаются в кулачки. Глаза способны медленно двигаться под закрытыми веками. Уши приближаются к своему обычному положению."
+      },
+      "17": {
+        "measurements": "Размер ≈ 13 см · Вес ≈ 150 г",
+        "measurementNote": "От макушки до копчика",
+        "description": "Малыш активно меняет положение в утробе. Совершенствуется слух: малыш начинает воспринимать звуки окружающего мира и матери.",
+        "comparison": "гранат",
+        "comparisonImage": "/uploads/weekly/9ba3fddbde2ec3c7f4353aeba9fcc2e1f9ffcf90f8195745fe6269cc0e37c941.webp",
+        "illustration": "/uploads/weekly/e8dc96af33dbc46aa8db4f0363c2352c6b9eea9470cb434dd1f4704d67453c56.webp",
+        "developmentDescription": "Ваш малыш по размеру — как гранат. Рост — примерно 13 см, вес — примерно 150 г. Почки работают и выделяют мочу, которая становится частью околоплодных вод. Наружные половые органы уже сформированы. Малыш продолжает активно двигаться и менять положение."
+      },
+      "18": {
+        "measurements": "Размер ≈ 14 см · Вес ≈ 200 г",
+        "measurementNote": "От макушки до копчика",
+        "description": "Малыш может хорошо сгибать ручки и ножки. На пальцах уже есть фаланги, формируются суставы.",
+        "comparison": "сладкий перец",
+        "comparisonImage": "/uploads/weekly/fef8249c427c09a6f150e4e5ce131390fcc16833a5c2e9b37fbc49a5e30c2968.webp",
+        "illustration": "/uploads/weekly/8ab325c3d5e230da26aa91672004c6787ea9fbfb7fe084038126e457d375b600.webp",
+        "developmentDescription": "Ваш малыш по размеру — как сладкий перец. Рост — примерно 14 см, вес — примерно 200 г. Развивается слух, совершенствуются сосательный и глотательный рефлексы. Он сгибает ручки и ножки, поворачивается. Некоторые мамы уже замечают первые шевеления."
+      },
+      "19": {
+        "measurements": "Размер ≈ 15 см · Вес ≈ 260 г",
+        "measurementNote": "От макушки до копчика",
+        "description": "Кожу начинает покрывать первородная смазка. Она защищает малыша при постоянном контакте с водами.",
+        "comparison": "крупный помидор",
+        "comparisonImage": "/uploads/weekly/31951ad0eca13989b6760da98518e188dc02eac84e027fc7480a05d06a1c0368.webp",
+        "illustration": "/uploads/weekly/97b9e2dd820fa7af6be336a37bff24cf9fac222a1362b1851b9ec9e6d9599475.webp",
+        "developmentDescription": "Ваш малыш по размеру — как крупный помидор. Рост — примерно 15 см, вес — примерно 260 г. Кожа начинает покрываться первородной смазкой — светлым жироподобным веществом, которое защищает её в околоплодных водах. Под кожей накапливается бурый жир, нужный для сохранения тепла после рождения."
+      },
+      "20": {
+        "measurements": "Рост ≈ 26 см · Вес ≈ 320 г",
+        "measurementNote": "От макушки до пят",
+        "description": "Уже сосёт пальчик и активно двигается. Вы можете почувствовать его толчки!",
+        "comparison": "банан",
+        "comparisonImage": "/uploads/weekly/f3caa23c9ccf5979c8b4517262743ebcf2a2250baecb0588ec4c36e87e5c8257.webp",
+        "illustration": "/uploads/weekly/d98947f5887c96d569028fbb5fbdfba7d16d61dff3ddec7d929c77a0b036d8a6.webp",
+        "developmentDescription": "Ваш малыш по размеру — как банан. Рост — примерно 26 см, вес — примерно 320 г. Он двигает конечностями и может сосать пальчик. Периоды активности сменяются отдыхом. С этой недели указываем полный рост: раньше учитывался размер от головы до копчика."
+      },
+      "21": {
+        "measurements": "Рост ≈ 27 см · Вес ≈ 390 г",
+        "measurementNote": "От макушки до пят",
+        "description": "Полностью сформировались брови и ресницы, малыш моргает. Кожа постепенно приобретает телесный оттенок и немного уплотняется.",
+        "comparison": "морковь",
+        "comparisonImage": "/uploads/weekly/b1d8d3905152517fa68513ca472a0b53c417566cf1c632352f5e3372d6d7bf47.webp",
+        "illustration": "/uploads/weekly/3ef989e3cb8f03df42de29b7c27d77c3b184e419a1435ddc55c0cf2f3e60a983.webp",
+        "developmentDescription": "Ваш малыш по размеру — как морковь. Рост — примерно 27 см, вес — примерно 390 г. Ножки становятся более пропорциональными телу. Кожу покрывает нежный пушок, помогающий удерживать защитную смазку. Продолжают развиваться слух и сосательный рефлекс."
+      },
+      "22": {
+        "measurements": "Рост ≈ 28 см · Вес ≈ 460 г",
+        "measurementNote": "От макушки до пят",
+        "description": "Малыш тренирует дыхательные движения, заглатывая воды. Но кислород пока получает через плаценту, а не лёгкие.",
+        "comparison": "батат",
+        "comparisonImage": "/uploads/weekly/59e73e25dc33bf562f232dbc5654ea5f5ce4b39339100dd31a13838ebbe4f788.webp",
+        "illustration": "/uploads/weekly/725d26f1ce80a0cd38ac0f2be1b22fadc5329e4bd0861b8159a04ae1c2f7087c.webp",
+        "developmentDescription": "Ваш малыш по размеру — как батат. Рост — примерно 28 см, вес — примерно 460 г. Брови и волоски на голове становятся заметнее. Развиваются лёгкие, малыш совершает тренировочные дыхательные движения. Кислород он получает через плаценту, а не вдыхает из окружающих вод."
+      },
+      "23": {
+        "measurements": "Рост ≈ 29 см · Вес ≈ 540 г",
+        "measurementNote": "От макушки до пят",
+        "description": "В лёгких появляется сурфактант — вещество, которое после рождения поможет им оставаться расправленными.",
+        "comparison": "крупное манго",
+        "comparisonImage": "/uploads/weekly/b8bf1e7a153271ef43bc103ec933c12b34acb886dde6f1e2bb119e779e54263a.webp",
+        "illustration": "/uploads/weekly/341305b2535aa46510375130aaf2e566646f210987f4fec0141e5db0d48a4882.webp",
+        "developmentDescription": "Ваш малыш по размеру — как крупное манго. Рост — примерно 29 см, вес — примерно 540 г. В лёгких начинается выработка сурфактанта — вещества, которое после рождения поможет воздушным мешочкам оставаться раскрытыми. Поджелудочная железа вырабатывает инсулин."
+      },
+      "24": {
+        "measurements": "Рост ≈ 30 см · Вес ≈ 630 г",
+        "measurementNote": "От макушки до пят",
+        "description": "Кожа все ещё морщинистая и достаточно тонкая: жира пока немного. Через неё просвечивают сосуды.",
+        "comparison": "початок кукурузы",
+        "comparisonImage": "/uploads/weekly/38a405c38e0814a9165ca93f45400e7227a4089a38333e853900e32bebfdb106.webp",
+        "illustration": "/uploads/weekly/c1c6d083203a1af3219ac054ac35d1ba00b06a066adbc6da61da4e1f3e7eca70.webp",
+        "developmentDescription": "Ваш малыш по размеру — как початок кукурузы. Рост — примерно 30 см, вес — примерно 630 г. Кожа ещё тонкая и морщинистая, через неё просвечивают сосуды. Жировой прослойки пока немного. Пропорции тела всё больше напоминают новорождённого, но лёгкие и другие органы продолжают созревать."
+      },
+      "25": {
+        "measurements": "Рост ≈ 35 см · Вес ≈ 720 г",
+        "measurementNote": "От макушки до пят",
+        "description": "Малыш может икать, а еще сжимать кулачки и даже ухватить свою ножку. Начинает проявляться предпочтение правой или левой руки.",
+        "comparison": "цукини",
+        "comparisonImage": "/uploads/weekly/b9cbb6a68602c11eaa4a05b5951587e76574b20c8e36cb815af07900baa30557.webp",
+        "illustration": "/uploads/weekly/178e8a525560c803e163b844bd7934b8decac8d174d25e235457bb21bb9b2411.webp",
+        "developmentDescription": "Ваш малыш по размеру — как цукини. Рост — примерно 35 см, вес — примерно 720 г. Он может отвечать движением на знакомый голос или вздрагивать от громкого звука. Иногда мама ощущает ритмичные лёгкие толчки — икоту малыша. Продолжают формироваться структуры позвоночника."
+      },
+      "26": {
+        "measurements": "Рост ≈ 36 см · Вес ≈ 820 г",
+        "measurementNote": "От макушки до пят",
+        "description": "Развивается память, ребёнок начинает запоминать голос матери и может различать его среди других.",
+        "comparison": "огурец",
+        "comparisonImage": "/uploads/weekly/15c7a1c986c31c61cd75130a5fa098e40f299dbd122fd974db10ea7bd320ffed.webp",
+        "illustration": "/uploads/weekly/06c927af8b52478195771dcd0cf438d028f839addab3c2cdbc17dcd6596c9e36.webp",
+        "developmentDescription": "Ваш малыш по размеру — как огурец. Рост — примерно 36 см, вес — примерно 820 г. Брови и ресницы уже сформированы. Примерно в этот период начинают открываться веки. Окончательный цвет глаз пока неизвестен: после рождения он ещё может меняться."
+      },
+      "27": {
+        "measurements": "Рост ≈ 37 см · Вес ≈ 920 г",
+        "measurementNote": "От макушки до пят",
+        "description": "Под кожей прибавляется жир, складочки постепенно разглаживаются. Малыш становится всё более округлым",
+        "comparison": "кочан цветной капусты",
+        "comparisonImage": "/uploads/weekly/4c1f25915b599bfcb0cdbcd82f952804a347a7b9bac55c9cc886a318c4afb0ca.webp",
+        "illustration": "/uploads/weekly/19cf99e1a7e93b5e8a7baecc7adbe50372a8de40a5ba0247ba78f2c3ece8fcb7.webp",
+        "developmentDescription": "Ваш малыш по размеру — как кочан цветной капусты. Рост — примерно 37 см, вес — примерно 920 г. Он уже способен открывать глаза. Мозг продолжает усложняться, нервная система созревает. Постепенно увеличивается жировая прослойка, и кожа становится менее морщинистой."
+      },
+      "28": {
+        "measurements": "Рост ≈ 38 см · Вес ≈ 1 кг",
+        "measurementNote": "От макушки до пят",
+        "description": "У мальчиков может начаться процесс опускания яичек в мошонку. У девочек — продолжается развитие репродуктивной системы.",
+        "comparison": "баклажан",
+        "comparisonImage": "/uploads/weekly/2ef429e344376810b3e2c364cc6caba31020678d0fa934c46dc71abae23c9dd6.webp",
+        "illustration": "/uploads/weekly/fd582ee745c93ee57680e7b6d87a7a8528d3f2e85d54681d9cc12dc797a07053.webp",
+        "developmentDescription": "Ваш малыш по размеру — как баклажан. Рост — примерно 38 см, вес — примерно 1 кг. Он открывает веки и совершает дыхательные движения, тренируя мышцы для будущего дыхания. Нервная система всё активнее участвует в управлении работой организма."
+      },
+      "29": {
+        "measurements": "Рост ≈ 39 см · Вес ≈ 1,2 кг",
+        "measurementNote": "От макушки до пят",
+        "description": "К этому сроку большинство детей уже занимают головное предлежание, так как голова тяжелее ягодиц.",
+        "comparison": "мускатная тыква",
+        "comparisonImage": "/uploads/weekly/136925a2a0c81360ec1e1c0e6174cd4b3079ea9a4ed6ad9f2edc75ce20efc66b.webp",
+        "illustration": "/uploads/weekly/af070f0de685c054c72f408470d33a05c4a82dc9b5710e6e599723ebd9e21f02.webp",
+        "developmentDescription": "Ваш малыш по размеру — как мускатная тыква. Рост — примерно 39 см, вес — примерно 1,2 кг. Тренировочные дыхательные движения становятся ритмичнее. Костный мозг начинает участвовать в образовании красных клеток крови. Впереди период активного набора веса и дальнейшего созревания органов."
+      },
+      "30": {
+        "measurements": "Рост ≈ 40 см · Вес ≈ 1,3 кг",
+        "measurementNote": "От макушки до пят",
+        "description": "На голове активно растут волосы, но их количество индивидуально. Малыш может родиться почти лысым!",
+        "comparison": "кочан капусты",
+        "comparisonImage": "/uploads/weekly/b4799c70ef8c2ae1e213c5dd3274a77c4b88f4977d5f40261d660497b3456bb0.webp",
+        "illustration": "/uploads/weekly/c61b9004b3ea71c482f72d37dafdff24c0069ca375ab6fedf15635d1b76ce80f.webp",
+        "developmentDescription": "Ваш малыш по размеру — как кочан капусты. Рост — примерно 40 см, вес — примерно 1,3 кг. Он широко открывает глаза, зрение продолжает развиваться. На голове растут волосы, но их количество у всех разное. Под кожей прибавляется жир, постепенно сглаживающий складочки."
+      },
+      "31": {
+        "measurements": "Рост ≈ 41 см · Вес ≈ 1,5 кг",
+        "measurementNote": "От макушки до пят",
+        "description": "Кишечник уже «натренирован»: он регулярно сокращается, в нём накапливается первородный кал (меконий).",
+        "comparison": "кокос",
+        "comparisonImage": "/uploads/weekly/4cbf61d57b929b7d4febbbd75d7314b82a0bf9f290d6139b621dc1bec8988b37.webp",
+        "illustration": "/uploads/weekly/a432db57161cf6012d052bc31bd7f8dd1ed65bf4a9f459cc1040fe5624fdb559.webp",
+        "developmentDescription": "Ваш малыш по размеру — как кокос. Рост — примерно 41 см, вес — примерно 1,5 кг. В мозге быстро образуются новые связи между нервными клетками. Малыш всё лучше различает знакомые голоса и может вздрагивать от резких звуков. Он активно двигается и сосёт пальчики."
+      },
+      "32": {
+        "measurements": "Рост ≈ 42 см · Вес ≈ 1,7 кг",
+        "measurementNote": "От макушки до пят",
+        "description": "Пушок на теле постепенно исчезает. На маленьких пальчиках ног уже заметны ноготки.",
+        "comparison": "пучок сельдерея",
+        "comparisonImage": "/uploads/weekly/abe13983ab151df173062dfadd94fec3adc1c62399b736bad231a79b4748e0cb.webp",
+        "illustration": "/uploads/weekly/ef3f34351d19a649e03b2a40840f4b078c688d5e5e7893a5f66d92653e204a39.webp",
+        "developmentDescription": "Ваш малыш по размеру — как пучок сельдерея. Рост — примерно 42 см, вес — примерно 1,7 кг. На пальцах ног заметны ноготки. Пушок, покрывавший тело, постепенно исчезает. Малыш продолжает набирать вес, а его органы готовятся к самостоятельной работе после рождения."
+      },
+      "33": {
+        "measurements": "Рост ≈ 44 см · Вес ≈ 1,9 кг",
+        "measurementNote": "От макушки до пят",
+        "description": "Печень накапливает железо на первые месяцы жизни. Лёгкие вырабатывают всё больше сурфактанта.",
+        "comparison": "ананас",
+        "comparisonImage": "/uploads/weekly/ad230e3f980f100af486a2851edec4724e5efdb98a1fc542359efe3cb65d3cdc.webp",
+        "illustration": "/uploads/weekly/d285580de96f2bff3025d34b280b3805c8499f2073b8214a4f3fbc75fa6a7862.webp",
+        "developmentDescription": "Ваш малыш по размеру — как ананас. Рост — примерно 44 см, вес — примерно 1,9 кг. Печень накапливает железо, которое понадобится после рождения. Лёгкие вырабатывают всё больше сурфактанта. Малыш тренирует сосание и глотание, их согласованность постепенно улучшается."
+      },
+      "34": {
+        "measurements": "Рост ≈ 45 см · Вес ≈ 2,1 кг",
+        "measurementNote": "От макушки до пят",
+        "description": "Ногти на руках достигают кончиков пальцев. Малыш обычно лежит, согнув и подтянув ножки.",
+        "comparison": "дыня канталупа",
+        "comparisonImage": "/uploads/weekly/b3dd852f1b42e4b5c94861c73c3e04a66641e8352fc0e0cb8b863c05c1ce4ddb.webp",
+        "illustration": "/uploads/weekly/96ebfbf39eea5694b169d2289898dbdebe11c8bc07d8335ed1e3460e49396bf3.webp",
+        "developmentDescription": "Ваш малыш по размеру — как дыня канталупа. Рост — примерно 45 см, вес — примерно 2,1 кг. Ногти на руках достигают кончиков пальцев. Малыш обычно лежит, согнув ножки и подтянув их к телу. Свободного места меньше, но движения по-прежнему должны ощущаться."
+      },
+      "35": {
+        "measurements": "Рост ≈ 46 см · Вес ≈ 2,3 кг",
+        "measurementNote": "От макушки до пят",
+        "description": "Сосание и глотание становятся согласованнее. Малыш готовится к кормлению после вашей встречи.",
+        "comparison": "медовая дыня",
+        "comparisonImage": "/uploads/weekly/75832bc4380465f379dd2472a488bea7945c0fe125528e4c73176ad39e05bebc.webp",
+        "illustration": "/uploads/weekly/e6725546dbb39a4a8b1233955d77801a4fd223b2a6b074930508c40cafffd6c9.webp",
+        "developmentDescription": "Ваш малыш по размеру — как медовая дыня. Рост — примерно 46 см, вес — примерно 2,3 кг. Сосание и глотание становятся более согласованными — это важная подготовка к кормлению. Жировая прослойка увеличивается и поможет сохранять тепло после рождения. Привычные шевеления сохраняются."
+      },
+      "36": {
+        "measurements": "Рост ≈ 47 см · Вес ≈ 2,5 кг",
+        "measurementNote": "От макушки до пят",
+        "description": "Кости интенсивно укрепляются, но череп остаётся гибким — это необходимо для безопасного прохождения головы через родовые пути.",
+        "comparison": "салат ромэн",
+        "comparisonImage": "/uploads/weekly/e0512975a7e7a2c38d9436a6dae34754edd9030bb1ac27c4444a58995c508c7e.webp",
+        "illustration": "/uploads/weekly/a886d614ad8a0254e0932a4e6e121d4b3889c9da368d94466a8b2389272d7086.webp",
+        "developmentDescription": "Ваш малыш по размеру — как салат ромэн. Рост — примерно 47 см, вес — примерно 2,5 кг. Кожа разглаживается, ручки и ножки становятся более округлыми. Большинство малышей к этому сроку располагаются головкой вниз. Лёгкие и нервная система продолжают созревать."
+      },
+      "37": {
+        "measurements": "Рост ≈ 49 см · Вес ≈ 3 кг",
+        "measurementNote": "От макушки до пят",
+        "description": "Малыш уже считается доношенным: все его жизненно важные органы и системы способны функционировать вне утробы матери.",
+        "comparison": "лук-порей",
+        "comparisonImage": "/uploads/weekly/4982f604ad7f17fb2ed295e7a22a1da823df3f5c3b1ed2bc1cd811dcb6fddab4.webp",
+        "illustration": "/uploads/weekly/0dfbdd900b0458cd6b8b50394927283ac5ac6514f9520b71820382fd43811ad9.webp",
+        "developmentDescription": "Ваш малыш по размеру — как лук-порей. Рост — примерно 49 см, вес — примерно 3 кг. Он уже крепко сжимает пальчики. Лицевые мышцы позволяют менять выражение лица, но эти движения ещё не связаны с эмоциями. После 37 полных недель рождение уже не считается преждевременным."
+      },
+      "38": {
+        "measurements": "Рост ≈ 50 см · Вес ≈ 3 кг",
+        "measurementNote": "От макушки до пят",
+        "description": "Улучшается координация движений. Уже проявляются безусловные рефлексы: хватательный и сосательный.",
+        "comparison": "стебли ревеня",
+        "comparisonImage": "/uploads/weekly/51218e3bfbcddec9ed208377a9c1fea27f1322387728a61c83d48fa7432b8fe2.webp",
+        "illustration": "/uploads/weekly/e6a9481901d20f941a588316b56bb44d9b40852fefcecf11d72cdcfbe8bd88ed.webp",
+        "developmentDescription": "Ваш малыш по размеру — как стебли ревеня. Рост — примерно 50 см, вес — примерно 3 кг. Большая часть пушка на теле уже исчезла. В кишечнике накопился меконий — первый стул, который обычно выходит после рождения. Ноготки на ногах достигают кончиков пальцев."
+      },
+      "39": {
+        "measurements": "Рост ≈ 51 см · Вес ≈ 3,3 кг",
+        "measurementNote": "От макушки до пят",
+        "description": "Наступил период полной доношенности. Под кожей малыша продолжают накапливаться запасы согревающего жира.",
+        "comparison": "арбуз",
+        "comparisonImage": "/uploads/weekly/19857f793a2ca39554dc9c5c237da78889e935a32f1bbc1b4365197ac409bcc3.webp",
+        "illustration": "/uploads/weekly/ee491cb8d63b70651f2c6c46db0f75607297e0f4203331b3f28f9a1b1e169b17.webp",
+        "developmentDescription": "Ваш малыш по размеру — как арбуз. Рост — примерно 51 см, вес — примерно 3,3 кг. Он достиг периода полной доношенности. Под кожей продолжают накапливаться запасы жира. Защитная смазка может сохраняться в складочках тела. Малыш готовится к жизни вне маминого живота."
+      },
+      "40": {
+        "measurements": "Рост ≈ 51 см · Вес ≈ 3,4 кг",
+        "measurementNote": "От макушки до пят",
+        "description": "Малыш может реагировать на яркий свет, фокусировать взгляд на расстоянии примерно 20–30 см,",
+        "comparison": "тыква",
+        "comparisonImage": "/uploads/weekly/c6854528540dac5f6c98a64d7cb386d2245b44b6d24974c332c7f8bdbb121006.webp",
+        "illustration": "/uploads/weekly/12d91721819a6007b7519a112d56d8a0d296d3264ef5c59044fc39f4367e8e26.webp",
+        "developmentDescription": "Ваш малыш по размеру — как тыква. Рост — примерно 51 см, вес — примерно 3,4 кг. Размеры при рождении у здоровых детей заметно различаются. Малыш продолжает двигаться в привычном ритме: приближение родов не должно приводить к исчезновению или заметному ослаблению шевелений."
+      },
+      "41": {
+        "measurements": "Рост ≈ 51 см · Вес ≈ 3–4 кг",
+        "measurementNote": "От макушки до пят",
+        "description": "Защитной смазки может становиться меньше. После рождения кожа иногда выглядит сухой и шелушится.",
+        "comparison": "небольшая тыква или арбуз",
+        "comparisonImage": "/uploads/weekly/4decb2f3b48776ce1c90da5ed576653c781b8681e7a01228a567bb49841dae37.webp",
+        "illustration": "/uploads/weekly/47fd25a396da9286fa077c4a5147dd7126f920bf123513031d739da932bbd98f.webp",
+        "developmentDescription": "Ваш малыш по размеру — как небольшая тыква или арбуз. Рост — примерно 51 см, вес — около 3–4 кг. Защитной смазки становится меньше, поэтому после рождения кожа иногда выглядит сухой и шелушится. Малыш продолжает двигаться. На этом сроке особенно важны наблюдение врача и согласованный план родов."
+      },
+      "42": {
+        "measurements": "Рост ≈ 51 см · Вес ≈ 3–4 кг",
+        "measurementNote": "От макушки до пят",
+        "description": "Ноготки могут быть длинными, защитной смазки — мало. Состояние малыша сейчас особенно важно оценивать врачам.",
+        "comparison": "арбуз 3–4 кг",
+        "comparisonImage": "/uploads/weekly/0dde0abb4aa641b23ea7bf97240bca58357204de8c4187adc79e2aab0a69edea.webp",
+        "illustration": "/uploads/weekly/034d2a714e5be313d79c5f96b44d2f1cdc49560dc2d0556657a416e56a45dad5.webp",
+        "developmentDescription": "Ваш малыш по размеру — как арбуз 3–4 кг. Рост — примерно 51 см, вес — около 3–4 кг; индивидуальные различия значительны. Защитной смазки может остаться мало, ноготки бывают длинными. С 42 полных недель беременность считается переношенной: важны медицинское наблюдение и согласованный план родоразрешения."
+      }
+    },
+    "mom": {
+      "1": {
+        "title": "Считается началом беременности, хотя зачатия ещё нет",
+        "paragraphs": [
+          "Первая акушерская неделя беременности начинается с первого дня менструации, несмотря на то, что зачатия еще даже не произошло.  Матка отторгает верхний слой эндометрия и готовится вырастить новый, в котором позже сможет закрепиться эмбрион. Поэтому привычные спазмы и усталость сейчас связаны с циклом. Акушерский календарь уже идёт, хотя встреча яйцеклетки и сперматозоида ещё впереди."
+        ]
+      },
+      "2": {
+        "title": "Тело создаёт условия для встречи",
+        "paragraphs": [
+          "Перед овуляцией выделения могут стать похожими на сырой яичный белок: прозрачными, скользкими и тягучими. Так эстрогены меняют свойства слизи шейки матки, облегчая продвижение сперматозоидов. Одновременно внутри матки нарастает эндометрий — будущая среда для прикрепления эмбриона. Тело готовится к зачатию ещё до того, как оно произойдёт."
+        ]
+      },
+      "3": {
+        "title": "В яичнике появляется временная железа",
+        "paragraphs": [
+          "После овуляции на месте лопнувшего фолликула появляется жёлтое тело — временная железа в яичнике. Она вырабатывает прогестерон, который поддерживает внутренний слой матки. Если зачатие произошло, жёлтое тело продолжит помогать беременности, пока эту задачу не возьмёт плацента. Получается, сначала важнейшую поддержку обеспечивает яичник!"
+        ]
+      },
+      "4": {
+        "title": "Матка уже участвует в питании эмбриона",
+        "paragraphs": [
+          "Плацента ещё формируется, а питание эмбриону нужно уже сейчас. Внутренний слой матки содержит железы, выделяющие богатый питательными веществами секрет. Он помогает обеспечивать самые ранние этапы развития. Поэтому эндометрий — гораздо больше, чем место прикрепления: материнские ткани участвуют в поддержке беременности с самого начала."
+        ]
+      },
+      "5": {
+        "title": "Почему хочется спать ещё до появления живота",
+        "paragraphs": [
+          "Перестройка уже идёт: меняется гормональный фон, развивается плацента, организм адаптирует кровообращение. Сонливость и непривычная усталость нередко появляются раньше внешних признаков. При этом их сила ничего не говорит о том, насколько хорошо развивается малыш: беременность не ощущается одинаково, ведь каждая женщина уникальна."
+        ]
+      },
+      "6": {
+        "title": "Внутри вас растёт новый орган",
+        "paragraphs": [
+          "Пока беременность незаметна снаружи. А внутри продолжает формироваться плацента — временный орган, который будет снабжать малыша кислородом и питательными веществами. Её ткани уже активно вырабатывают ХГЧ — гормон, на который реагирует тест. Организм перестраивается задолго до появления животика: отсюда сонливость, чувствительная грудь и первые приступы тошноты."
+        ]
+      },
+      "7": {
+        "title": "В туалет хочется чаще",
+        "paragraphs": [
+          "Уже сейчас к почкам поступает больше крови, и они активнее её фильтруют. Мочи может образовываться больше — отсюда неожиданные походы в туалет, особенно ночью. Но учащенное мочеиспускание не должно мешать обычной жизни: если чувствуете жжение или боль, обязательно обратитесь к врачу."
+        ]
+      },
+      "8": {
+        "title": "Любимая еда вдруг стала невкусной",
+        "paragraphs": [
+          "Во время беременности могут меняться восприятие вкуса и реакция на запахи. Вместе с тошнотой это способно перевернуть привычное меню. Но желание солёного или кислого не указывает на пол малыша – это распространенный миф. Также конкретная пищевая прихоть не доказывает нехватку тех или иных витаминов, чаще это связано с гормональной перестройкой."
+        ]
+      },
+      "9": {
+        "title": "Почему к вечеру живот больше",
+        "paragraphs": [
+          "На раннем сроке такую разницу часто создаёт кишечник. Гормональные изменения замедляют продвижение его содержимого, способствуя запорам и скоплению газов. Матка тоже растёт, но в течение дня она не увеличивается настолько резко. Поэтому вечерний объём живота ещё не показывает размеры малыша."
+        ]
+      },
+      "10": {
+        "title": "Матка начинает активный рост",
+        "paragraphs": [
+          "Матка не просто растягивается, как воздушный шар. Её мышечные клетки увеличиваются, а ткани и сосуды перестраиваются под беременность. Ее активный рост начинается под действием гормонов. Снаружи изменений может быть немного, но внутри уже стремительно увеличивается орган, которому предстоит вместить в себя ребёнка, плаценту и околоплодные воды."
+        ]
+      },
+      "11": {
+        "title": "Плацента принимает новую работу",
+        "paragraphs": [
+          "Внутри постепенно меняется источник гормональной поддержки: плацента принимает выработку прогестерона у жёлтого тела в яичнике. Передача этой функции происходит в течение нескольких недель и обычно завершается к концу первого триместра. Пока вы замечаете главным образом сонливость или тошноту, временный орган осваивает всё больше работы."
+        ]
+      },
+      "12": {
+        "title": "Матка выходит за пределы таза",
+        "paragraphs": [
+          "Растущая матка подходит к верхнему краю лобковой кости и начинает выходить из малого таза. Поэтому талия постепенно меняется, а низ живота может сильно округляться. При первой беременности это нередко становится заметно позже, чем при повторной. Один и тот же срок выглядит по-разному: на форму живота влияют телосложение, мышцы и работа кишечника."
+        ]
+      },
+      "13": {
+        "title": "Крови больше, а гемоглобин ниже",
+        "paragraphs": [
+          "Крови становится больше, но концентрация гемоглобина может снизиться. Парадокс объясняется просто: жидкая часть крови — плазма — увеличивается быстрее, чем количество красных клеток. Кровь словно становится более разбавленной. Это часть адаптации к беременности, однако низкий гемоглобин нельзя считать нормой: обычно показатели оценивает врач и назначает препараты железа."
+        ]
+      },
+      "14": {
+        "title": "Беременность меняет даже дёсны",
+        "paragraphs": [
+          "Дёсны резко начали кровоточить? Гормональные изменения делают их чувствительнее, поэтому воспаление возникает легче. Это не означает, что малыш «забирает кальций из зубов». Причина часто в реакции тканей на бактерии и ослаблении кровеносных сосудов. Как правило, ситуацию спасают бережная чистка и препараты, содержащие витамин С и рутин (по согласованию с врачом!)."
+        ]
+      },
+      "15": {
+        "title": "Откуда берётся полоска на животе",
+        "paragraphs": [
+          "На животе может проявиться тёмная вертикальная полоска. Гормональные изменения усиливают выработку пигмента меланина — того самого, который определяет цвет кожи. По этой же причине темнеют ареолы, а на лице иногда появляются пигментные пятна. Полоска не предсказывает пол ребёнка и возникает не у всех; после родов пигментация обычно постепенно бледнеет."
+        ]
+      },
+      "16": {
+        "title": "Первое молоко появляется уже сейчас",
+        "paragraphs": [
+          "До родов ещё несколько месяцев, а грудь уже может начинать вырабатывать молозиво. Это первое молоко, богатое защитными компонентами, появляется в груди примерно с середины беременности. Чаще процесс незаметен: то есть вы не заметите выделений из груди. Но внутри активно идут процессы, грудь плавно «готовится» к вскармливанию ребенка. "
+        ]
+      },
+      "17": {
+        "title": "Растяжки зависят не только от размера живота",
+        "paragraphs": [
+          "Могут появиться первые растяжки, причем это может случиться даже при небольшой прибавке веса. На них влияют растяжение кожи, гормональные изменения и наследственность. Сначала полоски бывают розовыми или фиолетовыми, затем обычно светлеют. Крем помогает повысить эластичность кожи, но не гарантирует их предотвращение. "
+        ]
+      },
+      "18": {
+        "title": "Плацента может смягчать первые толчки",
+        "paragraphs": [
+          "Первые шевеления зависят не только от активности малыша, но и от расположения плаценты. Если она прикреплена спереди, между ребёнком и стенкой живота, слабые толчки могут ощущаться менее отчётливо. Первые движения обычно замечают в 16–24 недели. Пока вы ждёте пинка, малыш уже давно двигается — просто не каждое движение доходит до ваших ощущений."
+        ]
+      },
+      "19": {
+        "title": "Нос может заложить без простуды",
+        "paragraphs": [
+          "Во время беременности слизистая может отекать из-за гормональных изменений и усиленного кровоснабжения. Поэтому свободное дыхание носом иногда сменяется заложенностью, особенно ночью. Это называют ринитом беременных. Но не всякий насморк связан с беременностью: при температуре, боли в пазухах, обильных выделениях из носа нужна врачебная оценка."
+        ]
+      },
+      "20": {
+        "title": "Теперь вы чувствуете малыша",
+        "paragraphs": [
+          "Лёгкие «пузырьки» и трепетание постепенно превращаются в узнаваемые толчки: обычно, уже на этом сроке мама чувствует малыша! В тишине, сидя или лёжа, их проще заметить, чем на ходу. Теперь связь с ребёнком становится осязаемой. Но при первой беременности первые шевеления нередко появляются и позже 20 недель. Если к 24 неделям вы их ни разу не почувствовали, сообщите врачу."
+        ]
+      },
+      "21": {
+        "title": "Внутри живота идёт обмен жидкостью",
+        "paragraphs": [
+          "Околоплодные воды постоянно участвуют в обмене. Малыш их заглатывает, а его почки выделяют мочу, которая становится важным источником вод. Этот обмен помогает поддерживать среду для движения и развития. Количество вод зависит от нескольких процессов, поэтому его оценивают на УЗИ, а не по внешнему размеру живота. Большой живот — вовсе не признак многоводия, ровно, как и наоборот, — маленький живот не говорит о маловодии. "
+        ]
+      },
+      "22": {
+        "title": "Сердце увеличивает производительность",
+        "paragraphs": [
+          "Ваше сердце уже перекачивает больше крови за минуту, чем до беременности. Усиленное кровоснабжение нужно матке и плаценте, так как активно меняется работа почек, кожи и других органов. Пульс может стать немного чаще, а привычная нагрузка — ощущаться иначе. Выраженное сердцебиение, особенно вместе с болью, слабостью или одышкой, требует медицинской оценки."
+        ]
+      },
+      "23": {
+        "title": "Первые отеки: обувь может стать тесной",
+        "paragraphs": [
+          "Растущая матка может пережимать некоторые сосуды и затруднять возвращение крови от ног к сердцу, а организм удерживает больше жидкости — она накапливается в тканях стоп и лодыжек. Отеки встречаются у каждой второй беременной. Здесь важно следить за давлением и наличием белка в моче, чтобы исключить развитие преэклампсии. "
+        ]
+      },
+      "24": {
+        "title": "Плацента влияет даже на уровень сахара",
+        "paragraphs": [
+          "Её гормоны снижают чувствительность тканей к инсулину, и поджелудочной железе приходится вырабатывать его больше. Если этого недостаточно, повышается глюкоза. Это может никак не ощущаться и случается не только у любительниц сладкого. Поэтому глюкозотолерантный тест рекомендован всем беременным, даже при хорошем самочувствии."
+        ]
+      },
+      "25": {
+        "title": "Почему любой прием пищи может вызвать изжогу",
+        "paragraphs": [
+          "Изжога появляется не потому, что у малыша растут волосы, это миф. Гормоны расслабляют мышечное кольцо между желудком и пищеводом, а растущая матка добавляет давление. Так, содержимое желудка попадает обратно в пищевод — отсюда жжение и кислый привкус. Облегчить изжогу помогают дробные порции, не ложиться сразу после еды, приподнятое изголовье и ограничение жирной, острой и кислой пищи."
+        ]
+      },
+      "26": {
+        "title": "Ноги сводит ночью: судороги мышц и стоп",
+        "paragraphs": [
+          "Магний участвует в работе мышц и нервов, а его дефицит может сопровождаться судорогами. Но ночной спазм икры или пальцев ног сам по себе не доказывает нехватку: у судорог беременных нет единственной установленной причины. Если они повторяются, обсудите с врачом питание и необходимость препаратов. Во время спазма осторожно потяните носок стопы на себя, без рывков."
+        ]
+      },
+      "27": {
+        "title": "Тело учится держать равновесие",
+        "paragraphs": [
+          "Живот меняет не только силуэт, но и условия равновесия. Поэтому привычная походка может измениться. Поясница быстрее устаёт, особенно если долго стоять неподвижно. Удерживать её идеально прямой весь день не требуется: мышцам обычно полезнее смена положения и посильное движение."
+        ]
+      },
+      "28": {
+        "title": "Положение тела влияет на кровоток",
+        "paragraphs": [
+          "Почему теперь советуют засыпать на боку? Лёжа на спине, увеличенная матка может сдавливать крупные сосуды и затруднять возвращение крови к сердцу. С 28 недель рекомендуется начинать сон на боку. Если проснулись на спине, просто повернитесь. Ставить будильник для проверки позы не нужно: контролировать себя всю ночь невозможно."
+        ]
+      },
+      "29": {
+        "title": "Густые волосы — тоже работа гормонов",
+        "paragraphs": [
+          "Волосы стали гуще? Во время беременности меняется их цикл: больше волос задерживается в фазе роста и меньше выпадает. Поэтому хвост может казаться объёмнее. После родов часть этих волос выпадет — это временный процесс, такой «волосопад» надо будет просто пережить. "
+        ]
+      },
+      "30": {
+        "title": "Почему немеют пальцы рук",
+        "paragraphs": [
+          "Задержка жидкости может повышать давление в узком канале запястья и сдавливать проходящий там нерв. Отсюда покалывание, онемение и иногда боль в кисти. Причина не обязательно в том, что вы «отлежали руку». Если ощущения повторяются и доставляют сильный дискомфорт, расскажите врачу: существуют способы уменьшить нагрузку на нерв."
+        ]
+      },
+      "31": {
+        "title": "Дыхание меняется раньше, чем вы думаете",
+        "paragraphs": [
+          "Одышку и сбивчивое дыхание на этом сроке вызывает не только большой живот. Ещё с ранних сроков прогестерон меняет работу дыхательного центра: за один вдох лёгкие могут получать больше воздуха. Позже матка поднимает диафрагму, а грудная клетка приспосабливается. Поэтому привычная лестница утомляет сильнее. А вот внезапная одышка или нехватка воздуха в покое требуют срочной оценки врачом."
+        ]
+      },
+      "32": {
+        "title": "Мышцы живота уступают место матке",
+        "paragraphs": [
+          "Живот растёт, и соединительная ткань между правой и левой прямыми мышцами живота растягивается. Расстояние между ними может увеличиться — это называют диастазом. Мышцы при этом не «порвались»: брюшная стенка адаптируется к объёму матки. Иногда при вставании заметен валик по центру живота, это вариант нормы. "
+        ]
+      },
+      "33": {
+        "title": "Почему сны стали такими яркими",
+        "paragraphs": [
+          "Снятся яркие, странные истории о родах и малыше? Во время беременности такие сны не редкость. Переживания могут отражаться в подобных сюжетах. Сон не предсказывает течение родов и не раскрывает состояние ребёнка. Если тревога мешает засыпать или сопровождает весь день, об этом стоит рассказать специалисту."
+        ]
+      },
+      "34": {
+        "title": "Вы передаёте малышу иммунную защиту",
+        "paragraphs": [
+          "Вы уже передаёте малышу часть своей иммунной защиты. Через плаценту проходят определённые антитела из вашей крови; особенно активно этот перенос идёт в третьем триместре. Они помогают защищать ребёнка в первые месяцы после рождения, пока его иммунная система развивается. Это временная и неполная защита, поэтому она не заменяет будущие прививки."
+        ]
+      },
+      "35": {
+        "title": "Сама матка к родам весит около килограмма",
+        "paragraphs": [
+          "До беременности матка весит несколько десятков граммов, а к родам — около килограмма. И это без малыша, плаценты и вод! Так сильно увеличивается сама мышечная стенка, которой предстоит работать во время схваток. Прибавка на весах складывается не только из веса ребёнка и жировых запасов: заметную часть создают кровь и жидкость."
+        ]
+      },
+      "36": {
+        "title": "Легче дышать, но чаще хочется в туалет",
+        "paragraphs": [
+          "Живот может опуститься, когда головка малыша располагается ниже в тазу. Иногда после этого легче дышать и меньше беспокоит давление под рёбрами, зато чаще хочется в туалет и сильнее ощущается тяжесть внизу. У одних это происходит заранее, у других — только в родах. По опущению живота нельзя определить, сколько дней осталось до встречи с малышом."
+        ]
+      },
+      "37": {
+        "title": "Шейка созревает, начинаются тренировочные схватки",
+        "paragraphs": [
+          "Шейка матки готовится к родам: становится мягче и короче. Этот процесс может идти почти без ощущений. Поэтому отсутствие предвестников не означает, что внутри ничего не происходит.",
+          "Тренировочные схватки при этом ощущаются как нерегулярное напряжение внизу живота и в пояснице. В отличие от родовых, они не нарастают по силе и частоте и часто проходят после отдыха, смены положения или тёплого душа."
+        ]
+      },
+      "38": {
+        "title": "Может выйти слизистая пробка",
+        "paragraphs": [
+          "Слизистая пробка — густая слизь в канале шейки матки, участвующая в защите от инфекции. По мере размягчения шейки она может выходить сразу или небольшими порциями. Иногда вы вовсе этого не замечаете. Пробка не работает как таймер: роды могут начать в любой день — как в течение суток, так и через 2-7 дней. А вот алая кровь или обильные водянистые выделения требуют срочного обращения в роддом."
+        ]
+      },
+      "39": {
+        "title": "Воды могут отходить по каплям",
+        "paragraphs": [
+          "Отхождение вод не всегда похоже на внезапную лужу из кино. Оболочки могут разорваться так, что жидкость будет подтекать понемногу, а схватки начнутся позже. Надёжно отличить воды от мочи или обычных выделений дома получается не всегда. Если бельё вновь и вновь намокает, свяжитесь с роддомом: важно проверить, целы ли плодные оболочки."
+        ]
+      },
+      "40": {
+        "title": "У организма нет будильника на ПДР",
+        "paragraphs": [
+          "ПДР рассчитывают по сроку беременности и уточняют по УЗИ. Но день начала родов зависит от сложного взаимодействия сигналов матери, ребёнка и плаценты. Организм не обязан запустить схватки ровно в назначенную дату. Поэтому к этой неделе вам важно знать дальнейший план наблюдения и продолжать отслеживать привычные шевеления малыша."
+        ]
+      },
+      "41": {
+        "title": "Нужна ли индукция родов",
+        "paragraphs": [
+          "Плацента продолжает свою работу, но важно понимать, что ей становится сложнее. С увеличением срока беременности риски для ребёнка постепенно растут. Поэтому после 41-ой недели врач может поднять вопрос индукции родов: как и когда помочь организму запустить родовой процесс. ВОЗ рекомендует индукцию с 41+ недели при достоверно установленном сроке; план индивидуально обсуждают с врачом."
+        ]
+      },
+      "42": {
+        "title": "Самочувствие не показывает всей картины",
+        "paragraphs": [
+          "Хорошее самочувствие не показывает, как работает плацента и достаточно ли малышу кислорода. При достижении 42+ недель беременность считается переношенной: здесь нужен конкретный план родоразрешения. Если плана ещё нет, свяжитесь с роддомом сегодня же. При уменьшении шевелений малыша или подозрительном затишье обращайтесь немедленно, даже если ничего не болит."
+        ]
+      }
+    },
+    "calendar": {
+      "1": [],
+      "2": [],
+      "3": [],
+      "4": [],
+      "5": [
+        {
+          "type": "study",
+          "title": "Первая реакция",
+          "label": "Реакция",
+          "description": "Радость, удивление, растерянность — у новости о беременности нет единственной «правильной» реакции."
+        }
+      ],
+      "6": [],
+      "7": [
+        {
+          "type": "study",
+          "title": "О чём спросить врача",
+          "label": "Вопросы врачу",
+          "description": "Сон, работа, близость, лекарства — вопросы на приёме могут касаться повседневной жизни, а не только анализов."
+        }
+      ],
+      "8": [
+        {
+          "type": "visit",
+          "label": "Приём",
+          "title": "Постановка на учёт",
+          "description": "Желательно пройти первый полноценный приём и основные анализы до 10–12 недель."
+        },
+        {
+          "type": "tests",
+          "label": "Анализы",
+          "title": "Стартовые анализы",
+          "description": "Желательно пройти первый полноценный приём и основные анализы до 10–12 недель."
+        }
+      ],
+      "9": [
+        {
+          "type": "study",
+          "title": "Заметка на память",
+          "label": "Заметка",
+          "description": "«Как я узнала», «Что подумала», «Кому рассказала» — иногда вся история начала беременности помещается в три строки."
+        }
+      ],
+      "10": [
+        {
+          "type": "study",
+          "title": "Кому рассказать",
+          "label": "Кому рассказать",
+          "description": "Кто-то делится новостью сразу, кто-то оставляет её в узком кругу. Сообщать всем одновременно необязательно."
+        }
+      ],
+      "11": [
+        {
+          "type": "scan",
+          "label": "УЗИ",
+          "title": "I скрининг",
+          "description": "Проводится в 11–13 недель 6 дней."
+        },
+        {
+          "type": "tests",
+          "title": "Анализы",
+          "description": "Биохимическая часть I скрининга."
+        }
+      ],
+      "12": [],
+      "13": [
+        {
+          "type": "study",
+          "title": "Фото на память",
+          "label": "Фото",
+          "description": "Домашняя футболка, привычная комната, ты в этот момент жизни. Памятной фотографии необязательно быть постановочной."
+        }
+      ],
+      "14": [],
+      "15": [
+        {
+          "type": "study",
+          "title": "История имени",
+          "label": "Имя",
+          "description": "У имени может быть семейная история, красивое значение или просто любимое звучание. А окончательный вариант иногда появляется уже после знакомства."
+        }
+      ],
+      "16": [],
+      "17": [
+        {
+          "type": "study",
+          "title": "Семейные истории",
+          "label": "Истории",
+          "description": "Как выбирали имя тебе? Какие слова говорила бабушка? У ожидания малыша может появиться продолжение в семейных историях."
+        }
+      ],
+      "18": [
+        {
+          "type": "scan",
+          "label": "УЗИ",
+          "title": "II скрининг",
+          "description": "Проводится в 18–20 недель 6 дней."
+        },
+        {
+          "type": "tests",
+          "label": "Анализы",
+          "title": "Контроль антител при Rh−",
+          "description": "При Rh-отрицательной крови контроль антител — в 18–20 недель."
+        }
+      ],
+      "19": [
+        {
+          "type": "study",
+          "title": "Музыка для себя",
+          "label": "Музыка",
+          "description": "В плейлисте беременности могут соседствовать Моцарт и песни из студенчества. Здесь вполне есть место твоему обычному музыкальному вкусу."
+        }
+      ],
+      "20": [
+        {
+          "type": "study",
+          "label": "Подготовка",
+          "title": "Начать подготовку к родам",
+          "description": "Оптимально начать обучение примерно с 20–24 недель, чтобы проходить материалы без спешки."
+        }
+      ],
+      "21": [],
+      "22": [],
+      "23": [
+        {
+          "type": "study",
+          "title": "Первые покупки",
+          "label": "Покупки",
+          "description": "Крошечные носочки умеют попадать в корзину раньше всего остального. Первая покупка может быть просто приятной мелочью, а не началом большого шопинга."
+        }
+      ],
+      "24": [
+        {
+          "type": "tests",
+          "label": "Анализы",
+          "title": "ГТТ",
+          "description": "Проводится в 24–28 недель."
+        }
+      ],
+      "25": [],
+      "26": [],
+      "27": [
+        {
+          "type": "study",
+          "title": "Советы окружающих",
+          "label": "Советы",
+          "description": "«А вот я в своё время…» — начало незапрошенной консультации. «Спасибо, я учту» вполне может быть её завершением."
+        }
+      ],
+      "28": [
+        {
+          "type": "tests",
+          "label": "Анализы",
+          "title": "Rh− контроль / антирезус-профилактика",
+          "description": "Контроль антител и решение вопроса об антирезусном иммуноглобулине — около 28 недель."
+        }
+      ],
+      "29": [
+        {
+          "type": "study",
+          "title": "Помощь после родов",
+          "label": "Помощь",
+          "description": "Помощь — это не только подержать малыша. Готовый ужин, продукты у двери и чистая кухня тоже считаются."
+        }
+      ],
+      "30": [
+        {
+          "type": "tests",
+          "label": "Анализы",
+          "title": "Анализы III триместра",
+          "description": "Повторные анализы III триместра выполняются по назначению врача в этом периоде."
+        }
+      ],
+      "31": [
+        {
+          "type": "study",
+          "title": "Роддом изнутри",
+          "label": "Роддом",
+          "description": "Возможность сопровождения, посещения и бытовые условия зависят от роддома. За общим названием могут скрываться разные правила."
+        }
+      ],
+      "32": [
+        {
+          "type": "ctg",
+          "title": "КТГ",
+          "description": "КТГ обычно начинают с 32 недель и далее повторяют по графику врача."
+        },
+        {
+          "type": "bag",
+          "label": "Сумка",
+          "title": "Сумка в роддом",
+          "description": "Удобно начать собирать сумку с 32 недели и полностью подготовить её к 36 неделе."
+        }
+      ],
+      "33": [
+        {
+          "type": "study",
+          "title": "Почему списки разные",
+          "label": "Списки",
+          "description": "В одном роддоме часть вещей предоставляют, в другом просят принести свои. Поэтому универсальная «идеальная сумка» подходит не всем."
+        }
+      ],
+      "34": [
+        {
+          "type": "scan",
+          "label": "УЗИ",
+          "title": "III УЗИ",
+          "description": "Проводится примерно в 34–35 недель 6 дней."
+        }
+      ],
+      "35": [
+        {
+          "type": "tests",
+          "label": "Анализы",
+          "title": "Стрептококк группы B",
+          "description": "Исследование проводится в 35–37 недель."
+        }
+      ],
+      "36": [],
+      "37": [
+        {
+          "type": "study",
+          "title": "Первые фотографии малыша",
+          "label": "Фото малыша",
+          "description": "Семейное фото может остаться семейным. Рождение малыша не обязывает сразу публиковать снимки или рассылать их всем знакомым."
+        }
+      ],
+      "38": [],
+      "39": [
+        {
+          "type": "study",
+          "title": "«Ну что, ещё нет?»",
+          "label": "Ожидание",
+          "description": "Иногда последние недели превращаются в ежедневную пресс-конференцию. «Когда будут новости, мы расскажем» — уже полноценный ответ."
+        }
+      ],
+      "40": [],
+      "41": [],
+      "42": []
+    },
+    "calendarNotes": {
+      "11": "Постановку на учёт и стартовые анализы желательно пройти до 10–12 недель.",
+      "18": "Подготовку к родам удобно начинать с 20–24 недель.",
+      "32": "Мы ставим событие на первую неделю периода, а в описании указываем весь диапазон."
+    }
+  }
+}

@@ -163,6 +163,13 @@
         retryMovement = null;
         history(); summary();
         content.querySelector('.helper-feedback').textContent = 'Шевеление записано';
+        import('./gamification-api.js?v=20261112-stars').then(async stars => {
+          const state = stars.snapshot() || await stars.loadGamification();
+          if (!state.features?.kicks_daily || state.preferences?.babyPause) return;
+          const result = await stars.action({type:'kick_record'});
+          const amount = result.reward?.actualAmount || 0;
+          if (dialog.open && mode === 'movements' && amount > 0) content.querySelector('.helper-feedback').textContent = `Шевеление записано. +${amount} ★`;
+        }).catch(()=>{});
       } catch (failure) {
         error.textContent = failure.message;
         error.hidden = false;

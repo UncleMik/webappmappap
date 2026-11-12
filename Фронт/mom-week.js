@@ -20,6 +20,7 @@
   function renderToday() {
     const week = window.webprilAccount?.week || 27;
     if (summary) {
+      if (!library[week]) { summary.textContent = 'Материалы откроются по вашему сроку'; return; }
       summary.textContent = library[week].paragraphs[0].split(/(?<=[.!?])\s/)[0];
       summary.closest('a').href = `mom.html?week=${week}`;
     }
@@ -82,6 +83,12 @@
       subtitle.className = 'mom-changes-subtitle';
       panel.querySelector('.section-heading').after(subtitle);
     }
+    panel.querySelector('.mom-information').hidden = !content;
+    subtitle.hidden = !content;
+    if (!content) {
+      panel.querySelector('.mom-changes-copy').textContent = 'Эта неделя пока закрыта. Она откроется по вашему сроку. Следующую неделю можно открыть за звёздочки на странице «Сегодня».';
+      document.querySelector('.mom-recommendations-grid')?.replaceChildren(); return;
+    }
     subtitle.textContent = content.title;
     const copy = panel.querySelector('.mom-changes-copy');
     copy.replaceChildren(...content.paragraphs.map(text => {
@@ -92,6 +99,7 @@
     panel.querySelector('.mom-information p').textContent = 'Процессы развиваются постепенно: описанные изменения могут появляться раньше или позже. Все сроки — акушерские.';
     window.renderPregnancyRecommendations(document.querySelector('.mom-recommendations-grid'), week, 'mom');
   }
+  window.addEventListener('stars:changed', () => { void window.loadWeeklyContent().then(data => { Object.assign(library,data.mom); render(Number(page.dataset.week)); }).catch(()=>{}); });
   function select(week, smooth = true) {
     week = normalize(week);
     if (week !== Number(page.dataset.week)) {

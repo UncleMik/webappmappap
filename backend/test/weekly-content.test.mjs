@@ -33,7 +33,7 @@ test('Weekly content imports all 42 weeks and API returns exact public data', as
     const response = await fetch(`${base}/api/weekly-content`);
     assert.equal(response.status, 200);
     assert.deepEqual(await response.json(), content);
-    assert.equal(response.headers.get('access-control-allow-origin'), 'https://unclemik.github.io');
+    assert.equal(response.headers.get('access-control-allow-origin'), 'https://app.legkie-rody.ru');
     assert.equal((await fetch(`${base}/api/weekly-content`, { headers: { 'If-None-Match': response.headers.get('etag') } })).status, 304);
     assert.equal((await fetch(`${base}/api/weekly-content`, { method: 'POST' })).status, 405);
     assert.equal((await fetch(`${base}/api/weekly-content`, { method: 'HEAD' })).status, 200);

@@ -1,3 +1,5 @@
+import { prepareCourseEmbed, trackCourseEmbed } from './course-embed-points.js?v=20261112-stars';
+import { trackCourseVideo } from './course-video-points.js?v=20261112-stars';
 import { courseLessonTopic } from './course-topics.js?v=20261109-topic-covers';
 import { courseVideoTopic } from './course-video-topics.js?v=20261027-topic-titles';
 import { courseVideoDescription } from './course-video-description.js?v=20261028-descriptions';
@@ -195,6 +197,10 @@ function videoPlayer(video, index, total, available, key, positions, restoreJobs
     const mounted = mountCourseVideo({ video, container, key, saved,
       isAllowed: () => scroller.contains(container) && !container.closest('[hidden]') && courseView?.isCurrent(),
       refresh: () => courseView?.refresh(), ...navigation, chapters });
+    const parts = JSON.parse(key);
+    const pointsNote = node('p', 'course-media-note');
+    container.append(pointsNote);
+    trackCourseVideo(mounted.player, { productId: Number(productId), lessonId: Number(lessonId), videoKey: `${parts[0]}:${parts[2]}` }, pointsNote);
     if (saved) restoreJobs.push(mounted.restore);
     return container;
   }
@@ -244,12 +250,16 @@ function videoPlayer(video, index, total, available, key, positions, restoreJobs
     player.setAttribute('allow', 'autoplay; encrypted-media; fullscreen; picture-in-picture; clipboard-write');
     player.setAttribute('allowfullscreen', '');
     player.referrerPolicy = 'strict-origin-when-cross-origin';
-    player.src = video.url;
+    player.src = prepareCourseEmbed(video);
     player.addEventListener('error', () => {
       reset();
       panel.append(mediaNote('Не удалось открыть видео. Попробуйте ещё раз.'));
     });
     stage.replaceChildren(player);
+    const parts = JSON.parse(key);
+    let pointsNote = panel.querySelector('.course-points-note');
+    if (!pointsNote) {pointsNote = node('p','course-media-note course-points-note');panel.append(pointsNote);}
+    trackCourseEmbed(player,video.provider,{productId:Number(productId),lessonId:Number(lessonId),videoKey:`${parts[0]}:${parts[2]}`},pointsNote);
   });
   stage.append(button);
   container.append(stage, panel);

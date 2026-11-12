@@ -106,3 +106,16 @@ dialog::backdrop { background: #2420377a; }
 .chat-reply { margin: 8px 0; padding: 6px 10px; border-left: 3px solid var(--line); }
 .chat-more { margin-top: 12px; }
 button.danger { color: #9a2143; border-color: #ce9aaa; }
+
+/* Keep owner controls readable on narrow screens. */
+#gamification fieldset { min-width: 0; margin: 12px 0; border: 1px solid #dedbe3; border-radius: 12px; }
+#gamification textarea, #gamification select, #gamification input:not([type=checkbox]) { width: 100%; box-sizing: border-box; min-width: 0; }
+#gamification input[type=checkbox] { width: auto; margin-left: 10px; }
+#gamification pre { white-space: pre-wrap; overflow-wrap: anywhere; max-width: 100%; }
+#gamification button { margin: 4px; }
+#gamification summary { overflow-wrap: anywhere; }
+
+#gamification .stars-account-list { max-height: 300px; overflow-y: auto; }
+#gamification .stars-account-list label { display: flex; align-items: center; gap: 8px; overflow-wrap: anywhere; }
+#gamification label[hidden] { display: none; }
+#gamification input[readonly] { color: #665f70; background: #f5f3f7; }

@@ -26,6 +26,13 @@ export function readConfig(env = process.env) {
   }
   const pilotIds = (env.AUTH_POINTS_PILOT_USER_IDS || '').split(',').map(id => id.trim().toLowerCase());
   const pointsPilotUserIds = pilotIds.every(isUuid) ? pilotIds : [];
+  const gamificationEnabled = env.AUTH_GAMIFICATION_ENABLED === 'true';
+  const pushFields = [env.GAMIFICATION_PUSH_PUBLIC_KEY, env.GAMIFICATION_PUSH_PRIVATE_KEY, env.GAMIFICATION_PUSH_SUBJECT];
+  if (pushFields.some(Boolean) && !pushFields.every(Boolean)) throw new Error('Incomplete gamification push configuration');
+  if (pushFields.every(Boolean) && (!/^[A-Za-z0-9_-]{87}$/.test(pushFields[0])
+    || !/^[A-Za-z0-9_-]{43}$/.test(pushFields[1]) || !/^(mailto:|https:\/\/)/.test(pushFields[2]))) {
+    throw new Error('Invalid gamification push configuration');
+  }
   const positive = (name, fallback, maximum) => {
     const value = Number(env[name] || fallback);
     if (!Number.isInteger(value) || value < 1 || value > maximum) throw new Error(`Invalid ${name}`);
@@ -40,6 +47,10 @@ export function readConfig(env = process.env) {
     databaseUrl: env.AUTH_DATABASE_URL,
     clubOwnerUserId: clubOwnerUserId?.toLowerCase() || null,
     pointsPilotUserIds, pointsForAll: env.AUTH_POINTS_FOR_ALL === 'true',
+    gamification: gamificationEnabled ? {
+      courseDurationsPath: resolve(env.GAMIFICATION_COURSE_DURATIONS || '/etc/wep-pril-media/course-durations.json'),
+      push: pushFields.every(Boolean) ? { publicKey: pushFields[0], privateKey: pushFields[1], subject: pushFields[2] } : null,
+    } : null,
     admin: adminOrigin ? { origin: adminOrigin, ownerEmail: normalizeEmail(env.ADMIN_OWNER_EMAIL),
       frontend: resolve(env.ADMIN_FRONTEND_DIR || '/opt/wep_pril/admin-frontend'),
       uploads: resolve(env.ADMIN_ARTICLE_UPLOADS || '/opt/wep_pril/uploads/articles'),

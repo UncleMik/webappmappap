@@ -3,20 +3,24 @@ import { createHash } from 'node:crypto';
 import { fileURLToPath } from 'node:url';
 import { openDatabase, readArticles, readArticle, readWeeklyContent } from './database.mjs';
 import { readCourseOffers } from './course-catalog.mjs';
+import { createLocalStarsAccess } from './auth/stars-access.mjs';
+import { AuthError, readSessionCookie } from './auth/security.mjs';
 
-export function createArticleServer(db, origin = 'https://unclemik.github.io') {
-  return createServer((request, response) => {
+export function createArticleServer(db, origin = 'https://app.legkie-rody.ru', { starsAccess } = {}) {
+  return createServer(async (request, response) => {
     const headers = {
       'Content-Type': 'application/json; charset=utf-8',
       'Access-Control-Allow-Origin': origin,
       'Access-Control-Allow-Methods': 'GET, HEAD, OPTIONS',
+      'Access-Control-Allow-Headers': 'X-Webpril-Account',
+      'Vary': 'Cookie, X-Webpril-Account',
       'X-Content-Type-Options': 'nosniff',
-      'Cache-Control': 'public, max-age=60',
+      'Cache-Control': starsAccess ? 'private, no-store' : 'public, max-age=60',
     };
     const send = (status, payload) => {
       const body = JSON.stringify(payload);
       const etag = `"${createHash('sha256').update(body).digest('hex')}"`;
-      if (status === 200 && request.headers['if-none-match'] === etag) { response.writeHead(304, { ...headers, ETag: etag }); response.end(); return; }
+      if (!starsAccess && status === 200 && request.headers['if-none-match'] === etag) { response.writeHead(304, { ...headers, ETag: etag }); response.end(); return; }
       response.writeHead(status, { ...headers, ETag: etag, ...(status !== 200 ? { 'Cache-Control': 'no-store' } : {}) });
       response.end(request.method === 'HEAD' ? undefined : body);
     };
@@ -30,25 +34,36 @@ export function createArticleServer(db, origin = 'https://unclemik.github.io') {
         send(catalog ? 200 : 503, catalog || { error: 'courses_unavailable' }); return;
       }
       if (url.pathname === '/api/health') { send(200, { status: 'ok', project: 'wep_pril', articles: readArticles(db).length }); return; }
-      if (url.pathname === '/api/weekly-content') { send(200, readWeeklyContent(db)); return; }
+      const gated = url.pathname === '/api/weekly-content' || url.pathname === '/api/articles' || url.pathname.startsWith('/api/articles/');
+      const access = starsAccess && gated ? await starsAccess.context(readSessionCookie(request), request.headers['x-webpril-account']) : null;
+      if (url.pathname === '/api/weekly-content') {
+        const data = readWeeklyContent(db);
+        send(200, starsAccess ? starsAccess.weekly(access, data) : data); return;
+      }
       if (url.pathname === '/api/articles') {
         const value = url.searchParams.get('week');
         if (value !== null && (!/^\d{1,2}$/.test(value) || Number(value) < 1 || Number(value) > 42)) { send(400, { error: 'Invalid week' }); return; }
-        send(200, { articles: readArticles(db, value === null ? null : Number(value)) }); return;
+        const articles = readArticles(db, value === null ? null : Number(value));
+        send(200, { articles: starsAccess ? starsAccess.filter(access, articles) : articles }); return;
       }
       const match = url.pathname.match(/^\/api\/articles\/(pregnancy-\d{3})$/);
       if (match) {
         const article = readArticle(db, match[1]);
+        if (article && starsAccess) starsAccess.assertWeek(access, article.week);
         send(article ? 200 : 404, article || { error: 'Article not found' }); return;
       }
       send(404, { error: 'Not found' });
-    } catch (error) { console.error('Article request failed', error.message); send(500, { error: 'Service unavailable' }); }
+    } catch (error) {
+      if (error instanceof AuthError) { send(error.status, { error: error.code, message: error.message }); return; }
+      console.error('Article request failed', error.message); send(500, { error: 'Service unavailable' });
+    }
   });
 }
 
 if (process.argv[1] === fileURLToPath(import.meta.url)) {
   const db = openDatabase(process.env.DATABASE_PATH || '/opt/wep_pril/data/articles.sqlite');
-  const server = createArticleServer(db);
+  const server = createArticleServer(db, process.env.AUTH_ORIGIN || 'https://app.legkie-rody.ru',
+    { starsAccess: createLocalStarsAccess({ url: process.env.AUTH_WEEKLY_ACCESS_URL }) });
   server.listen(Number(process.env.PORT || 3000), '127.0.0.1', () => console.log('wep_pril listening on localhost'));
   const stop = () => server.close(() => { db.close(); process.exit(0); });
   process.on('SIGTERM', stop);

@@ -35,7 +35,7 @@ function readAnnouncement(data, appOrigin) {
   return { id: data.id.toLowerCase(), title, body, link };
 }
 
-function readPoll(data) {
+function readPoll(data, hour = 0) {
   const id = data.week;
   const monday = typeof id === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(id) ? new Date(`${id}T00:00:00Z`) : new Date(NaN);
   if (monday.getUTCDay() !== 1 || monday.toISOString().slice(0, 10) !== id) {
@@ -50,10 +50,10 @@ function readPoll(data) {
     throw new AuthError(400, 'duplicate_options', 'Варианты ответа должны отличаться.');
   }
   const sunday = new Date(+monday + 6 * 86_400_000).toISOString().slice(0, 10);
-  return { id, question, options, opens: `${id}T00:00:00+03:00`, closes: `${sunday}T18:00:00+03:00` };
+  return { id, question, options, opens: `${id}T${String(hour).padStart(2,'0')}:00:00+03:00`, closes: `${sunday}T18:00:00+03:00` };
 }
 
-export function createAdmin({ pool, articles, ownerEmail, appOrigin }) {
+export function createAdmin({ pool, articles, ownerEmail, appOrigin, settings }) {
   async function role(client, user, lock = false) {
     if (!user) return null;
     if (user.email === ownerEmail) return 'owner';
@@ -150,7 +150,13 @@ export function createAdmin({ pool, articles, ownerEmail, appOrigin }) {
         LEFT JOIN weekly_poll_votes v ON v.poll_id=p.id AND v.choice=n-1 GROUP BY n ORDER BY n) AS counts
       FROM weekly_polls p ORDER BY opens_at DESC LIMIT 50`)).rows),
     schedulePoll: (token, expected, data) => write(token, expected, async (client, user) => {
-      const { id, question, options, opens, closes } = readPoll(data);
+      const config = settings ? await settings.get(client) : null;
+      const { id, question, options, opens: plannedOpens, closes: plannedCloses } = readPoll(data, config?.enabled && config.features?.stars ? 10 : 0);
+      let opens=plannedOpens,closes=plannedCloses;
+      if(data.revision!==undefined) {
+        const {rows:[existing]}=await client.query('SELECT opens_at,closes_at FROM weekly_polls WHERE id=$1 FOR UPDATE',[id]);
+        if(existing){opens=existing.opens_at;closes=existing.closes_at;}
+      }
       const args = [id, question, options, opens, closes];
       let result;
       if (data.revision === undefined) {
