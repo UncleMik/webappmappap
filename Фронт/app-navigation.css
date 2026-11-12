@@ -2,8 +2,8 @@
 .app-shell:not(.ai-page) > [data-initial-section] { padding-bottom:var(--bottom-nav-height); }
 .app-shell.ai-page > .app { height:var(--section-content-height, calc(100dvh - var(--bottom-nav-height))); }
 html.chat-viewport-active, .chat-viewport-active > .app-shell { height:100%; overflow:clip; }
-.chat-viewport-active .app-shell.ai-page > .app { position:fixed; top:var(--section-viewport-top, 0px); width:min(100%, 500px); }
-.chat-viewport-active .app-section-frame[data-app-panel="ai.html"] { top:var(--section-viewport-top, 0px); }
+.chat-viewport-active .app-shell.ai-page > .app { position:absolute; top:var(--section-page-top, 0px); left:max(0px, calc((100% - 500px) / 2)); width:min(100%, 500px); }
+.chat-viewport-active .app-section-frame[data-app-panel="ai.html"] { position:absolute; top:var(--section-page-top, 0px); }
 .app-shell > [hidden] { display:none !important; }
 .app-section-frame { position:fixed; inset:0 0 auto; width:100%; height:var(--section-content-height, calc(100dvh - var(--bottom-nav-height))); border:0; background:#fcfaf7; z-index:10; }
 .section-loading { position:fixed; top:0; left:0; right:0; z-index:30; padding:10px 16px; background:#f6f0ff; color:#794aff; font:14px/20px Roboto,sans-serif; box-shadow:0 2px 8px #794aff18; }

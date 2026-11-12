@@ -86,7 +86,7 @@ html:has(> .ai-page) { height: 100%; overflow: clip; }
 #history-more { flex-shrink:0; align-self:center; min-height:44px; margin:0; }
 #history-more[hidden] { display:none; }
 .conversations-dialog { position:fixed; top:0; bottom:auto; left:max(0px,calc((100vw - 500px)/2)); margin:0; width:min(86vw,340px); height:var(--chat-viewport-height,100dvh); max-height:none; max-width:none; padding:calc(14px + env(safe-area-inset-top,0px)) 14px calc(22px + env(safe-area-inset-bottom,0px)); border:0; border-right:1px solid #eee6f7; border-radius:0 22px 22px 0; background:#fdfbff; color:#171333; box-shadow:8px 0 32px #21173518; overflow-y:auto; }
-.app-shell.ai-page > .conversations-dialog { top:var(--section-viewport-top, 0px); }
+.app-shell.ai-page > .conversations-dialog { position:absolute; top:var(--section-page-top, 0px); }
 .conversations-dialog::backdrop { background:#21173563; }
 .conversations-header { display:flex; align-items:center; gap:4px; margin-bottom:14px; padding-left:7px; }
 .conversations-header h2 { flex:1; font-size:20px; line-height:27px; letter-spacing:-.3px; }

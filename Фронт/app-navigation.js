@@ -70,17 +70,21 @@ import('./account-profile.js?v=20261020-initial-content').catch(() => {});
     const viewport = window.visualViewport;
     const unzoomed = viewport && Math.abs(viewport.scale - 1) < 0.01;
     const chatActive = activeFile === 'ai.html';
-    const viewportTop = chatActive && unzoomed ? viewport.offsetTop : 0;
+    const pageTop = chatActive && unzoomed ? viewport.pageTop : 0;
     const visibleBottom = unzoomed ? viewport.offsetTop + viewport.height : innerHeight;
     document.documentElement.classList.toggle('chat-viewport-active', chatActive);
-    document.documentElement.style.setProperty('--section-viewport-top', `${viewportTop}px`);
-    // iOS can pan the visible viewport when focusing an input. Keep the whole
-    // chat inside that viewport; its bottom coordinate is not its height.
-    const contentHeight = Math.min(visibleBottom, nav.getBoundingClientRect().top) - viewportTop;
+    document.documentElement.style.setProperty('--section-page-top', `${pageTop}px`);
+    // On iOS the fixed navigation can move with the keyboard. Its top edge
+    // cannot define the chat height relative to a separately panned viewport.
+    // Use only lengths for sizing, and document coordinates for positioning.
+    const contentHeight = chatActive
+      ? (unzoomed ? viewport.height : innerHeight) - nav.getBoundingClientRect().height
+      : Math.min(visibleBottom, nav.getBoundingClientRect().top);
     document.documentElement.style.setProperty('--section-content-height', `${Math.max(0, contentHeight)}px`);
   };
   window.visualViewport?.addEventListener('resize', updateHeight);
   window.visualViewport?.addEventListener('scroll', updateHeight);
+  window.addEventListener('scroll', updateHeight, { passive: true });
   window.addEventListener('resize', updateHeight);
   new ResizeObserver(updateHeight).observe(nav);
   updateHeight();
