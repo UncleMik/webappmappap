@@ -18,7 +18,7 @@ import { todayDate, isoDate, parseDate, formatDate, pregnancyDate, returnPage } 
   const dayMs = 86400000, today = todayDate, iso = isoDate, parse = parseDate;
   const pregnancy = () => pregnancyDate(state);
   function valid() {
-    if (!ready || busy) return false;
+    if (!ready || busy || state.stage === 'mother') return false;
     if (step === 1) return Boolean(state.stage);
     if (step === 3) return state.goals.length > 0;
     if (!state.name.trim() || [...state.name.trim()].length > 80 || /[\p{Cc}\p{Cf}]/u.test(state.name)) return false;
@@ -68,7 +68,7 @@ import { todayDate, isoDate, parseDate, formatDate, pregnancyDate, returnPage } 
     progress.querySelectorAll('span').forEach((bar, i) => bar.classList.toggle('current', i < step));
     document.querySelector('.step-label').textContent = `Шаг ${step} из 3`;
     next.textContent = step === 3 ? 'Начать' : 'Продолжить';
-    if (step === 1) content.innerHTML = `<h1 tabindex="-1">На каком этапе вы сейчас?</h1><p class="onboarding-description">Сохраним ваш этап в личном профиле.</p><div class="stage-options"><label class="stage-option"><input type="radio" name="stage" value="pregnancy"><span class="stage-art" aria-hidden="true"></span><span class="stage-copy"><strong>Я беременна</strong><small>Сопровождение по вашему сроку</small></span><span class="stage-arrow" aria-hidden="true">›</span></label><label class="stage-option mother"><input type="radio" name="stage" value="mother"><span class="stage-art" aria-hidden="true"></span><span class="stage-copy"><strong>Я уже мама</strong><small>После рождения малыша</small></span><span class="stage-arrow" aria-hidden="true">›</span></label></div>`;
+    if (step === 1) content.innerHTML = `<h1 tabindex="-1">На каком этапе вы сейчас?</h1><p class="onboarding-description">Сохраним ваш этап в личном профиле.</p><div class="stage-options"><label class="stage-option"><input type="radio" name="stage" value="pregnancy"><span class="stage-art" aria-hidden="true"></span><span class="stage-copy"><strong>Я беременна</strong><small>Сопровождение по вашему сроку</small></span><span class="stage-arrow" aria-hidden="true">›</span></label><label class="stage-option mother"><input type="radio" name="stage" value="mother"><span class="stage-art" aria-hidden="true"></span><span class="stage-copy"><strong>Я уже мама</strong><small>Раздел в разработке</small></span><span class="stage-arrow" aria-hidden="true">›</span></label></div>`;
     if (step === 2 && state.stage === 'pregnancy') content.innerHTML = `<h1 tabindex="-1">Уточните срок беременности</h1><p class="onboarding-description">Выберите один удобный способ — мы рассчитаем срок и настроим календарь.</p><fieldset class="method-options"><legend class="sr-only">Способ расчёта срока беременности</legend>${[['conception','♡','Дата зачатия','Рассчитаем предполагаемую дату родов'],['due','▦','Предполагаемая дата родов','Если ПДР уже сообщил врач'],['weeks','◷','Срок беременности','Укажите недели и дни']].map(([value,icon,title,desc])=>`<label class="method-option"><span class="option-icon" aria-hidden="true">${icon}</span><span class="method-copy"><strong>${title}</strong><small>${desc}</small></span><input type="radio" name="method" value="${value}" aria-label="${title}"></label>`).join('')}</fieldset><div class="method-fields"></div><div class="onboarding-summary" aria-live="polite" hidden><strong></strong><small></small></div>`;
     if (step === 2 && state.stage === 'mother') content.innerHTML = `<h1 tabindex="-1">Когда родился малыш?</h1><p class="onboarding-description">Укажите дату рождения малыша.</p><div class="onboarding-fields">${field('birth','Дата рождения малыша','date',`max="${iso(today())}"`)}</div><div class="onboarding-summary" aria-live="polite" hidden><strong></strong><small>Возраст малыша</small></div>`;
     if (step === 3) {
@@ -93,7 +93,12 @@ import { todayDate, isoDate, parseDate, formatDate, pregnancyDate, returnPage } 
   }
   form.addEventListener('input', event => {
     const input = event.target;
-    if (input.name === 'stage') { if(state.stage !== input.value) state.goals = []; state.stage = input.value; }
+    if (input.name === 'stage') {
+      if(state.stage !== input.value) state.goals = [];
+      state.stage = input.value;
+      error.textContent = state.stage === 'mother' ? 'Раздел в разработке.' : '';
+      error.hidden = state.stage !== 'mother';
+    }
     else if (input.name === 'method') { state.method = input.value; methodFields(); }
     else if (input.name === 'goal') {
       state.goals = [...content.querySelectorAll('input[name=goal]:checked')].map(item=>Number(item.value));
