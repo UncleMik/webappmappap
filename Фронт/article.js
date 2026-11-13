@@ -208,7 +208,7 @@ if (article.pregnancy) {
 updateProgress();
 document.querySelector('.reader-progress').hidden = false;
 if (article.pregnancy) {
-  import('./article-points.js?v=20261112-stars').then(({ trackArticlePoints }) => {
+  import('./article-points.js?v=20261113-article-reward').then(({ trackArticlePoints }) => {
     trackArticlePoints(scroller, article.id);
   }).catch(() => {});
 }
