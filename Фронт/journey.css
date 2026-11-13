@@ -46,21 +46,32 @@
 .course-photo::before { background-image: url('assets/journey-courses-clean.webp'); }
 .course-lock-icon { position: absolute; width: 2.4rem; height: 2.8rem; top: 50%; left: 50%; transform: translate(-50%, -50%); }
 .journey-page .course-photo .course-lock-icon { top:50%; left:50%; right:auto; width:3rem; height:3.5rem; transform:translate(-50%, -50%); }
-/* A full-width title strip stays readable with every speaker photo and clear of the centered lock. */
+/* The approved compact lilac label sits in the empty side of each photo. */
 .journey-page .course-list .school-course-banner .course-banner-title {
   position: absolute;
-  inset: auto 0 0;
-  width: 100%;
-  padding: .35em 12px;
+  inset: 6% auto auto 5%;
+  width: max-content;
+  max-width: 52%;
+  padding: .3em .45em;
+  border-radius: .6em;
   color: #2c1151;
-  background: #fff;
-  font-size: clamp(18px, 10cqi, 24px);
+  background: #eee1ff;
+  font-size: clamp(15px, 10cqi, 24px);
   font-weight: 700;
-  line-height: 1.15;
+  line-height: 1.05;
   letter-spacing: -.015em;
   overflow-wrap: normal;
   text-wrap: balance;
   text-shadow: none;
+}
+.journey-page .course-list .school-course-banner-right .course-banner-title {
+  left: auto;
+  right: 5%;
+}
+/* The two-line All Inclusive label needs extra room above the centered lock. */
+.journey-page .course-card[data-offer-id="8835266"][data-access="locked"] .course-banner-title {
+  top: 1%;
+  padding: 2px 5px;
 }
 .course-copy { padding: .7rem 1rem; }
 .journey-page .course-copy h3 { font-size: 1.45rem; line-height: 1.7rem; }

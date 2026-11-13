@@ -10,7 +10,7 @@ import time
 import urllib.parse
 import urllib.request
 
-FILES = {'journey.css': {'old': '8b49be83482b247df9d339a9b1eb1daa927f744fb561c48bff050986bf32362a', 'new': 'f302c3e44c5cfb5a5582fba261dfe6f3662ce2adcca0c39d33ee381877252de7'}, 'journey.html': {'old': 'c408268f56c2763c610459ae9eda7ab5c4314bc538edca7c3a4cb95189c370e6', 'new': '532361239af3b8254aad18933c47995f022bc24da950e3f5ece127a199c7869d'}}
+FILES = {'journey.css': {'old': 'f302c3e44c5cfb5a5582fba261dfe6f3662ce2adcca0c39d33ee381877252de7', 'new': '067fc3b2060f6aa67d3847e46039a67bf5a50782566d763cce6d64a503991be8'}, 'journey.html': {'old': '532361239af3b8254aad18933c47995f022bc24da950e3f5ece127a199c7869d', 'new': '7261fd33b84ec6d8b9f53180e334e4d58aae370786e9037f4dd76d705600ad8a'}}
 
 
 def digest(data):
