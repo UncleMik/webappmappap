@@ -260,7 +260,7 @@ async (page) => {
   await page.waitForFunction(() => !document.querySelector('#chat-input').disabled);
   if (uploadPosts !== 2 || uploadStatus !== 2 || await page.locator('.user-message').filter({ hasText: 'Файл анализа:' }).count() !== 1) throw new Error('Upload result duplicate or extra send');
   await assertChip(null); await assertWaiting(false, 'upload result');
-  if ((await page.locator('#chat-quota').innerText()) !== 'Осталось вопросов сегодня: 26 из 30') throw new Error('Upload quota changed on lookup');
+  if ((await page.locator('#chat-quota').innerText()) !== 'На сегодня доступно 26/30') throw new Error('Upload quota changed on lookup');
   await page.locator('#chat-input').fill('Мой вопрос'); await choose(pdf);
   await page.locator('.send-button').click();
   await page.getByText('Обработка файлов сейчас занята.', { exact: false }).waitFor(); await assertChip(pdf.name);

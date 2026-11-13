@@ -179,11 +179,10 @@ resizeChat();
 function notice(message, isLimit = false) { status.textContent = message; status.hidden = !message; limitNotice = isLimit && !!message; }
 function updateControls() {
   const locked = !ready || busy || !!pending || remaining === 0 && !starsQuota;
-  const insufficientAttachment = !!selectedAttachment && remaining !== null && remaining < 2;
   input.disabled = locked || !!voice;
   const recording = voice?.stage === 'recording';
   const microphone = !input.value.trim() && !selectedAttachment;
-  send.disabled = voice ? !recording : locked || insufficientAttachment;
+  send.disabled = voice ? !recording : locked;
   send.setAttribute('aria-label', recording ? 'Остановить запись' : microphone ? 'Записать голосом' : 'Отправить сообщение');
   send.classList.toggle('voice-action', recording || microphone);
   send.classList.toggle('voice-stop', recording);
@@ -279,7 +278,8 @@ function quota(value) {
   if (olderQuota(stamp)) return false;
   starsQuota = value.freeRemaining !== undefined;
   remaining = Number.isInteger(value.totalRemaining) ? value.totalRemaining : value.remaining; currentLimit = value.maximum ?? value.limit;
-  quotaLabel.textContent = value.freeRemaining === undefined ? `Осталось вопросов сегодня: ${value.remaining} из ${value.limit}` : `Сегодня: ${value.freeRemaining} бесплатных · из запаса: ${Math.min(value.paidRemaining, value.paidDailyRemaining)} · запас: ${value.paidRemaining}. Фото или файл — 2 вопроса.`;
+  const bonusLimit = Math.max(0, (value.maximum ?? value.limit) - value.limit);
+  quotaLabel.textContent = `На сегодня доступно ${value.freeRemaining ?? value.remaining}/${value.limit}${starsQuota && bonusLimit > 0 ? ` · бонусные вопросы ${Math.min(value.paidRemaining, value.paidDailyRemaining)}/${bonusLimit}` : ''}`;
   window.dispatchEvent(new CustomEvent('stars:quota', { detail: value }));
   if (stamp) {
     quotaSnapshot = stamp; quotaDeadline = performance.now() + stamp.reset - stamp.server; quotaRetryAt = 0;
@@ -294,7 +294,7 @@ function dailyLimitError(error) {
   const fresh = quota(error.quota);
   if ((fresh || obsolete) && remaining > 0) return 'Лимит обновился. Попробуйте отправить вопрос ещё раз.';
   if (!obsolete) remaining = 0;
-  quotaLabel.textContent = currentLimit === null ? 'На сегодня вопросы закончились.' : `Осталось вопросов сегодня: ${remaining} из ${currentLimit}`;
+  if (!fresh && !obsolete) quotaLabel.textContent = currentLimit === null ? 'На сегодня вопросы закончились.' : `На сегодня доступно 0/${currentLimit}`;
   return errorMessage(error);
 }
 function quotaPanelVisible() { return !document.hidden && !voicePanel?.hidden; }

@@ -24,15 +24,25 @@ async function setup(){
   const userId=randomUUID();await pool.query('INSERT INTO auth_users(id,email,getcourse_id,profile) VALUES($1,$2,$4,$3)',[userId,userId+'@example.invalid',JSON.stringify({name:'Имя',stage:'pregnancy',dueDate:'2027-03-01',completedAt:now.toISOString()}),++gc]);
   await pool.query('INSERT INTO auth_stars_ai_credits(user_id,balance) VALUES($1,10)',[userId]);return {userId,tier:'free',now};
 }
-const reserve=(ctx,id=randomUUID(),cost=1)=>transaction(pool,client=>ai.reserve(client,ctx,{requestId:id,cost}));
-test('attachment spends free first then stock; reservation/refund are idempotent across Moscow midnight',async()=>{
+const reserve=(ctx,id=randomUUID())=>transaction(pool,client=>ai.reserve(client,ctx,{requestId:id}));
+test('one remaining free question accepts a reservation; duplicate and refund are idempotent across Moscow midnight',async()=>{
   const ctx=await setup(),id=randomUUID();await pool.query('INSERT INTO ai_chat_daily_usage VALUES($1,$2,4)',[ctx.userId,'2026-11-12']);
-  const row=await reserve(ctx,id,2);assert.equal(row.free_units,1);assert.equal(row.paid_units,1);
-  await reserve(ctx,id,2);let q=await ai.quota(pool,ctx);assert.equal(q.used,5);assert.equal(q.paidUsed,1);assert.equal(q.paidRemaining,9);assert.equal(q.resetsAt,'2026-11-12T21:00:00.000Z');
+  const row=await reserve(ctx,id);assert.equal(row.free_units,1);assert.equal(row.paid_units,0);
+  assert.equal((await reserve(ctx,id)).duplicate,true);let q=await ai.quota(pool,ctx);assert.equal(q.used,5);assert.equal(q.paidUsed,0);assert.equal(q.paidRemaining,10);assert.equal(q.resetsAt,'2026-11-12T21:00:00.000Z');
   now=new Date('2026-11-12T21:00:00Z');assert.equal(await transaction(pool,c=>ai.refund(c,{userId:ctx.userId,requestId:id})),true);
   assert.equal(await transaction(pool,c=>ai.refund(c,{userId:ctx.userId,requestId:id})),false);
   q=await ai.quota(pool,{...ctx,now});assert.equal(q.used,0);assert.equal(q.paidUsed,0);assert.equal(q.paidRemaining,10);
   assert.equal((await pool.query('SELECT used FROM ai_chat_daily_usage WHERE user_id=$1 AND day_moscow=$2',[ctx.userId,'2026-11-12'])).rows[0].used,4);
+});
+test('historical two-unit reservation still refunds free and bought units exactly once',async()=>{
+  const ctx=await setup(),id=randomUUID();
+  await pool.query('INSERT INTO ai_chat_daily_usage VALUES($1,$2,5)',[ctx.userId,'2026-11-12']);
+  await pool.query('INSERT INTO auth_stars_ai_daily_usage VALUES($1,$2,1)',[ctx.userId,'2026-11-12']);
+  await pool.query('UPDATE auth_stars_ai_credits SET balance=9 WHERE user_id=$1',[ctx.userId]);
+  await pool.query('INSERT INTO auth_stars_ai_reservations(user_id,request_id,day_moscow,free_units,paid_units) VALUES($1,$2,$3,1,1)',[ctx.userId,id,'2026-11-12']);
+  assert.equal(await transaction(pool,c=>ai.refund(c,{userId:ctx.userId,requestId:id})),true);
+  assert.equal(await transaction(pool,c=>ai.refund(c,{userId:ctx.userId,requestId:id})),false);
+  const q=await ai.quota(pool,ctx);assert.equal(q.used,4);assert.equal(q.paidUsed,0);assert.equal(q.paidRemaining,10);
 });
 test('parallel reservations cannot overspend and tier changes share the same usage',async()=>{
   const ctx=await setup();await pool.query('INSERT INTO ai_chat_daily_usage VALUES($1,$2,5)',[ctx.userId,'2026-11-12']);
@@ -61,6 +71,18 @@ async function chatFor(ctx,{urgent,fail=false,afterReply}={}){
     fetchImpl:async(_url,{body})=>{calls++;if(fail)throw Error('synthetic failure');if(afterReply)await afterReply();return {ok:true,json:async()=>({requestId:JSON.parse(body).requestId,answer:'Ответ',sources:[]})};}});
   return {chat,token,calls:()=>calls};
 }
+test('text and file each spend one question across the free and bought boundary',async()=>{
+  const ctx=await setup();await pool.query('INSERT INTO ai_chat_daily_usage VALUES($1,$2,4)',[ctx.userId,'2026-11-12']);
+  const {chat,token,calls}=await chatFor(ctx);
+  const file={requestId:randomUUID(),text:'Проверь файл',attachment:{name:'synthetic.pdf',mimeType:'application/pdf',data:Buffer.from('%PDF-1.4 synthetic').toString('base64')}};
+  const first=await chat.send(token,ctx.userId,file);assert.equal(first.status,'completed');assert.equal(first.quota.used,5);assert.equal(first.quota.paidUsed,0);
+  const text={requestId:randomUUID(),text:'Следующий вопрос'};
+  const second=await chat.send(token,ctx.userId,text);assert.equal(second.status,'completed');assert.equal(second.quota.used,5);assert.equal(second.quota.paidUsed,1);
+  assert.equal(second.quota.paidRemaining,9);
+  const duplicate=await chat.send(token,ctx.userId,file);assert.equal(duplicate.quota.paidUsed,1);assert.equal(calls(),2);
+  const rows=(await pool.query('SELECT free_units,paid_units FROM auth_stars_ai_reservations WHERE user_id=$1 ORDER BY request_id',[ctx.userId])).rows;
+  assert.equal(rows.length,2);assert.equal(rows.reduce((sum,row)=>sum+row.free_units+row.paid_units,0),2);
+});
 test('pre-migration stale pending refunds only its old free unit and preserves spent usage',async()=>{
   const ctx=await setup();await pool.query('INSERT INTO ai_chat_daily_usage VALUES($1,$2,3)',[ctx.userId,'2026-11-12']);
   await pool.query("INSERT INTO ai_chat_requests(user_id,request_id,question,question_hash,rights_hash,status,accepted_at) VALUES($1,$2,'old','old','old','pending',$3)",[ctx.userId,randomUUID(),new Date(+now-120000)]);
@@ -83,16 +105,16 @@ test('urgent preview is free; explicit continuation charges once, a new message 
 });
 
 test('session revoked after provider success fails pending request and refunds paid/free exactly once',async()=>{
-  const ctx=await setup();await pool.query('INSERT INTO ai_chat_daily_usage VALUES($1,$2,4)',[ctx.userId,'2026-11-12']);
+  const ctx=await setup();await pool.query('INSERT INTO ai_chat_daily_usage VALUES($1,$2,5)',[ctx.userId,'2026-11-12']);
   const {chat,token}=await chatFor(ctx,{afterReply:()=>pool.query('UPDATE auth_sessions SET revoked_at=$1 WHERE user_id=$2',[now,ctx.userId])});
   const message={requestId:randomUUID(),text:'Файл',attachment:{name:'synthetic.pdf',mimeType:'application/pdf',data:Buffer.from('%PDF-1.4\nsynthetic\n%%EOF').toString('base64')}};
   await assert.rejects(chat.send(token,ctx.userId,message),e=>e.code==='sign_in_required');
-  const q=await ai.quota(pool,ctx);assert.equal(q.used,4);assert.equal(q.paidUsed,0);assert.equal(q.paidRemaining,10);
+  const q=await ai.quota(pool,ctx);assert.equal(q.used,5);assert.equal(q.paidUsed,0);assert.equal(q.paidRemaining,10);
   const row=(await pool.query('SELECT status FROM ai_chat_requests WHERE user_id=$1 AND request_id=$2',[ctx.userId,message.requestId])).rows[0];assert.equal(row.status,'failed');
   assert.equal(await transaction(pool,c=>ai.refund(c,{userId:ctx.userId,requestId:message.requestId})),false);
 });
 
-test('selected pilot changes only included account: excluded and disabled users retain legacy file charge and quotas',async()=>{
+test('selected pilot changes only included account: all files charge one question',async()=>{
   const included=await setup(),excluded=await setup();
   config.audience={mode:'selected',userIds:[included.userId]};config.ai.freeDaily=2;config.ai.courseDaily=8;
   assert.equal((await ai.quota(pool,included)).limit,2);assert.equal((await ai.quota(pool,excluded)).limit,5);
@@ -103,7 +125,7 @@ test('selected pilot changes only included account: excluded and disabled users 
     const result=await chat.send(token,ctx.userId,{requestId:randomUUID(),text:'Файл',attachment});assert.equal(result.status,'failed');
     assert.equal(result.quota.used,ctx===included?0:1);
     const reservations=(await pool.query('SELECT * FROM auth_stars_ai_reservations WHERE user_id=$1',[ctx.userId])).rows;
-    assert.equal(reservations.length,ctx===included?1:0);if(ctx===included)assert.equal(reservations[0].free_units,2);
+    assert.equal(reservations.length,ctx===included?1:0);if(ctx===included)assert.equal(reservations[0].free_units,1);
   }
   config.enabled=false;assert.equal((await ai.quota(pool,included)).limit,5);
   const {chat,token}=await chatFor(included,{fail:true});
@@ -111,8 +133,8 @@ test('selected pilot changes only included account: excluded and disabled users 
 });
 test('removing account from pilot preserves stock and still refunds an existing accepted reservation',async()=>{
   const ctx=await setup(),id=randomUUID();await pool.query('INSERT INTO ai_chat_daily_usage VALUES($1,$2,4)',[ctx.userId,'2026-11-12']);
-  await reserve(ctx,id,2);config.audience={mode:'selected',userIds:[]};
-  assert.equal((await ai.quota(pool,ctx)).paidRemaining,9);assert.equal((await ai.quota(pool,ctx)).paidDailyRemaining,0);
+  await reserve(ctx,id);config.audience={mode:'selected',userIds:[]};
+  assert.equal((await ai.quota(pool,ctx)).paidRemaining,10);assert.equal((await ai.quota(pool,ctx)).paidDailyRemaining,0);
   assert.equal(await transaction(pool,c=>ai.refund(c,{userId:ctx.userId,requestId:id})),true);
   assert.equal((await ai.quota(pool,ctx)).paidRemaining,10);assert.equal((await ai.quota(pool,ctx)).used,4);
 });

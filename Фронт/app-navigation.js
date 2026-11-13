@@ -1,4 +1,4 @@
-import('./gamification.js?v=20261112-stars').catch(() => {});
+import('./gamification.js?v=20261113-unified-quota').catch(() => {});
 // Share the server profile across existing application sections.
 import('./account-profile.js?v=20261020-initial-content').catch(() => {});
 /* Keep primary sections alive in isolated panels; detail pages retain native navigation. */

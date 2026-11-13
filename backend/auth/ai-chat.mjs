@@ -387,7 +387,7 @@ export function createAiChat({ pool, service, courseMaterials, sourceMapPath, ur
       const acceptedNow = Number(new Date(clock())), today = day(acceptedNow);
       let economyEnabled = false;
       if (starsAi) {
-        const reservation = await starsAi.reserve(client, { userId: a.user.id, tier: a.dailyLimit === 30 ? 'course' : 'free', now: acceptedNow }, { requestId, cost: file ? 2 : 1 });
+        const reservation = await starsAi.reserve(client, { userId: a.user.id, tier: a.dailyLimit === 30 ? 'course' : 'free', now: acceptedNow }, { requestId });
         // History retention must not turn an old charged UUID into a free new question.
         if (reservation.duplicate) throw new AuthError(409, 'request_id_conflict', 'Обновите страницу и повторите вопрос.');
         economyEnabled = reservation.economyEnabled;

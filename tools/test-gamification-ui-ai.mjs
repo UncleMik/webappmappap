@@ -3,7 +3,7 @@ const require=createRequire('C:/Users/MIK/.cache/codex-runtimes/codex-primary-ru
 const origin='https://webpril-fixture.invalid',accountId='11111111-1111-4111-8111-111111111111',directory=resolve('output/playwright/gamification');await mkdir(directory,{recursive:true});const browser=await chromium.launch({headless:true,channel:'chrome'});
 const results=[],errors=[];
 try{for(const width of [320,390,500]){
- const context=await browser.newContext({viewport:{width,height:844},reducedMotion:'reduce'}),page=await context.newPage();let calls=[],quota={limit:5,remaining:0,freeRemaining:0,paidRemaining:3,paidDailyRemaining:0,totalRemaining:0,maximum:11},rows=[];
+ const context=await browser.newContext({viewport:{width,height:844},reducedMotion:'reduce'}),page=await context.newPage();let calls=[],quota={limit:5,remaining:1,freeRemaining:1,paidRemaining:10,paidDailyRemaining:2,totalRemaining:3,maximum:11,serverTime:'2026-11-05T20:59:00.000Z',resetsAt:'2026-11-05T21:00:00.000Z'},rows=[], mode='attachment';
  page.on('pageerror',error=>errors.push(error.message));
  await context.route('**/*',async route=>{
   const url=new URL(route.request().url());if(url.origin!==origin)return route.abort();const pathname=url.pathname;
@@ -16,7 +16,9 @@ try{for(const width of [320,390,500]){
    else if(path==='ai/conversations'&&body)data={accountId,conversation:{id:body.conversationId,title:'Новый чат',createdAt:new Date().toISOString(),updatedAt:new Date().toISOString()}};
    else if(path==='ai/messages'){
     calls.push(body);
-    if(!body.urgentContinue)data={accountId,requestId:body.requestId,status:'urgent',quota,urgent:{title:'Синтетическая срочная подсказка',body:'Тестовый утверждённый текст.',reassurance:'Тестовая поддержка.',free:true,continueToken:{expires:Date.now()+600000,signature:'test-signature'},actions:[{type:'call',href:'tel:103',label:'Позвонить 103'},{type:'continue',label:'Это не срочно, продолжить'}]}};
+    if(mode==='attachment'){quota={...quota,remaining:0,freeRemaining:0,paidDailyRemaining:0,totalRemaining:0};rows=[{id:'u-file',role:'user',content:'Файл',requestId:body.requestId,status:'completed'},{id:'a-file',role:'assistant',content:'Файл принят',requestId:body.requestId}];data={accountId,conversationId:body.conversationId,requestId:body.requestId,status:'completed',messages:rows,quota};}
+    else if(mode==='limit')return route.fulfill({status:429,json:{error:'ai_daily_limit',quota}});
+    else if(!body.urgentContinue)data={accountId,requestId:body.requestId,status:'urgent',quota,urgent:{title:'Синтетическая срочная подсказка',body:'Тестовый утверждённый текст.',reassurance:'Тестовая поддержка.',free:true,continueToken:{expires:Date.now()+600000,signature:'test-signature'},actions:[{type:'call',href:'tel:103',label:'Позвонить 103'},{type:'continue',label:'Это не срочно, продолжить'}]}};
     else {quota={...quota,freeRemaining:1,totalRemaining:1,remaining:1};rows=[{id:'u'+calls.length,role:'user',content:body.text,requestId:body.requestId,status:'completed',createdAt:new Date().toISOString()},{id:'a'+calls.length,role:'assistant',content:'Тестовый ответ после продолжения.',requestId:body.requestId,createdAt:new Date().toISOString()}];data={accountId,conversationId:body.conversationId,requestId:body.requestId,status:'completed',messages:rows,quota};}
    }else data={accountId,enabled:false};
    return route.fulfill({json:data});
@@ -27,8 +29,20 @@ try{for(const width of [320,390,500]){
   }
   const path=resolve('Фронт','.'+decodeURIComponent(pathname)),types={'.js':'text/javascript','.css':'text/css','.woff':'font/woff','.webp':'image/webp'};try{return route.fulfill({body:await readFile(path),contentType:types[extname(path)]||'application/octet-stream'});}catch{return route.fulfill({status:404,body:''});}
  });
+ await page.clock.install({time:new Date('2026-11-05T20:59:00.000Z')});
  await page.goto(origin+'/ai.html');await page.waitForFunction(()=>!document.querySelector('#chat-input').disabled);
- assert.ok((await page.locator('#chat-quota').innerText()).includes('запас: 3'));
+ assert.equal(await page.locator('#chat-quota').innerText(),'На сегодня доступно 1/5 · бонусные вопросы 2/6');
+ assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth>document.documentElement.clientWidth),false);
+ assert.equal(await page.locator('#chat-quota').evaluate(node=>node.scrollWidth>node.clientWidth),false);
+ await page.screenshot({path:resolve(directory,'quota-'+width+'.png')});
+ await page.locator('#analysis-file').setInputFiles({name:'test.pdf',mimeType:'application/pdf',buffer:Buffer.from('%PDF-synthetic')});
+ await page.getByRole('button',{name:'Отправить сообщение',exact:true}).click();await page.getByText('Файл принят',{exact:true}).waitFor();
+ assert.equal(calls.length,1);assert.equal(calls[0].attachment.name,'test.pdf');
+ assert.equal(await page.locator('#chat-quota').innerText(),'На сегодня доступно 0/5 · бонусные вопросы 0/6');
+ mode='limit';await page.locator('#chat-input').fill('Проверка лимита');await page.getByRole('button',{name:'Отправить сообщение',exact:true}).click();
+ await page.waitForFunction(()=>!document.querySelector('#chat-status').hidden);assert.equal(await page.locator('#chat-quota').innerText(),'На сегодня доступно 0/5 · бонусные вопросы 0/6');
+ quota={...quota,remaining:5,freeRemaining:5,paidDailyRemaining:2,totalRemaining:7,serverTime:'2026-11-05T21:00:00.000Z',resetsAt:'2026-11-06T21:00:00.000Z'};await page.clock.fastForward(60001);await page.waitForFunction(()=>document.querySelector('#chat-quota').textContent==='На сегодня доступно 5/5 · бонусные вопросы 2/6');
+ mode='urgent';calls=[];await page.locator('#chat-input').fill('');
  await page.locator('#chat-input').fill('Синтетический тревожный текст');await page.getByRole('button',{name:'Отправить сообщение',exact:true}).click();
  await page.getByRole('heading',{name:'Синтетическая срочная подсказка'}).waitFor();assert.equal(calls.length,1);assert.equal(calls[0].urgentContinue,undefined);
  assert.equal(await page.getByRole('link',{name:'Позвонить 103'}).getAttribute('href'),'tel:103');
@@ -40,5 +54,10 @@ try{for(const width of [320,390,500]){
  await page.keyboard.press('Escape');await page.waitForFunction(()=>!document.querySelector('#chat-input').disabled);
  await page.setViewportSize({width,height:420});await page.locator('#chat-input').fill('Текст при клавиатуре');
  assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth),false);assert.equal(await page.locator('#chat-input').evaluate(node=>node.getBoundingClientRect().bottom>document.querySelector('.bottom-navigation').getBoundingClientRect().top),false);
- results.push({width,quotaAndUrgent:true,sameRequestContinuation:true,newQuestionRescreened:true,keyboard:true});await context.close();
+ quota={limit:30,remaining:30,freeRemaining:30,paidRemaining:10,paidDailyRemaining:10,totalRemaining:40,maximum:40};
+ await page.reload();await page.waitForFunction(()=>document.querySelector('#chat-quota').textContent==='На сегодня доступно 30/30 · бонусные вопросы 10/10');
+ assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth>document.documentElement.clientWidth),false);
+ assert.equal(await page.locator('#chat-quota').evaluate(node=>node.scrollWidth>node.clientWidth),false);
+ await page.screenshot({path:resolve(directory,'quota-full-'+width+'.png')});
+ results.push({width,fullQuotaFits:true,quotaAndUrgent:true,attachmentAtOne:true,paidDailyCap:true,zeroAnd429:true,quotaRefresh:true,noOverflow:true,sameRequestContinuation:true,newQuestionRescreened:true,keyboard:true});await context.close();
 }assert.deepEqual(errors,[]);await writeFile(resolve(directory,'ai-result.json'),JSON.stringify({fixtureOnly:true,results,errors},null,2));console.log(JSON.stringify({results,errors}));}finally{await browser.close();}

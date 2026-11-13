@@ -28,7 +28,7 @@ async page => {
  });
  await page.clock.install({time:new Date('2044-03-10T03:00:00.000Z')});
  const navigate=async()=>{quotaCalls=0;chatCalls=0;releaseQuota=null;releaseChat=null;await page.goto(base+'/ai.html');await page.getByText('Сохранённая переписка',{exact:true}).waitFor()};
- const count=async value=>{await page.getByText(`Осталось вопросов сегодня: ${value.remaining} из ${value.limit}`,{exact:true}).waitFor()};
+ const count=async value=>{await page.getByText(`На сегодня доступно ${value.remaining}/${value.limit}`,{exact:true}).waitFor()};
  const settle=async()=>page.waitForTimeout(100);
  // Device date is unrelated to the authoritative Moscow deadline.
  await navigate();await count(old(5,1));
@@ -63,10 +63,10 @@ async page => {
   if(limit===5)await page.evaluate(()=>{Object.defineProperty(document,'hidden',{configurable:true,value:true});document.dispatchEvent(new Event('visibilitychange'))});
   const clocks=await page.evaluate(()=>({wall:Date.now(),monotonic:performance.now()}));await page.clock.setSystemTime(new Date(clocks.wall+120000));
   assert(await page.evaluate(before=>performance.now()-before,clocks.monotonic)<1000,'Sleep fixture advanced performance clock');
-  await settle();assert(quotaCalls===0&&await page.locator('#chat-quota').textContent()===`Осталось вопросов сегодня: 0 из ${limit}`,'Wall-clock change granted quota locally');
+  await settle();assert(quotaCalls===0&&await page.locator('#chat-quota').textContent()===`На сегодня доступно 0/${limit}`,'Wall-clock change granted quota locally');
   await page.evaluate(()=>{if(document.hidden){Object.defineProperty(document,'hidden',{configurable:true,value:false});document.dispatchEvent(new Event('visibilitychange'))}window.dispatchEvent(new Event('focus'));window.dispatchEvent(new Event('pageshow'))});await settle();
   assert(quotaCalls===1&&releaseQuota,'Frozen monotonic wake did not deduplicate server refresh');
-  assert(await page.locator('#chat-quota').innerText()===`Осталось вопросов сегодня: 0 из ${limit}`,'Wake optimistically reset quota before server response');
+  assert(await page.locator('#chat-quota').innerText()===`На сегодня доступно 0/${limit}`,'Wake optimistically reset quota before server response');
   await releaseQuota();await count(freshQuota);
   if(limit===5)assert(await page.locator('#chat-input').inputValue()==='Черновик после сна','Frozen-clock wake lost draft');
  }
@@ -94,9 +94,9 @@ async page => {
  // A preserved iframe resumes independently of document visibility.
  historyQuota=old(5,0);quotaCalls=0;
  await page.route(base+'/quota-shell.html',route=>route.fulfill({contentType:'text/html',body:'<!doctype html><iframe id="quota-ai" src="/ai.html"></iframe>'}));
- await page.goto(base+'/quota-shell.html');const frame=page.frameLocator('#quota-ai');await frame.getByText('Осталось вопросов сегодня: 0 из 5',{exact:true}).waitFor();
+ await page.goto(base+'/quota-shell.html');const frame=page.frameLocator('#quota-ai');await frame.getByText('На сегодня доступно 0/5',{exact:true}).waitFor();
  await page.locator('#quota-ai').evaluate(element=>{element.hidden=true});await page.clock.fastForward(60001);await settle();assert(quotaCalls===0,'Hidden iframe polled quota');
- await page.locator('#quota-ai').evaluate(element=>{element.hidden=false});await frame.getByText('Осталось вопросов сегодня: 5 из 5',{exact:true}).waitFor();assert(quotaCalls===1,'Restored iframe did not refresh quota');
+ await page.locator('#quota-ai').evaluate(element=>{element.hidden=false});await frame.getByText('На сегодня доступно 5/5',{exact:true}).waitFor();assert(quotaCalls===1,'Restored iframe did not refresh quota');
  // Recording continues while quota refreshes; no STT or question is triggered.
  chatMode='limit';historyQuota=old(5,1);await navigate();await page.getByRole('button',{name:'Записать голосом',exact:true}).click();await page.getByRole('button',{name:'Остановить запись',exact:true}).waitFor();
  await page.clock.fastForward(60001);await count(freshQuota);

@@ -23,17 +23,15 @@ export function createStarsAi({ pool, settings, clock = Date.now }) {
       totalRemaining: freeRemaining + Math.min(paidRemaining, paidDailyRemaining), maximum: cap.free + cap.paid,
       resetsAt: new Date(Date.parse(`${today}T00:00:00Z`) + 21 * 3600000).toISOString(), serverTime: new Date(now).toISOString() };
   }
-  async function reserve(client, { userId, tier, now = clock() }, { requestId, cost }) {
-    if (![1, 2].includes(cost)) throw new Error('Invalid AI cost');
+  async function reserve(client, { userId, tier, now = clock() }, { requestId }) {
     // Same first lock as wallet.withAccount. No stock/daily row may be locked first.
     await client.query('SELECT id FROM auth_users WHERE id=$1 FOR UPDATE', [userId]);
     const { rows: [old] } = await client.query('SELECT * FROM auth_stars_ai_reservations WHERE user_id=$1 AND request_id=$2', [userId, requestId]);
     if (old) return { ...old, duplicate: true };
     const cap = await limits(settings, client, tier, userId);
-    if (!cap.enabled) cost = 1;
     const q = await quota(client, { userId, tier, now }, cap);
-    if (q.totalRemaining < cost) throw Object.assign(new AuthError(429, 'ai_daily_limit', 'Сегодня доступные вопросы закончились. Возвращайтесь завтра.'), { quota: q });
-    const free = Math.min(cost, q.freeRemaining), paid = cost - free, today = day(now);
+    if (q.totalRemaining < 1) throw Object.assign(new AuthError(429, 'ai_daily_limit', 'Сегодня доступные вопросы закончились. Возвращайтесь завтра.'), { quota: q });
+    const free = q.freeRemaining > 0 ? 1 : 0, paid = 1 - free, today = day(now);
     if (free) await client.query(`INSERT INTO ai_chat_daily_usage(user_id,day_moscow,used) VALUES($1,$2,$3)
       ON CONFLICT(user_id,day_moscow) DO UPDATE SET used=ai_chat_daily_usage.used+EXCLUDED.used`, [userId, today, free]);
     if (paid) {
