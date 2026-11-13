@@ -12,11 +12,9 @@ function showArticleReward(amount) {
   reward.innerHTML = `
     <div class="article-reward-card">
       <span class="article-reward-coin" aria-hidden="true">
-        <svg viewBox="0 0 100 100" fill="none">
-          <circle cx="50" cy="50" r="48" fill="#FFE48B"/>
-          <circle cx="50" cy="50" r="38" fill="#F6BE36" stroke="#FFF3BD" stroke-width="3"/>
-          <circle cx="50" cy="50" r="31" stroke="#DCA024" stroke-width="1.5"/>
-          <path d="m50 27 6.8 14 15.4 2.2-11.1 10.9 2.6 15.3L50 62.2l-13.7 7.2 2.6-15.3L27.8 43.2 43.2 41Z" fill="#FFF7D9"/>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="9.5"/>
+          <path d="m12 7 1.5 3.1 3.4.5-2.5 2.4.6 3.4-3-1.6-3 1.6.6-3.4-2.5-2.4 3.4-.5Z"/>
         </svg>
         <span class="article-reward-spark article-reward-spark-one"></span>
         <span class="article-reward-spark article-reward-spark-two"></span>
