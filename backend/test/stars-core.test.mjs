@@ -297,7 +297,13 @@ test('wallet SQL, migrations, domain hooks and verified course progress',async t
     // Explicit owner review state cannot remove this old poll entitlement.
     await pool.query('UPDATE auth_stars_wallet SET legacy=false WHERE user_id=$1',[u.id]);
     const result=await polls.read(u.id);assert.equal(result.accountId,u.id);assert.equal(result.enabled,true);assert.equal(result.available,true);assert.ok(result.poll);
-    await polls.vote(u.token,u.id,{pollId:'prelaunch-active',choice:0});await polls.vote(u.token,u.id,{pollId:'prelaunch-active',choice:0});
+    const firstVote=await polls.vote(u.token,u.id,{pollId:'prelaunch-active',choice:0});
+    assert.equal(firstVote.accountId,u.id);
+    assert.equal(firstVote.choice,0);
+    const repeatedVote=await polls.vote(u.token,u.id,{pollId:'prelaunch-active',choice:1});
+    assert.equal(repeatedVote.accountId,u.id);
+    assert.equal(repeatedVote.choice,0,'repeat must preserve the original answer');
+    assert.equal((await pool.query("SELECT count(*)::int AS count FROM weekly_poll_votes WHERE poll_id='prelaunch-active' AND user_id=$1",[u.id])).rows[0].count,1);
     const {rows}=await pool.query("SELECT amount FROM auth_points_ledger WHERE user_id=$1 AND event_code='poll_vote' AND event_ref='prelaunch-active'",[u.id]);
     assert.equal(rows.length,1);assert.equal(rows[0].amount,20);assert.equal((await state(u)).wallet.balance,120);
    }
@@ -316,7 +322,10 @@ test('wallet SQL, migrations, domain hooks and verified course progress',async t
    assert.equal((await pool.query('SELECT user_id FROM weekly_poll_votes WHERE user_id=$1',[selected.id])).rows.length,0);
    assert.equal((await pool.query('SELECT id FROM auth_points_ledger WHERE user_id=$1',[selected.id])).rows.length,0);
    result=await polls.read(outside.id);assert.equal(result.accountId,outside.id);assert.equal(result.enabled,true);assert.equal(result.available,true);assert.ok(result.poll);
-   await polls.vote(outside.token,outside.id,{pollId:'onboarding-clock',choice:1});
+   const outsideVote=await polls.vote(outside.token,outside.id,{pollId:'onboarding-clock',choice:1});
+   assert.equal(outsideVote.accountId,outside.id,'new account outside pilot can vote immediately');
+   assert.equal(outsideVote.choice,1);
+   assert.equal((await polls.read(outside.id)).poll.choice,1,'vote remains after a fresh read');
    now=start+1; // One millisecond later is Moscow day1, still locked.
    assert.equal((await polls.read(selected.id)).enabled,false);
    await assert.rejects(polls.vote(selected.token,selected.id,{pollId:'onboarding-clock',choice:0}),{code:'poll_onboarding'});

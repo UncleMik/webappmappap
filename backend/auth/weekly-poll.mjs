@@ -87,7 +87,7 @@ export function createWeeklyPoll(pool, { stars = null, notifications = null } = 
           if(!old.length){const reward=await stars.credit(client,c,{code:'poll_vote',ref:pollId,amount:c.settings.rewards?.poll??20});
             await client.query('UPDATE weekly_poll_votes SET points=$3 WHERE poll_id=$1 AND user_id=$2',[pollId,session.user_id,reward.actualAmount]);}
         }
-        return vote;
+        return { ...vote, accountId: session.user_id };
       });
     },
     async settle() {
