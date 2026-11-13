@@ -15,11 +15,12 @@ const programNav = document.querySelector('.course-program-nav');
 const params = new URLSearchParams(location.search);
 const productId = params.get('course');
 const sectionId = params.get('section');
-const program = courseProgram(params.get('program'));
+const program = courseProgram(params.get('program'))
+  || (params.get('programs') === '1' && !params.has('offer') ? 'express' : null);
 const selected = productId !== null;
 const offerId = params.get('offer');
 const offerSource = params.get('from') === 'journey' ? 'journey' : null;
-const grouped = !selected && (offerId !== null || params.get('programs') === '1');
+const grouped = !selected && offerId !== null;
 let offerCatalog = null;
 const topicId = params.get('topic');
 const subsectionId = params.get('sub');
@@ -29,7 +30,7 @@ const subsection = topic?.sections.find(([id]) => id === subsectionId);
 const validId = (!selected || positiveId(productId)) && (offerId === null || positiveId(offerId))
   && (sectionId === null || (selected && positiveId(sectionId)));
 const baseTitle = selected ? (sectionId === null ? 'Курс' : 'Раздел курса')
-  : grouped ? 'Программы школы' : program ? (subsection?.[1] ?? topic?.title ?? 'Курсы школы') : 'Мои курсы';
+  : grouped ? 'Программы школы' : program ? (subsection?.[1] ?? topic?.title ?? 'Все программы') : 'Мои курсы';
 const programOffers = { express: [8835218], full: [8835266, 8835331] };
 const programCourseIds = { express: '4309095', full: '4302509' };
 const fullCourseId = programCourseIds.full;
@@ -45,6 +46,10 @@ function setBack(href, text) {
 }
 
 function paragraph(text) { return node('p', 'account-empty', text); }
+
+function purchaseLink() {
+  return primaryLink('Посмотреть тарифы', 'https://legkie-rody.ru/tarif');
+}
 
 function showError(error, retry, message = courseErrorText(error)) {
   const box = node('div', 'course-state');
@@ -87,6 +92,7 @@ async function loadTopicCourses(read) {
 function renderProgram(data, owned) {
   const fragment = document.createDocumentFragment();
   const lessons = groupTopicLessons(data.courseTrees ?? []);
+  let needsPurchase = false;
   if (topicId === null) {
     const grid = node('div', 'course-topic-grid');
     if (program === 'full' && programProducts.has(fullCourseId)) {
@@ -131,7 +137,7 @@ function renderProgram(data, owned) {
     if (subsectionId === null) {
       if (!available.length) {
         fragment.append(paragraph('В этой теме пока нет уроков, доступных по вашему тарифу.'));
-        if ([...programProducts.keys()].some(id => !owned.has(id))) fragment.append(primaryLink('Посмотреть программы', 'courses.html'));
+        needsPurchase = [...programProducts.keys()].some(id => !owned.has(id));
       }
       for (const [position, [id, title]] of available.entries()) {
         const entries = lessons.get(topic.id + '/' + id);
@@ -166,9 +172,18 @@ function renderProgram(data, owned) {
       }
       if (!entries.length) {
         fragment.append(paragraph('В этом подразделе пока нет уроков.'));
-        if ([...programProducts.keys()].some(id => !owned.has(id))) fragment.append(primaryLink('Посмотреть программы', 'courses.html'));
+        needsPurchase = [...programProducts.keys()].some(id => !owned.has(id));
       }
     }
+  }
+  const entries = topicId === null
+    ? [...lessons.values()].flat()
+    : !topic || subsectionId !== null && !subsection ? []
+      : subsectionId === null
+        ? topic.sections.flatMap(([id]) => lessons.get(topic.id + '/' + id) ?? [])
+        : lessons.get(topic.id + '/' + subsectionId) ?? [];
+  if (needsPurchase || entries.some(lesson => !lesson.available && !owned.has(String(lesson.productId)))) {
+    fragment.append(purchaseLink());
   }
   list.replaceChildren(fragment);
   list.setAttribute('aria-busy', 'false');
@@ -350,6 +365,7 @@ function renderCourse(data) {
     if (!atRoot && firstAvailable) fragment.append(primaryLink('Открыть первый урок', lessonUrl(productId, firstAvailable.lessonId, section.streamId, program)));
   }
   if (!modules.length && !directLessons.length) fragment.append(paragraph('Доступных уроков сейчас нет.'));
+  if (!course.available) fragment.append(purchaseLink());
   list.replaceChildren(fragment);
   list.setAttribute('aria-busy', 'false');
 }
