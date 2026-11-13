@@ -11,7 +11,7 @@ import { todayDate, isoDate, parseDate, formatDate, pregnancyDate, returnPage } 
   let step = 1, busy = false, ready = false;
   const destination = returnPage(new URLSearchParams(location.search).get('next'));
   const retry = document.querySelector('#retry-profile');
-  const state = { name:'', stage:'', method:'', conception:'', due:'', weeks:'', days:'', birth:'', goals:[] };
+  const state = { name:'', stage:'', method:'', conception:'', due:'', weeks:'', days:'0', birth:'', goals:[] };
   const pregnancyGoals = ['Спокойно пройти беременность','Подготовиться к родам','Понимать развитие малыша','Подготовить тело к родам','Разобраться с анализами','Справиться с тревогой','Подготовиться к первым дням с малышом'];
   const motherGoals = ['Восстановиться после родов','Наладить грудное вскармливание','Разобраться с уходом за малышом','Наладить сон малыша и свой сон','Вернуться к физической активности','Справиться со стрессом','Общаться с мамами и делиться опытом'];
   const symbols = ['♡','✦','◌','↟','▤','☁','◇'];
@@ -100,6 +100,9 @@ import { todayDate, isoDate, parseDate, formatDate, pregnancyDate, returnPage } 
       error.hidden = state.stage !== 'mother';
     }
     else if (input.name === 'method') { state.method = input.value; methodFields(); }
+    else if (input.name === 'days') {
+      state.days = input.value === '' && !input.validity.badInput ? '0' : input.value;
+    }
     else if (input.name === 'goal') {
       state.goals = [...content.querySelectorAll('input[name=goal]:checked')].map(item=>Number(item.value));
       content.querySelector('.goal-count').textContent = `Выбрано: ${state.goals.length}`;
