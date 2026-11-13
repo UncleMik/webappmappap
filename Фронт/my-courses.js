@@ -183,7 +183,8 @@ function renderProgram(data, owned) {
         ? topic.sections.flatMap(([id]) => lessons.get(topic.id + '/' + id) ?? [])
         : lessons.get(topic.id + '/' + subsectionId) ?? [];
   if (needsPurchase || entries.some(lesson => !lesson.available && !owned.has(String(lesson.productId)))) {
-    fragment.append(purchaseLink());
+    if (topicId === null) fragment.append(purchaseLink());
+    else fragment.prepend(purchaseLink());
   }
   list.replaceChildren(fragment);
   list.setAttribute('aria-busy', 'false');
@@ -365,7 +366,7 @@ function renderCourse(data) {
     if (!atRoot && firstAvailable) fragment.append(primaryLink('Открыть первый урок', lessonUrl(productId, firstAvailable.lessonId, section.streamId, program)));
   }
   if (!modules.length && !directLessons.length) fragment.append(paragraph('Доступных уроков сейчас нет.'));
-  if (!course.available) fragment.append(purchaseLink());
+  if (!course.available) fragment.prepend(purchaseLink());
   list.replaceChildren(fragment);
   list.setAttribute('aria-busy', 'false');
 }
