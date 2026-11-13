@@ -1,0 +1,46 @@
+/* Shared back navigation: approved circular button, independent of page rem scaling. */
+.back-control.back-control {
+  display: inline-flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 10px;
+  flex-shrink: 0;
+  width: fit-content;
+  min-width: 46px;
+  height: auto;
+  min-height: 46px;
+  max-width: 100%;
+  margin-left: 0;
+  padding: 0;
+  color: #794aff;
+  background: transparent;
+  text-decoration: none;
+}
+.back-control .back-control-icon {
+  display: grid;
+  place-items: center;
+  flex: 0 0 46px;
+  width: 46px;
+  height: 46px;
+  border-radius: 50%;
+  color: #794aff;
+  background: #eee4ff;
+}
+.back-control .back-control-icon svg {
+  display: block;
+  width: 28px;
+  height: 28px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2.6;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.back-control:focus-visible { outline: 2px solid #794aff; outline-offset: 3px; border-radius: 23px; }
+.back-control:hover .back-control-icon { background: #e5d7ff; }
+.back-control[hidden] { display: none; }
+.mom-header:has(.back-control) { grid-template-columns: 46px minmax(0, 1fr) 3.5rem; }
+.video-header:has(.back-control) { grid-template-columns: 46px minmax(0, 1fr) 4.4rem; }
+.video-header:has(.back-control):has(.video-favorite[aria-pressed="true"]) { grid-template-columns: 46px minmax(0, 1fr) calc(4.4rem + 90px); }
+.reader-toolbar:has(.back-control) { min-height: 46px; }
+.course-lesson-mode .reader-toolbar:has(.back-control) { padding-left: 50px; }

@@ -16,9 +16,10 @@
   <link rel="stylesheet" href="club-chat-improvements.css?v=20261109-keyboard">
   <link rel="stylesheet" href="mobile-layout.css?v=20261007-darker-sides">
   <script type="module" src="club-chat.js?v=20261111-photo-close"></script>
+<link rel="stylesheet" href="back-control.css?v=20261113-circle">
 </head>
 <body class="club-page community-chat"><div class="app">
-  <header class="discussion-header"><a href="club.html#participants" aria-label="Назад в клуб">‹</a><div><h1>Чат</h1><p></p></div><button type="button" class="chat-search-toggle" id="chat-search-toggle" aria-label="Поиск по переписке" aria-expanded="false" aria-controls="chat-search-panel" disabled><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5"/><path d="m16 16 5 5"/></svg></button></header>
+  <header class="discussion-header"><a class="back-control" href="club.html#participants" aria-label="Назад в клуб"><span class="back-control-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5m7-7-7 7 7 7"/></svg></span></a><div><h1>Чат</h1><p></p></div><button type="button" class="chat-search-toggle" id="chat-search-toggle" aria-label="Поиск по переписке" aria-expanded="false" aria-controls="chat-search-panel" disabled><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5"/><path d="m16 16 5 5"/></svg></button></header>
   <section id="chat-search-panel" class="chat-search-panel" aria-label="Поиск по всей переписке" hidden>
     <form id="chat-search-form"><label for="chat-search-text" class="visually-hidden">Текст сообщения</label><input id="chat-search-text" type="search" minlength="2" maxlength="100" placeholder="Найти в переписке" autocomplete="off"><button type="submit">Найти</button><button id="chat-search-close" type="button" aria-label="Закрыть поиск">×</button></form>
     <p id="chat-search-status" role="status"></p><ol id="chat-search-results"></ol><button type="button" class="chat-search-more" id="chat-search-more" hidden>Ещё результаты</button>

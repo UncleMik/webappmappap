@@ -11,6 +11,7 @@ import { topics, groupTopicLessons, courseLessonTopic } from './course-topics.js
 const list = document.querySelector('.owned-list');
 const heading = document.querySelector('.owned-header h1');
 const back = document.querySelector('.owned-main > .course-back');
+const backIcon = back.querySelector('.back-control-icon').cloneNode(true);
 const programNav = document.querySelector('.course-program-nav');
 const params = new URLSearchParams(location.search);
 const productId = params.get('course');
@@ -42,7 +43,7 @@ const courseUrl = (...args) => baseCourseUrl(...args) + (offerId !== null ? '&of
 function setBack(href, text) {
   back.href = href;
   back.setAttribute('aria-label', text);
-  back.replaceChildren(node('span', 'course-back-arrow', '‹'), node('span', 'course-back-label', text));
+  back.replaceChildren(backIcon.cloneNode(true), node('span', 'course-back-label', text));
 }
 
 function paragraph(text) { return node('p', 'account-empty', text); }
