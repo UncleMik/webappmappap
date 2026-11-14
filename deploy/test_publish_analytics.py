@@ -13,8 +13,10 @@ spec.loader.exec_module(release)
 
 
 class ReleaseChecks(unittest.TestCase):
-    def bundle(self, path, *, bad_hash=False, extra=False):
-        payload = {name: b'export {};' for name in release.BACKEND}
+    def bundle(self, path, *, bad_hash=False, extra=False, backend_only=False):
+        payload = {name: b'export {};' for name in release.REQUIRED}
+        if backend_only:
+            payload = {name: data for name, data in payload.items() if name in release.BACKEND}
         manifest = {'revision': 'a' * 40, 'files': {name: {'before': None,
             'sha256': hashlib.sha256(data).hexdigest()} for name, data in payload.items()}}
         if bad_hash:
@@ -30,8 +32,8 @@ class ReleaseChecks(unittest.TestCase):
         with tempfile.TemporaryDirectory() as folder:
             path = Path(folder) / 'release.zip'
             self.bundle(path)
-            self.assertEqual(len(release.load_bundle(path)[1]), len(release.BACKEND))
-            for options in ({'bad_hash': True}, {'extra': True}):
+            self.assertEqual(len(release.load_bundle(path)[1]), len(release.REQUIRED))
+            for options in ({'bad_hash': True}, {'extra': True}, {'backend_only': True}):
                 self.bundle(path, **options)
                 with self.assertRaises(RuntimeError):
                     release.load_bundle(path)

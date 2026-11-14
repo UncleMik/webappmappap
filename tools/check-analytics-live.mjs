@@ -17,7 +17,19 @@ try {
  await context.addCookies([{name:session.cookieName,value:session.cookieValue,url:origin,secure:true,httpOnly:true,sameSite:'Lax'}]);
  const page=await context.newPage();page.setDefaultTimeout(15000);
  const posts=[],sessionStatuses=[],loadedScripts=new Set(),eventTypes=new Set(),eventActions=new Set();let blocked=0,browserErrors=0,invalidBatch=false,unauthenticatedPhase=false;
- page.on('pageerror',()=>{browserErrors++;});
+ const safeError = text => {
+  let value=String(text||'');
+  for(const secret of [session.userId,session.cookieName,session.cookieValue,marker])value=value.split(secret).join('[redacted]');
+  return value.replace(/https?:\/\/[^\s)]+/g,url=>{try{return new URL(url).pathname;}catch{return '[url]';}})
+   .replace(/[0-9a-f]{8}-[0-9a-f-]{27,}/gi,'[uuid]').replace(/[\w.+-]+@[\w.-]+\.[A-Za-z]{2,}/g,'[email]').slice(0,4000);
+ };
+ result.pageErrors=[];
+ page.on('pageerror',error=>{browserErrors++;result.pageErrors.push({message:safeError(error.message),stack:safeError(error.stack)});});
+ result.requestFailures=[];
+ page.on('requestfailed',request=>{
+  const url=new URL(request.url());
+  if(url.origin===origin&&['/auth-gate.js','/analytics.js','/api/auth/session','/api/auth/analytics/events'].includes(url.pathname))result.requestFailures.push({path:url.pathname,error:safeError(request.failure()?.errorText)});
+ });
  page.on('response',response=>{
   const url=new URL(response.url());
   if(url.origin!==origin)return;
@@ -25,7 +37,7 @@ try {
   if(['/auth-gate.js','/analytics.js'].includes(url.pathname)&&response.status()===200)loadedScripts.add(url.pathname);
   if(url.pathname==='/api/auth/analytics/events'&&response.request().method()==='POST'&&!unauthenticatedPhase) {
    const item={status:response.status(),json:null};posts.push(item);
-   response.json().then(data=>{item.json={accepted:data.accepted,excluded:data.excluded};}).catch(()=>{});
+   response.json().then(data=>{item.json={accepted:data.accepted,excluded:data.excluded,...(typeof data.error==='string'&&/^[a-z_]{1,80}$/.test(data.error)?{error:data.error}:{})};}).catch(()=>{item.bodyUnavailable=true;});
   }
  });
  await context.route('**/*',async route=>{
@@ -45,7 +57,6 @@ try {
   }
   blocked++;return route.abort();
  });
- await page.clock.install();
  await page.goto(origin+'/index.html');
  await page.waitForFunction(()=>window.webprilAnalyticsSession?.completed===true&&document.querySelector('#account-lock').sheet.disabled===true);
  result.realGateSession=true;
@@ -53,12 +64,13 @@ try {
  if(!result.gateHintMinimal)throw new Error('unexpected_gate_hint');
  await page.getByRole('link',{name:'Мой путь',exact:true}).click();
  await page.getByRole('button',{name:'Баллы',exact:true}).click();
- await page.clock.fastForward(31000);
+ await new Promise(done=>setTimeout(done,31000));
  const deadline=Date.now()+20000;
  while(!posts.some(item=>item.json)&&Date.now()<deadline)await new Promise(done=>setTimeout(done,100));
  result.sessionStatus200=sessionStatuses.includes(200);
  result.publishedScriptsLoaded=loadedScripts.size===2;
  result.posts200Excluded=posts.length>0&&posts.every(item=>item.status===200&&item.json?.accepted===0&&item.json?.excluded===true);
+ result.postResponses=posts;
  result.noInvalidBatch=!invalidBatch;
  result.screenViewCollected=eventTypes.has('page_view');
  result.transitionCollected=eventTypes.has('transition');

@@ -22,7 +22,7 @@
   }
   function identity() {
     const hint = window.webprilAnalyticsSession;
-    if (hint?.id === window.webprilSessionAccountId) return hint.completed === true ? hint.id : null;
+    if (hint && typeof hint.id === 'string' && hint.id === window.webprilSessionAccountId) return hint.completed === true ? hint.id : null;
     const user = window.webprilAccount?.user;
     return user?.profile?.completedAt && typeof user.id === 'string' &&
       (!window.webprilSessionAccountId || window.webprilSessionAccountId === user.id) ? user.id : null;

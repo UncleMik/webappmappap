@@ -24,6 +24,7 @@ FRONTEND = {'Фронт/' + n for n in ('analytics.js', 'auth-client.js', 'auth-
     'course-views.js', 'weekly-video-player.js', 'my-courses.js', 'weekly-poll.js')}
 ADMIN = {'Фронт/admin/' + n for n in ('analytics.js', 'index.html', 'panel.js', 'ui.css')}
 ALLOWED = BACKEND | FRONTEND | ADMIN
+REQUIRED = BACKEND | ADMIN | {'Фронт/analytics.js', 'Фронт/auth-client.js', 'Фронт/auth-gate.js'}
 SHA = re.compile(r'[a-f0-9]{64}\Z')
 
 
@@ -66,7 +67,7 @@ def load_bundle(bundle):
         require(set(manifest) == {'revision', 'files'} and isinstance(manifest['revision'], str)
             and re.fullmatch(r'[a-f0-9]{40}', manifest['revision']), 'INVALID_MANIFEST')
         files = manifest['files']
-        require(isinstance(files, dict) and BACKEND <= files.keys()
+        require(isinstance(files, dict) and REQUIRED <= files.keys()
             and set(files) <= ALLOWED, 'INVALID_FILESET')
         require(set(names) == {'manifest.json', *('payload/' + n for n in files)}, 'INVALID_PACKAGE')
         payload = {}

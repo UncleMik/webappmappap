@@ -10,6 +10,7 @@ const browser=await chromium.launch({headless:true,channel:'chrome'});
 const context=await browser.newContext({viewport:{width:390,height:844}}),page=await context.newPage();
 const origin='https://app.legkie-rody.ru',accountId='11111111-1111-4111-8111-111111111111';
 const events=[],errors=[];let mode='normal',posts=0;
+let holdSession=true;const pendingSessions=[];
 const quota={limit:30,remaining:30};
 page.on('pageerror',error=>errors.push(error.message));
 await context.route('**/*',async route=>{
@@ -18,7 +19,10 @@ await context.route('**/*',async route=>{
  if(path==='/api/auth/analytics/events'){
   const batch=route.request().postDataJSON();validateAnalyticsBatch(batch);events.push(...batch.events);return route.fulfill({json:{accepted:batch.events.length}});
  }
- if(path==='/api/auth/session')return route.fulfill({json:{authenticated:true,user:{id:accountId,email:'synthetic@example.invalid',profile:{completedAt:'fixture'}}}});
+ if(path==='/api/auth/session'){
+  if(holdSession)await new Promise(resolve=>pendingSessions.push(resolve));
+  return route.fulfill({json:{authenticated:true,user:{id:accountId,email:'synthetic@example.invalid',profile:{completedAt:'fixture'}}}});
+ }
  if(path==='/api/articles')return route.fulfill({json:{articles:[{id:'trusted-article',week:27,number:1,title:'Синтетическая статья'}]}});
  if(path==='/api/articles/trusted-article')return route.fulfill({json:{id:'trusted-article',week:27,number:1,title:'Синтетическая статья',minutes:1,blocks:Array.from({length:20},()=>({type:'paragraph',text:'Синтетический абзац для проверки чтения. '.repeat(10)}))}});
  if(path==='/api/auth/personal')return route.fulfill({json:{accountId,weights:[],pressure:[],wellbeing:[],movements:[],readArticles:[],favorites:[],baby:{}}});
@@ -44,7 +48,15 @@ await context.route('**/*',async route=>{
 try{
  await page.goto(origin+'/ai.html');
  await page.evaluate(()=>{document.querySelector('.app').dataset.initialSection='ai.html';});
+ assert.ok(pendingSessions.length>0,'real auth-gate session request is deliberately delayed');
+ assert.deepEqual(await page.evaluate(()=>[typeof window.webprilSessionAccountId,typeof window.webprilAnalyticsSession,typeof window.webprilAccount]),['undefined','undefined','undefined'],'no initial session id, hint or account profile');
  await page.addScriptTag({url:origin+'/analytics.js'});
+ await page.evaluate(()=>webprilAnalytics.track('action',{action:'points_open'}));
+ await page.waitForTimeout(100);
+ assert.deepEqual(errors,[],'analytics can initialize and run before the delayed gate response');
+ assert.equal(events.length,0,'no collection before authenticated completed-profile hint');
+ holdSession=false;for(const release of pendingSessions.splice(0))release();
+ await page.waitForFunction(()=>window.webprilAnalyticsSession?.completed===true&&window.webprilSessionAccountId);
  await page.waitForFunction(()=>!document.querySelector('#chat-input').disabled);
  await page.locator('#chat-input').fill('PRIVATE_SENTINEL question');await page.locator('.send-button').click();
  await page.getByText('Синтетический ответ 1',{exact:true}).waitFor();
@@ -75,5 +87,5 @@ try{
  assert.ok(events.some(event=>event.type==='content_open'&&event.resourceId==='trusted-article'));
  assert.ok(events.some(event=>event.type==='article_progress'&&event.resourceId==='trusted-article'&&event.progress===100));
  assert.deepEqual(errors,[]);
- console.log('PASS actual AI UI: text/file acceptance + completion, limit/privacy; real standalone article gate-only session + reading; zero model calls');
+ console.log('PASS delayed real auth-gate: no initial globals/errors/events, collection resumes after verified session; actual AI text/file acceptance/completion + limit/privacy; standalone article gate-only reading; zero model calls');
 }finally{await browser.close();}
