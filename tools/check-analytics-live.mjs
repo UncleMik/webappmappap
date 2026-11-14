@@ -16,6 +16,24 @@ try {
  const context=await (browser=await chromium.launch({headless:true,channel:'chrome'})).newContext({viewport:{width:390,height:844}});
  await context.addCookies([{name:session.cookieName,value:session.cookieValue,url:origin,secure:true,httpOnly:true,sameSite:'Lax'}]);
  const page=await context.newPage();page.setDefaultTimeout(15000);
+ await page.addInitScript(() => {
+  const originalFetch=window.fetch.bind(window);
+  window.__analyticsReplies=[];
+  window.fetch=async (...args) => {
+   const response=await originalFetch(...args);
+   const raw=args[0] instanceof Request?args[0].url:String(args[0]);
+   const url=new URL(raw,location.href);
+   if(url.origin===location.origin&&url.pathname==='/api/auth/analytics/events') {
+    const reply={status:response.status};window.__analyticsReplies.push(reply);
+    try {
+     const data=await response.clone().json();
+     if(typeof data.accepted==='number')reply.accepted=data.accepted;
+     if(typeof data.excluded==='boolean')reply.excluded=data.excluded;
+    }catch {reply.bodyUnavailable=true;}
+   }
+   return response;
+  };
+ });
  const posts=[],sessionStatuses=[],loadedScripts=new Set(),eventTypes=new Set(),eventActions=new Set();let blocked=0,browserErrors=0,invalidBatch=false,unauthenticatedPhase=false;
  const safeError = text => {
   let value=String(text||'');
@@ -66,10 +84,16 @@ try {
  await page.getByRole('button',{name:'Баллы',exact:true}).click();
  await new Promise(done=>setTimeout(done,31000));
  const deadline=Date.now()+20000;
- while(!posts.some(item=>item.json)&&Date.now()<deadline)await new Promise(done=>setTimeout(done,100));
+ let inPageReplies=[];
+ while(Date.now()<deadline) {
+  inPageReplies=await page.evaluate(()=>window.__analyticsReplies||[]);
+  if(inPageReplies.some(item=>item.excluded===true||item.bodyUnavailable))break;
+  await new Promise(done=>setTimeout(done,100));
+ }
  result.sessionStatus200=sessionStatuses.includes(200);
  result.publishedScriptsLoaded=loadedScripts.size===2;
- result.posts200Excluded=posts.length>0&&posts.every(item=>item.status===200&&item.json?.accepted===0&&item.json?.excluded===true);
+ result.inPageReplies=inPageReplies;
+ result.posts200Excluded=inPageReplies.length>0&&inPageReplies.every(item=>item.status===200&&item.accepted===0&&item.excluded===true);
  result.postResponses=posts;
  result.noInvalidBatch=!invalidBatch;
  result.screenViewCollected=eventTypes.has('page_view');
