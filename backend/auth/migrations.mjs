@@ -8,7 +8,7 @@ const previous = ['schema.sql', 'single-session-migration.sql', 'course-checks-m
   'ai-conversations-migration.sql', 'points-migration.sql', 'points-article-migration.sql',
   'points-video-migration.sql', 'weekly-poll.sql', 'admin-migration.sql'];
 const current = ['stars-migration.sql', 'stars-ai-migration.sql',
-  'gamification-migration.sql', 'gamification-admin-migration.sql'];
+  'gamification-migration.sql', 'gamification-admin-migration.sql', 'analytics-migration.sql'];
 
 export async function applyAuthMigrations(pool) {
   const files = await Promise.all([...previous, ...current].map(name => readFile(new URL(name, import.meta.url), 'utf8')));

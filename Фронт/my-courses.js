@@ -370,6 +370,7 @@ function renderCourse(data) {
   if (!course.available) fragment.prepend(purchaseLink());
   list.replaceChildren(fragment);
   list.setAttribute('aria-busy', 'false');
+  window.webprilAnalytics?.setResource('course', String(course.productId));
 }
 
 function clear() {

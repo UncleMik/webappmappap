@@ -5,6 +5,7 @@ import { AuthError, isUuid, normalizeEmail, readSessionCookie, sessionCookie } f
 const assets = new Map([
   ['/admin/ui.css', ['ui.css', 'text/css; charset=utf-8']],
   ['/admin/stars.js', ['stars.js', 'application/javascript; charset=utf-8']],
+  ['/admin/analytics.js', ['analytics.js', 'application/javascript; charset=utf-8']],
   ['/admin/panel.js', ['panel.js', 'application/javascript; charset=utf-8']],
   ['/admin/login.js', ['login.js', 'application/javascript; charset=utf-8']],
 ]);
@@ -12,7 +13,7 @@ const panelType = 'text/html; charset=utf-8';
 const csp = "default-src 'none'; script-src 'self'; style-src 'self'; img-src 'self' blob:; connect-src 'self'; base-uri 'none'; frame-ancestors 'none'; form-action 'self'";
 const denied = () => new AuthError(403, 'admin_forbidden', 'У этого аккаунта нет доступа к админке.');
 
-export async function createAdminHttp({ admin, service, store, origin, frontend, uploads, mailPerMinute, gamificationAdmin }) {
+export async function createAdminHttp({ admin, service, store, origin, frontend, uploads, mailPerMinute, gamificationAdmin, analytics }) {
   const host = new URL(origin).host;
   const files = new Map();
   for (const [key, [file, type]] of [...assets, ['/admin/login', ['login.html', panelType]], ['/admin', ['index.html', panelType]]]) {
@@ -22,7 +23,8 @@ export async function createAdminHttp({ admin, service, store, origin, frontend,
   return async function adminHttp(request, response, url, send, readJson) {
     const path = url.pathname, method = request.method;
     if (request.headers.host !== host) { send(404, { error: 'not_found' }); return; }
-    if (url.search) throw new AuthError(400, 'invalid_url', 'Неверный запрос.');
+    const analyticsQuery = path === '/api/admin/analytics' && url.searchParams.size === 1 && ['7','30','90'].includes(url.searchParams.get('days'));
+    if (url.search && !analyticsQuery) throw new AuthError(400, 'invalid_url', 'Неверный запрос.');
     const token = readSessionCookie(request);
     const expected = request.headers['x-webpril-account'];
     const fileResponse = ({ bytes, type }) => {
@@ -60,6 +62,7 @@ export async function createAdminHttp({ admin, service, store, origin, frontend,
     }
     const article = path.match(/^\/api\/admin\/articles\/(pregnancy-\d{3})(\/visibility)?$/);
     if (method === 'GET') {
+      if (analytics && path === '/api/admin/analytics') { send(200, await analytics.report(token, expected, Number(url.searchParams.get('days') || 7))); return; }
       if (gamificationAdmin && path === '/api/admin/gamification') { send(200, await gamificationAdmin.state(token, expected)); return; }
       if (gamificationAdmin && path === '/api/admin/gamification/metrics') { send(200, await gamificationAdmin.metrics(token, expected)); return; }
       if (gamificationAdmin && path === '/api/admin/gamification/history') { send(200, await gamificationAdmin.history(token, expected)); return; }

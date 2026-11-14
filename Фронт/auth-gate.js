@@ -15,6 +15,8 @@
   function login(reason) {
     if (exiting) return;
     exiting = true;
+    window.webprilAnalyticsSession = null;
+    window.dispatchEvent(new Event('webpril:analytics-session'));
     window.dispatchEvent(new Event('webpril:session-ended'));
     document.querySelectorAll('iframe.app-section-frame').forEach(frame => {
       try { frame.contentWindow.dispatchEvent(new Event('webpril:session-ended')); } catch {}
@@ -57,6 +59,11 @@
         }
         sessionUserId = session.user.id;
         window.webprilSessionAccountId = sessionUserId;
+        const completed = !!session.user.profile?.completedAt;
+        if (window.webprilAnalyticsSession?.id !== sessionUserId || window.webprilAnalyticsSession?.completed !== completed) {
+          window.webprilAnalyticsSession = { id: sessionUserId, completed };
+          window.dispatchEvent(new Event('webpril:analytics-session'));
+        }
         if (!suspended && !document.hidden && !exiting) lock.sheet.disabled = true;
       } catch { if (epoch === checkEpoch && !suspended && !document.hidden) login(); }
       finally { if (epoch === checkEpoch) checking = undefined; }

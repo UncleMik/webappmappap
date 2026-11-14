@@ -207,6 +207,9 @@ if (article.pregnancy) {
 }
 updateProgress();
 document.querySelector('.reader-progress').hidden = false;
+import('./analytics.js?v=20261114-analytics').then(() => {
+  window.webprilAnalytics?.trackArticle(scroller, String(readArticleId));
+}).catch(() => {});
 if (article.pregnancy) {
   import('./article-points.js?v=20261113-article-reward-brand').then(({ trackArticlePoints }) => {
     trackArticlePoints(scroller, article.id);

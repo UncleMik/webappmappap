@@ -12,6 +12,8 @@ function difference(ranges, previous) {
 }
 // The backend verifies course, lesson, trusted duration and every video independently.
 export function trackCourseVideo(video, material, note) {
+  const analyticsId = `${material.productId}:${material.lessonId}`;
+  window.webprilAnalytics?.trackVideo(video, analyticsId, undefined, 'lesson');
   let account, attemptId, baseline=[], pending=null, timer, stopped=false, needsStart=true, again=false;
   const visible = () => !document.hidden && !window.frameElement?.hidden && video.isConnected && !video.closest('[hidden]');
   async function update() {

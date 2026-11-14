@@ -32,6 +32,7 @@
   function leave(hash = '') {
     if (leaving) return;
     leaving = true;
+    analyticsAdmin.clear();
     workspace.replaceChildren();
     if (preview.open) preview.close();
     previewCopy.replaceChildren();
@@ -510,11 +511,13 @@
     }, 'Действий пока нет.');
   }
   const starsAdmin = window.WebprilStarsAdmin({root:$('#gamification'),api});
+  const analyticsAdmin = window.WebprilAnalyticsAdmin({root:$('#analytics'),api});
   const renderers = { gamification: data => starsAdmin.render(data), articles: rows => { articles = rows; renderArticles(); },
     announcements: renderAnnouncements, polls: renderPolls, staff: renderStaff, history: renderHistory };
   async function reload() {
     const id = ++loading, selected = section;
     if (selected === 'chats') { await loadChatRooms(); return; }
+    if (selected === 'analytics') { if(account?.role === 'owner') await analyticsAdmin.load(); return; }
     try {
       const data = await api(selected);
       if (id === loading && !leaving) renderers[selected](data);
@@ -525,6 +528,8 @@
   for (const tab of tabs) tab.addEventListener('click', () => {
     if (section === tab.dataset.tab) return;
     if (section === 'chats') clearChat();
+    if (section === 'analytics') analyticsAdmin.clear();
+    if (tab.dataset.tab === 'analytics' && account?.role !== 'owner') return;
     section = tab.dataset.tab;
     for (const button of tabs) {
       const active = button === tab;
@@ -551,11 +556,17 @@
       $('#identity').textContent = (user.role === 'owner' ? 'Владелец' : 'Редактор') + ' · ' + user.email;
       $('[data-tab=staff]').hidden = user.role !== 'owner';
       $('[data-tab=gamification]').hidden = user.role !== 'owner';
+      $('[data-tab=analytics]').hidden = user.role !== 'owner';
+      if(user.role !== 'owner') {
+        analyticsAdmin.clear();
+        if(section === 'analytics') $('[data-tab=articles]').click();
+      }
       if(user.role !== 'owner')$('#gamification').replaceChildren();
       $('#logout').hidden = false;
       workspace.hidden = false;
       if (wasHidden) { message(''); await reload(); }
     } catch (error) {
+      analyticsAdmin.clear();
       if (!leaving) { workspace.hidden = true; clearChat(); chatControls(); if (preview.open) preview.close(); previewCopy.replaceChildren(); message(error.message, true); }
     } finally { checking = false; }
   }

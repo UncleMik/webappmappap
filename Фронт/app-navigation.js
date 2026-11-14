@@ -142,9 +142,11 @@ import('./account-profile.js?v=20261020-initial-content').catch(() => {});
     // Journey opens the current week; other tabs retain their saved state.
     const target = push && restoreTab && file !== 'journey.html' ? new URL(panel.url) : url;
     if (push) history.pushState(null, '', target);
+    const previousFile = activeFile;
     old.element.hidden = true;
     panel.element.hidden = false;
     activeFile = file;
+    if (previousFile !== file) window.webprilAnalytics?.track('transition', { page: file, fromPage: previousFile });
     updateHeight();
     setActive(file);
     status.hidden = true;

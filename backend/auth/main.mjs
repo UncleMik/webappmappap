@@ -26,6 +26,9 @@ import { loadGamificationCatalog } from './gamification-content.mjs';
 import { createGamificationSettings } from './gamification-settings.mjs';
 import { createGamificationAdmin } from './gamification-admin.mjs';
 import { createGamificationNotifications, createGamificationPushTransport } from './gamification-notifications.mjs';
+import { createAnalytics } from './analytics.mjs';
+import { readFileSync } from 'node:fs';
+import { weeklyVideoPosition } from './weekly-videos.mjs';
 
 let pool, courseDb, adminArticles;
 function closeCourseDb() {
@@ -38,6 +41,9 @@ pool = openPool(config);
 await pool.query('SELECT id FROM auth_users LIMIT 0'); // Migration must be applied first.
 await pool.query('SELECT user_id FROM auth_personal_records LIMIT 0');
 await pool.query('SELECT message_id FROM club_message_reactions LIMIT 0');
+await pool.query('SELECT collection_started_at FROM auth_analytics_state WHERE id=1');
+await pool.query('SELECT event_id FROM auth_analytics_events LIMIT 0');
+await pool.query('SELECT user_id FROM auth_analytics_exclusions LIMIT 0');
 if (config.laraWeb) await pool.query('SELECT request_id,conversation_id FROM ai_chat_requests LIMIT 0');
 const store = createStore(pool, config);
 const sendMail = createMailer(config.mail), getcourse = createGetCourse(config.getcourse);
@@ -49,7 +55,7 @@ const courseChecks = config.getcourseTech
   ? createCourseChecks({ pool, tech: createGetCourseTech(config.getcourseTech) }) : null;
 const pointsEnabled = config.pointsForAll || config.pointsPilotUserIds.length > 0;
 let courseMaterials = null;
-if (courseChecks || pointsEnabled || config.gamification) {
+if (courseChecks || pointsEnabled || config.gamification || config.admin) {
   try { courseDb = new DatabaseSync(config.courseDatabasePath, { readOnly: true }); }
   catch { console.error('auth_catalog_unavailable'); }
 }
@@ -87,21 +93,39 @@ if (pointsEnabled) {
 const points = createPoints({ pool, userIds: config.pointsPilotUserIds, forAll: config.pointsForAll,
   stars, lookupArticle: id => courseDb && readArticle(courseDb, id) });
 const weeklyPoll = createWeeklyPoll(pool, { stars, notifications: gamificationNotifications });
-let admin, adminHttp;
+let videoTitles = new Map();
+try { videoTitles = new Map(JSON.parse(readFileSync(new URL('../content/weekly-video-materials.json', import.meta.url), 'utf8')).map(item => [item.id,item.title])); }
+catch { console.error('analytics_video_titles_unavailable'); }
+const titleForResource = (type,id) => {
+  try {
+    if (type === 'video') return videoTitles.get(weeklyVideoPosition(id)) || null;
+    if (!courseDb) return null;
+    if (type === 'article') return readArticle(courseDb,id)?.title || null;
+    if (type === 'lesson') {
+      const lessonId = /^\d+:([1-9]\d*)(?::[A-Za-z0-9_.:-]+)?$/.exec(id)?.[1] || (/^[1-9]\d*$/.test(id) ? id : null);
+      return lessonId ? courseDb.prepare('SELECT title FROM course_lesson_drafts WHERE lesson_id=?').get(lessonId)?.title || null : null;
+    }
+    if (type === 'course') return courseDb.prepare('SELECT title FROM course_products WHERE product_id=?').get(id)?.title || null;
+  } catch { return null; }
+  return null;
+};
+let admin, adminHttp, analytics;
 if (config.admin) {
   try {
     await pool.query('SELECT user_id FROM admin_editors LIMIT 0');
     adminArticles = openAdminArticles(config.admin.database, config.admin.uploads);
     admin = createAdmin({ pool, articles: adminArticles, ownerEmail: config.admin.ownerEmail, appOrigin: config.origin, settings: gamificationSettings });
     const gamificationAdmin = gamificationSettings ? createGamificationAdmin({ pool, admin, settings: gamificationSettings }) : null;
-    adminHttp = await createAdminHttp({ admin, service, store, gamificationAdmin, ...config.admin, mailPerMinute: config.mailPerMinute });
+    analytics = createAnalytics({ pool, admin, store, ownerEmail: config.admin.ownerEmail, titleForResource });
+    adminHttp = await createAdminHttp({ admin, service, store, gamificationAdmin, analytics, ...config.admin, mailPerMinute: config.mailPerMinute });
   } catch {
     console.error('admin_start_failed');
     adminArticles?.close(); adminArticles = null; admin = null;
   }
 }
+analytics ??= createAnalytics({ pool, store, ownerEmail: config.admin?.ownerEmail, titleForResource });
 const server = createAuthServer({ ...config, service, store, courseChecks, courseMaterials, aiChat, points, weeklyPoll, admin, adminHttp,
-  stars, starsAccess, gamification, gamificationNotifications,
+  stars, starsAccess, gamification, gamificationNotifications, analytics,
   personalData: createPersonalData(pool), profilePhoto: createProfilePhoto(pool),
   clubChat: createClubChat({ pool, service, courseMaterials, store, points, ownerUserId: config.clubOwnerUserId }), trustProxy: true });
 let working = false, stopping = false, lastCleanup = 0;
@@ -115,6 +139,7 @@ const worker = setInterval(async () => {
       lastCleanup = Date.now();
       try { await store.cleanup(); } catch { console.error('auth_cleanup_failed'); }
       try { await aiChat?.cleanup(); } catch { console.error('ai_cleanup_failed'); }
+      try { await analytics.cleanup(); } catch { console.error('analytics_cleanup_failed'); }
     }
   } finally { working = false; }
 }, 1000);

@@ -32,6 +32,7 @@ function fileData(file) {
   });
 }
 let voice = null;
+let analyticsVoice = false;
 const voiceControls = document.querySelector('#voice-controls');
 const voiceStatus = document.querySelector('#voice-status');
 const voiceCancel = document.querySelector('#voice-cancel');
@@ -67,7 +68,7 @@ function acceptConversation(data) { if (data.conversation?.id === activeConversa
 function saveThread() {
   if (!activeConversationId) return;
   const state = threadStates.get(activeConversationId) || {};
-  Object.assign(state, { messages, hasMore, nextBefore, pending, draft: input.value, attachment: selectedAttachment, expandedSources });
+  Object.assign(state, { messages, hasMore, nextBefore, pending, draft: input.value, attachment: selectedAttachment, expandedSources, analyticsVoice });
   threadStates.set(activeConversationId, state);
 }
 function leaveThread() {
@@ -78,6 +79,7 @@ function showThread(id) {
   messages = state?.messages || []; hasMore = state?.hasMore || false; nextBefore = state?.nextBefore || null;
   pending = state?.pending || null; replyWaiting = false; expandedSources = state?.expandedSources || new Set();
   input.value = state?.draft || ''; selectAttachment(state?.attachment || null); ready = false;
+  analyticsVoice = state?.analyticsVoice === true;
   conversationTitle.textContent = conversations.find(row => row.id === id)?.title || 'Новый чат';
   notice(''); render(); renderConversations();
 }
@@ -197,6 +199,7 @@ function updateControls() {
   menu.setEnabled(!!accountId && !ended);
 }
 function clearPrivate() {
+  analyticsVoice = false;
   revision++; clearQuotaRefresh(); cancelVoice(); controller?.abort(); controller = null;
   accountEpoch++; listRevision++; listController?.abort(); listController = null; listBusy = false;
   for (const state of threadStates.values()) state.createAbort?.abort();
@@ -461,7 +464,9 @@ async function submit() {
   const text = pending?.text || input.value.trim() || (selectedAttachment ? 'Помоги разобраться с результатами анализов.' : ''); if (!text) return;
   replyWaiting = true;
   if (!pending) {
-    pending = { requestId: crypto.randomUUID(), conversationId: threadId, text, attachment: selectedAttachment };
+    pending = { requestId: crypto.randomUUID(), conversationId: threadId, text, attachment: selectedAttachment,
+      analyticsFormat: selectedAttachment ? 'file' : analyticsVoice ? 'voice' : 'text' };
+    analyticsVoice = false;
     input.value = ''; selectAttachment(null);
     const content = pending.attachment ? `${text}\n\nФайл анализа: ${pending.attachment.name}` : text;
     merge([{ id: sendingId(pending.requestId), role: 'user', content,
@@ -498,6 +503,16 @@ async function submit() {
     if (data.status === 'urgent') {
       quota(data.quota); replyWaiting=false; attempt.checkStatus=false; delete attempt.urgentContinue; render(); showUrgent(data.urgent,attempt); return;
     }
+    if (['pending', 'completed', 'failed'].includes(data.status)) {
+      if (!attempt.analyticsAccepted) {
+        attempt.analyticsAccepted = true;
+        window.webprilAnalytics?.track('ai_request', { format: attempt.analyticsFormat || 'text', outcome: 'accepted' });
+      }
+      if (['completed', 'failed'].includes(data.status) && !attempt.analyticsResult) {
+        attempt.analyticsResult = true;
+        window.webprilAnalytics?.track('ai_result', { format: attempt.analyticsFormat || 'text', outcome: data.status });
+      }
+    }
     replyWaiting = data.status === 'pending';
     quota(data.quota); acceptConversation(data); merge(data.messages);
     if (data.status === 'completed') { pending = null; input.value = ''; notice(''); }
@@ -508,6 +523,11 @@ async function submit() {
     } else notice('Нажмите «Проверить результат» через несколько секунд.');
   } catch (error) {
     if (current !== revision || validateIdentity(error)) return;
+    if (!attempt.analyticsError) {
+      attempt.analyticsError = true;
+      window.webprilAnalytics?.track('error', { action: error.code === 'ai_daily_limit' ? 'ai_limit' : 'ai_error', format: attempt.analyticsFormat || 'text', outcome: error.code === 'ai_daily_limit' ? 'limit' : 'failed' });
+      if (error.code === 'ai_daily_limit') window.webprilAnalytics?.track('ai_result', { format: attempt.analyticsFormat || 'text', outcome: 'limit' });
+    }
     replyWaiting = false; render();
     if (!threadStates.get(threadId)?.saved) { notice('Не удалось создать чат. Повторите попытку — вопрос пока не отправлен.'); return; }
     if (error.code === 'ai_purchase_required') { clearPrivate(); notice(errorMessage(error)); return; }
@@ -601,6 +621,8 @@ async function transcribeVoice(attempt) {
     if (!currentVoice(attempt)) return;
     if (result.requestId !== attempt.requestId || typeof result.text !== 'string' || !result.text.trim() || result.text.length > 4000) throw Object.assign(new Error('invalid transcript'), { code: 'invalid_ai_voice' });
     const text = result.text.trim(); cancelVoice(); input.value = text; updateControls(); input.focus();
+    analyticsVoice = true;
+    window.webprilAnalytics?.track('action', { action: 'ai_voice_transcribed', format: 'voice', outcome: 'completed' });
     notice('Проверьте текст и нажмите «Отправить».');
   } catch (error) {
     if (!currentVoice(attempt) || validateIdentity(error)) return;

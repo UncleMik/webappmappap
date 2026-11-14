@@ -1,3 +1,5 @@
+import('./analytics.js?v=20261114-analytics').catch(() => {});
+
 export async function authRequest(path, body, { headers } = {}) {
   let response;
   try {

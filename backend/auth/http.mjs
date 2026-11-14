@@ -79,7 +79,7 @@ function limitQuota(error) {
 const materialsUnavailable = () => new AuthError(503, 'course_materials_unavailable',
   'Материалы курсов временно недоступны. Попробуйте ещё раз.');
 
-export function createAuthServer({ service, store, courseChecks, courseMaterials, personalData, profilePhoto, clubChat, aiChat, points, weeklyPoll, stars, starsAccess, gamification, gamificationNotifications, adminHttp, admin, origin, enabled = false, trustProxy = false, mailPerMinute = 120, weeklyMedia = createWeeklyMedia() }) {
+export function createAuthServer({ service, store, courseChecks, courseMaterials, personalData, profilePhoto, clubChat, aiChat, points, weeklyPoll, stars, starsAccess, gamification, gamificationNotifications, analytics, adminHttp, admin, origin, enabled = false, trustProxy = false, mailPerMinute = 120, weeklyMedia = createWeeklyMedia() }) {
   let largeAiInFlight = false;
   async function requireAccount(token, expected) {
     const user = await service.session(token);
@@ -339,6 +339,7 @@ export function createAuthServer({ service, store, courseChecks, courseMaterials
         }
       }
       const data = await readJson(request, isAiVoice ? MAX_AI_VOICE_BODY_BYTES : isAiSend ? MAX_AI_BODY_BYTES : url.pathname === '/api/auth/personal' ? 1_000_000
+        : url.pathname === '/api/auth/analytics/events' ? 32768
         : url.pathname === '/api/auth/gamification/actions' ? 16000
         : url.pathname === '/api/auth/profile-photo' ? 512_000
           : url.pathname === '/api/auth/club/messages' ? 512_000 : 4096, isAiSend);
@@ -346,6 +347,12 @@ export function createAuthServer({ service, store, courseChecks, courseMaterials
       const proxy = trustProxy && ['127.0.0.1', '::1', '::ffff:127.0.0.1'].includes(peer);
       const ip = proxy ? String(request.headers['x-real-ip'] || peer) : peer;
       await store.rateLimit('request_ip', ip, 600);
+      if (url.pathname === '/api/auth/analytics/events') {
+        const token = readSessionCookie(request), expected = request.headers['x-webpril-account'];
+        await requireAccount(token, expected);
+        if (!analytics) throw new AuthError(503, 'analytics_unavailable', 'Аналитика временно недоступна.');
+        send(200, await analytics.ingest(token, expected, data)); return;
+      }
       const newWrites = {
         '/api/auth/stars/purchase': [stars, 'purchase'],
         '/api/auth/stars/course-video': [stars, 'courseVideoWatching'],

@@ -28,6 +28,7 @@
       render();
       try {
         await api.write({ operation: 'setFavorite', id, favorite, ...(favorite && title ? { title } : {}) });
+        window.webprilAnalytics?.track('action', { action: favorite ? 'favorite_add' : 'favorite_remove' });
       } catch (error) {
         if (material === current) showError(error.message);
       } finally {

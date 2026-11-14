@@ -256,6 +256,7 @@ function videoPlayer(video, index, total, available, key, positions, restoreJobs
       panel.append(mediaNote('Не удалось открыть видео. Попробуйте ещё раз.'));
     });
     stage.replaceChildren(player);
+    window.webprilAnalytics?.track('action', { action: 'external_video_open', resourceType: 'lesson', resourceId: `${productId}:${lessonId}` });
     const parts = JSON.parse(key);
     let pointsNote = panel.querySelector('.course-points-note');
     if (!pointsNote) {pointsNote = node('p','course-media-note course-points-note');panel.append(pointsNote);}
@@ -559,6 +560,7 @@ function renderLesson(data) {
   scroller.removeAttribute('aria-busy');
   scroller.classList.toggle('course-copy-disabled', lesson.contentCopyDisabled);
   document.title = lesson.title;
+  window.webprilAnalytics?.trackArticle(scroller, `${lesson.productId}:${lesson.lessonId}`, 'lesson');
 }
 
 if (!positiveId(productId) || !positiveId(lessonId)) {

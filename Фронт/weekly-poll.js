@@ -138,6 +138,7 @@
           body: JSON.stringify({ pollId: poll.id, choice: Number(selected) })
         });
         render({ poll: { ...poll, choice: vote.choice, counts: vote.counts }, accountId });
+        window.webprilAnalytics?.track('action', { action: 'poll_vote' });
         if (!discussion.hidden) {
           if (window.navigateApp) window.navigateApp(discussion.href);
           else location.assign(discussion.href);

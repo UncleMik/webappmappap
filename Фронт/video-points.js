@@ -25,6 +25,8 @@ function difference(ranges, previous) {
 }
 
 export function trackVideoPoints(video, videoId, note) {
+  window.webprilAnalytics?.setResource('video', String(videoId));
+  window.webprilAnalytics?.trackVideo(video, String(videoId));
   const frame = window.frameElement;
   const visible = () => !document.hidden && !frame?.hidden;
   const account = window.webprilSessionAccountId;

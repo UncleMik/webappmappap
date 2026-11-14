@@ -79,6 +79,13 @@ test('top window polls every 30 seconds without concealing a verified page', asy
   assert.equal(app.lock.sheet.disabled, true);
 });
 
+test('verified gate exposes only account id and completed-profile boolean to analytics', async () => {
+  const app = gate({ replies: [{...valid,user:{...valid.user,profile:{completedAt:'2026-11-14',name:'PRIVATE',dueDate:'PRIVATE'}}}] });
+  await flush();
+  assert.deepEqual({...app.window.webprilAnalyticsSession},{id:'user-1',completed:true});
+  assert.deepEqual(app.dispatched,['webpril:analytics-session']);
+});
+
 test('iframe delegates replacement to its top window and has no heartbeat', async () => {
   const app = gate({ iframe: true, replies: [replaced] });
   await flush();
@@ -101,7 +108,8 @@ test('replacement clears media and preserved frames, then redirects with reason 
   app.tick();
   await flush();
   assert.equal(app.lock.sheet.disabled, false);
-  assert.deepEqual(app.dispatched, ['webpril:session-ended']);
+  assert.deepEqual(app.dispatched.filter(type => type === 'webpril:session-ended'), ['webpril:session-ended']);
+  assert.equal(app.window.webprilAnalyticsSession, null, 'revoked session clears its minimal analytics hint');
   assert.equal(app.timers.size, 0);
   assert.deepEqual(actions, ['pause', 'remove src', 'remove source', 'load', 'remove frame']);
   assert.equal(app.redirects.length, 1);
